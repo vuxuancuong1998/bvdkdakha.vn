@@ -1143,9 +1143,148 @@ Class homeController Extends baseController
                     $page_title = "Xác thực email thất bại";
                     $page_description = "Liên kết xác thực đã được sử dụng. Vui lòng kiểm tra lại hoặc liên hệ với bộ phận hỗ trợ.";
                     $this->view->data['page_description'] = $page_description;
-                    $this->view->data['page_title'] = $page_title;
-                    $this->view->show("404");
                 }
             }
+    }
+
+    private function ensureTT25Tables()
+    {
+        global $db;
+        $db->query("CREATE TABLE IF NOT EXISTS hicrm_tt25_categories (
+            id int(11) NOT NULL AUTO_INCREMENT,
+            code varchar(50) NOT NULL,
+            name varchar(255) NOT NULL,
+            description text DEFAULT NULL,
+            sort_order int(11) NOT NULL DEFAULT 0,
+            status tinyint(4) NOT NULL DEFAULT 1,
+            created_at datetime DEFAULT CURRENT_TIMESTAMP,
+            PRIMARY KEY (id)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+
+        $db->query("CREATE TABLE IF NOT EXISTS hicrm_tt25_requests (
+            id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+            fullname varchar(255) NOT NULL,
+            cccd varchar(50) NOT NULL,
+            dob date NOT NULL,
+            phone varchar(20) NOT NULL,
+            bhyt_code varchar(50) DEFAULT NULL,
+            email varchar(255) NOT NULL,
+            category_id int(11) NOT NULL,
+            category_name varchar(255) NOT NULL,
+            status tinyint(4) NOT NULL DEFAULT 0 COMMENT '0: Mới tiếp nhận, 1: Hoàn thành, 2: Từ chối',
+            note text DEFAULT NULL,
+            created_at datetime DEFAULT CURRENT_TIMESTAMP,
+            updated_at datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+            PRIMARY KEY (id),
+            KEY idx_status (status),
+            KEY idx_created_at (created_at),
+            KEY idx_search (fullname, cccd, phone, email)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+
+        $db->query("SHOW COLUMNS FROM hicrm_tt25_requests LIKE 'bhyt_code'");
+        if(!$db->num_row()){
+            $db->query("ALTER TABLE hicrm_tt25_requests ADD COLUMN bhyt_code varchar(50) DEFAULT NULL AFTER phone");
+        }
+
+        $db->query("SELECT COUNT(*) as cnt FROM hicrm_tt25_categories");
+        $row = $db->fetch_object(true);
+        if(!$row || intval($row->cnt) == 0){
+            $cats = array(
+                array('code' => 'BHXH', 'name' => 'Giấy chứng nhận nghỉ việc hưởng bảo hiểm xã hội (Mẫu TT25/BYT)', 'sort' => 1),
+                array('code' => 'RAVIEN', 'name' => 'Giấy ra viện (Mẫu TT25/BYT)', 'sort' => 2),
+                array('code' => 'KHAMSK', 'name' => 'Giấy khám sức khỏe (Mẫu TT25/BYT)', 'sort' => 3),
+                array('code' => 'CHUNGSINH', 'name' => 'Giấy chứng sinh (Mẫu TT25/BYT)', 'sort' => 4),
+                array('code' => 'SAOBENHAN', 'name' => 'Giấy trích sao bệnh án (Mẫu TT25/BYT)', 'sort' => 5),
+                array('code' => 'NOITRU', 'name' => 'Giấy chứng nhận điều trị nội trú (Mẫu TT25/BYT)', 'sort' => 6)
+            );
+            foreach($cats as $c){
+                $db->query("INSERT INTO hicrm_tt25_categories (code, name, sort_order, status) VALUES ('".$db->escapestring($c['code'])."', '".$db->escapestring($c['name'])."', ".intval($c['sort']).", 1)");
+            }
+        }
+    }
+
+    public function lay_giay_tt25()
+    {
+        global $db;
+        $this->ensureTT25Tables();
+
+        $isAjax = (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest') || isset($_POST['is_ajax']);
+
+        if($_SERVER['REQUEST_METHOD'] === 'POST'){
+            $fullname = isset($_POST['fullname']) ? trim($_POST['fullname']) : '';
+            $cccd = isset($_POST['cccd']) ? trim($_POST['cccd']) : '';
+            $dob = isset($_POST['dob']) ? trim($_POST['dob']) : '';
+            $phone = isset($_POST['phone']) ? trim($_POST['phone']) : '';
+            $bhyt_code = isset($_POST['bhyt_code']) ? trim($_POST['bhyt_code']) : '';
+            $email = isset($_POST['email']) ? trim($_POST['email']) : '';
+            $category_id = isset($_POST['category_id']) ? intval($_POST['category_id']) : 0;
+
+            $errors = array();
+            if(empty($fullname)){ $errors[] = "Vui lòng nhập Họ và tên."; }
+            if(empty($cccd)){ 
+                $errors[] = "Vui lòng nhập Số CCCD."; 
+            } elseif(!preg_match('/^\d{12}$/', $cccd)) {
+                $errors[] = "Số CCCD phải bao gồm đúng 12 chữ số.";
+            }
+
+            if(empty($dob)){ $errors[] = "Vui lòng chọn Ngày tháng năm sinh."; }
+            
+            if(empty($phone)){ 
+                $errors[] = "Vui lòng nhập Số điện thoại."; 
+            } elseif(!preg_match('/^\d{10}$/', $phone)) {
+                $errors[] = "Số điện thoại liên hệ phải bao gồm đúng 10 chữ số.";
+            }
+
+            if(empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)){ $errors[] = "Vui lòng nhập Email hợp lệ."; }
+            if($category_id <= 0){ $errors[] = "Vui lòng chọn Loại giấy theo danh mục giấy TT25/BYT."; }
+
+            if(empty($errors)){
+                $db->query("SELECT name FROM hicrm_tt25_categories WHERE id = '".$category_id."' LIMIT 1");
+                $catRow = $db->fetch_object(true);
+                $category_name = $catRow ? $catRow->name : 'Giấy TT25/BYT';
+
+                $fn = $db->escapestring($fullname);
+                $cd = $db->escapestring($cccd);
+                $db_dob = $db->escapestring($dob);
+                $ph = $db->escapestring($phone);
+                $bh = $db->escapestring($bhyt_code);
+                $em = $db->escapestring($email);
+                $cn = $db->escapestring($category_name);
+
+                $db->query("INSERT INTO hicrm_tt25_requests (fullname, cccd, dob, phone, bhyt_code, email, category_id, category_name, status, created_at) 
+                    VALUES ('$fn', '$cd', '$db_dob', '$ph', '$bh', '$em', '$category_id', '$cn', 0, NOW())");
+
+                $successMsg = "Hệ thống đã tiếp nhận yêu cầu; Vui lòng kiểm tra thư mục email trong 24h.";
+
+                if($isAjax){
+                    header('Content-Type: application/json; charset=utf-8');
+                    echo json_encode(array(
+                        'status' => 'success',
+                        'message' => $successMsg
+                    ));
+                    exit();
+                } else {
+                    $this->view->data['success_message'] = $successMsg;
+                }
+            } else {
+                if($isAjax){
+                    header('Content-Type: application/json; charset=utf-8');
+                    echo json_encode(array(
+                        'status' => 'error',
+                        'message' => implode('<br>', $errors)
+                    ));
+                    exit();
+                } else {
+                    $this->view->data['error_message'] = implode('<br>', $errors);
+                }
+            }
+        }
+
+        $db->query("SELECT * FROM hicrm_tt25_categories WHERE status = 1 ORDER BY sort_order ASC, id ASC");
+        $categories = $db->fetch_object();
+
+        $this->view->data['tt25_categories'] = is_array($categories) ? $categories : array();
+        $this->view->data['page_title'] = "Lấy giấy TT25 - Bệnh viện đa khoa khu vực Đắk Hà";
+        $this->view->show("lay-giay-tt25");
     }
 }

@@ -46,8 +46,9 @@ Class apiController extends baseController
 	{
 		$_SESSION['user']['id'] = $user->id;
 		$_SESSION['user']['email'] = $user->user_email;
-		$_SESSION['user']['full_name'] = $user->full_name;
-		$_SESSION['user']['group'] = $user->user_group;
+		$_SESSION['user']['full_name'] = !empty($user->full_name) ? $user->full_name : (!empty($user->user_username) ? $user->user_username : 'Người dùng');
+		$_SESSION['user']['group'] = intval($user->user_group);
+		$_SESSION['user']['avatar'] = !empty($user->user_avatar_url) ? $user->user_avatar_url : '';
 		$_SESSION['LoggedIn'] = 1;
 	}
 	private function adminClearTwoFactorSession()
@@ -119,7 +120,7 @@ Class apiController extends baseController
 			return XC_URL.'/admin';
 		}
 		if($group === 2){
-			return XC_URL.'/quan-ly-nha-tuyen-dung.html';
+			return XC_URL.'/khong-gian-lam-viec-so';
 		}
 		if($group === 3 || $group === 4){
 			return XC_URL.'/quan-ly-ho-so-ung-vien.html';
@@ -1458,6 +1459,250 @@ Class apiController extends baseController
 		echo json_encode($result);
 	}
 	//====END====/
+
+	//======= API Static Pages (Quản lý trang tĩnh CMS) ==========//
+	public function staticpages()
+	{
+		header('Content-Type: application/json; charset=utf-8');
+		if(!$this->requireAdminApiPermission('staticpages', false)){ return; }
+		global $db;
+		$result = array('status' => 500, 'message' => 'Lỗi kết nối');
+
+		$id = isset($_POST['id']) ? (int)$_POST['id'] : 0;
+		$page_title = isset($_POST['page_title']) ? trim($_POST['page_title']) : '';
+		$category_id = isset($_POST['category_id']) ? (int)$_POST['category_id'] : 0;
+		$hashtag = isset($_POST['hashtag']) ? trim($_POST['hashtag']) : '';
+		$link_url = isset($_POST['link_url']) ? trim($_POST['link_url']) : '';
+		$page_slug = isset($_POST['page_slug']) ? trim($_POST['page_slug']) : '';
+		$page_summary = isset($_POST['page_summary']) ? trim($_POST['page_summary']) : '';
+		$page_content = isset($_POST['page_content']) ? trim($_POST['page_content']) : '';
+		$meta_title = isset($_POST['meta_title']) ? trim($_POST['meta_title']) : '';
+		$meta_keywords = isset($_POST['meta_keywords']) ? trim($_POST['meta_keywords']) : '';
+		$meta_description = isset($_POST['meta_description']) ? trim($_POST['meta_description']) : '';
+		$sort_order = isset($_POST['sort_order']) ? (int)$_POST['sort_order'] : 0;
+		$page_status = isset($_POST['page_status']) ? (int)$_POST['page_status'] : 1;
+
+		if(empty($page_title)){
+			$result['message'] = 'Vui lòng nhập Tên trang tĩnh!';
+			echo json_encode($result);
+			return;
+		}
+
+		if(empty($page_slug)){
+			$page_slug = preg_replace('/[^a-z0-9\-]/', '', strtolower(str_replace(' ', '-', $page_title)));
+		}
+		$page_slug = preg_replace('/[^a-z0-9\-]/', '', strtolower(str_replace(' ', '-', $page_slug)));
+
+		$banner_image = '';
+		if(isset($_FILES['banner_image']) && $_FILES['banner_image']['name'] != ''){
+			$file_name = $_FILES['banner_image']['name'];
+			$file_tmp = $_FILES['banner_image']['tmp_name'];
+			$file_ext = strtolower(pathinfo($file_name, PATHINFO_EXTENSION));
+			$allowed = array('jpg', 'jpeg', 'png', 'gif', 'webp');
+			if(in_array($file_ext, $allowed)){
+				$new_name = 'static_page_'.time().'_'.rand(100,999).'.'.$file_ext;
+				$target = './uploads/images/'.$new_name;
+				if(move_uploaded_file($file_tmp, $target)){
+					$banner_image = 'uploads/images/'.$new_name;
+				}
+			}
+		}
+
+		$e_title = $db->escapestring($page_title);
+		$e_slug = $db->escapestring($page_slug);
+		$e_hashtag = $db->escapestring($hashtag);
+		$e_link = $db->escapestring($link_url);
+		$e_summary = $db->escapestring($page_summary);
+		$e_content = $db->escapestring($page_content);
+		$e_mtitle = $db->escapestring($meta_title);
+		$e_mkey = $db->escapestring($meta_keywords);
+		$e_mdesc = $db->escapestring($meta_description);
+
+		if($id == 0){
+			$db->query("SELECT id FROM hicrm_static_pages WHERE page_slug = '".$e_slug."' LIMIT 1");
+			if($db->fetch_object(true)){
+				$e_slug .= '-'.time();
+			}
+			
+			$db->query("INSERT INTO hicrm_static_pages (category_id, page_title, page_slug, hashtag, link_url, page_summary, page_content, banner_image, meta_title, meta_keywords, meta_description, sort_order, page_status, created_at)
+			VALUES ('".$category_id."', '".$e_title."', '".$e_slug."', '".$e_hashtag."', '".$e_link."', '".$e_summary."', '".$e_content."', '".$banner_image."', '".$e_mtitle."', '".$e_mkey."', '".$e_mdesc."', '".$sort_order."', '".$page_status."', NOW())");
+			
+			$result['status'] = 200;
+			$result['message'] = 'Thêm trang tĩnh thành công!';
+			$result['returnUrl'] = XC_URL."/admin/staticpages";
+		} else {
+			$img_update = !empty($banner_image) ? ", banner_image = '".$banner_image."'" : "";
+			$db->query("UPDATE hicrm_static_pages SET 
+				category_id = '".$category_id."',
+				page_title = '".$e_title."',
+				page_slug = '".$e_slug."',
+				hashtag = '".$e_hashtag."',
+				link_url = '".$e_link."',
+				page_summary = '".$e_summary."',
+				page_content = '".$e_content."',
+				meta_title = '".$e_mtitle."',
+				meta_keywords = '".$e_mkey."',
+				meta_description = '".$e_mdesc."',
+				sort_order = '".$sort_order."',
+				page_status = '".$page_status."'
+				".$img_update."
+				WHERE id = '".$id."'");
+
+			$result['status'] = 200;
+			$result['message'] = 'Cập nhật trang tĩnh thành công!';
+			$result['returnUrl'] = XC_URL."/admin/staticpages";
+		}
+
+		echo json_encode($result);
+	}
+
+	public function deletestaticpage()
+	{
+		header('Content-Type: application/json; charset=utf-8');
+		if(!$this->requireAdminApiPermission('staticpages', false)){ return; }
+		global $db;
+		$id = isset($_POST['id']) ? (int)$_POST['id'] : 0;
+		if($id > 0){
+			$db->query("UPDATE hicrm_static_pages SET page_status = 99 WHERE id = '".$id."'");
+			echo json_encode(array('status' => 200, 'message' => 'Đã xóa trang tĩnh thành công!'));
+		} else {
+			echo json_encode(array('status' => 400, 'message' => 'ID không hợp lệ!'));
+		}
+	}
+
+	public function staticpagecategories()
+	{
+		header('Content-Type: application/json; charset=utf-8');
+		if(!$this->requireAdminApiPermission('staticpage_categories', false)){ return; }
+		global $db;
+		$result = array('status' => 500, 'message' => 'Lỗi kết nối');
+
+		$id = isset($_POST['id']) ? (int)$_POST['id'] : 0;
+		$category_name = isset($_POST['category_name']) ? trim($_POST['category_name']) : '';
+		$category_slug = isset($_POST['category_slug']) ? trim($_POST['category_slug']) : '';
+		$category_description = isset($_POST['category_description']) ? trim($_POST['category_description']) : '';
+		$category_status = isset($_POST['category_status']) ? (int)$_POST['category_status'] : 1;
+
+		if(empty($category_name)){
+			$result['message'] = 'Vui lòng nhập Tên danh mục!';
+			echo json_encode($result);
+			return;
+		}
+
+		if(empty($category_slug)){
+			$category_slug = preg_replace('/[^a-z0-9\-]/', '', strtolower(str_replace(' ', '-', $category_name)));
+		}
+
+		$e_name = $db->escapestring($category_name);
+		$e_slug = $db->escapestring($category_slug);
+		$e_desc = $db->escapestring($category_description);
+
+		if($id == 0){
+			$db->query("INSERT INTO hicrm_static_page_categories (category_name, category_slug, category_description, category_status, created_at)
+			VALUES ('".$e_name."', '".$e_slug."', '".$e_desc."', '".$category_status."', NOW())");
+			$result['status'] = 200;
+			$result['message'] = 'Thêm danh mục trang tĩnh thành công!';
+			$result['returnUrl'] = XC_URL."/admin/staticpagecategories";
+		} else {
+			$db->query("UPDATE hicrm_static_page_categories SET category_name = '".$e_name."', category_slug = '".$e_slug."', category_description = '".$e_desc."', category_status = '".$category_status."' WHERE id = '".$id."'");
+			$result['status'] = 200;
+			$result['message'] = 'Cập nhật danh mục thành công!';
+			$result['returnUrl'] = XC_URL."/admin/staticpagecategories";
+		}
+
+		echo json_encode($result);
+	}
+	//====END CMS STATIC PAGES====/
+
+	//======= API Support Requests (Quản lý Yêu cầu) ==========//
+	public function submitrequest()
+	{
+		header('Content-Type: application/json; charset=utf-8');
+		global $db;
+		$result = array('status' => 500, 'message' => 'Lỗi kết nối');
+
+		$user_id = isset($_SESSION['user']['id']) ? (int)$_SESSION['user']['id'] : 0;
+		$user_name = isset($_SESSION['user']['full_name']) ? $_SESSION['user']['full_name'] : (isset($_POST['user_name']) ? trim($_POST['user_name']) : 'Khách');
+		$user_email = isset($_SESSION['user']['email']) ? $_SESSION['user']['email'] : (isset($_POST['user_email']) ? trim($_POST['user_email']) : '');
+		
+		$title = isset($_POST['title']) ? trim($_POST['title']) : '';
+		$service_type = isset($_POST['service_type']) ? trim($_POST['service_type']) : 'CNTT';
+		$priority = isset($_POST['priority']) ? trim($_POST['priority']) : 'Normal';
+		$department = isset($_POST['department']) ? trim($_POST['department']) : '';
+		$content = isset($_POST['content']) ? trim($_POST['content']) : '';
+		$action_status = isset($_POST['action_status']) ? trim($_POST['action_status']) : 'sent';
+
+		if(empty($title)){
+			$result['message'] = 'Vui lòng nhập Tiêu đề / Nội dung ngắn của yêu cầu!';
+			echo json_encode($result);
+			return;
+		}
+
+		$prefix = 'YC-' . date('Ymd') . '-';
+		$rand_code = $prefix . rand(100, 999);
+
+		$attachment = '';
+		if(isset($_FILES['attachment']) && $_FILES['attachment']['name'] != ''){
+			$file_name = $_FILES['attachment']['name'];
+			$file_tmp = $_FILES['attachment']['tmp_name'];
+			$file_ext = strtolower(pathinfo($file_name, PATHINFO_EXTENSION));
+			$new_name = 'request_'.time().'_'.rand(100,999).'.'.$file_ext;
+			$target = './uploads/files/'.$new_name;
+			if(move_uploaded_file($file_tmp, $target)){
+				$attachment = 'uploads/files/'.$new_name;
+			}
+		}
+
+		$e_code = $db->escapestring($rand_code);
+		$e_name = $db->escapestring($user_name);
+		$e_email = $db->escapestring($user_email);
+		$e_dept = $db->escapestring($department);
+		$e_type = $db->escapestring($service_type);
+		$e_prio = $db->escapestring($priority);
+		$e_title = $db->escapestring($title);
+		$e_content = $db->escapestring($content);
+		$e_attach = $db->escapestring($attachment);
+		$e_status = in_array($action_status, array('draft','sent','processing','completed','rejected')) ? $action_status : 'sent';
+
+		$db->query("INSERT INTO hicrm_support_requests (request_code, user_id, user_name, user_email, department, service_type, priority, title, content, attachment, status, created_at)
+		VALUES ('".$e_code."', '".$user_id."', '".$e_name."', '".$e_email."', '".$e_dept."', '".$e_type."', '".$e_prio."', '".$e_title."', '".$e_content."', '".$e_attach."', '".$e_status."', NOW())");
+
+		$result['status'] = 200;
+		$result['request_code'] = $rand_code;
+		$result['message'] = ($e_status === 'draft') ? 'Đã lưu nháp yêu cầu thành công!' : 'Gửi yêu cầu hỗ trợ thành công! Mã YC: ' . $rand_code;
+		$result['returnUrl'] = XC_URL."/khong-gian-lam-viec-so";
+
+		echo json_encode($result);
+	}
+
+	public function updaterequeststatus()
+	{
+		header('Content-Type: application/json; charset=utf-8');
+		if(!$this->requireAdminApiPermission('support_requests', false)){ return; }
+		global $db;
+		$result = array('status' => 500, 'message' => 'Lỗi kết nối');
+
+		$id = isset($_POST['id']) ? (int)$_POST['id'] : 0;
+		$status = isset($_POST['status']) ? trim($_POST['status']) : '';
+		$resolution_note = isset($_POST['resolution_note']) ? trim($_POST['resolution_note']) : '';
+
+		$allowed_status = array('draft', 'sent', 'processing', 'completed', 'rejected');
+		if($id <= 0 || !in_array($status, $allowed_status)){
+			$result['message'] = 'Trạng thái hoặc ID không hợp lệ!';
+			echo json_encode($result);
+			return;
+		}
+
+		$e_status = $db->escapestring($status);
+		$e_note = $db->escapestring($resolution_note);
+
+		$db->query("UPDATE hicrm_support_requests SET status = '".$e_status."', resolution_note = '".$e_note."', updated_at = NOW() WHERE id = '".$id."'");
+
+		$result['status'] = 200;
+		$result['message'] = 'Cập nhật trạng thái và nội dung xử lý yêu cầu thành công!';
+		echo json_encode($result);
+	}
+	//====END SUPPORT REQUESTS====/
 
 	//=======API product ========== ////
 	public function productActions()
@@ -3812,7 +4057,11 @@ Class apiController extends baseController
 			$result["status"] = 200;
 			$result["name"] = $_SESSION['user']['full_name'];
 			$result["message"] = "Đăng nhập thành công";
-			$result['return_url'] = $isFrontendLogin ? $this->frontendLoginReturnUrl($row) : XC_URL.'/admin';
+			if($isFrontendLogin){
+				$result['return_url'] = $this->frontendLoginReturnUrl($row);
+			}else{
+				$result['return_url'] = (intval($row->user_group) === 2) ? XC_URL.'/khong-gian-lam-viec-so' : XC_URL.'/admin';
+			}
         }
 		else
 		{

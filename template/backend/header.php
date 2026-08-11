@@ -122,7 +122,7 @@ $adminCanAny = function($keys) use ($adminCan){
                     <?php endif; ?>
                     
                     
-                    <?php if($adminCanAny(array('employers','employer_posts','candidates','students','events','news_comments','google_meet','market_results','customer_feedbacks','job_support_customers','users','groups'))): ?>
+                    <?php if($adminCanAny(array('employers','employer_posts','candidates','students','tt25_documents','events','news_comments','google_meet','market_results','customer_feedbacks','job_support_customers','users','groups'))): ?>
                     <li><hr class="hr-horizontal"></li>
                     <li class="nav-item static-item">
                         <a class="nav-link static-item disabled" href="#" tabindex="-1">
@@ -192,6 +192,14 @@ $adminCanAny = function($keys) use ($adminCan){
                         <a class="nav-link "  href="<?php echo XC_URL;?>/admin/students">
                          <i class="fa-solid fa-user-graduate"></i>
                             <span class="item-name">Sinh viên</span>
+                        </a>
+                    </li>
+                    <?php endif; ?>
+                    <?php if($adminCan('tt25_documents')): ?>
+                    <li class="nav-item">
+                        <a class="nav-link <?php echo (isset($active_menu) && $active_menu == 'tt25documents') ? 'active' : ''; ?>" href="<?php echo XC_URL;?>/admin/tt25documents">
+                            <i class="fa-solid fa-file-medical"></i>
+                            <span class="item-name">Quản lý giấy tờ TT25</span>
                         </a>
                     </li>
                     <?php endif; ?>

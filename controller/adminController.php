@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 Class adminController extends baseController
 {
 	private function ensureAdminPermissionTables()
@@ -36,6 +36,7 @@ Class adminController extends baseController
 			array('key' => 'events', 'name' => 'Quản lý tin tức & sự kiện', 'parent' => 'news_section', 'sort' => 50),
 			array('key' => 'news_comments', 'name' => 'Quản lý bình luận tin tức', 'parent' => 'news_section', 'sort' => 51),
 			array('key' => 'customer_feedbacks', 'name' => 'Quản lý phản hồi khách hàng', 'parent' => '', 'sort' => 54),
+			array('key' => 'tt25_documents', 'name' => 'Quản lý giấy tờ TT25', 'parent' => '', 'sort' => 55),
 			array('key' => 'job_support_customers', 'name' => 'Quản lý khách hàng hỗ trợ tìm việc', 'parent' => '', 'sort' => 55),
 			array('key' => 'market_results', 'name' => 'Quản lý kết quả sàn', 'parent' => '', 'sort' => 56),
 			array('key' => 'google_meet', 'name' => 'Sàn việc làm online', 'parent' => '', 'sort' => 60),
@@ -155,7 +156,7 @@ Class adminController extends baseController
 			$this->view->admintmp('index');
 			return;
 		}
-		$routes = array('employers'=>'/admin/employers','employer_posts'=>'/admin/employers/posts','candidates'=>'/admin/candidates','students'=>'/admin/students','events'=>'/admin/events','news_comments'=>'/admin/newscomments','customer_feedbacks'=>'/admin/customerfeedbacks','job_support_customers'=>'/admin/jobsupportcustomers','market_results'=>'/admin/marketresults','google_meet'=>'/admin/googlemeet','users'=>'/admin/users','groups'=>'/admin/groups','images'=>'/admin/images','videos'=>'/admin/videos','config'=>'/admin/config','settings'=>'/admin/settings');
+		$routes = array('employers'=>'/admin/employers','employer_posts'=>'/admin/employers/posts','candidates'=>'/admin/candidates','students'=>'/admin/students','events'=>'/admin/events','news_comments'=>'/admin/newscomments','customer_feedbacks'=>'/admin/customerfeedbacks','tt25_documents'=>'/admin/tt25documents','job_support_customers'=>'/admin/jobsupportcustomers','market_results'=>'/admin/marketresults','google_meet'=>'/admin/googlemeet','users'=>'/admin/users','groups'=>'/admin/groups','images'=>'/admin/images','videos'=>'/admin/videos','config'=>'/admin/config','settings'=>'/admin/settings');
 		foreach($routes as $key => $route){
 			if($this->adminHasMenuPermission($allowed, $key)){ header('Location: '.XC_URL.$route); return; }
 		}
@@ -2143,6 +2144,131 @@ Class adminController extends baseController
 		$this->view->data['job_support_customer_total'] = $totalCustomers;
 		$this->view->data['job_support_customer_total_pages'] = $totalPages;
 		$this->view->admintmp('job-support-customers');
+	}
+
+	public function tt25documents($para = array())
+	{
+		if(!$this->prepareAdminAccess('tt25_documents')){ return; }
+		global $db;
+		if(!(isset($_SESSION['user']['id']) && $_SESSION['user']['id'] != "")){ $this->adminRedirect('/admin/login'); }
+
+		$db->query("CREATE TABLE IF NOT EXISTS hicrm_tt25_requests (
+			id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+			fullname varchar(255) NOT NULL,
+			cccd varchar(50) NOT NULL,
+			dob date NOT NULL,
+			phone varchar(20) NOT NULL,
+			email varchar(255) NOT NULL,
+			category_id int(11) NOT NULL,
+			category_name varchar(255) NOT NULL,
+			status tinyint(4) NOT NULL DEFAULT 0 COMMENT '0: Mới tiếp nhận, 1: Hoàn thành, 2: Từ chối',
+			note text DEFAULT NULL,
+			created_at datetime DEFAULT CURRENT_TIMESTAMP,
+			updated_at datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+			PRIMARY KEY (id),
+			KEY idx_status (status),
+			KEY idx_created_at (created_at),
+			KEY idx_search (fullname, cccd, phone, email)
+		) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+
+		$isAjax = (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest') || isset($_POST['is_ajax']);
+
+		if($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['tt25_action'])){
+			$action = trim((string)$_POST['tt25_action']);
+			$reqId = isset($_POST['id']) ? intval($_POST['id']) : 0;
+
+			if($action === 'complete' && $reqId > 0){
+				$db->query("UPDATE hicrm_tt25_requests SET status = 1, updated_at = NOW() WHERE id = '".$reqId."' LIMIT 1");
+				if($isAjax){
+					header('Content-Type: application/json; charset=utf-8');
+					echo json_encode(array('status' => 'success', 'message' => 'Đã cập nhật trạng thái Hoàn thành.'));
+					exit();
+				}
+				$this->setAdminFlash('success', 'Đã cập nhật trạng thái Hoàn thành cho bệnh nhân.');
+			}
+			elseif($action === 'reject' && $reqId > 0){
+				$note = isset($_POST['note']) ? trim($db->escapestring($_POST['note'])) : 'Từ chối cấp giấy';
+				$db->query("UPDATE hicrm_tt25_requests SET status = 2, note = '".$note."', updated_at = NOW() WHERE id = '".$reqId."' LIMIT 1");
+				if($isAjax){
+					header('Content-Type: application/json; charset=utf-8');
+					echo json_encode(array('status' => 'success', 'message' => 'Đã cập nhật trạng thái Từ chối.'));
+					exit();
+				}
+				$this->setAdminFlash('success', 'Đã cập nhật trạng thái Từ chối.');
+			}
+			elseif($action === 'reset' && $reqId > 0){
+				$db->query("UPDATE hicrm_tt25_requests SET status = 0, updated_at = NOW() WHERE id = '".$reqId."' LIMIT 1");
+				if($isAjax){
+					header('Content-Type: application/json; charset=utf-8');
+					echo json_encode(array('status' => 'success', 'message' => 'Đã chuyển về Mới tiếp nhận.'));
+					exit();
+				}
+				$this->setAdminFlash('info', 'Đã chuyển trạng thái về Mới tiếp nhận.');
+			}
+			elseif($action === 'delete' && $reqId > 0){
+				$db->query("DELETE FROM hicrm_tt25_requests WHERE id = '".$reqId."' LIMIT 1");
+				if($isAjax){
+					header('Content-Type: application/json; charset=utf-8');
+					echo json_encode(array('status' => 'success', 'message' => 'Đã xóa bản ghi yêu cầu.'));
+					exit();
+				}
+				$this->setAdminFlash('success', 'Đã xóa yêu cầu cấp giấy.');
+			}
+
+			if(!$isAjax){
+				$this->adminRedirect('/admin/tt25documents');
+			}
+		}
+
+		$page = (isset($_GET['page']) && intval($_GET['page']) > 0) ? intval($_GET['page']) : 1;
+		$perPage = 15;
+		$keyword = isset($_GET['keyword']) ? trim($_GET['keyword']) : '';
+		$statusFilter = isset($_GET['status']) ? trim($_GET['status']) : 'all';
+
+		$where = array("1=1");
+
+		if($keyword !== ''){
+			$kw = $db->escapestring($keyword);
+			$where[] = "(fullname LIKE '%".$kw."%' OR cccd LIKE '%".$kw."%' OR phone LIKE '%".$kw."%' OR email LIKE '%".$kw."%' OR category_name LIKE '%".$kw."%')";
+		}
+
+		if($statusFilter !== 'all' && $statusFilter !== ''){
+			$st = intval($statusFilter);
+			$where[] = "status = '".$st."'";
+		}
+
+		$baseSql = "FROM hicrm_tt25_requests WHERE ".implode(' AND ', $where);
+		$db->query("SELECT COUNT(id) AS total ".$baseSql);
+		$totalRequests = intval($db->fetch_object(true)->total);
+		$totalPages = max(1, ceil($totalRequests / $perPage));
+		if($page > $totalPages){ $page = $totalPages; }
+		$offset = ($page - 1) * $perPage;
+
+		$db->query("SELECT * ".$baseSql." ORDER BY created_at DESC, id DESC LIMIT ".$offset.",".$perPage);
+		$items = $db->fetch_object();
+
+		$db->query("SELECT status, COUNT(id) as total FROM hicrm_tt25_requests GROUP BY status");
+		$statusCountsRaw = $db->fetch_object();
+		$statusCounts = array('all' => 0, '0' => 0, '1' => 0, '2' => 0);
+		if(is_array($statusCountsRaw)){
+			foreach($statusCountsRaw as $sc){
+				$statusCounts[(string)$sc->status] = intval($sc->total);
+				$statusCounts['all'] += intval($sc->total);
+			}
+		}
+
+		$this->view->data['active_menu'] = "tt25documents";
+		$this->view->data['tt25_requests'] = is_array($items) ? $items : array();
+		$this->view->data['tt25_page'] = $page;
+		$this->view->data['tt25_per_page'] = $perPage;
+		$this->view->data['tt25_total'] = $totalRequests;
+		$this->view->data['tt25_total_pages'] = $totalPages;
+		$this->view->data['tt25_keyword'] = $keyword;
+		$this->view->data['tt25_status_filter'] = $statusFilter;
+		$this->view->data['tt25_status_counts'] = $statusCounts;
+		$this->view->data['tt25_flash'] = $this->getAdminFlash();
+
+		$this->view->admintmp("tt25-documents");
 	}
 	public function products($para)
 	{

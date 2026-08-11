@@ -1,365 +1,185 @@
-<?php
-global $db;
-$session_id = session_id();
-$current_time = date('Y-m-d H:i:s');
-$current_date = date('Y-m-d');
-$visit_stats = array('online' => 0, 'yesterday' => 0, 'total' => 0);
 
-if ($session_id) {
-    $session_id_esc = $db->escapestring($session_id);
-    $is_new_visit = empty($_SESSION['website_visit_recorded']);
+  <!-- ============================================================
+       FOOTER
+       ============================================================ -->
+  <footer class="site-footer" role="contentinfo" itemscope itemtype="https://schema.org/MedicalOrganization">
+    <div class="footer-main">
+      <div class="container">
+        <div class="footer-grid">
 
-    // Count each PHP session once. The totals table remains constant in size.
-    if ($is_new_visit) {
-        $db->query("INSERT INTO hicrm_website_visit_daily (visit_date, visit_count)
-                    VALUES ('$current_date', 1)
-                    ON DUPLICATE KEY UPDATE visit_count = visit_count + 1");
-        $db->query("INSERT INTO hicrm_website_visit_stats (stat_key, stat_value)
-                    VALUES ('total_visits', 1)
-                    ON DUPLICATE KEY UPDATE stat_value = stat_value + 1");
-        $_SESSION['website_visit_recorded'] = 1;
-    }
-
-    // Refresh the active-session row at most once every five minutes.
-    $now = time();
-    if (empty($_SESSION['website_online_refreshed_at']) || $now - (int) $_SESSION['website_online_refreshed_at'] >= 300) {
-        $expires_at = date('Y-m-d H:i:s', $now + 300);
-        $db->query("INSERT INTO hicrm_website_active_sessions (session_id, expires_at)
-                    VALUES ('$session_id_esc', '$expires_at')
-                    ON DUPLICATE KEY UPDATE expires_at = '$expires_at'");
-        $_SESSION['website_online_refreshed_at'] = $now;
-
-        // A new visit clears expired rows. The expiry index makes this inexpensive.
-        if ($is_new_visit) {
-            $db->query("DELETE FROM hicrm_website_active_sessions
-                        WHERE expires_at < '$current_time' LIMIT 1000");
-        }
-    }
-
-    $yesterday = date('Y-m-d', strtotime('-1 day'));
-    $db->query("SELECT
-                    (SELECT COUNT(*) FROM hicrm_website_active_sessions WHERE expires_at >= '$current_time') AS online,
-                    (SELECT visit_count FROM hicrm_website_visit_daily WHERE visit_date = '$yesterday') AS yesterday,
-                    (SELECT stat_value FROM hicrm_website_visit_stats WHERE stat_key = 'total_visits') AS total");
-    $visit_stats_row = $db->fetch_object(true);
-    if ($visit_stats_row) {
-        $visit_stats['online'] = (int) $visit_stats_row->online;
-        $visit_stats['yesterday'] = (int) $visit_stats_row->yesterday;
-        $visit_stats['total'] = (int) $visit_stats_row->total;
-    }
-}
-?>
-
-<!-- FOOTER MOBILE BEAUTIFUL REDESIGN -->
-<style>
-  /* ===== NEW FOOTER REDESIGN: 3 - 6 - 3 ===== */
-  .footer {
-    background: linear-gradient(180deg, #ffffff 0%, #f7fbff 58%, #eef6ff 100%);
-    color: #607086;
-    padding: 60px 0 20px;
-    font-family: 'Inter', system-ui, sans-serif;
-    border-top: 1px solid #dfe8f5;
-    margin-top: 0;
-  }
-  .footer-inner {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 24px;
-  }
-  .footer-top-custom {
-    display: grid;
-    grid-template-columns: repeat(12, minmax(0, 1fr));
-    gap: 40px;
-    padding-bottom: 40px;
-    border-bottom: 1px solid #dfe8f5;
-  }
-  .footer-col-3 {
-    grid-column: span 3;
-  }
-  .footer-col-6 {
-    grid-column: span 6;
-  }
-  .footer-logo-custom {
-    font-size: 24px;
-    font-weight: 800;
-    margin-bottom: 15px;
-    display: flex;
-    align-items: center;
-  }
-  .footer-logo-custom .blue {
-    color: #0d4e96;
-  }
-  .footer-logo-custom .white {
-    color: #1f2937;
-  }
-  .footer-webname {
-    color: #152238;
-    font-size: 14px;
-    font-weight: 700;
-    margin-bottom: 20px;
-    line-height: 1.5;
-  }
-  .footer-info-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-  }
-  .footer-info-item {
-    display: flex;
-    gap: 10px;
-    font-size: 13.5px;
-    line-height: 1.5;
-  }
-  .footer-info-item i {
-    color: #0d4e96;
-    font-size: 16px;
-    flex-shrink: 0;
-    margin-top: 2px;
-  }
-  .footer-info-item span {
-    color: #5a6b82;
-  }
-  .footer-col-title {
-    color: #152238;
-    font-size: 16px;
-    font-weight: 800;
-    margin-bottom: 20px;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-  }
-  .footer-intro {
-    font-size: 14px;
-    line-height: 1.8;
-    color: #607086;
-    margin-bottom: 25px;
-  }
-  .footer-links-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 24px;
-  }
-  .footer-link-column {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-  }
-  .footer-link-group-title {
-    color: #152238;
-    font-size: 15px;
-    font-weight: 700;
-    margin: 0 0 4px;
-  }
-  .footer-static-link {
-    color: #607086;
-    font-size: 14px;
-    text-decoration: none;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    transition: all 0.3s ease;
-  }
-  .footer-static-link:hover {
-    color: #0d4e96;
-    transform: translateX(4px);
-  }
-  .footer-static-link::before {
-    content: "•";
-    color: #0d4e96;
-    font-weight: bold;
-  }
-  .footer-map-container {
-    border-radius: 12px;
-    overflow: hidden;
-    box-shadow: 0 12px 28px rgba(13, 78, 150, 0.08);
-    border: 1px solid #dfe8f5;
-    margin-bottom: 20px;
-    background: #fff;
-  }
-  .footer-stats-box {
-    background: rgba(255, 255, 255, 0.82);
-    border-radius: 12px;
-    padding: 16px;
-    border: 1px solid #dfe8f5;
-    box-shadow: 0 10px 24px rgba(13, 78, 150, 0.06);
-  }
-  .footer-stat-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 13.5px;
-    padding: 8px 0;
-    border-bottom: 1px dashed #d8e5f3;
-  }
-  .footer-stat-row:last-child {
-    border-bottom: none;
-    padding-bottom: 0;
-  }
-  .footer-stat-row:first-child {
-    padding-top: 0;
-  }
-  .footer-stat-label {
-    color: #607086;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-  .footer-stat-label i {
-    color: #0d4e96;
-  }
-  .footer-stat-value {
-    color: #152238;
-    font-weight: 700;
-  }
-  .footer-bottom-custom {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding-top: 20px;
-    font-size: 13px;
-    color: #66768a;
-    flex-wrap: wrap;
-    gap: 15px;
-  }
-  .footer-bottom-custom a {
-    color: #607086;
-    text-decoration: none;
-    margin-left: 20px;
-    transition: color 0.3s, background 0.3s, border-color 0.3s;
-    padding: 8px 12px;
-    border-radius: 999px;
-    background: #fff;
-    border: 1px solid #dfe8f5;
-  }
-  .footer-bottom-custom a:hover {
-    color: #fff;
-    background: #0d4e96;
-    border-color: #0d4e96;
-  }
-  @media (max-width: 992px) {
-    .footer-col-3, .footer-col-6 {
-      grid-column: span 12;
-    }
-    .footer-top-custom {
-      gap: 30px;
-    }
-    .footer-links-grid {
-      grid-template-columns: 1fr;
-    }
-  }
-</style>
-
-<footer class="footer">
-  <div class="footer-inner">
-    <div class="footer-top-custom">
-      <div class="footer-col-3">
-        <div class="footer-logo-custom">
-          <span class="blue">Việc</span><span class="white">Làm</span>
-        </div>
-        <div class="footer-webname">Hệ thống cổng thông tin việc làm</div>
-        <ul class="footer-info-list">
-          <li class="footer-info-item">
-            <i class="ti ti-phone"></i>
-            <span>SĐT: <?php echo $this->helper->get_config('site_phone'); ?></span>
-          </li>
-          <li class="footer-info-item">
-            <i class="ti ti-map-pin"></i>
-            <span>Địa chỉ: <?php echo $this->helper->get_config('site_address'); ?></span>
-          </li>
-          <li class="footer-info-item">
-            <i class="ti ti-mail"></i>
-            <span>Email: <?php echo $this->helper->get_config('site_email'); ?></span>
-          </li>
-        </ul>
-      </div>
-
-      <div class="footer-col-6">
-        <h4 class="footer-col-title">Giới Thiệu Và Liên Kết</h4>
-        <p class="footer-intro">
-          Cổng thông tin việc làm hỗ trợ kết nối sinh viên, người tìm việc và doanh nghiệp tuyển dụng.
-          Tìm việc nhanh chóng, ứng tuyển thuận tiện và theo dõi cơ hội nghề nghiệp trên cùng một nền tảng.
-        </p>
-        <div class="footer-links-grid">
-          <div class="footer-link-column">
-            <h5 class="footer-link-group-title">Giới thiệu</h5>
-            <a href="<?php echo XC_URL; ?>/gioi-thieu.html" class="footer-static-link">Giới thiệu website</a>
-            <a href="<?php echo XC_URL; ?>/huong-dan.html" class="footer-static-link">Hướng dẫn sử dụng</a>
-            <a href="<?php echo XC_URL; ?>/dieu-khoan-su-dung.html" class="footer-static-link">Điều khoản sử dụng</a>
-            <a href="<?php echo XC_URL; ?>/lien-he.html" class="footer-static-link">Chính sách bảo mật</a>
+          <div class="footer-brand">
+            <a href="<?php echo XC_URL; ?>/" class="logo" aria-label="Trang chủ">
+              <div class="logo-icon" aria-hidden="true">
+                <img
+                  src="<?php echo XC_URL; ?>/template/frontend/assets/images/logo.png"
+                  alt="Logo Bệnh viện đa khoa khu vực Đắk Hà"
+                  width="48"
+                  height="48"
+                  loading="lazy"
+                  itemprop="logo" />
+              </div>
+              <div class="logo-text">
+                <span class="name">Bệnh viện đa khoa khu vực Đắk Hà</span>
+                <span class="sub">Sở Y tế tỉnh Quảng Ngãi</span>
+              </div>
+            </a>
+            <p class="footer-desc">
+              Bệnh viện đa khoa khu vực Đắk Hà là đơn vị sự nghiệp y tế công lập, chịu trách nhiệm
+              chăm sóc sức khỏe toàn diện cho nhân dân huyện Đắk Hà, tỉnh Kon Tum.
+            </p>
+            <nav class="footer-socials" aria-label="Mạng xã hội">
+              <a href="https://www.facebook.com/ttytdakha" target="_blank" rel="noopener noreferrer"
+                 class="footer-social-btn" aria-label="Facebook">
+                <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                  <path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/>
+                </svg>
+              </a>
+              <a href="https://zalo.me/ttytdakha" target="_blank" rel="noopener noreferrer"
+                 class="footer-social-btn" aria-label="Zalo">
+                <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                  <path d="M12 2C6.477 2 2 6.477 2 12c0 1.89.525 3.66 1.438 5.168L2 22l4.832-1.438A9.955 9.955 0 0012 22c5.523 0 10-4.477 10-10S17.523 2 12 2z"/>
+                </svg>
+              </a>
+              <a href="https://youtube.com" target="_blank" rel="noopener noreferrer"
+                 class="footer-social-btn" aria-label="YouTube">
+                <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                  <path d="M22.54 6.42a2.78 2.78 0 00-1.94-1.96C18.88 4 12 4 12 4s-6.88 0-8.6.46A2.78 2.78 0 001.46 6.42 29 29 0 001 12a29 29 0 00.46 5.58 2.78 2.78 0 001.94 1.96C5.12 20 12 20 12 20s6.88 0 8.6-.46a2.78 2.78 0 001.94-1.96A29 29 0 0023 12a29 29 0 00-.46-5.58z"/>
+                  <polygon points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02" fill="var(--color-primary-dark)"/>
+                </svg>
+              </a>
+            </nav>
           </div>
-          <div class="footer-link-column">
-            <h5 class="footer-link-group-title">Liên kết</h5>
-            <a href="<?php echo XC_URL; ?>/quy-trinh-san-viec-lam.html" class="footer-static-link">Quy trình sàn việc làm</a>
-            <a href="<?php echo XC_URL; ?>/san-viec-lam-online.html" class="footer-static-link">Sàn việc làm online</a>
-            <a href="<?php echo XC_URL; ?>/quan-ly-viec-lam.html" class="footer-static-link">Danh sách việc làm</a>
-            <a href="<?php echo XC_URL; ?>/quan-ly-ung-vien.html" class="footer-static-link">Hồ sơ ứng viên</a>
-          </div>
-        </div>
-      </div>
 
-      <div class="footer-col-3">
-        <div class="footer-map-container">
-          <!-- <iframe src="https://maps.app.goo.gl/CTvMi75GKntVEFyRA" width="100%" height="150" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe> -->
-       <iframe src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d3593.134326441834!2d107.982716!3d14.376124!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x316bff93738e53c3%3A0x4738fa311885a20b!2zVHLGsOG7nW5nIENhbyDEkeG6s25nIEtvbiBUdW0!5e1!3m2!1svi!2sus!4v1783957173965!5m2!1svi!2sus" width="600" height="150" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+          <!-- Quick links -->
+          <div class="footer-col">
+            <h3>Liên kết nhanh</h3>
+            <nav class="footer-links" aria-label="Liên kết nhanh footer">
+              <a href="<?php echo XC_URL; ?>/">Trang chủ</a>
+              <a href="<?php echo XC_URL; ?>/trang/gioi-thieu">Giới thiệu</a>
+              <a href="<?php echo XC_URL; ?>/trang/ban-lanh-dao">Ban lãnh đạo</a>
+              <a href="<?php echo XC_URL; ?>/trang/co-cau-to-chuc">Sơ đồ tổ chức</a>
+              <a href="<?php echo XC_URL; ?>/tin-tuc-su-kien.html">Tin tức - Sự kiện</a>
+              <a href="<?php echo XC_URL; ?>/dich-vu-y-te.html">Dịch vụ y tế</a>
+              <a href="<?php echo XC_URL; ?>/hoat-dong.html">Hoạt động</a>
+              <a href="<?php echo XC_URL; ?>/trang/van-ban">Văn bản pháp quy</a>
+              <a href="<?php echo XC_URL; ?>/login">Đăng nhập</a>
+              <a href="<?php echo XC_URL; ?>/lien-he.html">Liên hệ</a>
+            </nav>
           </div>
-        <div class="footer-stats-box">
-          <div class="footer-stat-row">
-            <span class="footer-stat-label"><i class="ti ti-users"></i> Đang online:</span>
-            <span class="footer-stat-value"><?php echo number_format($visit_stats['online']); ?></span>
+
+          <!-- Contact info -->
+          <div class="footer-col">
+            <h3>Thông tin liên hệ</h3>
+            <address class="footer-contact-list" itemprop="address" itemscope itemtype="https://schema.org/PostalAddress">
+              <div class="footer-contact-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/>
+                  <circle cx="12" cy="10" r="3"/>
+                </svg>
+                <span itemprop="streetAddress">Đường Trần Phú, Thị trấn Đắk Hà, Xã Đắk Hà, tỉnh Quảng Ngãi</span>
+              </div>
+              <div class="footer-contact-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                  <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 10.8 19.79 19.79 0 01.01 2.18 2 2 0 012 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/>
+                </svg>
+                <span>
+                  Cấp cứu 24/7: <a href="tel:1900xxxx" style="color:var(--color-danger);font-weight:700;">1900 xxxx</a><br>
+                  Hành chính: <a href="tel:02603862xxx">(0260) 386 2xxx</a>
+                </span>
+              </div>
+              <div class="footer-contact-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                  <polyline points="22,6 12,13 2,6"/>
+                </svg>
+                <span><a href="mailto:ttytdakha@kontum.gov.vn">ttytdakha@kontum.gov.vn</a></span>
+              </div>
+            </address>
+
+            <div class="footer-hours">
+              <p>
+                <strong>Giờ làm việc:</strong><br>
+                Thứ Hai – Thứ Sáu: 7:00 – 17:00<br>
+                Thứ Bảy: 7:00 – 11:30<br>
+                Cấp cứu: 24/7 kể cả ngày lễ
+              </p>
+            </div>
           </div>
-          <div class="footer-stat-row">
-            <span class="footer-stat-label"><i class="ti ti-calendar-event"></i> Truy cập hôm qua:</span>
-            <span class="footer-stat-value"><?php echo number_format($visit_stats['yesterday']); ?></span>
+
+          <!-- Map placeholder -->
+          <div class="footer-col">
+            <h3>Bản đồ vị trí</h3>
+            <div class="map-lazy-wrap"
+                 style="height:180px;background:var(--color-primary);border-radius:var(--radius-md);overflow:hidden;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:8px;"
+                 data-src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3867.1!2d107.9!3d14.7!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMTTCsDQyJzAwLjAiTiAxMDfCsDU0JzAwLjAiRQ!5e0!3m2!1svi!2svn!4v1000000000000"
+                 role="img"
+                 aria-label="Bản đồ vị trí Bệnh viện đa khoa khu vực Đắk Hà (sẽ tải khi cuộn đến)">
+              <svg viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="1.5" aria-hidden="true">
+                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/>
+              </svg>
+              <span style="color:rgba(255,255,255,.6);font-size:12px;">Đang tải bản đồ...</span>
+            </div>
+            <a href="https://goo.gl/maps/example" target="_blank" rel="noopener noreferrer"
+               style="display:inline-flex;align-items:center;gap:6px;margin-top:10px;font-size:13px;color:rgba(255,255,255,.6);"
+               id="footer-map-link">
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3"/>
+              </svg>
+              Xem trên Google Maps
+            </a>
           </div>
-          <div class="footer-stat-row">
-            <span class="footer-stat-label"><i class="ti ti-chart-line"></i> Tổng lượt truy cập:</span>
-            <span class="footer-stat-value"><?php echo number_format($visit_stats['total']); ?></span>
-          </div>
+
         </div>
       </div>
     </div>
 
-    <div class="footer-bottom-custom">
-      <div class="footer-bottom-text">© 2026 Cổng thông tin việc làm. Kết nối cơ hội nghề nghiệp cho sinh viên, người lao động và doanh nghiệp.</div>
-      <div class="footer-bottom-links">
-        <a href="<?php echo XC_URL; ?>/dieu-khoan-su-dung.html">Điều khoản</a>
-        <a href="<?php echo XC_URL; ?>/lien-he.html">Bảo mật</a>
-        <a href="#">Cookie</a>
-      </div>
-    </div>
-  </div>
-</footer>
-
-<!-- FLOAT WIDGET: Zalo, Facebook, Chat -->
-<div class="float-widget" id="floatWidget">
-  <div class="chat-panel" id="chatPanel" aria-hidden="true">
-    <div class="chat-panel-header">
-      <div class="chat-panel-header-info">
-        <div class="chat-panel-avatar"><i class="ti ti-headset"></i></div>
-        <div>
-          <div class="chat-panel-title">Việc làm hỗ trợ</div>
-          <div class="chat-panel-status">Đang trực tuyến</div>
+    <!-- Footer Bottom -->
+    <div class="footer-bottom">
+      <div class="container">
+        <div class="footer-bottom-inner">
+          <p>
+            © <time datetime="2026">2026</time> Bệnh viện đa khoa khu vực Đắk Hà — Thuộc
+            <a href="https://soytekontum.gov.vn" target="_blank" rel="noopener noreferrer">Sở Y tế tỉnh Quảng Ngãi</a>.
+            Thiết kế & Phát triển bởi <abbr title="Bộ phận Công nghệ thông tin">CNTT TTYT Đắk Hà</abbr>.
+          </p>
+          <nav aria-label="Liên kết pháp lý">
+            <a href="<?php echo XC_URL; ?>/trang/chinh-sach-bao-mat">Chính sách bảo mật</a>
+            &nbsp;·&nbsp;
+            <a href="<?php echo XC_URL; ?>/trang/dieu-khoan-su-dung">Điều khoản sử dụng</a>
+            &nbsp;·&nbsp;
+            <a href="<?php echo XC_URL; ?>/admin" rel="noindex,nofollow">Nội bộ</a>
+          </nav>
         </div>
       </div>
-      <button type="button" class="chat-panel-close" id="chatPanelClose" aria-label="Đóng chat"><i class="ti ti-x"></i></button>
     </div>
-    <div class="chat-panel-body" id="chatPanelBody"><div class="chat-messages" id="chatMessages"></div></div>
-    <div class="chat-suggestions-wrap">
-      <p class="chat-suggestions-label">Gợi ý cho bạn</p>
-      <div class="chat-suggestions" id="chatSuggestions" role="list"></div>
-    </div>
-  </div>
+  </footer>
 
-  <div class="float-actions">
-    <a href="<?php echo $this->helper->get_config('zalo_chat_url'); ?>" class="float-action-btn float-zalo" target="_blank" rel="noopener noreferrer" title="Chat Zalo" aria-label="Zalo">
-      <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M24 4C12.95 4 4 11.84 4 21.54c0 5.12 2.56 9.7 6.58 12.72l-1.7 6.22 6.8-3.58C17.9 38.28 20.86 39 24 39c11.05 0 20-7.84 20-17.46S35.05 4 24 4z"/></svg>
+  <!-- ============================================================
+       STICKY EMERGENCY BUTTON (mobile)
+       ============================================================ -->
+  <div class="sticky-emergency" aria-label="Gọi cấp cứu khẩn cấp">
+    <a href="tel:1900xxxx" class="emergency-fab" id="emergency-fab-btn"
+       aria-label="Gọi hotline cấp cứu 1900 xxxx">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+        <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 10.8 19.79 19.79 0 01.01 2.18 2 2 0 012 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/>
+      </svg>
     </a>
-    <a href="<?php echo $this->helper->get_config('facebook_url'); ?>" class="float-action-btn float-fb" target="_blank" rel="noopener noreferrer" title="Facebook" aria-label="Facebook"><i class="ti ti-brand-facebook"></i></a>
-    <button type="button" class="float-btn" id="chatToggleBtn" title="Chat trực tuyến" aria-label="Mở chat" aria-expanded="false"><i class="ti ti-message-circle" id="chatToggleIcon"></i></button>
   </div>
-</div>
+
+  <!-- Scroll to Top -->
+  <button class="scroll-top" id="scroll-top-btn" aria-label="Cuộn lên đầu trang">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+      <polyline points="18 15 12 9 6 15"/>
+    </svg>
+  </button>
+
+  <!-- Hidden text for SR -->
+  <style>.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}</style>
+
+  <!-- Bootstrap 5 Bundle JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- Main JS -->
+  <script src="<?php echo XC_URL;?>/template/frontend/assets/js/main.js" defer></script>
+
+</body>
 </html>
-<script src="<?php echo $template_path;?>/assets/js/chatbot.js?v=<?php echo filemtime(__SITE_PATH.'/template/frontend/assets/js/chatbot.js'); ?>"></script>
-<script src="<?php echo $template_path;?>/assets/js/jscore.min.js?v=<?php echo filemtime(__SITE_PATH.'/template/frontend/assets/js/jscore.min.js'); ?>"></script>

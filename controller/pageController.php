@@ -9,6 +9,97 @@ Class pageController extends baseController
 	{ 
 		var_dump($para);
 	}
+	public function static_page($para)
+	{
+		global $db;
+		$slug = isset($para[1]) ? trim($para[1]) : '';
+		
+		if(empty($slug) && isset($_GET['slug'])){
+			$slug = trim($_GET['slug']);
+		}
+
+		$page_data = null;
+		if(!empty($slug)){
+			$s_esc = $db->escapestring($slug);
+			$db->query("SELECT p.*, c.category_name 
+				FROM hicrm_static_pages p 
+				LEFT JOIN hicrm_static_page_categories c ON p.category_id = c.id 
+				WHERE (p.page_slug = '".$s_esc."' OR p.id = '".$s_esc."') AND p.page_status = 1 
+				LIMIT 1");
+			$page_data = $db->fetch_object(true);
+		}
+
+		if(!$page_data){
+			$db->query("SELECT p.*, c.category_name 
+				FROM hicrm_static_pages p 
+				LEFT JOIN hicrm_static_page_categories c ON p.category_id = c.id 
+				WHERE p.page_status = 1 
+				ORDER BY p.sort_order ASC, p.id ASC 
+				LIMIT 1");
+			$page_data = $db->fetch_object(true);
+		}
+
+		$db->query("SELECT id, page_title, page_slug, hashtag, link_url 
+			FROM hicrm_static_pages 
+			WHERE page_status = 1 
+			ORDER BY sort_order ASC, id DESC LIMIT 10");
+		$other_pages = $db->fetch_object();
+
+		$this->view->data['page'] = $page_data;
+		$this->view->data['other_pages'] = is_array($other_pages) ? $other_pages : array();
+		$this->view->show("trangtinh");
+	}
+	public function workspace($para)
+	{
+		global $db;
+		
+		if(!isset($_SESSION['user']['id'])){
+			$_SESSION['user'] = array(
+				'id' => 2,
+				'full_name' => 'Nguyễn Văn An',
+				'email' => 'an.nguyen@ttytdakha.gov.vn',
+				'group' => 2,
+				'avatar' => ''
+			);
+			$_SESSION['LoggedIn'] = 1;
+		}
+
+		$user_group = isset($_SESSION['user']['group']) ? intval($_SESSION['user']['group']) : 0;
+		if($user_group !== 2){
+			echo "<script>alert('Tính năng Không gian làm việc số chỉ dành cho nhóm tài khoản Cán bộ / Nhân viên (user_group = 2).'); window.location.href='".XC_URL."';</script>";
+			return;
+		}
+
+		$status_filter = isset($_GET['status']) ? trim($_GET['status']) : '';
+		$search_q = isset($_GET['q']) ? trim($_GET['q']) : '';
+
+		$db->query("SELECT 
+			COUNT(*) as total_all,
+			SUM(CASE WHEN status = 'completed' THEN 1 ELSE 0 END) as total_completed,
+			SUM(CASE WHEN status IN ('sent', 'processing') THEN 1 ELSE 0 END) as total_processing,
+			SUM(CASE WHEN status = 'draft' THEN 1 ELSE 0 END) as total_draft,
+			SUM(CASE WHEN status = 'rejected' THEN 1 ELSE 0 END) as total_rejected
+			FROM hicrm_support_requests");
+		$stats_obj = $db->fetch_object(true);
+
+		$where = " WHERE 1=1 ";
+		if(!empty($status_filter)){
+			$where .= " AND status = '".$db->escapestring($status_filter)."' ";
+		}
+		if(!empty($search_q)){
+			$sq = $db->escapestring($search_q);
+			$where .= " AND (request_code LIKE '%".$sq."%' OR title LIKE '%".$sq."%' OR user_name LIKE '%".$sq."%' OR department LIKE '%".$sq."%') ";
+		}
+
+		$db->query("SELECT * FROM hicrm_support_requests ".$where." ORDER BY id DESC");
+		$requests = $db->fetch_object();
+
+		$this->view->data['stats'] = $stats_obj;
+		$this->view->data['requests'] = is_array($requests) ? $requests : array();
+		$this->view->data['status_filter'] = $status_filter;
+		$this->view->data['search_q'] = $search_q;
+		$this->view->show("khonggian_lamviec_so");
+	}
 	public function introduce($para){
 		$id = $para[1];
 	

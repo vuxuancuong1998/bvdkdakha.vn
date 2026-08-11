@@ -1,196 +1,408 @@
-<?php require "header.php"; ?>
+<?php require_once 'header.php'; ?>
+  <style>
+    /* Page-specific styles */
+    .page-hero {
+      background: linear-gradient(135deg, var(--color-primary-dark) 0%, var(--color-primary) 100%);
+      padding: var(--space-16) 0 var(--space-10);
+      color: #fff;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .page-hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    }
+    .page-hero h1 {
+      font-size: var(--font-size-5xl);
+      font-weight: 800;
+      color: #fff;
+      margin-bottom: var(--space-3);
+      position: relative;
+    }
+    .page-hero p {
+      color: rgba(255,255,255,.8);
+      font-size: var(--font-size-lg);
+      position: relative;
+    }
 
-<style>
-.contact-page{background:linear-gradient(180deg,#f5f8fc 0%,#ffffff 55%,#f4f5f6 100%);overflow:hidden}
-.contact-hero{position:relative;padding:58px 20px 42px;background:radial-gradient(circle at 15% 20%,rgba(13,78,150,.16),transparent 30%),radial-gradient(circle at 85% 10%,rgba(132,68,4,.16),transparent 28%),linear-gradient(135deg,#0d4e96 0%,#073763 58%,#844404 100%);color:#fff}
-.contact-hero:after{content:'';position:absolute;left:-8%;right:-8%;bottom:-62px;height:110px;background:#fff;border-radius:50% 50% 0 0/100% 100% 0 0}
-.contact-hero-inner{max-width:none;margin:0 auto;position:relative;z-index:1;display:grid;grid-template-columns:1.15fr .85fr;gap:34px;align-items:center}
-.contact-eyebrow{display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.26);padding:7px 14px;border-radius:999px;font-size:13px;font-weight:700;margin-bottom:18px;backdrop-filter:blur(8px)}
-.contact-hero h1{font-size:42px;line-height:1.16;font-weight:800;letter-spacing:-1px;margin-bottom:14px;max-width:760px}
-.contact-hero p{font-size:15px;line-height:1.8;color:rgba(255,255,255,.86);max-width:650px}
-.contact-hero-actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:24px}.contact-btn{display:inline-flex;align-items:center;gap:8px;padding:12px 18px;border-radius:14px;font-weight:800;font-size:14px;transition:.2s;border:1px solid rgba(255,255,255,.22)}
-.contact-btn.primary{background:#fff;color:#0d4e96}.contact-btn.secondary{background:rgba(255,255,255,.12);color:#fff}.contact-btn:hover{transform:translateY(-2px);box-shadow:0 14px 32px rgba(0,0,0,.18)}
-.contact-hero-card{background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.22);border-radius:28px;padding:22px;box-shadow:0 24px 70px rgba(0,0,0,.18);backdrop-filter:blur(12px)}
-.hero-card-top{display:flex;align-items:center;gap:14px;margin-bottom:18px}.hero-card-icon{width:54px;height:54px;border-radius:18px;background:#fff;color:#0d4e96;display:flex;align-items:center;justify-content:center;font-size:27px;box-shadow:0 12px 28px rgba(0,0,0,.14)}
-.hero-card-title{font-size:16px;font-weight:800}.hero-card-sub{font-size:12px;color:rgba(255,255,255,.72);margin-top:3px}.hero-mini-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.hero-mini{background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.17);border-radius:16px;padding:13px}.hero-mini b{display:block;font-size:18px;color:#fff}.hero-mini span{font-size:11px;color:rgba(255,255,255,.72)}
-.contact-main{max-width:none;margin:0 auto;padding:54px 20px 44px;position:relative;z-index:2}.contact-grid{display:grid;grid-template-columns:.9fr 1.1fr;gap:22px;align-items:stretch}.contact-panel{background:#fff;border:1px solid #e9eef6;border-radius:26px;box-shadow:0 16px 46px rgba(13,78,150,.08);overflow:hidden}.contact-panel.pad{padding:24px}.panel-title{font-size:22px;font-weight:800;color:#111;margin-bottom:8px}.panel-desc{font-size:13px;color:#687385;line-height:1.7;margin-bottom:22px}.info-list{display:grid;gap:14px}.info-item{display:flex;gap:13px;align-items:flex-start;padding:14px;border:1px solid #edf2f8;border-radius:18px;background:linear-gradient(180deg,#fff,#f8fbff);transition:.2s}.info-item:hover{border-color:#0d4e96;transform:translateY(-2px);box-shadow:0 10px 24px rgba(13,78,150,.08)}.info-icon{width:42px;height:42px;border-radius:14px;background:#eef5ff;color:#0d4e96;display:flex;align-items:center;justify-content:center;font-size:21px;flex-shrink:0}.info-label{font-size:12px;font-weight:700;color:#8a95a6;text-transform:uppercase;letter-spacing:.4px}.info-value{font-size:14px;font-weight:700;color:#1f2937;margin-top:3px;line-height:1.5}.info-note{font-size:12px;color:#788398;margin-top:2px;line-height:1.5}.contact-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:20px}.contact-stat{border-radius:18px;background:#0d4e96;color:#fff;padding:16px 12px;text-align:center}.contact-stat:nth-child(2){background:#844404}.contact-stat:nth-child(3){background:#143d63}.contact-stat b{display:block;font-size:20px}.contact-stat span{font-size:11px;opacity:.78}.map-card{display:flex;flex-direction:column}.map-head{padding:22px 24px 16px;display:flex;justify-content:space-between;gap:16px;align-items:flex-start}.map-title{font-size:22px;font-weight:800;color:#111}.map-desc{font-size:13px;color:#687385;margin-top:7px;line-height:1.6}.map-badge{display:inline-flex;align-items:center;gap:7px;background:#fff7ed;color:#844404;border:1px solid #fed7aa;border-radius:999px;padding:8px 12px;font-size:12px;font-weight:800;white-space:nowrap}.map-wrap{height:458px;margin:0 16px 16px;border-radius:22px;overflow:hidden;border:1px solid #e5ecf5;position:relative;background:#e9eef6}.map-wrap iframe{width:100%;height:100%;border:0;display:block}.contact-form-section{display:grid;grid-template-columns:1fr .95fr;gap:22px;margin-top:22px}.contact-form{background:#fff;border:1px solid #e9eef6;border-radius:26px;padding:24px;box-shadow:0 16px 46px rgba(13,78,150,.08)}.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.form-group{display:flex;flex-direction:column;gap:7px}.form-group.full{grid-column:1/-1}.form-group label{font-size:12px;font-weight:800;color:#334155}.form-group input,.form-group textarea{border:1px solid #dfe7f2;border-radius:14px;padding:12px 14px;font-family:inherit;font-size:14px;outline:none;background:#fbfdff;transition:.18s}.form-group textarea{min-height:120px;resize:vertical}.form-group input:focus,.form-group textarea:focus{border-color:#0d4e96;box-shadow:0 0 0 4px rgba(13,78,150,.1);background:#fff}.submit-btn{margin-top:14px;width:100%;border:0;border-radius:16px;padding:14px 18px;background:linear-gradient(135deg,#0d4e96,#073763);color:#fff;font-weight:800;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:.2s}.submit-btn:hover{transform:translateY(-2px);box-shadow:0 14px 28px rgba(13,78,150,.22)}.support-card{border-radius:26px;padding:24px;background:linear-gradient(135deg,#111827,#0d4e96);color:#fff;position:relative;overflow:hidden;box-shadow:0 18px 48px rgba(13,78,150,.16)}.support-card:before{content:'';position:absolute;width:220px;height:220px;border-radius:50%;right:-70px;top:-70px;background:rgba(255,255,255,.11)}.support-card>*{position:relative}.support-card h3{font-size:24px;margin-bottom:10px}.support-card p{font-size:13px;line-height:1.8;color:rgba(255,255,255,.78);margin-bottom:18px}.support-steps{display:grid;gap:12px}.support-step{display:flex;gap:12px;align-items:flex-start;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.13);border-radius:16px;padding:13px}.support-step i{font-size:22px;color:#ffd08a}.support-step b{display:block;font-size:13px}.support-step span{display:block;font-size:12px;color:rgba(255,255,255,.72);margin-top:3px;line-height:1.5}.faq-strip{margin-top:22px;display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.faq-item{background:#fff;border:1px solid #e9eef6;border-radius:20px;padding:18px;box-shadow:0 10px 28px rgba(15,23,42,.05)}.faq-item i{font-size:24px;color:#0d4e96}.faq-item b{display:block;font-size:14px;margin:8px 0 5px;color:#111}.faq-item span{font-size:12px;line-height:1.6;color:#64748b}
-.contact-page label.error{font-size:12px;color:#dc2626}
-@media(max-width:1024px){.contact-hero-inner,.contact-grid,.contact-form-section{grid-template-columns:1fr}.contact-hero-card{max-width:560px}.map-wrap{height:390px}.faq-strip{grid-template-columns:1fr 1fr}}
-@media(max-width:768px){.contact-hero{padding:42px 16px 38px}.contact-hero h1{font-size:32px}.contact-main{padding:44px 14px 34px}.contact-panel.pad,.contact-form,.support-card{padding:18px}.map-head{padding:18px;flex-direction:column}.map-wrap{margin:0 12px 12px;height:330px}.contact-stats,.faq-strip{grid-template-columns:1fr}.form-grid{grid-template-columns:1fr}.hero-mini-grid{grid-template-columns:1fr 1fr}}
-@media(max-width:480px){.contact-hero h1{font-size:26px}.contact-hero p{font-size:13px}.contact-hero-actions{flex-direction:column}.contact-btn{justify-content:center;width:100%}.hero-mini-grid{grid-template-columns:1fr}.panel-title,.map-title{font-size:19px}.info-item{padding:12px}.map-wrap{height:290px;border-radius:18px}.contact-form-section{gap:14px}.contact-page{background:#f6f8fb}}
-.contact-page *{box-sizing:border-box}
-.contact-page img,.contact-page iframe{max-width:100%}
-.contact-page a,.contact-page button,.contact-page input,.contact-page textarea{min-width:0}
-.contact-hero-inner,.contact-grid,.contact-form-section,.faq-strip,.hero-mini-grid,.form-grid{min-width:0}
-.contact-panel,.contact-form,.support-card,.faq-item,.contact-hero-card{min-width:0}
-.info-value,.info-note,.panel-desc,.map-desc,.support-card p,.support-step span,.faq-item span{overflow-wrap:anywhere}
-.form-group input,.form-group textarea{width:100%}
-</style>
+    /* Emergency block */
+    .emergency-block {
+      background: var(--color-danger);
+      color: #fff;
+      border-radius: var(--radius-xl);
+      padding: var(--space-8);
+      text-align: center;
+      box-shadow: 0 8px 32px rgba(217,48,37,.3);
+      margin-bottom: var(--space-8);
+    }
+    .emergency-block .emg-icon {
+      width: 64px; height: 64px;
+      background: rgba(255,255,255,.15);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto var(--space-4);
+    }
+    .emergency-block .emg-icon svg { width: 32px; height: 32px; }
+    .emergency-block h2 { font-size: var(--font-size-2xl); font-weight: 800; margin-bottom: var(--space-2); color:#fff; }
+    .emergency-block .emg-number {
+      font-size: clamp(2rem, 6vw, 3.5rem);
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      display: block;
+      color: #fff;
+      text-decoration: none;
+      transition: opacity var(--transition-fast);
+      animation: pulse-badge 2s infinite;
+    }
+    .emergency-block .emg-number:hover { opacity: .85; }
+    .emergency-block p { color: rgba(255,255,255,.85); margin-top: var(--space-2); }
 
-<main class="contact-page">
-  <section class="contact-hero">
-    <div class="contact-hero-inner">
-      <div>
-        <div class="contact-eyebrow"><i class="ti ti-headset"></i> Trung tâm hỗ trợ và kết nối việc làm</div>
-        <h1>Liên hệ với Cổng thông tin việc làm</h1>
-        <p>Chúng tôi luôn sẵn sàng hỗ trợ sinh viên, người tìm việc và nhà tuyển dụng trong quá trình đăng tin, ứng tuyển, tạo CV và kết nối cơ hội nghề nghiệp.</p>
-        <div class="contact-hero-actions">
-          <a class="contact-btn primary" href="tel:02603860929"><i class="ti ti-phone-call"></i> Gọi ngay</a>
-          <a class="contact-btn secondary" href="mailto:vieclam@kontum.edu.vn"><i class="ti ti-mail"></i> Gửi email</a>
-        </div>
+    /* Contact cards */
+    .contact-info-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--space-5);
+      margin-bottom: var(--space-8);
+    }
+    .contact-info-card {
+      background: var(--color-bg);
+      border-radius: var(--radius-xl);
+      padding: var(--space-6);
+      box-shadow: var(--shadow-card);
+      border: 1px solid var(--color-border-light);
+      transition: all var(--transition-normal);
+      text-align: center;
+    }
+    .contact-info-card:hover {
+      box-shadow: var(--shadow-hover);
+      transform: translateY(-3px);
+    }
+    .contact-info-card .ci-icon {
+      width: 56px; height: 56px;
+      border-radius: var(--radius-md);
+      background: var(--color-bg-alt);
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto var(--space-4);
+      transition: all var(--transition-normal);
+    }
+    .contact-info-card:hover .ci-icon { background: var(--color-primary); }
+    .contact-info-card .ci-icon svg { width: 26px; height: 26px; color: var(--color-primary); }
+    .contact-info-card:hover .ci-icon svg { color: #fff; }
+    .contact-info-card h3 { font-size: var(--font-size-sm); font-weight: 700; color: var(--color-text-muted); text-transform: uppercase; letter-spacing: .05em; margin-bottom: var(--space-2); }
+    .contact-info-card p, .contact-info-card a { font-size: var(--font-size-base); font-weight: 600; color: var(--color-text); line-height: 1.5; }
+    .contact-info-card a:hover { color: var(--color-primary); }
+
+    /* Form card */
+    .contact-form-card {
+      background: var(--color-bg);
+      border-radius: var(--radius-xl);
+      padding: var(--space-10) var(--space-10);
+      box-shadow: var(--shadow-lg);
+      border: 1px solid var(--color-border-light);
+    }
+
+    .form-success-msg {
+      display: none;
+      background: #e6f9ee;
+      border: 1.5px solid var(--color-accent);
+      border-radius: var(--radius-md);
+      padding: var(--space-4) var(--space-5);
+      color: var(--color-accent-dark);
+      font-weight: 600;
+      margin-bottom: var(--space-5);
+      align-items: center;
+      gap: var(--space-3);
+    }
+    .form-success-msg.show { display: flex; }
+    .form-success-msg svg { width: 22px; height: 22px; flex-shrink:0; }
+
+    .contact-layout {
+      display: grid;
+      grid-template-columns: 1fr 1.2fr;
+      gap: var(--space-10);
+      align-items: start;
+    }
+
+    .hours-table { width: 100%; border-collapse: collapse; margin-top: var(--space-4); font-size: var(--font-size-sm); }
+    .hours-table td { padding: var(--space-2) var(--space-3); border-bottom: 1px solid var(--color-border-light); }
+    .hours-table tr:last-child td { border-bottom: none; }
+    .hours-table td:first-child { color: var(--color-text-muted); font-weight: 600; }
+    .hours-table td:last-child { color: var(--color-text); font-weight: 700; }
+    .badge-247 {
+      display: inline-block;
+      background: var(--color-danger);
+      color: #fff;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: var(--radius-full);
+    }
+
+    @media (max-width: 768px) {
+      .contact-info-grid { grid-template-columns: 1fr; }
+      .contact-layout { grid-template-columns: 1fr; }
+      .contact-form-card { padding: var(--space-6); }
+      .page-hero h1 { font-size: var(--font-size-3xl); }
+    }
+    @media (max-width: 1024px) {
+      .contact-info-grid { grid-template-columns: repeat(2, 1fr); }
+      .contact-layout { grid-template-columns: 1fr; }
+    }
+  </style>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "MedicalOrganization",
+    "name": "Trung tâm Y tế khu vực Đắk Hà",
+    "url": "https://ttytdakha.gov.vn",
+    "telephone": "+84-260-3862xxx",
+    "email": "ttytdakha@kontum.gov.vn",
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "Đường Trần Phú, Thị trấn Đắk Hà",
+      "addressLocality": "Đắk Hà",
+      "addressRegion": "Kon Tum",
+      "postalCode": "58000",
+      "addressCountry": "VN"
+    },
+    "openingHoursSpecification": [
+      {"@type": "OpeningHoursSpecification","dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday","Friday"],"opens": "07:00","closes": "17:00"},
+      {"@type": "OpeningHoursSpecification","dayOfWeek": "Saturday","opens": "07:00","closes": "11:30"}
+    ]
+  }
+  </script>
+
+  <!-- BREADCRUMB -->
+  <nav class="breadcrumb" aria-label="breadcrumb">
+    <div class="container">
+      <ol class="breadcrumb-list" itemscope itemtype="https://schema.org/BreadcrumbList">
+        <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+          <a href="../index.html" itemprop="item"><span itemprop="name">Trang chủ</span></a>
+          <meta itemprop="position" content="1" />
+        </li>
+        <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+          <span itemprop="name">Liên hệ</span>
+          <meta itemprop="position" content="2" />
+        </li>
+      </ol>
+    </div>
+  </nav>
+
+  <!-- MAIN CONTENT -->
+  <main id="main-content" role="main">
+
+    <!-- Page Hero -->
+    <section class="page-hero" aria-labelledby="page-title">
+      <div class="container">
+        <h1 id="page-title">Liên hệ với chúng tôi</h1>
+        <p>Chúng tôi luôn sẵn sàng lắng nghe và hỗ trợ bạn. Đừng ngần ngại liên hệ khi cần.</p>
       </div>
-      <div class="contact-hero-card">
-        <div class="hero-card-top">
-          <div class="hero-card-icon"><i class="ti ti-building-community"></i></div>
+    </section>
+
+    <!-- Contact Section -->
+    <section aria-labelledby="contact-section-title">
+      <div class="container">
+        <h2 id="contact-section-title" class="sr-only">Thông tin liên hệ và form góp ý</h2>
+
+        <!-- Emergency Block -->
+        <div class="emergency-block" data-animate role="alert">
+          <div class="emg-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 10.8 19.79 19.79 0 01.01 2.18 2 2 0 012 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/>
+            </svg>
+          </div>
+          <h2>🚨 Đường dây cấp cứu khẩn cấp 24/7</h2>
+          <a href="tel:1900xxxx" class="emg-number">1900 xxxx</a>
+          <p>Hoạt động 24 giờ / 7 ngày, kể cả ngày lễ và Tết Nguyên Đán</p>
+        </div>
+
+        <!-- Quick Contact Info Cards -->
+        <div class="contact-info-grid" data-animate>
+          <article class="contact-info-card">
+            <div class="ci-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/>
+              </svg>
+            </div>
+            <h3>Địa chỉ</h3>
+            <p>Đường Trần Phú, Thị trấn Đắk Hà<br>Huyện Đắk Hà, tỉnh Kon Tum</p>
+          </article>
+
+          <article class="contact-info-card">
+            <div class="ci-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 10.8 19.79 19.79 0 01.01 2.18 2 2 0 012 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/>
+              </svg>
+            </div>
+            <h3>Điện thoại</h3>
+            <a href="tel:02603862xxx">Hành chính: (0260) 386 2xxx</a><br>
+            <a href="tel:1900xxxx" style="color:var(--color-danger);">Cấp cứu: 1900 xxxx</a>
+          </article>
+
+          <article class="contact-info-card">
+            <div class="ci-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/>
+              </svg>
+            </div>
+            <h3>Email</h3>
+            <a href="mailto:ttytdakha@kontum.gov.vn">ttytdakha@kontum.gov.vn</a>
+          </article>
+        </div>
+
+        <!-- Main Layout: Hours + Form -->
+        <div class="contact-layout">
+
+          <!-- Left: Hours + Map -->
           <div>
-            <div class="hero-card-title">Trường Cao đẳng Kon Tum</div>
-            <div class="hero-card-sub">Đồng hành cùng sinh viên và doanh nghiệp</div>
+            <div style="background:var(--color-bg);border-radius:var(--radius-xl);padding:var(--space-8);box-shadow:var(--shadow-card);border:1px solid var(--color-border-light);margin-bottom:var(--space-6);" data-animate>
+              <h2 style="font-size:var(--font-size-xl);font-weight:700;margin-bottom:var(--space-4);color:var(--color-text);">
+                Giờ làm việc
+              </h2>
+              <table class="hours-table" aria-label="Lịch làm việc">
+                <caption class="sr-only">Giờ làm việc của Trung tâm Y tế khu vực Đắk Hà</caption>
+                <tbody>
+                  <tr><td>Thứ Hai – Thứ Sáu</td><td>07:00 – 17:00</td></tr>
+                  <tr><td>Thứ Bảy</td><td>07:00 – 11:30</td></tr>
+                  <tr><td>Chủ Nhật</td><td>Nghỉ (trừ cấp cứu)</td></tr>
+                  <tr><td>Cấp cứu</td><td><span class="badge-247">24/7</span> Kể cả lễ, Tết</td></tr>
+                </tbody>
+              </table>
+
+              <div style="margin-top:var(--space-6);padding-top:var(--space-5);border-top:1px solid var(--color-border-light);">
+                <h3 style="font-size:var(--font-size-base);font-weight:700;margin-bottom:var(--space-3);">Mạng xã hội</h3>
+                <div style="display:flex;gap:var(--space-3);">
+                  <a href="https://www.facebook.com/ttytdakha" target="_blank" rel="noopener noreferrer"
+                     class="btn btn-primary btn-sm" id="social-facebook">
+                    Facebook
+                  </a>
+                  <a href="https://zalo.me/ttytdakha" target="_blank" rel="noopener noreferrer"
+                     class="btn btn-outline btn-sm" id="social-zalo">
+                    Zalo OA
+                  </a>
+                </div>
+              </div>
+            </div>
+
+            <!-- Map -->
+            <div style="border-radius:var(--radius-xl);overflow:hidden;box-shadow:var(--shadow-md);height:300px;" data-animate data-animate-delay="200">
+              <div class="map-lazy-wrap"
+                   style="width:100%;height:100%;background:var(--color-bg-alt);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:var(--space-3);"
+                   data-src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3867!2d107.9!3d14.7!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMTTCsDQyJzAwLjAiTiAxMDfCsDU0JzAwLjAiRQ!5e0!3m2!1svi!2svn!4v1"
+                   aria-label="Bản đồ vị trí Trung tâm Y tế khu vực Đắk Hà">
+                <svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="var(--color-primary)" stroke-width="1.5" aria-hidden="true">
+                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/>
+                </svg>
+                <p style="color:var(--color-text-muted);font-size:var(--font-size-sm);text-align:center;">
+                  Đường Trần Phú, TT. Đắk Hà<br>
+                  <a href="https://goo.gl/maps/example" target="_blank" rel="noopener noreferrer" style="color:var(--color-primary);">Xem trên Google Maps →</a>
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right: Feedback Form -->
+          <div class="contact-form-card" data-animate data-animate-delay="100">
+            <h2 style="font-size:var(--font-size-2xl);font-weight:800;color:var(--color-text);margin-bottom:var(--space-2);">
+              Gửi góp ý / Phản ánh
+            </h2>
+            <p style="color:var(--color-text-muted);margin-bottom:var(--space-6);">
+              Ý kiến của bạn giúp chúng tôi cải thiện dịch vụ. Mọi phản ánh sẽ được tiếp nhận và xử lý trong vòng 3 ngày làm việc.
+            </p>
+
+            <!-- Success message -->
+            <div class="form-success-msg" id="form-success" role="alert">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+                <path d="M22 11.08V12a10 10 0 11-5.93-9.14"/>
+                <polyline points="22 4 12 14.01 9 11.01"/>
+              </svg>
+              Cảm ơn bạn! Phản ánh của bạn đã được gửi thành công. Chúng tôi sẽ liên hệ lại trong 3 ngày làm việc.
+            </div>
+
+            <form id="contact-form" novalidate aria-label="Form góp ý phản ánh">
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--space-4);">
+                <div class="form-group">
+                  <label class="form-label" for="contact-name">
+                    Họ và tên <span class="required" aria-label="bắt buộc">*</span>
+                  </label>
+                  <input type="text" id="contact-name" name="name" class="form-control"
+                         placeholder="Nguyễn Văn A"
+                         autocomplete="name" aria-required="true" />
+                  <span class="form-error" aria-live="polite"></span>
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="contact-phone">
+                    Số điện thoại <span class="required" aria-label="bắt buộc">*</span>
+                  </label>
+                  <input type="tel" id="contact-phone" name="phone" class="form-control"
+                         placeholder="0912 345 678"
+                         autocomplete="tel" aria-required="true" />
+                  <span class="form-error" aria-live="polite"></span>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="contact-email">Địa chỉ Email</label>
+                <input type="email" id="contact-email" name="email" class="form-control"
+                       placeholder="example@email.com"
+                       autocomplete="email" />
+                <span class="form-error" aria-live="polite"></span>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="contact-subject">
+                  Tiêu đề <span class="required" aria-label="bắt buộc">*</span>
+                </label>
+                <input type="text" id="contact-subject" name="subject" class="form-control"
+                       placeholder="Nội dung góp ý của bạn về..."
+                       aria-required="true" />
+                <span class="form-error" aria-live="polite"></span>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="feedback-category">Phân loại</label>
+                <select id="feedback-category" name="category" class="form-control">
+                  <option value="">-- Chọn loại phản ánh --</option>
+                  <option value="chat-luong">Chất lượng dịch vụ</option>
+                  <option value="thai-do">Thái độ nhân viên</option>
+                  <option value="co-so-vat-chat">Cơ sở vật chất</option>
+                  <option value="tu-van">Tư vấn y tế</option>
+                  <option value="khac">Ý kiến khác</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="contact-message">
+                  Nội dung góp ý <span class="required" aria-label="bắt buộc">*</span>
+                </label>
+                <textarea id="contact-message" name="message" class="form-control"
+                          placeholder="Vui lòng mô tả chi tiết ý kiến, góp ý hoặc phản ánh của bạn..."
+                          rows="5" aria-required="true"></textarea>
+                <span class="form-error" aria-live="polite"></span>
+              </div>
+
+              <div style="margin-bottom:var(--space-5);">
+                <label style="display:flex;align-items:flex-start;gap:var(--space-3);font-size:var(--font-size-sm);color:var(--color-text-muted);cursor:pointer;">
+                  <input type="checkbox" id="agree-privacy" required
+                         style="margin-top:3px;accent-color:var(--color-primary);" />
+                  Tôi đồng ý với <a href="/chinh-sach-bao-mat" style="color:var(--color-primary);">Chính sách bảo mật</a> và cho phép Trung tâm sử dụng thông tin để xử lý yêu cầu.
+                </label>
+              </div>
+
+              <button type="submit" class="btn btn-primary btn-lg" id="submit-contact" style="width:100%;justify-content:center;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                  <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
+                </svg>
+                Gửi góp ý
+              </button>
+            </form>
           </div>
         </div>
-        <div class="hero-mini-grid">
-          <div class="hero-mini"><b>24/7</b><span>Tiếp nhận thông tin trực tuyến</span></div>
-          <div class="hero-mini"><b>48h</b><span>Phản hồi yêu cầu hỗ trợ</span></div>
-          <div class="hero-mini"><b>100+</b><span>Đối tác tuyển dụng</span></div>
-          <div class="hero-mini"><b>1 chạm</b><span>Kết nối cơ hội việc làm</span></div>
-        </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <section class="contact-main">
-    <div class="contact-grid">
-      <div class="contact-panel pad">
-        <h2 class="panel-title">Thông tin đơn vị</h2>
-        <p class="panel-desc">Thông tin liên hệ chính thức phục vụ tư vấn tuyển dụng, hỗ trợ ứng viên và tiếp nhận hợp tác doanh nghiệp.</p>
-        <div class="info-list">
-          <div class="info-item"><div class="info-icon"><i class="ti ti-school"></i></div><div><div class="info-label">Tên đơn vị</div><div class="info-value">Trường Cao đẳng Kon Tum</div><div class="info-note">Cổng thông tin việc làm dành cho sinh viên và người tìm việc</div></div></div>
-          <div class="info-item"><div class="info-icon"><i class="ti ti-map-pin"></i></div><div><div class="info-label">Địa chỉ</div><div class="info-value">14 Ngụy Như Kon Tum, phường Ngô Mây, TP. Kon Tum, tỉnh Kon Tum</div><div class="info-note">Vui lòng liên hệ trước khi đến làm việc trực tiếp</div></div></div>
-          <div class="info-item"><div class="info-icon"><i class="ti ti-phone"></i></div><div><div class="info-label">Số điện thoại</div><div class="info-value">0260 3860 929</div><div class="info-note">Hỗ trợ trong giờ hành chính</div></div></div>
-          <div class="info-item"><div class="info-icon"><i class="ti ti-mail"></i></div><div><div class="info-label">Email</div><div class="info-value">vieclam@kontum.edu.vn</div><div class="info-note">Tiếp nhận hồ sơ, hợp tác tuyển dụng và phản hồi hỗ trợ</div></div></div>
-          <div class="info-item"><div class="info-icon"><i class="ti ti-clock-hour-4"></i></div><div><div class="info-label">Thời gian làm việc</div><div class="info-value">Thứ 2 - Thứ 6: 07:30 - 17:00</div><div class="info-note">Nghỉ thứ 7, chủ nhật và các ngày lễ theo quy định</div></div></div>
-        </div>
-        <div class="contact-stats"><div class="contact-stat"><b>5K+</b><span>Ứng viên</span></div><div class="contact-stat"><b>500+</b><span>Tin tuyển dụng</span></div><div class="contact-stat"><b>98%</b><span>Hài lòng</span></div></div>
-      </div>
-
-      <div class="contact-panel map-card">
-        <div class="map-head"><div><h2 class="map-title">Bản đồ chỉ đường</h2><p class="map-desc">Tìm vị trí đơn vị trên Google Map để thuận tiện liên hệ, làm việc và kết nối tuyển dụng.</p></div><div class="map-badge"><i class="ti ti-map-2"></i> Google Map</div></div>
-        <div class="map-wrap">
-          <iframe loading="lazy" allowfullscreen referrerpolicy="no-referrer-when-downgrade" src="https://www.google.com/maps?q=Tr%C6%B0%E1%BB%9Dng%20Cao%20%C4%91%E1%BA%B3ng%20Kon%20Tum&output=embed"></iframe>
-        </div>
-      </div>
-    </div>
-
-    <div class="contact-form-section">
-      <form class="contact-form" id="contactForm" action="#" method="post" novalidate>
-        <h2 class="panel-title">Gửi yêu cầu liên hệ</h2>
-        <p class="panel-desc">Điền thông tin bên dưới, bộ phận phụ trách sẽ tiếp nhận và phản hồi trong thời gian sớm nhất.</p>
-        <div class="form-grid">
-          <div class="form-group"><label>Họ và tên</label><input type="text" id="customer_name" name="customer_name" placeholder="Nhập họ và tên"></div>
-          <div class="form-group"><label>Số điện thoại</label><input type="tel" id="customer_phone" name="customer_phone" placeholder="Nhập số điện thoại"></div>
-          <div class="form-group"><label>Email</label><input type="email" id="customer_email" name="customer_email" placeholder="Nhập email"></div>
-          <div class="form-group"><label>Địa chỉ</label><input type="text" id="customer_address" name="customer_address" placeholder="Nhập địa chỉ liên hệ"></div>
-          <div class="form-group full"><label>Nội dung</label><textarea id="content" name="content" placeholder="Nhập nội dung cần hỗ trợ..."></textarea></div>
-        </div>
-        <button class="submit-btn" type="submit"><i class="ti ti-send"></i> Gửi thông tin liên hệ</button>
-      </form>
-
-      <div class="support-card">
-        <h3>Hỗ trợ nhanh hơn</h3>
-        <p>Để quá trình xử lý thuận tiện, vui lòng cung cấp rõ thông tin người liên hệ, nội dung cần hỗ trợ và tài liệu liên quan nếu có.</p>
-        <div class="support-steps">
-          <div class="support-step"><i class="ti ti-user-check"></i><div><b>Ứng viên / sinh viên</b><span>Hỗ trợ tạo CV, tìm việc phù hợp và theo dõi trạng thái ứng tuyển.</span></div></div>
-          <div class="support-step"><i class="ti ti-building"></i><div><b>Nhà tuyển dụng</b><span>Hỗ trợ đăng tin, duyệt tin tuyển dụng và kết nối nguồn ứng viên.</span></div></div>
-          <div class="support-step"><i class="ti ti-handshake"></i><div><b>Đối tác doanh nghiệp</b><span>Tiếp nhận đề xuất hợp tác, ngày hội việc làm và chương trình thực tập.</span></div></div>
-        </div>
-      </div>
-    </div>
-
-    <div class="faq-strip">
-      <div class="faq-item"><i class="ti ti-file-cv"></i><b>Hỗ trợ CV</b><span>Tư vấn hoàn thiện hồ sơ, cập nhật thông tin cá nhân và xuất CV chuyên nghiệp.</span></div>
-      <div class="faq-item"><i class="ti ti-speakerphone"></i><b>Đăng tin tuyển dụng</b><span>Tiếp nhận nhu cầu tuyển dụng, kiểm duyệt nội dung và hiển thị tin phù hợp.</span></div>
-      <div class="faq-item"><i class="ti ti-shield-check"></i><b>Bảo mật thông tin</b><span>Cam kết tiếp nhận và xử lý thông tin liên hệ đúng mục đích hỗ trợ.</span></div>
-    </div>
-  </section>
-</main>
-
-<?php require "footer.php"; ?>
-<script>
-jQuery(function($){
-  var $form = $('#contactForm');
-  if(!$form.length){
-    return;
-  }
-
-  $form.validate({
-    onfocusout: false,
-    onkeyup: false,
-    onclick: false,
-    errorElement: 'label',
-    rules: {
-      customer_name: { required: true },
-      customer_phone: { required: true },
-      customer_email: { required: true, email: true },
-      customer_address: { required: true },
-      content: { required: true }
-    },
-    messages: {
-      customer_name: { required: 'Vui lòng nhập họ và tên.' },
-      customer_phone: { required: 'Vui lòng nhập số điện thoại.' },
-      customer_email: {
-        required: 'Vui lòng nhập email.',
-        email: 'Email không đúng định dạng.'
-      },
-      customer_address: { required: 'Vui lòng nhập địa chỉ.' },
-      content: { required: 'Vui lòng nhập nội dung liên hệ.' }
-    },
-    submitHandler: function(form, event){
-      event.preventDefault();
-      var formData = new FormData(form);
-      formData.append('rating', 0);
-
-      $.ajax({
-        type: 'POST',
-        url: '<?php echo XC_URL; ?>/api/addFeedback',
-        data: formData,
-        dataType: 'json',
-        processData: false,
-        contentType: false,
-        success:function(data){
-          if(data.status == 200){
-            Swal.fire({
-              toast: true,
-              icon: 'success',
-              title: data.message,
-              showConfirmButton: false,
-              timer: 1200,
-              timerProgressBar: true,
-              didOpen: (toast) => {
-                toast.addEventListener('mouseenter', Swal.stopTimer);
-                toast.addEventListener('mouseleave', Swal.resumeTimer);
-              }
-            }).then((result) => {
-              window.location.href = data.return_url;
-            });
-          }else{
-            Swal.fire({
-              icon: 'error',
-              title: 'Gửi yêu cầu thất bại!',
-              text: data.message,
-              footer: '<a href=""></a>'
-            });
-          }
-        },
-        error: function(){
-          Swal.fire({
-            icon: 'error',
-            title: 'Gửi yêu cầu thất bại!',
-            text: 'Không thể gửi yêu cầu liên hệ, vui lòng thử lại.'
-          });
-        }
-      });
-
-      return false;
-    }
-  });
-});
-</script>
+  </main>
+<?php require_once 'footer.php'; ?>

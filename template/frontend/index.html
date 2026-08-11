@@ -1,5 +1,421 @@
+<!DOCTYPE html>
+<html lang="vi" itemscope itemtype="https://schema.org/MedicalOrganization">
 
-<?php require_once 'header.php'; ?>
+<head>
+  <!-- ============================================================
+       META & SEO
+       ============================================================ -->
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+  <title>Bệnh viện đa khoa khu vực Đắk Hà — Chăm sóc sức khỏe toàn diện cho cộng đồng</title>
+  <meta name="description"
+    content="Bệnh viện đa khoa khu vực Đắk Hà — đơn vị y tế công lập hàng đầu tỉnh Kon Tum, cung cấp dịch vụ khám chữa bệnh, chăm sóc sức khỏe toàn diện cho nhân dân. Hotline cấp cứu 24/7: 1900 xxxx." />
+  <meta name="keywords"
+    content="Bệnh viện đa khoa Đắk Hà, bệnh viện Đắk Hà, khám chữa bệnh Kon Tum, y tế khu vực Đắk Hà" />
+  <meta name="author" content="Bệnh viện đa khoa khu vực Đắk Hà" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://ttytdakha.gov.vn/" />
+
+  <!-- Open Graph -->
+  <meta property="og:type"        content="website" />
+  <meta property="og:url"         content="https://ttytdakha.gov.vn/" />
+  <meta property="og:title"       content="Bệnh viện đa khoa khu vực Đắk Hà" />
+  <meta property="og:description" content="Đơn vị y tế công lập hàng đầu huyện Đắk Hà, tỉnh Kon Tum. Khám chữa bệnh, chăm sóc sức khỏe cộng đồng, cấp cứu 24/7." />
+  <meta property="og:image"       content="https://ttytdakha.gov.vn/assets/images/og-cover.jpg" />
+  <meta property="og:locale"      content="vi_VN" />
+  <meta property="og:site_name"   content="Bệnh viện đa khoa khu vực Đắk Hà" />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card"        content="summary_large_image" />
+  <meta name="twitter:title"       content="Bệnh viện đa khoa khu vực Đắk Hà" />
+  <meta name="twitter:description" content="Đơn vị y tế công lập hàng đầu huyện Đắk Hà, tỉnh Kon Tum. Khám chữa bệnh, cấp cứu 24/7." />
+  <meta name="twitter:image"       content="https://ttytdakha.gov.vn/assets/images/og-cover.jpg" />
+
+  <!-- Preconnect fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet" />
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="assets/icons/favicon.svg" />
+
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="assets/css/style.css" />
+
+  <!-- ============================================================
+       STRUCTURED DATA — JSON-LD
+       ============================================================ -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "MedicalOrganization",
+    "@id": "https://ttytdakha.gov.vn/#organization",
+    "name": "Bệnh viện đa khoa khu vực Đắk Hà",
+    "alternateName": "Bệnh viện đa khoa khu vực Đắk Hà",
+    "url": "https://ttytdakha.gov.vn",
+    "logo": "https://ttytdakha.gov.vn/assets/icons/favicon.svg",
+    "image": "https://ttytdakha.gov.vn/assets/images/banner-01.jpg",
+    "description": "Bệnh viện đa khoa khu vực Đắk Hà là đơn vị sự nghiệp y tế công lập thuộc Sở Y tế tỉnh Quảng Ngãi, chịu trách nhiệm chăm sóc sức khỏe toàn diện cho nhân dân huyện Đắk Hà và các vùng lân cận.",
+    "telephone": "+84-260-3862xxx",
+    "email": "ttytdakha@kontum.gov.vn",
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "Đường Trần Phú, Thị trấn Đắk Hà",
+      "addressLocality": "Đắk Hà",
+      "addressRegion": "Kon Tum",
+      "postalCode": "58000",
+      "addressCountry": "VN"
+    },
+    "openingHoursSpecification": [
+      {
+        "@type": "OpeningHoursSpecification",
+        "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday","Friday"],
+        "opens": "07:00",
+        "closes": "17:00"
+      },
+      {
+        "@type": "OpeningHoursSpecification",
+        "dayOfWeek": "Saturday",
+        "opens": "07:00",
+        "closes": "11:30"
+      }
+    ],
+    "medicalSpecialty": ["InternalMedicine","Pediatrics","ObstetricsGynecology","Surgery","EmergencyMedicine"],
+    "availableService": {
+      "@type": "MedicalTherapy",
+      "name": "Khám chữa bệnh đa khoa"
+    },
+    "sameAs": [
+      "https://www.facebook.com/ttytdakha",
+      "https://zalo.me/ttytdakha"
+    ]
+  }
+  </script>
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "Bệnh viện đa khoa khu vực Đắk Hà làm việc mấy giờ?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Giờ làm việc hành chính: Thứ Hai – Thứ Sáu từ 7:00 – 17:00, Thứ Bảy từ 7:00 – 11:30. Cấp cứu hoạt động 24/7 kể cả ngày lễ, Tết."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Hotline cấp cứu của Bệnh viện đa khoa khu vực Đắk Hà là bao nhiêu?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Đường dây cấp cứu khẩn cấp 24/7: 1900 xxxx hoặc (0260) 386 2xxx. Đội ngũ cấp cứu luôn trực sẵn sàng."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Bệnh viện đa khoa khu vực Đắk Hà có những dịch vụ khám gì?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Trung tâm cung cấp đầy đủ các dịch vụ: khám nội khoa, ngoại khoa, sản phụ khoa, nhi khoa, mắt, tai mũi họng, răng hàm mặt, phục hồi chức năng, xét nghiệm, chẩn đoán hình ảnh và cấp cứu 24/7."
+        }
+      }
+    ]
+  }
+  </script>
+</head>
+
+<body>
+
+  <!-- ============================================================
+       TOP BAR
+       ============================================================ -->
+  <aside class="topbar" role="banner" aria-label="Thanh thông tin nhanh">
+    <div class="container">
+      <div class="topbar-inner">
+        <div class="topbar-hotline">
+          <span class="hotline-badge">Cấp cứu</span>
+          <span>Đường dây nóng:</span>
+          <a href="tel:1900xxxx" aria-label="Gọi hotline cấp cứu 1900 xxxx">1900 xxxx</a>
+        </div>
+        <div class="topbar-right">
+          <nav class="topbar-socials" aria-label="Mạng xã hội">
+            <a href="https://www.facebook.com/ttytdakha" target="_blank" rel="noopener noreferrer"
+               aria-label="Trang Facebook Bệnh viện đa khoa Đắk Hà">
+              <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/>
+              </svg>
+            </a>
+            <a href="https://zalo.me/ttytdakha" target="_blank" rel="noopener noreferrer"
+               aria-label="Trang Zalo Bệnh viện đa khoa Đắk Hà">
+              <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path d="M12 2C6.477 2 2 6.477 2 12c0 1.89.525 3.66 1.438 5.168L2 22l4.832-1.438A9.955 9.955 0 0012 22c5.523 0 10-4.477 10-10S17.523 2 12 2zm-1 13H9V9h2v6zm3.5 0h-2V9h2v6z"/>
+              </svg>
+            </a>
+            <a href="https://youtube.com" target="_blank" rel="noopener noreferrer"
+               aria-label="Kênh YouTube Bệnh viện đa khoa Đắk Hà">
+              <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path d="M22.54 6.42a2.78 2.78 0 00-1.94-1.96C18.88 4 12 4 12 4s-6.88 0-8.6.46A2.78 2.78 0 001.46 6.42 29 29 0 001 12a29 29 0 00.46 5.58 2.78 2.78 0 001.94 1.96C5.12 20 12 20 12 20s6.88 0 8.6-.46a2.78 2.78 0 001.94-1.96A29 29 0 0023 12a29 29 0 00-.46-5.58z"/>
+                <polygon points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02" fill="white"/>
+              </svg>
+            </a>
+          </nav>
+          <!-- <div class="topbar-lang" role="button" tabindex="0" aria-label="Chuyển đổi ngôn ngữ">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/>
+              <line x1="2" y1="12" x2="22" y2="12"/>
+              <path d="M12 2a15.3 15.3 0 010 20M12 2a15.3 15.3 0 000 20"/>
+            </svg>
+            VI | EN
+          </div> -->
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ============================================================
+       HEADER
+       ============================================================ -->
+  <header class="site-header" id="site-header" role="banner">
+    <div class="container">
+      <div class="header-inner">
+
+        <!-- Logo -->
+        <a href="index.html" class="logo" aria-label="Trang chủ Bệnh viện đa khoa khu vực Đắk Hà">
+          <div class="logo-icon" aria-hidden="true">
+           <img
+                  src="assets/images/logo.png"
+                  alt="Logo Bệnh viện đa khoa khu vực Đắk Hà"
+                  width="48"
+                  height="48"
+                  loading="lazy"
+                  itemprop="logo" />
+          </div>
+          <div class="logo-text" itemprop="name">
+            <span class="name">Bệnh viện đa khoa khu vực Đắk Hà</span>
+            <span class="sub">Sở Y tế tỉnh Quảng Ngãi</span>
+          </div>
+        </a>
+
+        <!-- Main Navigation -->
+        <nav class="main-nav" aria-label="Menu chính" role="navigation">
+          <ul class="nav-list" role="list">
+
+            <li class="nav-item">
+              <a href="index.html" class="nav-link active" aria-current="page">Trang chủ</a>
+            </li>
+
+            <li class="nav-item">
+              <a href="pages/gioi-thieu.html" class="nav-link" aria-haspopup="true" aria-expanded="false">
+                Giới thiệu
+                <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+                  <polyline points="6 9 12 15 18 9"/>
+                </svg>
+              </a>
+              <div class="dropdown" role="menu" aria-label="Menu giới thiệu">
+                <a href="pages/gioi-thieu.html#lich-su" role="menuitem">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                  Lịch sử hình thành
+                </a>
+                <a href="pages/gioi-thieu.html#chuc-nang" role="menuitem">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+                  Chức năng nhiệm vụ
+                </a>
+                <a href="pages/so-do-to-chuc.html" role="menuitem">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+                  Sơ đồ tổ chức
+                </a>
+                <a href="pages/ban-lanh-dao.html" role="menuitem">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                  Ban lãnh đạo
+                </a>
+              </div>
+            </li>
+
+            <li class="nav-item">
+              <a href="pages/tin-tuc.html" class="nav-link" aria-haspopup="true" aria-expanded="false">
+                Tin tức - Sự kiện
+                <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+                  <polyline points="6 9 12 15 18 9"/>
+                </svg>
+              </a>
+              <div class="dropdown" role="menu" aria-label="Menu tin tức">
+                <a href="pages/tin-tuc.html?cat=hoat-dong" role="menuitem">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                  Tin hoạt động nội bộ
+                </a>
+                <a href="pages/tin-tuc.html?cat=cong-dong" role="menuitem">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/></svg>
+                  Tin y tế cộng đồng
+                </a>
+                <a href="pages/tin-tuc.html?cat=thong-bao" role="menuitem">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0"/></svg>
+                  Thông báo
+                </a>
+                <a href="pages/tin-tuc.html?cat=su-kien" role="menuitem">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                  Sự kiện - Hội thảo
+                </a>
+              </div>
+            </li>
+
+            <li class="nav-item">
+              <a href="pages/dich-vu-y-te.html" class="nav-link" aria-haspopup="true" aria-expanded="false">
+                Dịch vụ Y tế
+                <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+                  <polyline points="6 9 12 15 18 9"/>
+                </svg>
+              </a>
+              <div class="dropdown" role="menu" aria-label="Menu dịch vụ">
+                <a href="pages/dich-vu-y-te.html#kham-chua-benh" role="menuitem">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+                  Khám chữa bệnh
+                </a>
+                <a href="pages/dich-vu-y-te.html#bang-gia" role="menuitem">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 100 7h5a3.5 3.5 0 110 7H6"/></svg>
+                  Bảng giá dịch vụ
+                </a>
+                <a href="pages/dich-vu-y-te.html#goi-kham" role="menuitem">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                  Gói khám sức khỏe
+                </a>
+              </div>
+            </li>
+
+            <li class="nav-item">
+              <a href="pages/hoat-dong.html" class="nav-link">Hoạt động</a>
+            </li>
+
+            <li class="nav-item">
+              <a href="pages/van-ban.html" class="nav-link">Văn bản</a>
+            </li>
+
+            <li class="nav-item">
+              <a href="pages/lien-he.html" class="nav-link">Liên hệ</a>
+            </li>
+
+          </ul>
+        </nav>
+
+        <!-- Header CTA -->
+        <div class="header-cta">
+          <a href="pages/dat-lich.html" class="btn btn-accent btn-sm" id="btn-dat-lich">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+              <line x1="16" y1="2" x2="16" y2="6"/>
+              <line x1="8" y1="2" x2="8" y2="6"/>
+              <line x1="3" y1="10" x2="21" y2="10"/>
+            </svg>
+            Đăng nhập
+          </a>
+        </div>
+
+        <!-- Hamburger (mobile) -->
+        <button class="hamburger" id="hamburger-btn"
+                aria-label="Mở menu điều hướng"
+                aria-expanded="false"
+                aria-controls="mobile-nav">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+
+      </div>
+    </div>
+  </header>
+
+  <!-- Mobile Navigation Drawer -->
+  <nav class="mobile-nav" id="mobile-nav" aria-label="Menu mobile" aria-hidden="true">
+    <div class="mobile-nav-header">
+      <a href="index.html" class="logo">
+        <div class="logo-icon" aria-hidden="true">
+          <img
+                  src="assets/images/logo.png"
+                  alt="Logo Bệnh viện đa khoa khu vực Đắk Hà"
+                  width="48"
+                  height="48"
+                  loading="lazy"
+                  itemprop="logo" />
+        </div>
+        <div class="logo-text">
+          <span class="name">Bệnh viện đa khoa khu vực Đắk Hà</span>
+          <span class="sub">Sở Y tế tỉnh Quảng Ngãi</span>
+        </div>
+      </a>
+      <button class="mobile-close" aria-label="Đóng menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <line x1="18" y1="6" x2="6" y2="18"/>
+          <line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
+    </div>
+
+    <div class="mobile-nav-body">
+      <a href="index.html" class="mobile-nav-link">Trang chủ</a>
+
+      <button class="mobile-nav-link" data-submenu="sub-gioi-thieu" aria-expanded="false">
+        Giới thiệu
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+          <polyline points="9 18 15 12 9 6"/>
+        </svg>
+      </button>
+      <div class="mobile-submenu" id="sub-gioi-thieu" role="menu">
+        <a href="pages/gioi-thieu.html#lich-su">Lịch sử hình thành</a>
+        <a href="pages/gioi-thieu.html#chuc-nang">Chức năng nhiệm vụ</a>
+        <a href="pages/so-do-to-chuc.html">Sơ đồ tổ chức</a>
+        <a href="pages/ban-lanh-dao.html">Ban lãnh đạo</a>
+      </div>
+
+      <button class="mobile-nav-link" data-submenu="sub-tintuc" aria-expanded="false">
+        Tin tức - Sự kiện
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+          <polyline points="9 18 15 12 9 6"/>
+        </svg>
+      </button>
+      <div class="mobile-submenu" id="sub-tintuc" role="menu">
+        <a href="pages/tin-tuc.html?cat=hoat-dong">Tin hoạt động nội bộ</a>
+        <a href="pages/tin-tuc.html?cat=cong-dong">Tin y tế cộng đồng</a>
+        <a href="pages/tin-tuc.html?cat=thong-bao">Thông báo</a>
+        <a href="pages/tin-tuc.html?cat=su-kien">Sự kiện - Hội thảo</a>
+      </div>
+
+      <button class="mobile-nav-link" data-submenu="sub-dichvu" aria-expanded="false">
+        Dịch vụ Y tế
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+          <polyline points="9 18 15 12 9 6"/>
+        </svg>
+      </button>
+      <div class="mobile-submenu" id="sub-dichvu" role="menu">
+        <a href="pages/dich-vu-y-te.html#kham-chua-benh">Khám chữa bệnh</a>
+        <a href="pages/dich-vu-y-te.html#bang-gia">Bảng giá dịch vụ</a>
+        <a href="pages/dich-vu-y-te.html#goi-kham">Gói khám sức khỏe</a>
+      </div>
+
+      <a href="pages/hoat-dong.html" class="mobile-nav-link">Hoạt động</a>
+      <a href="pages/van-ban.html"   class="mobile-nav-link">Văn bản</a>
+      <a href="pages/lien-he.html"   class="mobile-nav-link">Liên hệ</a>
+    </div>
+
+    <div class="mobile-nav-footer">
+      <a href="pages/dat-lich.html" class="btn btn-accent">
+        <i data-lucide="log-in"></i>
+        Đăng nhập
+      </a>
+      <a href="tel:1900xxxx" class="btn btn-danger">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 10.8 19.79 19.79 0 01.01 2.18 2 2 0 012 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/>
+        </svg>
+        Gọi cấp cứu: 1900 xxxx
+      </a>
+    </div>
+  </nav>
+
+  <div class="nav-overlay" id="nav-overlay" aria-hidden="true"></div>
 
   <!-- ============================================================
        MAIN CONTENT
@@ -16,13 +432,13 @@
           <div class="marquee-track" role="marquee" aria-live="polite" aria-label="Thông báo cuộn">
             <div class="marquee-content">
               <span class="marquee-item">Lịch khám chuyên khoa Mắt: Thứ 3, Thứ 5 hàng tuần — Đăng ký trước qua hotline</span>
-              <!-- <span class="marquee-item">Triển khai tiêm vắc-xin phòng dại miễn phí cho trẻ em dưới 5 tuổi từ ngày 10/08/2026</span> -->
-              <!-- <span class="marquee-item">Thông báo tuyển dụng viên chức y tế năm 2026 — Hạn nộp hồ sơ: 30/09/2026</span>
+              <span class="marquee-item">Triển khai tiêm vắc-xin phòng dại miễn phí cho trẻ em dưới 5 tuổi từ ngày 10/08/2026</span>
+              <span class="marquee-item">Thông báo tuyển dụng viên chức y tế năm 2026 — Hạn nộp hồ sơ: 30/09/2026</span>
               <span class="marquee-item">Khai mạc Tuần lễ sức khỏe tâm thần cộng đồng huyện Đắk Hà — 15/08/2026</span>
               <span class="marquee-item">Lịch khám chuyên khoa Mắt: Thứ 3, Thứ 5 hàng tuần — Đăng ký trước qua hotline</span>
               <span class="marquee-item">Triển khai tiêm vắc-xin phòng dại miễn phí cho trẻ em dưới 5 tuổi từ ngày 10/08/2026</span>
               <span class="marquee-item">Thông báo tuyển dụng viên chức y tế năm 2026 — Hạn nộp hồ sơ: 30/09/2026</span>
-              <span class="marquee-item">Khai mạc Tuần lễ sức khỏe tâm thần cộng đồng huyện Đắk Hà — 15/08/2026</span> -->
+              <span class="marquee-item">Khai mạc Tuần lễ sức khỏe tâm thần cộng đồng huyện Đắk Hà — 15/08/2026</span>
             </div>
           </div>
         </div>
@@ -37,7 +453,7 @@
 
         <!-- Slide 1 -->
         <article class="slide active" role="group" aria-roledescription="slide" aria-label="Slide 1 / 3">
-          <div class="slide-bg" style="background-image: url('<?php echo XC_URL;?>/template/frontend/assets/images/banner-01.jpg');" role="img" aria-label="Bệnh viện đa khoa khu vực Đắk Hà — Cơ sở vật chất hiện đại"></div>
+          <div class="slide-bg" style="background-image: url('assets/images/banner-01.jpg');" role="img" aria-label="Bệnh viện đa khoa khu vực Đắk Hà — Cơ sở vật chất hiện đại"></div>
           <div class="slide-overlay" aria-hidden="true"></div>
           <div class="container">
             <div class="slide-content">
@@ -73,7 +489,7 @@
 
         <!-- Slide 2 -->
         <article class="slide" role="group" aria-roledescription="slide" aria-label="Slide 2 / 3">
-          <div class="slide-bg" style="background-image: url('<?php echo XC_URL;?>/template/frontend/assets/images/banner-02.jpg');" role="img" aria-label="Cơ sở hạ tầng và trang thiết bị y tế hiện đại"></div>
+          <div class="slide-bg" style="background-image: url('assets/images/banner-02.jpg');" role="img" aria-label="Cơ sở hạ tầng và trang thiết bị y tế hiện đại"></div>
           <div class="slide-overlay" aria-hidden="true"></div>
           <div class="container">
             <div class="slide-content">
@@ -96,7 +512,7 @@
 
         <!-- Slide 3 -->
         <article class="slide" role="group" aria-roledescription="slide" aria-label="Slide 3 / 3">
-          <div class="slide-bg" style="background-image: url('<?php echo XC_URL;?>/template/frontend/assets/images/banner-03.jpg');" role="img" aria-label="Đội ngũ y tế phục vụ cộng đồng huyện Đắk Hà"></div>
+          <div class="slide-bg" style="background-image: url('assets/images/banner-03.jpg');" role="img" aria-label="Đội ngũ y tế phục vụ cộng đồng huyện Đắk Hà"></div>
           <div class="slide-overlay" aria-hidden="true"></div>
           <div class="container">
             <div class="slide-content">
@@ -276,7 +692,7 @@
 
           <figure class="about-img-wrap" data-animate>
             <img
-              src="<?php echo XC_URL; ?>/template/frontend/assets/images/banner-02.jpg"
+              src="assets/images/banner-02.jpg"
               alt="Cơ sở vật chất và trang thiết bị y tế hiện đại của Bệnh viện đa khoa khu vực Đắk Hà"
               class="about-img"
               loading="lazy"
@@ -509,7 +925,7 @@
           <article class="doctor-card" data-animate itemscope itemtype="https://schema.org/Physician">
             <div class="doctor-img-wrap">
               <img
-                src="<?php echo XC_URL; ?>/template/frontend/assets/images/doctor-01.jpg"
+                src="assets/images/doctor-01.jpg"
                 alt="Bác sĩ CKI Nguyễn Văn An — Chuyên khoa Nội tổng quát"
                 class="doctor-img"
                 loading="lazy"
@@ -530,7 +946,7 @@
           <article class="doctor-card" data-animate data-animate-delay="100" itemscope itemtype="https://schema.org/Physician">
             <div class="doctor-img-wrap">
               <img
-                src="<?php echo XC_URL; ?>/template/frontend/assets/images/doctor-02.jpg"
+                src="assets/images/doctor-02.jpg"
                 alt="Bác sĩ CKII Trần Thị Bình — Chuyên khoa Sản phụ khoa"
                 class="doctor-img"
                 loading="lazy"
@@ -551,7 +967,7 @@
           <article class="doctor-card" data-animate data-animate-delay="200" itemscope itemtype="https://schema.org/Physician">
             <div class="doctor-img-wrap">
               <img
-                src="<?php echo XC_URL; ?>/template/frontend/assets/images/doctor-03.jpg"
+                src="assets/images/doctor-03.jpg"
                 alt="Thạc sĩ, Bác sĩ Lê Minh Cường — Trưởng khoa Ngoại tổng hợp"
                 class="doctor-img"
                 loading="lazy"
@@ -572,7 +988,7 @@
           <article class="doctor-card" data-animate data-animate-delay="300" itemscope itemtype="https://schema.org/Physician">
             <div class="doctor-img-wrap">
               <img
-                src="<?php echo XC_URL; ?>/template/frontend/assets/images/doctor-01.jpg"
+                src="assets/images/doctor-01.jpg"
                 alt="Bác sĩ CKI Phạm Thu Hà — Chuyên khoa Nhi"
                 class="doctor-img"
                 loading="lazy"
@@ -620,7 +1036,7 @@
           <article class="news-card news-featured" itemscope itemtype="https://schema.org/NewsArticle">
             <div class="news-card-img-wrap">
               <img
-                src="<?php echo XC_URL; ?>/template/frontend/assets/images/banner-03.jpg"
+                src="assets/images/banner-03.jpg"
                 alt="Bệnh viện đa khoa khu vực Đắk Hà triển khai chiến dịch tiêm chủng mở rộng 2026"
                 class="news-card-img"
                 loading="lazy"
@@ -668,7 +1084,7 @@
 
             <article class="news-side-item" itemscope itemtype="https://schema.org/NewsArticle">
               <img
-                src="<?php echo XC_URL; ?>/template/frontend/assets/images/banner-01.jpg"
+                src="assets/images/banner-01.jpg"
                 alt="Khánh thành khu khám bệnh mới"
                 class="news-side-thumb"
                 loading="lazy"
@@ -686,7 +1102,7 @@
 
             <article class="news-side-item" itemscope itemtype="https://schema.org/NewsArticle">
               <img
-                src="<?php echo XC_URL; ?>/template/frontend/assets/images/banner-02.jpg"
+                src="assets/images/banner-02.jpg"
                 alt="Hội thảo khoa học chuyên đề nội khoa 2026"
                 class="news-side-thumb"
                 loading="lazy"
@@ -704,7 +1120,7 @@
 
             <article class="news-side-item" itemscope itemtype="https://schema.org/NewsArticle">
               <img
-                src="<?php echo XC_URL; ?>/template/frontend/assets/images/banner-03.jpg"
+                src="assets/images/banner-03.jpg"
                 alt="Thông báo tuyển dụng viên chức y tế 2026"
                 class="news-side-thumb"
                 loading="lazy"
@@ -722,7 +1138,7 @@
 
             <article class="news-side-item" itemscope itemtype="https://schema.org/NewsArticle">
               <img
-                src="<?php echo XC_URL; ?>/template/frontend/assets/images/banner-01.jpg"
+                src="assets/images/banner-01.jpg"
                 alt="Phòng chống sốt xuất huyết mùa mưa Tây Nguyên"
                 class="news-side-thumb"
                 loading="lazy"
@@ -860,4 +1276,187 @@
     </section> -->
 
   </main>
-<?php require_once 'footer.php'; ?>
+
+  <!-- ============================================================
+       FOOTER
+       ============================================================ -->
+  <footer class="site-footer" role="contentinfo" itemscope itemtype="https://schema.org/MedicalOrganization">
+    <div class="footer-main">
+      <div class="container">
+        <div class="footer-grid">
+
+          <!-- Brand column -->
+          <div class="footer-brand">
+            <a href="index.html" class="logo" aria-label="Trang chủ">
+              <div class="logo-icon" aria-hidden="true">
+                <img
+                  src="assets/images/logo.png"
+                  alt="Logo Bệnh viện đa khoa khu vực Đắk Hà"
+                  width="48"
+                  height="48"
+                  loading="lazy"
+                  itemprop="logo" />
+              </div>
+              <div class="logo-text">
+                <span class="name">Bệnh viện đa khoa khu vực Đắk Hà</span>
+                <span class="sub">Sở Y tế tỉnh Quảng Ngãi</span>
+              </div>
+            </a>
+            <p class="footer-desc">
+              Bệnh viện đa khoa khu vực Đắk Hà là đơn vị sự nghiệp y tế công lập, chịu trách nhiệm
+              chăm sóc sức khỏe toàn diện cho nhân dân huyện Đắk Hà, tỉnh Kon Tum.
+            </p>
+            <nav class="footer-socials" aria-label="Mạng xã hội">
+              <a href="https://www.facebook.com/ttytdakha" target="_blank" rel="noopener noreferrer"
+                 class="footer-social-btn" aria-label="Facebook">
+                <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                  <path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/>
+                </svg>
+              </a>
+              <a href="https://zalo.me/ttytdakha" target="_blank" rel="noopener noreferrer"
+                 class="footer-social-btn" aria-label="Zalo">
+                <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                  <path d="M12 2C6.477 2 2 6.477 2 12c0 1.89.525 3.66 1.438 5.168L2 22l4.832-1.438A9.955 9.955 0 0012 22c5.523 0 10-4.477 10-10S17.523 2 12 2z"/>
+                </svg>
+              </a>
+              <a href="https://youtube.com" target="_blank" rel="noopener noreferrer"
+                 class="footer-social-btn" aria-label="YouTube">
+                <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                  <path d="M22.54 6.42a2.78 2.78 0 00-1.94-1.96C18.88 4 12 4 12 4s-6.88 0-8.6.46A2.78 2.78 0 001.46 6.42 29 29 0 001 12a29 29 0 00.46 5.58 2.78 2.78 0 001.94 1.96C5.12 20 12 20 12 20s6.88 0 8.6-.46a2.78 2.78 0 001.94-1.96A29 29 0 0023 12a29 29 0 00-.46-5.58z"/>
+                  <polygon points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02" fill="var(--color-primary-dark)"/>
+                </svg>
+              </a>
+            </nav>
+          </div>
+
+          <!-- Quick links -->
+          <div class="footer-col">
+            <h3>Liên kết nhanh</h3>
+            <nav class="footer-links" aria-label="Liên kết nhanh footer">
+              <a href="index.html">Trang chủ</a>
+              <a href="pages/gioi-thieu.html">Giới thiệu</a>
+              <a href="pages/ban-lanh-dao.html">Ban lãnh đạo</a>
+              <a href="pages/so-do-to-chuc.html">Sơ đồ tổ chức</a>
+              <a href="pages/tin-tuc.html">Tin tức - Sự kiện</a>
+              <a href="pages/dich-vu-y-te.html">Dịch vụ y tế</a>
+              <a href="pages/hoat-dong.html">Hoạt động</a>
+              <a href="pages/van-ban.html">Văn bản pháp quy</a>
+              <a href="pages/dat-lich.html">Đăng nhập</a>
+              <a href="pages/lien-he.html">Liên hệ</a>
+            </nav>
+          </div>
+
+          <!-- Contact info -->
+          <div class="footer-col">
+            <h3>Thông tin liên hệ</h3>
+            <address class="footer-contact-list" itemprop="address" itemscope itemtype="https://schema.org/PostalAddress">
+              <div class="footer-contact-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/>
+                  <circle cx="12" cy="10" r="3"/>
+                </svg>
+                <span itemprop="streetAddress">Đường Trần Phú, Thị trấn Đắk Hà, Xã Đắk Hà, tỉnh Quảng Ngãi</span>
+              </div>
+              <div class="footer-contact-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                  <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 10.8 19.79 19.79 0 01.01 2.18 2 2 0 012 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/>
+                </svg>
+                <span>
+                  Cấp cứu 24/7: <a href="tel:1900xxxx" style="color:var(--color-danger);font-weight:700;">1900 xxxx</a><br>
+                  Hành chính: <a href="tel:02603862xxx">(0260) 386 2xxx</a>
+                </span>
+              </div>
+              <div class="footer-contact-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                  <polyline points="22,6 12,13 2,6"/>
+                </svg>
+                <span><a href="mailto:ttytdakha@kontum.gov.vn">ttytdakha@kontum.gov.vn</a></span>
+              </div>
+            </address>
+
+            <div class="footer-hours">
+              <p>
+                <strong>Giờ làm việc:</strong><br>
+                Thứ Hai – Thứ Sáu: 7:00 – 17:00<br>
+                Thứ Bảy: 7:00 – 11:30<br>
+                Cấp cứu: 24/7 kể cả ngày lễ
+              </p>
+            </div>
+          </div>
+
+          <!-- Map placeholder -->
+          <div class="footer-col">
+            <h3>Bản đồ vị trí</h3>
+            <div class="map-lazy-wrap"
+                 style="height:180px;background:var(--color-primary);border-radius:var(--radius-md);overflow:hidden;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:8px;"
+                 data-src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3867.1!2d107.9!3d14.7!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMTTCsDQyJzAwLjAiTiAxMDfCsDU0JzAwLjAiRQ!5e0!3m2!1svi!2svn!4v1000000000000"
+                 role="img"
+                 aria-label="Bản đồ vị trí Bệnh viện đa khoa khu vực Đắk Hà (sẽ tải khi cuộn đến)">
+              <svg viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="1.5" aria-hidden="true">
+                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/>
+              </svg>
+              <span style="color:rgba(255,255,255,.6);font-size:12px;">Đang tải bản đồ...</span>
+            </div>
+            <a href="https://goo.gl/maps/example" target="_blank" rel="noopener noreferrer"
+               style="display:inline-flex;align-items:center;gap:6px;margin-top:10px;font-size:13px;color:rgba(255,255,255,.6);"
+               id="footer-map-link">
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3"/>
+              </svg>
+              Xem trên Google Maps
+            </a>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer Bottom -->
+    <div class="footer-bottom">
+      <div class="container">
+        <div class="footer-bottom-inner">
+          <p>
+            © <time datetime="2026">2026</time> Bệnh viện đa khoa khu vực Đắk Hà — Thuộc
+            <a href="https://soytekontum.gov.vn" target="_blank" rel="noopener noreferrer">Sở Y tế tỉnh Quảng Ngãi</a>.
+            Thiết kế & Phát triển bởi <abbr title="Bộ phận Công nghệ thông tin">CNTT TTYT Đắk Hà</abbr>.
+          </p>
+          <nav aria-label="Liên kết pháp lý">
+            <a href="/chinh-sach-bao-mat">Chính sách bảo mật</a>
+            &nbsp;·&nbsp;
+            <a href="/dieu-khoan-su-dung">Điều khoản sử dụng</a>
+            &nbsp;·&nbsp;
+            <a href="/noi-bo/" rel="noindex,nofollow">Nội bộ</a>
+          </nav>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ============================================================
+       STICKY EMERGENCY BUTTON (mobile)
+       ============================================================ -->
+  <div class="sticky-emergency" aria-label="Gọi cấp cứu khẩn cấp">
+    <a href="tel:1900xxxx" class="emergency-fab" id="emergency-fab-btn"
+       aria-label="Gọi hotline cấp cứu 1900 xxxx">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+        <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 10.8 19.79 19.79 0 01.01 2.18 2 2 0 012 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/>
+      </svg>
+    </a>
+  </div>
+
+  <!-- Scroll to Top -->
+  <button class="scroll-top" id="scroll-top-btn" aria-label="Cuộn lên đầu trang">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+      <polyline points="18 15 12 9 6 15"/>
+    </svg>
+  </button>
+
+  <!-- Hidden text for SR -->
+  <style>.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}</style>
+
+  <!-- Main JS -->
+  <script src="assets/js/main.js" defer></script>
+
+</body>
+</html>

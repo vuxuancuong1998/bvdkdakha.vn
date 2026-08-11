@@ -19,7 +19,7 @@ if (!defined('XVN_CONFIG_LOADED')) {
 	date_default_timezone_set('Asia/Ho_Chi_Minh');
 
 	//=============== Custom configuration ==================//
-	define('DB_NAME', 'vieclam.vn'); //database name
+	define('DB_NAME', 'bvdkdakha.vn'); //database name
 	define('DB_USER', 'root'); //database user
 	define('DB_PASSWORD', ''); //database password
 	define('DB_HOST', 'localhost'); //sql server
@@ -43,7 +43,7 @@ if (!defined('XVN_CONFIG_LOADED')) {
 	define('AdminThemeMaster', 'backend'); //Replace xpanel by your admin theme's name
 
 	/*** define site path ***/
-	define('XC_URL','http://localhost/vieclam.vn'); //Replace by your site url
+	define('XC_URL','https://publish-riding-extends-ending.trycloudflare.com/bvdkdakha.vn'); //Replace by your site url
 }
 
 $siteurl = XC_URL;

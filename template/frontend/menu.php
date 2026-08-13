@@ -98,29 +98,25 @@
             </li>
 
             <li class="nav-item">
-              <a href="<?php echo XC_URL; ?>/tin-tuc-su-kien.html" class="nav-link" aria-haspopup="true" aria-expanded="false">
+              <?php global $db;
+                  $db->query("SELECT * FROM hicrm_event_type WHERE event_type_status NOT IN(99) ORDER BY event_stt ASC");
+                  $item_events = $db->fetch_object();
+                  
+              ?>
+              <a href="#" class="nav-link" aria-haspopup="true" aria-expanded="false">
                 Tin tức - Sự kiện
                 <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
                   <polyline points="6 9 12 15 18 9"/>
                 </svg>
               </a>
+            
               <div class="dropdown" role="menu" aria-label="Menu tin tức">
-                <a href="<?php echo XC_URL; ?>/tin-tuc-su-kien.html?cat=hoat-dong" role="menuitem">
+                  <?php foreach( $item_events as $item){ ?>
+                <a href="<?php echo XC_URL; ?>/tin-tuc/<?php echo $item->id;?>-<?php echo $item->event_type_slug; ?>.html" role="menuitem">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-                  Tin hoạt động nội bộ
+                  <?php echo $item->event_type_name; ?>
                 </a>
-                <a href="<?php echo XC_URL; ?>/tin-tuc-su-kien.html?cat=cong-dong" role="menuitem">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/></svg>
-                  Tin y tế cộng đồng
-                </a>
-                <a href="<?php echo XC_URL; ?>/tin-tuc-su-kien.html?cat=thong-bao" role="menuitem">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0"/></svg>
-                  Thông báo
-                </a>
-                <a href="<?php echo XC_URL; ?>/tin-tuc-su-kien.html?cat=su-kien" role="menuitem">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-                  Sự kiện - Hội thảo
-                </a>
+                <?php }?>
               </div>
             </li>
 
@@ -327,10 +323,10 @@
         </svg>
       </button>
       <div class="mobile-submenu" id="sub-tintuc" role="menu">
-        <a href="<?php echo XC_URL; ?>/tin-tuc-su-kien.html?cat=hoat-dong">Tin hoạt động nội bộ</a>
-        <a href="<?php echo XC_URL; ?>/tin-tuc-su-kien.html?cat=cong-dong">Tin y tế cộng đồng</a>
-        <a href="<?php echo XC_URL; ?>/tin-tuc-su-kien.html?cat=thong-bao">Thông báo</a>
-        <a href="<?php echo XC_URL; ?>/tin-tuc-su-kien.html?cat=su-kien">Sự kiện - Hội thảo</a>
+        <a href="<?php echo XC_URL; ?>/tin-tuc/tin-hoat-dong">Tin hoạt động nội bộ</a>
+        <a href="<?php echo XC_URL; ?>/tin-tuc/y-hoc-thuong-thuc">Y học thường thức</a>
+        <a href="<?php echo XC_URL; ?>/tin-tuc/thong-bao-huong-dan">Thông báo - Hướng dẫn</a>
+        <a href="<?php echo XC_URL; ?>/tin-tuc/su-kien-hoi-thao">Sự kiện - Hội thảo</a>
       </div>
 
       <button class="mobile-nav-link" data-submenu="sub-dichvu" aria-expanded="false">
@@ -541,3 +537,4 @@
     }
   });
   </script>
+<?php require_once "slider.php";?>

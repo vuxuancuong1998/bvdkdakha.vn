@@ -221,6 +221,14 @@ private function getController() {
 				$this->args = $packArgs($parts, 1);
 			}
 		}
+		elseif($segment0 == "chi-tiet-tin-tuc")
+		{
+			$this->controller = "home";
+			$this->action = "news_detail";
+			if(isset($parts[1])) {
+				$this->args = $packArgs($parts, 1);
+			}
+		}
 		elseif($segment0 == "hoat-dong" || $segment0 == "hoat-dong.html")
 		{
 			$this->controller = "home";
@@ -387,6 +395,9 @@ private function getController() {
 			if(isset($parts[1]))
 			{
 				$this->action = $parts[1];
+				if($segment0 == "admin" && $parts[1] == "news-categories") {
+					$this->action = "newsCategories";
+				}
 			}
 			if(isset($parts[2]) && $parts[2] != "")
 			{

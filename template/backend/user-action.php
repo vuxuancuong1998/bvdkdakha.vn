@@ -91,6 +91,7 @@ jQuery.validator.addMethod('strongPassword', function(value, element) {
 					var user_email = jQuery('#email').val();
 					var user_password = jQuery('#password').val();
 					var user_group = jQuery('#user_group').val();
+					var user_department = jQuery('#user_department').val();
 					var method = jQuery('#method').val();
 					var user_id = jQuery('#user_id').val();
 					jQuery.ajax({
@@ -100,10 +101,11 @@ jQuery.validator.addMethod('strongPassword', function(value, element) {
 							'full_name': full_name,
 							'user_email': user_email,
 							'user_password': user_password,
-						'user_group': user_group,
-						'method': method,
-						'user_id': user_id,
-						'csrf_token': '<?php echo htmlspecialchars($admin_csrf_token, ENT_QUOTES, 'UTF-8'); ?>'
+							'user_group': user_group,
+							'user_department': user_department,
+							'method': method,
+							'user_id': user_id,
+							'csrf_token': '<?php echo htmlspecialchars($admin_csrf_token, ENT_QUOTES, 'UTF-8'); ?>'
 						},
 						dataType: 'json',
 						success: function(data){
@@ -163,11 +165,20 @@ jQuery.validator.addMethod('strongPassword', function(value, element) {
 							  </div>
                               
 							  <div class="form-group col-md-6">
-                                 <label class="form-label" for="user_category">Quyền tài khoản:</label>
+                                 <label class="form-label" for="user_group">Quyền tài khoản:</label>
                                  <select class='form-control selectpicker' id='user_group' name='user_group' data-live-search="true">
                                    <?php foreach($roles as $role){ ?>
 								   <option <?php if(isset($user) && $user->user_group == $role->id) echo "selected"; ?> value="<?php echo $role->id;?>"><?php echo $role->group_name;?></option>
                                    <?php } ?>
+                                 </select>
+                              </div>
+                              <div class="form-group col-md-6">
+                                 <label class="form-label" for="user_department">Khoa / Phòng ban:</label>
+                                 <select class='form-control selectpicker' id='user_department' name='user_department' data-live-search="true">
+                                    <option value="0">-- Chọn Khoa / Phòng --</option>
+                                    <?php foreach($departments as $dept){ ?>
+                                       <option <?php if(isset($user) && $user->user_department == $dept->id) echo "selected"; ?> value="<?php echo $dept->id;?>"><?php echo htmlspecialchars($dept->depart_name);?></option>
+                                    <?php } ?>
                                  </select>
                               </div>
 								  <div class="text-end">

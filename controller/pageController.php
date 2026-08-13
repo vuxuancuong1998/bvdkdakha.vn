@@ -55,9 +55,9 @@ Class pageController extends baseController
 		
 		if(!isset($_SESSION['user']['id'])){
 			$_SESSION['user'] = array(
-				'id' => 2,
-				'full_name' => 'Nguyễn Văn An',
-				'email' => 'an.nguyen@ttytdakha.gov.vn',
+				'id' => 40,
+				'full_name' => 'Cương Vũ Xuân',
+				'email' => 'vxcuong1101@gmail.com',
 				'group' => 2,
 				'avatar' => ''
 			);
@@ -69,6 +69,29 @@ Class pageController extends baseController
 			echo "<script>alert('Tính năng Không gian làm việc số chỉ dành cho nhóm tài khoản Cán bộ / Nhân viên (user_group = 2).'); window.location.href='".XC_URL."';</script>";
 			return;
 		}
+
+		$user_id = isset($_SESSION['user']['id']) ? intval($_SESSION['user']['id']) : 0;
+		$user_dept_id = 0;
+		$user_dept_name = '';
+
+		if($user_id > 0) {
+			$db->query("SELECT u.*, d.depart_name FROM hicrm_users u 
+						LEFT JOIN hicrm_departments d ON u.user_department = d.id 
+						WHERE u.id = '".$user_id."' LIMIT 1");
+			$user_data = $db->fetch_object(true);
+			if($user_data) {
+				$user_dept_id = isset($user_data->user_department) ? intval($user_data->user_department) : 0;
+				$user_dept_name = isset($user_data->depart_name) ? $user_data->depart_name : '';
+			}
+		}
+
+		if(empty($user_dept_name)) {
+			$user_dept_name = 'Khoa Khám bệnh';
+		}
+
+		// Fetch all active staff members in the same department from hicrm_staff
+		$db->query("SELECT id, staff_fullname AS full_name FROM hicrm_staff WHERE staff_department = '".$user_dept_id."' AND staff_status = 1 ORDER BY staff_fullname ASC");
+		$dept_users = $db->fetch_object();
 
 		$status_filter = isset($_GET['status']) ? trim($_GET['status']) : '';
 		$search_q = isset($_GET['q']) ? trim($_GET['q']) : '';
@@ -98,6 +121,9 @@ Class pageController extends baseController
 		$this->view->data['requests'] = is_array($requests) ? $requests : array();
 		$this->view->data['status_filter'] = $status_filter;
 		$this->view->data['search_q'] = $search_q;
+		$this->view->data['dept_users'] = is_array($dept_users) ? $dept_users : array();
+		$this->view->data['user_dept_name'] = $user_dept_name;
+		$this->view->data['user_dept_id'] = $user_dept_id;
 		$this->view->show("khonggian_lamviec_so");
 	}
 	public function introduce($para){

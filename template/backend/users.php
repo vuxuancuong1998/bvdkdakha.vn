@@ -10,8 +10,8 @@ $(document).ready(function () {
          order: [[1, 'asc']],
          orderCellsTop: true,
          columnDefs: [
-            { targets: [0, 5], orderable: false },
-            { targets: 5, searchable: false }
+            { targets: [0, 6], orderable: false },
+            { targets: 6, searchable: false }
          ],
          language: {
             search: 'Tìm kiếm:',
@@ -30,7 +30,7 @@ $(document).ready(function () {
          initComplete: function () {
             var api = this.api();
 
-            api.columns([3, 4]).every(function () {
+            api.columns([3, 4, 5]).every(function () {
                var column = this;
                var $select = $('#user-list-table thead .user-filter-row th')
                   .eq(column.index())
@@ -75,9 +75,27 @@ $(document).ready(function () {
                Swal.fire({
                   icon: 'success',
                   title: 'Reset mật khẩu thành công',
-                  html: 'Mật khẩu mới: <strong style="font-size:18px;color:#007bff;">' + data.new_password + '</strong>',
+                  html: '<div class="d-flex flex-column align-items-center gap-3">' +
+                        '  <div>Mật khẩu mới ngẫu nhiên:</div>' +
+                        '  <div class="p-2 border rounded bg-light w-100 text-center font-monospace" style="font-size:20px; color:#10b981; font-weight:800;" id="new-pwd-txt">' + data.new_password + '</div>' +
+                        '  <button type="button" class="btn btn-outline-primary btn-sm px-3" id="copy-pwd-btn">' +
+                        '    <i class="fa-solid fa-copy me-1"></i> Sao chép mật khẩu' +
+                        '  </button>' +
+                        '</div>',
                   allowOutsideClick: false,
-                  showConfirmButton: true
+                  showConfirmButton: true,
+                  confirmButtonText: 'Đóng'
+               });
+
+               // Handle copy action
+               $(document).off('click', '#copy-pwd-btn').on('click', '#copy-pwd-btn', function() {
+                  var $temp = $("<input>");
+                  $("body").append($temp);
+                  $temp.val(data.new_password).select();
+                  document.execCommand("copy");
+                  $temp.remove();
+                  
+                  $(this).html('<i class="fa-solid fa-check me-1"></i> Đã sao chép!').removeClass('btn-outline-primary').addClass('btn-success');
                });
             } else {
                Swal.fire({
@@ -92,6 +110,56 @@ $(document).ready(function () {
                icon: 'error',
                title: 'Lỗi',
                text: 'Có lỗi xảy ra khi gọi API reset mật khẩu'
+            });
+         }
+      });
+   });
+
+   $(document).on('click', '.btn-toggle-lock', function (e) {
+      e.preventDefault();
+      var id = $(this).data('id');
+      var currentStatus = $(this).data('status');
+      var actionText = (Number(currentStatus) === 2) ? 'mở khóa' : 'khóa';
+
+      Swal.fire({
+         title: 'Xác nhận',
+         text: 'Bạn có chắc chắn muốn ' + actionText + ' tài khoản này?',
+         icon: 'question',
+         showCancelButton: true,
+         confirmButtonText: 'Đồng ý',
+         cancelButtonText: 'Hủy'
+      }).then((result) => {
+         if (result.isConfirmed) {
+            $.ajax({
+               type: "POST",
+               url: "<?php echo XC_URL; ?>/api/toggleuserstatus",
+               data: { id: id, csrf_token: '<?php echo htmlspecialchars($admin_csrf_token, ENT_QUOTES, 'UTF-8'); ?>' },
+               dataType: "json",
+               success: function (data) {
+                  if (Number(data.status) === 200) {
+                     Swal.fire({
+                        icon: 'success',
+                        title: 'Thành công',
+                        text: data.message,
+                        timer: 1500,
+                        showConfirmButton: false
+                     });
+                     setTimeout(function () { location.reload(); }, 1600);
+                  } else {
+                     Swal.fire({
+                        icon: 'error',
+                        title: 'Lỗi',
+                        text: data.message || 'Không thể thực hiện thao tác'
+                     });
+                  }
+               },
+               error: function () {
+                  Swal.fire({
+                     icon: 'error',
+                     title: 'Lỗi',
+                     text: 'Có lỗi xảy ra khi kết nối máy chủ'
+                  });
+               }
             });
          }
       });
@@ -208,7 +276,8 @@ $(document).ready(function () {
                               <th>STT</th>
                               <th>Họ và tên</th>
                               <th>Email</th>
-                              <th>Đối tượng</th>
+                              <th>Khoa phòng</th>
+                              <th>Nhóm quyền</th>
                               <th>Trạng thái</th>
                               <th style="min-width: 220px">Thao tác</th>
                            </tr>
@@ -219,6 +288,11 @@ $(document).ready(function () {
                               </th>
                               <th>
                                  <input type="search" class="form-control form-control-sm user-column-search" data-column="2" placeholder="Lọc email">
+                              </th>
+                              <th>
+                                 <select class="form-select form-select-sm">
+                                    <option value="">Tất cả khoa phòng</option>
+                                 </select>
                               </th>
                               <th>
                                  <select class="form-select form-select-sm">
@@ -238,8 +312,9 @@ $(document).ready(function () {
                            <?php foreach($users as $user): ?>
                            <tr>
                               <td><?php echo $i; ?></td>
-                              <td><?php echo htmlspecialchars($user->full_name, ENT_QUOTES, 'UTF-8'); ?></td>
+                              <td><?php echo htmlspecialchars($user->user_username, ENT_QUOTES, 'UTF-8'); ?></td>
                               <td><?php echo htmlspecialchars($user->user_email, ENT_QUOTES, 'UTF-8'); ?></td>
+                              <td><?php echo htmlspecialchars($user->depart_name ?? 'Chưa cấu hình', ENT_QUOTES, 'UTF-8'); ?></td>
                               <td><?php echo htmlspecialchars($user->group_name, ENT_QUOTES, 'UTF-8'); ?></td>
                               <td>
                                  <?php if((int)$user->user_status === 1){ ?>
@@ -247,7 +322,7 @@ $(document).ready(function () {
                                  <?php } elseif((int)$user->user_status === 2) { ?>
                                     <span class="badge bg-warning text-dark">Tạm khóa</span>
                                  <?php } else { ?>
-                                    <span class="badge bg-secondary"><?php echo htmlspecialchars($user->status_label, ENT_QUOTES, 'UTF-8'); ?></span>
+                                    <span class="badge bg-secondary"><?php echo htmlspecialchars($user->status_label ?? 'Không xác định', ENT_QUOTES, 'UTF-8'); ?></span>
                                  <?php } ?>
                               </td>
                               <td>
@@ -255,13 +330,21 @@ $(document).ready(function () {
                                     <?php if((int)$user->uid !== (int)$_SESSION['user']['id']): ?>
                                     <button type="button" class="btn btn-sm btn-primary btn-assign-admin-group" data-user-id="<?php echo (int)$user->uid; ?>" data-group-id="<?php echo (int)$user->user_group; ?>">Gán quyền</button>
                                     <?php endif; ?>
-                                    <!-- <a class="btn btn-sm btn-primary" href="<?php echo XC_URL; ?>/admin/users/role/<?php echo $user->uid; ?>">
+                                    
+                                    <a class="btn btn-sm btn-primary" href="<?php echo XC_URL; ?>/admin/users/role/<?php echo $user->uid; ?>">
                                        Phân quyền
-                                    </a> -->
+                                    </a>
 
-                                    <!-- <a class="btn btn-sm btn-info text-white" href="<?php echo XC_URL; ?>/admin/users/edit/<?php echo $user->uid; ?>">
+                                    <a class="btn btn-sm btn-info text-white" href="<?php echo XC_URL; ?>/admin/users/edit/<?php echo $user->uid; ?>">
                                        Sửa
-                                    </a> -->
+                                    </a>
+
+                                    <a class="btn btn-sm btn-warning text-white btn-toggle-lock"
+                                       href="#"
+                                       data-id="<?php echo $user->uid; ?>"
+                                       data-status="<?php echo $user->user_status; ?>">
+                                       <?php echo ((int)$user->user_status === 2) ? 'Mở khóa' : 'Khóa'; ?>
+                                    </a>
 
                                     <a class="btn btn-sm btn-secondary reset-password-btn"
                                        href="#"

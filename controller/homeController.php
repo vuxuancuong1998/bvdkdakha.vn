@@ -320,93 +320,163 @@ Class homeController Extends baseController
     }
     public function events($para = array()){
         global $db;
-        $detailId = is_array($para) && isset($para[1]) ? intval($para[1]) : 0;
-        if($detailId > 0){
-            return $this->news_detail($para);
+        
+        // 1. Check if it's a detail page (e.g. url is /tin-tuc/slug-123.html or /tin-tuc/123-slug.html or numeric ID)
+        // $param1 = is_array($para) && isset($para[1]) ? trim($para[1]) : '';
+        // if (preg_match('/-(\d+)\.html$/', $param1, $matches) || preg_match('/^(\d+)-/', $param1, $matches) || (is_numeric($param1) && intval($param1) > 0)) {
+        //     $para['news_id'] = intval($matches[1] ?? $param1);
+        //     return $this->news_detail($para);
+        // }
+        $type = explode("-",$para[1]);
+		$event_type = $type[0];
+        // 2. Retrieve search query, sort, and type filters from menu or GET parameters
+        $q = isset($_GET['q']) ? trim($_GET['q']) : '';
+        $sort = isset($_GET['sort']) ? trim($_GET['sort']) : 'newest';
+        $type_param = isset($_GET['type']) ? trim($_GET['type']) : (isset($_GET['cat']) ? trim($_GET['cat']) : $param1);
+        
+
+        // $event_type = 0;
+        $current_type_slug = '';
+
+        // 3. Build query clauses for hicrm_events with event_status = 4 ONLY
+        $where = array("event_status = 4");
+        if ($q !== '') {
+            $kw = $db->escapestring($q);
+            $where[] = "(event_name LIKE '%".$kw."%' OR event_description LIKE '%".$kw."%' OR event_content LIKE '%".$kw."%')";
         }
-        $keyword = trim(isset($_GET['keyword']) ? $_GET['keyword'] : '');
-        $activeSection = isset($_GET['section']) ? trim($_GET['section']) : 'all';
-        if(!in_array($activeSection, array('all','site','employer','seeker'), true)){ $activeSection = 'all'; }
-        $sectionConfig = array(
-            'site' => array('types' => array(0,3), 'page_param' => 'site_page', 'per_page' => 9),
-            'employer' => array('types' => array(1), 'page_param' => 'employer_page', 'per_page' => 6),
-            'seeker' => array('types' => array(2), 'page_param' => 'seeker_page', 'per_page' => 9)
-        );
-        $sections = array();
-        $counts = array('all' => 0);
-        foreach($sectionConfig as $key => $config){
-            $page = max(1, intval(isset($_GET[$config['page_param']]) ? $_GET[$config['page_param']] : 1));
-            $where = array("event_status = 1", "event_type IN (".implode(',', array_map('intval', $config['types'])).")");
-            if($keyword !== ''){
-                $kw = $db->escapestring($keyword);
-                $where[] = "(event_name LIKE '%".$kw."%' OR event_description LIKE '%".$kw."%' OR event_content LIKE '%".$kw."%')";
-            }
-            $whereSql = implode(' AND ', $where);
-            $db->query("SELECT COUNT(id) AS total FROM hicrm_events WHERE ".$whereSql);
-            $total = intval($db->fetch_object(true)->total);
-            $counts[$key] = $total;
-            $counts['all'] += $total;
-            $totalPages = max(1, ceil($total / $config['per_page']));
-            if($page > $totalPages){ $page = $totalPages; }
-            $offset = ($page - 1) * $config['per_page'];
-            $db->query("SELECT * FROM hicrm_events WHERE ".$whereSql." ORDER BY event_hot DESC, event_created_date DESC, id DESC LIMIT ".$offset.",".$config['per_page']);
-            $sections[$key] = array('items' => $db->fetch_object(), 'page' => $page, 'total_pages' => $totalPages, 'total' => $total, 'page_param' => $config['page_param']);
+        if ($event_type > 0) {
+            $where[] = "event_type = ".$event_type;
         }
-        $db->query("SELECT * FROM hicrm_events WHERE event_status = 1 ORDER BY event_hot DESC, event_created_date DESC, id DESC LIMIT 5");
-        $this->view->data['featured_news'] = $db->fetch_object();
-        $this->view->data['news_sections'] = $sections;
-        $this->view->data['news_counts'] = $counts;
-        $this->view->data['news_keyword'] = $keyword;
-        $this->view->data['news_active_section'] = $activeSection;
+
+        $whereSql = implode(' AND ', $where);
+
+        // 4. Pagination math
+        $page = isset($_GET['page']) ? max(1, intval($_GET['page'])) : 1;
+        $per_page = 9;
+
+        $db->query("SELECT COUNT(*) AS total FROM hicrm_events WHERE ".$whereSql);
+        $total = intval($db->fetch_object(true)->total);
+        $total_pages = max(1, ceil($total / $per_page));
+        if ($page > $total_pages) {
+            $page = $total_pages;
+        }
+        $offset = ($page - 1) * $per_page;
+        $start_record = $total > 0 ? $offset + 1 : 0;
+        $end_record = min($offset + $per_page, $total);
+
+        // 5. Order By sorting options
+        $orderBy = "event_hot DESC, event_created_date DESC, id DESC";
+        if ($sort === 'oldest') {
+            $orderBy = "event_created_date ASC, id ASC";
+        } elseif ($sort === 'popular') {
+            $orderBy = "event_hot DESC, event_created_date DESC, id DESC";
+        }
+
+        // 6. Query events list
+        $db->query("SELECT * FROM hicrm_events WHERE ".$whereSql." ORDER BY ".$orderBy." LIMIT ".$offset.",".$per_page);
+        $events_raw = $db->fetch_object();
+        $events_list = is_array($events_raw) ? $events_raw : array();
+
+        // 7. Featured event (first event in current query or hot event)
+        $featured_event = null;
+        if (!empty($events_list)) {
+            $featured_event = $events_list[0];
+        } else {
+            $db->query("SELECT * FROM hicrm_events WHERE ".$whereSql." ORDER BY event_hot DESC, event_created_date DESC, id DESC LIMIT 1");
+            $featured_event = $db->fetch_object(true);
+        }
+
+        // 8. Query popular events sidebar (event_status = 4 ONLY)
+        $db->query("SELECT * FROM hicrm_events WHERE event_status = 4 ORDER BY event_hot DESC, event_created_date DESC, id DESC LIMIT 5");
+        $popular_raw = $db->fetch_object();
+        $popular_events = is_array($popular_raw) ? $popular_raw : array();
+
+        // 9. Expose variables to view
+        $this->view->data['news_list'] = $events_list;
+        $this->view->data['events_list'] = $events_list;
+        $this->view->data['featured_event'] = $featured_event;
+        $this->view->data['popular_news'] = $popular_events;
+        $this->view->data['popular_events'] = $popular_events;
+        $this->view->data['q'] = $q;
+        $this->view->data['sort'] = $sort;
+        $this->view->data['event_type'] = $event_type;
+        $this->view->data['current_type_slug'] = $current_type_slug;
+        $this->view->data['page'] = $page;
+        $this->view->data['total_pages'] = $total_pages;
+        $this->view->data['total'] = $total;
+        $this->view->data['per_page'] = $per_page;
+        $this->view->data['start_record'] = $start_record;
+        $this->view->data['end_record'] = $end_record;
+        
         $this->view->show("tin-tuc");
     }
+
     public function news_detail($para = array()){
         global $db;
-        $db->query("CREATE TABLE IF NOT EXISTS `hicrm_event_comments` (
-            `id` int(11) NOT NULL AUTO_INCREMENT,
-            `event_id` int(11) NOT NULL,
-            `parent_id` int(11) DEFAULT NULL,
-            `user_id` int(11) DEFAULT NULL,
-            `comment_name` varchar(255) NOT NULL,
-            `comment_email` varchar(255) DEFAULT NULL,
-            `comment_content` text NOT NULL,
-            `admin_reply` text DEFAULT NULL,
-            `reply_user_id` int(11) DEFAULT NULL,
-            `status` tinyint(1) NOT NULL DEFAULT 1,
-            `created_at` datetime NOT NULL DEFAULT current_timestamp(),
-            `updated_at` datetime DEFAULT NULL,
-            `replied_at` datetime DEFAULT NULL,
-            PRIMARY KEY (`id`),
-            KEY `idx_event_status_created` (`event_id`,`status`,`created_at`),
-            KEY `idx_status_created` (`status`,`created_at`),
-            KEY `idx_user_id` (`user_id`)
-        ) ENGINE=InnoDB DEFAULT CHARSET=utf8");
-        $db->query("SHOW COLUMNS FROM `hicrm_event_comments` LIKE 'user_id'");
-        if($db->num_row() <= 0){
-            $db->query("ALTER TABLE `hicrm_event_comments` ADD COLUMN `user_id` int(11) DEFAULT NULL AFTER `parent_id`");
-        }
-        $newsId = is_array($para) && isset($para[1]) && preg_match('/^(\d+)/', (string)$para[1], $matches) ? intval($matches[1]) : 0;
-        if($newsId <= 0 && isset($_GET['id'])){ $newsId = intval($_GET['id']); }
-        if($newsId <= 0){ header("Location: ".XC_URL."/tin-tuc-su-kien.html"); exit(); }
-        $db->query("SELECT * FROM hicrm_events WHERE id = '".$newsId."' AND event_status = 1 LIMIT 1");
-        if($db->num_row() <= 0){ header("Location: ".XC_URL."/tin-tuc-su-kien.html"); exit(); }
+        $newsId = isset($para['news_id']) ? intval($para['news_id']) : 0;
+        if($newsId <= 0){ header("Location: ".XC_URL."/tin-tuc"); exit(); }
+        
+        // 1. Fetch details from hicrm_events with event_status = 4 ONLY
+        $db->query("SELECT * FROM hicrm_events WHERE id = '".$newsId."' AND event_status = 4 LIMIT 1");
+        if($db->num_row() <= 0){ header("Location: ".XC_URL."/tin-tuc"); exit(); }
         $news = $db->fetch_object(true);
-        $db->query("SELECT * FROM hicrm_events WHERE event_status = 1 AND id <> '".$newsId."' AND event_type = '".intval($news->event_type)."' ORDER BY event_hot DESC, event_created_date DESC, id DESC LIMIT 5");
+
+        // Map fields to match view expectations
+        $news->title = $news->event_name;
+        $news->description = $news->event_description;
+        $news->content = $news->event_content;
+        $news->thumbnail_url = !empty($news->event_image) ? (strpos($news->event_image, 'http') === 0 ? $news->event_image : '/uploads/events/'.$news->event_image) : '';
+        $news->published_at = $news->event_created_date;
+        $news->created_at = $news->event_created_date;
+        $news->views_count = isset($news->views_count) ? $news->views_count : 0;
+        $news->new_category = $news->event_type ?? 1;
+        $news->category_name = 'Sự kiện - Tin tức';
+        $news->author_name = 'Ban biên tập';
+
+        // 2. Increase view count with cookie filter
+        $cookie_name = "viewed_event_" . $newsId;
+        if (!isset($_COOKIE[$cookie_name])) {
+            setcookie($cookie_name, "1", time() + 3600, "/");
+        }
+
+        // 3. Related articles from hicrm_events with event_status = 4
+        $db->query("SELECT * FROM hicrm_events WHERE event_status = 4 AND id <> '".$newsId."' AND event_type = '".intval($news->event_type)."' ORDER BY event_created_date DESC LIMIT 4");
+        $rel_raw = $db->fetch_object();
+        if (empty($rel_raw) || !is_array($rel_raw)) {
+            $db->query("SELECT * FROM hicrm_events WHERE event_status = 4 AND id <> '".$newsId."' ORDER BY event_created_date DESC LIMIT 4");
+            $rel_raw = $db->fetch_object();
+        }
+        $related_news = array();
+        if (is_array($rel_raw)) {
+            foreach ($rel_raw as $item) {
+                $item->title = $item->event_name;
+                $item->description = $item->event_description;
+                $item->thumbnail_url = !empty($item->event_image) ? (strpos($item->event_image, 'http') === 0 ? $item->event_image : '/uploads/events/'.$item->event_image) : '';
+                $item->published_at = $item->event_created_date;
+                $related_news[] = $item;
+            }
+        }
+
+        // 4. Popular events sidebar with event_status = 4
+        $db->query("SELECT * FROM hicrm_events WHERE event_status = 4 AND id <> '".$newsId."' ORDER BY event_hot DESC, event_created_date DESC LIMIT 5");
+        $pop_raw = $db->fetch_object();
+        $popular_news = array();
+        if (is_array($pop_raw)) {
+            foreach ($pop_raw as $item) {
+                $item->title = $item->event_name;
+                $item->thumbnail_url = !empty($item->event_image) ? (strpos($item->event_image, 'http') === 0 ? $item->event_image : '/uploads/events/'.$item->event_image) : '';
+                $item->published_at = $item->event_created_date;
+                $popular_news[] = $item;
+            }
+        }
+
         $this->view->data['news_detail'] = $news;
-        $this->view->data['related_news'] = $db->fetch_object();
-        $db->query("SELECT * FROM hicrm_events WHERE event_status = 1 AND id <> '".$newsId."' ORDER BY event_created_date DESC, id DESC LIMIT 6");
-        $this->view->data['more_news'] = $db->fetch_object();
-        $db->query("SELECT ec.*,
-                COALESCE(NULLIF(u.full_name, ''), NULLIF(ec.comment_name, ''), 'An danh') AS commenter_name,
-                COALESCE(NULLIF(ru.full_name, ''), 'Ban quan tri') AS reply_user_name
-            FROM hicrm_event_comments ec
-            LEFT JOIN hicrm_users u ON u.id = ec.user_id
-            LEFT JOIN hicrm_users ru ON ru.id = ec.reply_user_id
-            WHERE ec.event_id = '".$newsId."' AND ec.status = 1
-            ORDER BY COALESCE(ec.parent_id, ec.id) DESC, ec.parent_id ASC, ec.created_at ASC, ec.id ASC");
-        $this->view->data['news_comments'] = $db->fetch_object();
-        $this->view->show("tintuc_detail");
+        $this->view->data['related_news'] = $related_news;
+        $this->view->data['popular_news'] = $popular_news;
+        
+        $this->view->show("tin-tuc-detail");
     }
+
     public function add_news_comment() {
         global $db;
         header('Content-Type: application/json');

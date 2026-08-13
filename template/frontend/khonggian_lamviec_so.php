@@ -1,6 +1,12 @@
 <?php require_once 'header.php'; ?>
 <?php require_once 'menu.php'; ?>
 
+<!-- Load jQuery and Select2 CDN -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+
 <!-- ============================================================
      WORKSPACE DEDICATED STYLES (PURE CSS)
      ============================================================ -->
@@ -553,6 +559,49 @@
   .ws-grid-2col { grid-template-columns: 1fr; }
   .workspace-hero-inner { flex-direction: column; align-items: flex-start; }
 }
+
+/* Custom Select2 Styling to match modern glassmorphism aesthetic */
+.select2-container--default .select2-selection--single {
+  height: 48px !important;
+  border: 1px solid #cbd5e1 !important;
+  border-radius: 8px !important;
+  display: flex !important;
+  align-items: center !important;
+  padding: 0 12px !important;
+  font-family: inherit !important;
+  font-size: 14px !important;
+  transition: border-color 0.2s, box-shadow 0.2s !important;
+}
+.select2-container--default .select2-selection--single:focus,
+.select2-container--default.select2-container--focus .select2-selection--single {
+  border-color: #0284c7 !important;
+  box-shadow: 0 0 0 4px rgba(2, 132, 199, 0.1) !important;
+}
+.select2-container--default .select2-selection--single .select2-selection__arrow {
+  height: 46px !important;
+}
+.select2-container--default .select2-selection--single .select2-selection__rendered {
+  color: #0f172a !important;
+  padding-left: 0 !important;
+}
+.select2-dropdown {
+  border: 1px solid #cbd5e1 !important;
+  border-radius: 8px !important;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1) !important;
+  z-index: 99999 !important;
+}
+.select2-container--default .select2-results__option {
+  padding: 8px 12px !important;
+  font-size: 14px !important;
+}
+.select2-container--default .select2-results__option--highlighted[aria-selected] {
+  background-color: #0284c7 !important;
+}
+.select2-container--default .select2-search--dropdown .select2-search__field {
+  border: 1px solid #cbd5e1 !important;
+  border-radius: 6px !important;
+  padding: 6px 10px !important;
+}
 </style>
 
 <div class="workspace-page-wrapper">
@@ -790,11 +839,17 @@
         <div class="ws-grid-2col">
           <div class="ws-form-field">
             <label class="ws-field-label">Họ và tên người yêu cầu <span style="color: #ef4444;">*</span></label>
-            <input type="text" name="user_name" class="ws-field-control" value="<?php echo htmlspecialchars($_SESSION['user']['full_name']); ?>" required>
+            <select name="user_name" class="ws-field-control select2-searchable" required style="width: 100%;">
+              <option value="">-- Chọn nhân viên --</option>
+              <?php foreach($dept_users as $du): ?>
+                <option value="<?php echo htmlspecialchars($du->full_name); ?>" <?php if($_SESSION['user']['full_name'] == $du->full_name) echo 'selected'; ?>>
+                  <?php echo htmlspecialchars($du->full_name); ?>
+                </option>
+              <?php endforeach; ?>
+            </select>
           </div>
-          <div class="ws-form-field">
-            <label class="ws-field-label">Khoa / Phòng ban <span style="color: #ef4444;">*</span></label>
-            <input type="text" name="department" class="ws-field-control" placeholder="Ví dụ: Khoa Khám bệnh, Phòng Kế hoạch..." required>
+          <div class="ws-form-field" style="display: none;">
+            <input type="hidden" name="department" value="<?php echo htmlspecialchars($user_dept_name); ?>">
           </div>
         </div>
 
@@ -890,24 +945,27 @@
 </div>
 
 <script>
+$(document).ready(function() {
+  if (window.$ && $.fn && $.fn.select2) {
+    $('.select2-searchable').select2({
+      placeholder: "Chọn nhân viên...",
+      allowClear: true,
+      dropdownParent: $('#modalCreateRequest')
+    });
+  }
+});
+
 function openCreateRequestModal() {
   var modalEl = document.getElementById('modalCreateRequest');
   if (modalEl) {
-    if (window.$ && $.fn && $.fn.modal) {
-      $('#modalCreateRequest').modal('show');
-    } else {
-      modalEl.classList.add('show');
-      document.body.style.overflow = 'hidden';
-    }
+    modalEl.classList.add('show');
+    document.body.style.overflow = 'hidden';
   }
 }
 
 function closeCreateRequestModal() {
   var modalEl = document.getElementById('modalCreateRequest');
   if (modalEl) {
-    if (window.$ && $.fn && $.fn.modal) {
-      $('#modalCreateRequest').modal('hide');
-    }
     modalEl.classList.remove('show');
     document.body.style.overflow = '';
   }
@@ -916,9 +974,6 @@ function closeCreateRequestModal() {
 function closeViewDetailModal() {
   var modalEl = document.getElementById('modalViewDetail');
   if (modalEl) {
-    if (window.$ && $.fn && $.fn.modal) {
-      $('#modalViewDetail').modal('hide');
-    }
     modalEl.classList.remove('show');
     document.body.style.overflow = '';
   }
@@ -995,12 +1050,8 @@ function viewRequestDetail(req) {
 
   var modalEl = document.getElementById('modalViewDetail');
   if (modalEl) {
-    if (window.$ && $.fn && $.fn.modal) {
-      $('#modalViewDetail').modal('show');
-    } else {
-      modalEl.classList.add('show');
-      document.body.style.overflow = 'hidden';
-    }
+    modalEl.classList.add('show');
+    document.body.style.overflow = 'hidden';
   }
 }
 

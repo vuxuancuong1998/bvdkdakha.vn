@@ -49,6 +49,7 @@
 
   <!-- Stylesheet -->
   <link rel="stylesheet" href="<?php echo XC_URL;?>/template/frontend/assets/css/style.css?version=<?php echo time(); ?>" />
+  <link rel="stylesheet" href="<?php echo XC_URL;?>/template/frontend/assets/css/tin-tuc.css?version=<?php echo time(); ?>" />
 
   <!-- ============================================================
        STRUCTURED DATA — JSON-LD

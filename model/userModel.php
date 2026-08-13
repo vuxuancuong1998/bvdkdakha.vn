@@ -4,16 +4,12 @@ Class userModel extends baseModel
 	
 	public function get_user_list(){
 		global $db;
-		$db->query("SELECT *, u.id as uid FROM hicrm_users as u 
+		$db->query("SELECT u.*, u.id as uid, g.group_name, d.depart_name, s.status_label FROM hicrm_users as u 
 		LEFT JOIN hicrm_user_groups as g ON u.user_group = g.id
+		LEFT JOIN hicrm_departments as d ON u.user_department = d.id
 		LEFT JOIN hicrm_status as s ON u.user_status = s.id
 		WHERE u.user_status NOT IN(99)
-		-- AND (u.user_group = 1 OR EXISTS (
-		-- 	SELECT 1 FROM hicrm_user_group_permissions gp
-		-- 	INNER JOIN hicrm_admin_menu_permissions p ON p.id = gp.permission_id AND p.permission_status = 1
-		-- 	WHERE gp.group_id = u.user_group
-		-- ))
-		ORDER BY u.user_created_at DESC");
+		ORDER BY u.id DESC");
 		return $db->fetch_object();
 	}
 	public function get_user_category(){
@@ -38,10 +34,10 @@ Class userModel extends baseModel
 	}
 	public function get_user($id){
 		global $db;
-		$db->query("SELECT *, u.id as uid FROM hicrm_users as u 
+		$db->query("SELECT u.*, u.id as uid, g.group_name, d.depart_name FROM hicrm_users as u 
 		LEFT JOIN hicrm_user_groups as g ON u.user_group = g.id
+		LEFT JOIN hicrm_departments as d ON u.user_department = d.id
 		LEFT JOIN hicrm_status as s ON u.user_status = s.id
-		LEFT JOIN hicrm_user_category as c ON u.user_category = c.id
 		WHERE u.user_status NOT IN(99) AND u.id = '".$id."'");
 		return $db->fetch_object(true);
 	}

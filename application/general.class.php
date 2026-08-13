@@ -405,7 +405,14 @@ Class general{
 			{
 				$db->query("SELECT * FROM hicrm_events WHERE id = '1'");
 				$bl = $db->fetch_object(true);
-				$fs = XC_URL."/tin-tuc-su-kien/".$bl->id."-".$this->bodau($bl->category_name).".html";
+				$fs = XC_URL."/tin-tuc/".$bl->id."-".$this->bodau($bl->category_name).".html";
+				break;
+			}
+            case "event_detail":
+			{
+				$db->query("SELECT * FROM hicrm_events WHERE id = '".$id."");
+				$bl = $db->fetch_object(true);
+				$fs = XC_URL."/chi-tiet-tin-tuc/".$bl->id."-".$this->bodau($bl->event_name).".html";
 				break;
 			}
              case "introduce":
@@ -457,6 +464,20 @@ Class general{
 				$db->query("SELECT * FROM hicrm_users WHERE id = '".$id."'");
 				$bl = $db->fetch_object(true);
 				$fs = XC_URL."/thanh-vien/".$bl->id."-".$this->bodau($bl->user_fullname).".html";
+				break;
+			}
+			case "news_category":
+			{
+				$db->query("SELECT * FROM hicrm_news_categories WHERE id = '".$id."'");
+				$bl = $db->fetch_object(true);
+				$fs = XC_URL."/tin-tuc/".($bl ? $bl->code : "");
+				break;
+			}
+			case "news":
+			{
+				$db->query("SELECT * FROM hicrm_news WHERE id = '".$id."'");
+				$bl = $db->fetch_object(true);
+				$fs = XC_URL."/tin-tuc/".($bl ? ($bl->slug ? $bl->slug : $this->bodau($bl->title)) : "")."-$id.html";
 				break;
 			}
 			case "place":

@@ -732,8 +732,9 @@ Class apiController extends baseController
 		$email = $db->escapestring($_POST['user_email']);
 		$password = md5($db->escapestring($_POST['user_password']));
 		$user_group = isset($_POST['user_group']) ? intval($_POST['user_group']) : 0;
+		$user_department = isset($_POST['user_department']) ? intval($_POST['user_department']) : 0;
 		$method = $_POST['method'];
-		$user_created_date = date("d-m-Y");
+		$user_created_date = date("Y-m-d");
 		$user_id = isset($_POST['user_id']) ? intval($_POST['user_id']) : 0;
 		$result = array();
 		if($user_group <= 0){
@@ -794,7 +795,7 @@ Class apiController extends baseController
 				echo json_encode($result);
 				return;
 			}
-			$db->query("INSERT INTO hicrm_users(full_name, user_password, user_email, user_group) VALUES ('".$full_name."','".$password."','".$email."','".$user_group."')");
+			$db->query("INSERT INTO hicrm_users(user_username, user_password, user_email, user_group, user_department, user_status, user_created_date) VALUES ('".$full_name."','".$password."','".$email."','".$user_group."','".$user_department."',1,'".$user_created_date."')");
 			$result['status'] = 200;
 			$result['message'] = 'Thêm thành công';
 			$result['url'] = XC_URL."/admin/users";
@@ -827,9 +828,10 @@ Class apiController extends baseController
 				return;
 			}
 			$fields = array(
-				"full_name = '".$full_name."'",
+				"user_username = '".$full_name."'",
 				"user_email = '".$email."'",
-				"user_group = '".$user_group."'"
+				"user_group = '".$user_group."'",
+				"user_department = '".$user_department."'"
 			);
 			if(trim((string)($_POST['user_password'] ?? '')) !== ''){
 				$fields[] = "user_password = '".$password."'";
@@ -839,6 +841,46 @@ Class apiController extends baseController
 			$result['message'] = 'Cập nhật tài khoản thành công';
 			$result['url'] = XC_URL."/admin/users";
 		}
+		echo json_encode($result);
+	}
+
+	public function toggleuserstatus()
+	{
+		global $db;
+		if(!$this->requireAdminApiPermission('users')){ return; }
+		$result = array('status' => 500, 'message' => 'Lỗi kết nối');
+		$id = isset($_POST['id']) ? intval($_POST['id']) : 0;
+		if($id <= 0){
+			$result['status'] = 400;
+			$result['message'] = 'ID tài khoản không hợp lệ';
+			echo json_encode($result);
+			return;
+		}
+		if($id === intval($_SESSION['user']['id'])){
+			$result['status'] = 400;
+			$result['message'] = 'Không thể tự khóa tài khoản của chính mình';
+			echo json_encode($result);
+			return;
+		}
+		$db->query("SELECT * FROM hicrm_users WHERE id = '".$id."' LIMIT 1");
+		if(!$db->num_row()){
+			$result['status'] = 404;
+			$result['message'] = 'Tài khoản không tồn tại';
+			echo json_encode($result);
+			return;
+		}
+		$user = $db->fetch_object(true);
+		if(intval($user->user_group) === 1 && !$this->currentAdminIsSuperAdmin()){
+			$result['status'] = 403;
+			$result['message'] = 'Không thể thay đổi trạng thái tài khoản Super Admin.';
+			echo json_encode($result);
+			return;
+		}
+		$new_status = (intval($user->user_status) === 1) ? 2 : 1;
+		$db->query("UPDATE hicrm_users SET user_status = '".$new_status."' WHERE id = '".$id."' LIMIT 1");
+		$result['status'] = 200;
+		$result['new_status'] = $new_status;
+		$result['message'] = ($new_status === 2) ? 'Đã khóa tài khoản thành công' : 'Đã mở khóa tài khoản thành công';
 		echo json_encode($result);
 	}
 	//end insert user database
@@ -1234,113 +1276,433 @@ Class apiController extends baseController
 	//===== API NEWS === 
 	public function news()
 	{
-		if(!$this->requireAdminApiPermission('events', false)){ return; }
+		if(!(isset($_SESSION['user']['id']) && $_SESSION['user']['id'] != "")){ 
+			echo json_encode(['status' => 403, 'message' => 'Vui lòng đăng nhập!']); 
+			return; 
+		}
 		global $db;
-		$new_name = $_POST['new_name'];
-		$new_description = $_POST['new_description'];
-		$new_content = $db->escapestring($_POST['new_content']);
-		$new_user_created = $_POST['new_user_created'];
-		$new_created_date = date('Y-m-d H:i:s');
-		$FinalFilenameFront = "";
-		$FinalFilenameFront2 = "";
-		$expensions = array("jpeg","jpg","png");
-		$method = $_POST['method'];
-		$result = array();
-		$id = $_POST['nid'];
+		$user_id = intval($_SESSION['user']['id']);
+		$is_btv = (intval($_SESSION['user']['group']) === 5);
+		$is_qtv = (intval($_SESSION['user']['group']) === 1);
+
+		$method = isset($_POST['method']) ? trim($_POST['method']) : '';
+		$id = isset($_POST['nid']) ? intval($_POST['nid']) : 0;
+
+		$title = isset($_POST['title']) ? trim($_POST['title']) : '';
+		$content = isset($_POST['content']) ? trim($_POST['content']) : '';
+		$description = isset($_POST['description']) ? trim($_POST['description']) : '';
+		$new_category = isset($_POST['new_category']) ? intval($_POST['new_category']) : 0;
+		$slug = isset($_POST['slug']) ? trim($_POST['slug']) : '';
+		$is_featured = isset($_POST['is_featured']) ? intval($_POST['is_featured']) : 0;
+		$status = isset($_POST['status']) ? intval($_POST['status']) : 1;
+		$published_at = !empty($_POST['published_at']) ? $_POST['published_at'] : date('Y-m-d H:i:s');
+
+		// Validation
+		if (empty($title)) {
+			echo json_encode(['status' => 400, 'message' => 'Tiêu đề bài viết là bắt buộc!']);
+			return;
+		}
+		if (empty($content)) {
+			echo json_encode(['status' => 400, 'message' => 'Nội dung bài viết là bắt buộc!']);
+			return;
+		}
+		if ($new_category <= 0) {
+			echo json_encode(['status' => 400, 'message' => 'Vui lòng chọn danh mục bài viết!']);
+			return;
+		}
+
+		// Slug generation & validation
+		$general = general::getInstance();
+		if (empty($slug)) {
+			$slug = $general->bodau($title);
+		} else {
+			$slug = $general->bodau($slug);
+		}
 		
-		if(isset($method) && $method == "add")
-		{
-			$FinalFilenameFront = "";
-			$FinalFilenameFront2 = "";
-			//echo $_FILES['hinhanh']['name']."ssss";
-			if ($_FILES['new_image']['error'] == 4) {
-				// Không có file upload → gán hình mặc định
-				$FinalFilenameFront = '';
-			}else{
-				$errors= array();
-				$file_name = $_FILES['new_image']['name'];
-				$file_size =$_FILES['new_image']['size'];
-				$file_tmp =$_FILES['new_image']['tmp_name'];
-				$file_type=$_FILES['new_image']['type'];
-				$file_ext=strtolower(end(explode('.',$_FILES['new_image']['name'])));
-				$OriginalFilename = $FinalFilename = preg_replace('`[^a-z0-9-_.]`i','',$_FILES['new_image']['name']); 
-				$FinalFilenameFront = md5(time())."-".$FinalFilename;
-				if(in_array($file_ext,$expensions)=== false){
-					$errors[]="Extension not allowed, please choose a .png, .jpg file.";
-				}
-				if($file_size > 5242880){
-					$errors[]='File size must be max 2Mb';
-				}
-				if(empty($errors)==true){
-					move_uploaded_file($file_tmp,"./uploads/news/".$FinalFilenameFront);
-					
-				}else
-				{
-					$result["status"] = 500;
-				}
-				
-			}
-			$db->query("INSERT INTO hicrm_news(new_name,new_description,new_content,new_image,new_user_created,new_status,new_created_date)
-			VALUES('".$_POST['new_name']."','".$_POST['new_description']."','".$new_content."','".$FinalFilenameFront."','".$new_user_created."',1,'".$new_created_date."')");
-			$result["status"] = 200;
-			$result["url"] = XC_URL."/uploads/news/".$FinalFilenameFront;
-			$result["id"] = $FinalFilenameFront;
-			$result['message'] = 'Thêm thành công';
-			$result['returnUrl'] = XC_URL."/admin/news";
+		// Check slug uniqueness
+		$slug_check_query = "SELECT id FROM hicrm_news WHERE slug = '".$db->escapestring($slug)."' AND status NOT IN (99)";
+		if ($id > 0) {
+			$slug_check_query .= " AND id <> ".$id;
 		}
-		elseif(isset($method) && $method == "edit")
-		{
-			// echo "ssss";
-			// echo $id .'id';
-			$db->query("SELECT * FROM hicrm_news WHERE id = '".$id."'");
-			$db->fetch_object(true);
-			if($db->num_row())
-			{
-				// echo "aa";
-				$FinalFilenameFront = "";
-				//echo $_FILES['hinhanh']['name']."ssss";
-				if(isset($_FILES['new_image']))
-				{
-					$errors= array();
-					$file_name = $_FILES['new_image']['name'];
-					$file_size =$_FILES['new_image']['size'];
-					$file_tmp =$_FILES['new_image']['tmp_name'];
-					$file_type=$_FILES['new_image']['type'];
-					$file_ext=strtolower(end(explode('.',$_FILES['new_image']['name'])));
-					$OriginalFilename = $FinalFilename = preg_replace('`[^a-z0-9-_.]`i','',$_FILES['new_image']['name']); 
-					$FinalFilenameFront = md5(time())."-".$FinalFilename;
-					if(in_array($file_ext,$expensions)=== false){
-						$errors[]="Extension not allowed, please choose a .png, .jpg file.";
+		$db->query($slug_check_query);
+		if ($db->num_row() > 0) {
+			echo json_encode(['status' => 400, 'message' => 'Đường dẫn (slug) đã tồn tại, vui lòng chọn đường dẫn khác!']);
+			return;
+		}
+
+		// Additional category details (Events)
+		$event_start_at = null;
+		$event_end_at = null;
+		$event_location = null;
+		if ($new_category === 3) {
+			$event_start_at = !empty($_POST['event_start_at']) ? $_POST['event_start_at'] : null;
+			$event_end_at = !empty($_POST['event_end_at']) ? $_POST['event_end_at'] : null;
+			$event_location = !empty($_POST['event_location']) ? trim($_POST['event_location']) : null;
+		}
+
+		// Handle Cropped Thumbnail Upload
+		$thumbnail_url = null;
+		if (!empty($_POST['cropped_thumbnail'])) {
+			$data = $_POST['cropped_thumbnail'];
+			if (preg_match('/^data:image\/(\w+);base64,/', $data, $type)) {
+				$data = substr($data, strpos($data, ',') + 1);
+				$type = strtolower($type[1]);
+				if (in_array($type, ['png', 'jpg', 'jpeg'])) {
+					$data = base64_decode($data);
+					if ($data !== false) {
+						$filename = md5(time() . rand(1, 10000)) . '.' . $type;
+						$upload_path = "./uploads/news/" . $filename;
+						if (!is_dir('./uploads/news')) {
+							mkdir('./uploads/news', 0777, true);
+						}
+						file_put_contents($upload_path, $data);
+						$thumbnail_url = "/uploads/news/" . $filename;
 					}
-					if($file_size > 5242880){
-						$errors[]='File size must be max 2Mb';
-					}
-					if(empty($errors)==true){
-						move_uploaded_file($file_tmp,"./uploads/news/".$FinalFilenameFront);
-						
-					}else
-					{
-						$result["status"] = 500;
-					}
-					
 				}
-				
-				$updateimage = ($FinalFilenameFront != "")? ", new_image = '".$FinalFilenameFront."'" : "";
-				// echo "UPDATE hicrm_news SET new_name = '".$_POST['new_name']."',new_description = '".$_POST['new_description']."', new_content = '".$new_content."'".$updateimage." WHERE id = '".$id."'";
-				$db->query("UPDATE hicrm_news SET new_name = '".$_POST['new_name']."',new_description = '".$_POST['new_description']."', new_content = '".$new_content."'".$updateimage." WHERE id = '".$id."'");
-				$result["status"] = 200;
-				$result['message'] = 'Sửa thành công';
-				$result['returnUrl'] = XC_URL."/admin/news";
-			}
-			else
-			{
-				$result["status"] = 500;
-				$result["message"] = "Không tồn tại nội dung này!";
 			}
 		}
-		echo json_encode($result);
+
+		// Action add
+		if ($method === 'add') {
+			if ($is_btv) {
+				$status = 1; // force draft for Editor
+			}
+			
+			$fields = [
+				'author_id' => $user_id,
+				'new_category' => $new_category,
+				'title' => "'".$db->escapestring($title)."'",
+				'slug' => "'".$db->escapestring($slug)."'",
+				'description' => "'".$db->escapestring($description)."'",
+				'content' => "'".$db->escapestring($content)."'",
+				'status' => $status,
+				'is_featured' => $is_featured,
+				'published_at' => "'".$db->escapestring($published_at)."'",
+				'created_at' => "NOW()"
+			];
+			if ($thumbnail_url) {
+				$fields['thumbnail_url'] = "'".$db->escapestring($thumbnail_url)."'";
+			}
+			if ($event_start_at) {
+				$fields['event_start_at'] = "'".$db->escapestring($event_start_at)."'";
+			}
+			if ($event_end_at) {
+				$fields['event_end_at'] = "'".$db->escapestring($event_end_at)."'";
+			}
+			if ($event_location) {
+				$fields['event_location'] = "'".$db->escapestring($event_location)."'";
+			}
+
+			$keys = implode(', ', array_keys($fields));
+			$vals = implode(', ', array_values($fields));
+			
+			$db->query("INSERT INTO hicrm_news ($keys) VALUES ($vals)");
+			
+			echo json_encode([
+				'status' => 200,
+				'message' => 'Tạo bài viết thành công!',
+				'returnUrl' => XC_URL.'/admin/news'
+			]);
+			return;
+		}
+		// Action edit
+		elseif ($method === 'edit' && $id > 0) {
+			// Check existence
+			$db->query("SELECT * FROM hicrm_news WHERE id = ".$id." LIMIT 1");
+			$news_item = $db->fetch_object(true);
+			if (!$news_item) {
+				echo json_encode(['status' => 404, 'message' => 'Bài viết không tồn tại!']);
+				return;
+			}
+
+			// Validate permissions
+			if ($is_btv) {
+				if (intval($news_item->author_id) !== $user_id) {
+					echo json_encode(['status' => 403, 'message' => 'Bạn không có quyền chỉnh sửa bài viết của người khác!']);
+					return;
+				}
+				if (intval($news_item->status) === 3 || intval($news_item->status) === 4) {
+					echo json_encode(['status' => 403, 'message' => 'Bài viết đã được duyệt hoặc phát hành, không thể chỉnh sửa!']);
+					return;
+				}
+				$status = 1; // force Editor edit to keep draft status
+			}
+
+			$update_fields = [
+				"new_category = ".$new_category,
+				"title = '".$db->escapestring($title)."'",
+				"slug = '".$db->escapestring($slug)."'",
+				"description = '".$db->escapestring($description)."'",
+				"content = '".$db->escapestring($content)."'",
+				"status = ".$status,
+				"is_featured = ".$is_featured,
+				"published_at = '".$db->escapestring($published_at)."'",
+				"updated_at = NOW()",
+				"updated_by = ".$user_id
+			];
+
+			if ($thumbnail_url) {
+				$update_fields[] = "thumbnail_url = '".$db->escapestring($thumbnail_url)."'";
+			}
+			if ($new_category === 3) {
+				$update_fields[] = "event_start_at = ".($event_start_at ? "'".$db->escapestring($event_start_at)."'" : "NULL");
+				$update_fields[] = "event_end_at = ".($event_end_at ? "'".$db->escapestring($event_end_at)."'" : "NULL");
+				$update_fields[] = "event_location = ".($event_location ? "'".$db->escapestring($event_location)."'" : "NULL");
+			} else {
+				$update_fields[] = "event_start_at = NULL";
+				$update_fields[] = "event_end_at = NULL";
+				$update_fields[] = "event_location = NULL";
+			}
+
+			$db->query("UPDATE hicrm_news SET ".implode(', ', $update_fields)." WHERE id = ".$id);
+
+			echo json_encode([
+				'status' => 200,
+				'message' => 'Cập nhật bài viết thành công!',
+				'returnUrl' => XC_URL.'/admin/news'
+			]);
+			return;
+		}
+
+		echo json_encode(['status' => 400, 'message' => 'Thao tác không hợp lệ!']);
 	}
-	//====END====/
+
+	public function updatenewsstatus() {
+		if(!(isset($_SESSION['user']['id']) && $_SESSION['user']['id'] != "")){ 
+			echo json_encode(['status' => 403, 'message' => 'Vui lòng đăng nhập!']); 
+			return; 
+		}
+		global $db;
+		$user_id = intval($_SESSION['user']['id']);
+		$is_btv = (intval($_SESSION['user']['group']) === 5);
+		$is_qtv = (intval($_SESSION['user']['group']) === 1);
+
+		$id = isset($_POST['id']) ? intval($_POST['id']) : 0;
+		$action = isset($_POST['action']) ? trim($_POST['action']) : ''; // e.g. submit, cancel, approve, publish, delete
+
+		if ($id <= 0) {
+			echo json_encode(['status' => 400, 'message' => 'ID không hợp lệ!']);
+			return;
+		}
+
+		$db->query("SELECT * FROM hicrm_news WHERE id = ".$id." LIMIT 1");
+		$news_item = $db->fetch_object(true);
+		if (!$news_item) {
+			echo json_encode(['status' => 404, 'message' => 'Bài viết không tồn tại!']);
+			return;
+		}
+
+		// Enforce permissions and lifecycle states
+		if ($action === 'submit') {
+			if ($is_btv && intval($news_item->author_id) !== $user_id) {
+				echo json_encode(['status' => 403, 'message' => 'Bạn không thể thao tác trên bài viết của người khác!']);
+				return;
+			}
+			if (intval($news_item->status) !== 1 && intval($news_item->status) !== 98) {
+				echo json_encode(['status' => 400, 'message' => 'Bài viết phải ở trạng thái Nháp hoặc Từ chối mới có thể gửi phê duyệt!']);
+				return;
+			}
+			$db->query("UPDATE hicrm_news SET status = 2, updated_at = NOW(), updated_by = ".$user_id." WHERE id = ".$id);
+			echo json_encode(['status' => 200, 'message' => 'Đã gửi yêu cầu phê duyệt bài viết!']);
+			return;
+		}
+		elseif ($action === 'cancel') {
+			if ($is_btv && intval($news_item->author_id) !== $user_id) {
+				echo json_encode(['status' => 403, 'message' => 'Bạn không thể thao tác trên bài viết của người khác!']);
+				return;
+			}
+			if (intval($news_item->status) !== 2) {
+				echo json_encode(['status' => 400, 'message' => 'Bài viết chưa được gửi phê duyệt hoặc đã được xử lý!']);
+				return;
+			}
+			$db->query("UPDATE hicrm_news SET status = 1, updated_at = NOW(), updated_by = ".$user_id." WHERE id = ".$id);
+			echo json_encode(['status' => 200, 'message' => 'Đã hủy gửi phê duyệt bài viết!']);
+			return;
+		}
+		elseif ($action === 'approve') {
+			if (!$is_qtv) {
+				echo json_encode(['status' => 403, 'message' => 'Chỉ Quản trị viên mới có quyền phê duyệt bài viết!']);
+				return;
+			}
+			if (intval($news_item->status) !== 2) {
+				echo json_encode(['status' => 400, 'message' => 'Bài viết không ở trạng thái chờ phê duyệt!']);
+				return;
+			}
+			$db->query("UPDATE hicrm_news SET status = 3, updated_at = NOW(), updated_by = ".$user_id." WHERE id = ".$id);
+			echo json_encode(['status' => 200, 'message' => 'Đã phê duyệt bài viết!']);
+			return;
+		}
+		elseif ($action === 'reject') {
+			if (!$is_qtv) {
+				echo json_encode(['status' => 403, 'message' => 'Chỉ Quản trị viên mới có quyền từ chối bài viết!']);
+				return;
+			}
+			if (intval($news_item->status) !== 2) {
+				echo json_encode(['status' => 400, 'message' => 'Bài viết không ở trạng thái chờ phê duyệt!']);
+				return;
+			}
+			$db->query("UPDATE hicrm_news SET status = 98, updated_at = NOW(), updated_by = ".$user_id." WHERE id = ".$id);
+			echo json_encode(['status' => 200, 'message' => 'Đã từ chối phê duyệt bài viết!']);
+			return;
+		}
+		elseif ($action === 'publish') {
+			if (!$is_qtv) {
+				echo json_encode(['status' => 403, 'message' => 'Chỉ Quản trị viên mới có quyền phát hành bài viết!']);
+				return;
+			}
+			$db->query("UPDATE hicrm_news SET status = 4, published_at = NOW(), updated_at = NOW(), updated_by = ".$user_id." WHERE id = ".$id);
+			echo json_encode(['status' => 200, 'message' => 'Đã phát hành bài viết thành công!']);
+			return;
+		}
+		elseif ($action === 'delete') {
+			if ($is_btv) {
+				if (intval($news_item->author_id) !== $user_id) {
+					echo json_encode(['status' => 403, 'message' => 'Bạn không thể xóa bài viết của người khác!']);
+					return;
+				}
+				if (intval($news_item->status) === 3 || intval($news_item->status) === 4) {
+					echo json_encode(['status' => 403, 'message' => 'Bài viết đã phê duyệt hoặc phát hành, không thể xóa!']);
+					return;
+				}
+			}
+			$db->query("UPDATE hicrm_news SET status = 99, updated_at = NOW(), updated_by = ".$user_id." WHERE id = ".$id);
+			echo json_encode(['status' => 200, 'message' => 'Đã xóa bài viết thành công!']);
+			return;
+		}
+
+		echo json_encode(['status' => 400, 'message' => 'Thao tác không hợp lệ!']);
+	}
+
+	public function bulknewsaction() {
+		if(!(isset($_SESSION['user']['id']) && $_SESSION['user']['id'] != "")){ 
+			echo json_encode(['status' => 403, 'message' => 'Vui lòng đăng nhập!']); 
+			return; 
+		}
+		global $db;
+		$user_id = intval($_SESSION['user']['id']);
+		$is_btv = (intval($_SESSION['user']['group']) === 5);
+		$is_qtv = (intval($_SESSION['user']['group']) === 1);
+
+		$ids = isset($_POST['ids']) ? $_POST['ids'] : [];
+		$action = isset($_POST['action']) ? trim($_POST['action']) : '';
+
+		if (empty($ids) || !is_array($ids)) {
+			echo json_encode(['status' => 400, 'message' => 'Vui lòng chọn ít nhất một bài viết!']);
+			return;
+		}
+
+		$valid_ids = array_map('intval', $ids);
+		$ids_str = implode(',', $valid_ids);
+
+		if ($action === 'delete') {
+			if ($is_btv) {
+				$db->query("SELECT COUNT(*) as cnt FROM hicrm_news WHERE id IN (".$ids_str.") AND (author_id <> ".$user_id." OR status IN (3,4))");
+				$invalid_count = intval($db->fetch_object(true)->cnt);
+				if ($invalid_count > 0) {
+					echo json_encode(['status' => 403, 'message' => 'Lỗi: Có bài viết đã duyệt/phát hành hoặc bài viết của người khác!']);
+					return;
+				}
+			}
+			$db->query("UPDATE hicrm_news SET status = 99, updated_at = NOW(), updated_by = ".$user_id." WHERE id IN (".$ids_str.")");
+			echo json_encode(['status' => 200, 'message' => 'Đã xóa hàng loạt bài viết thành công!']);
+			return;
+		}
+		
+		if (preg_match('/^status_(\d+)$/', $action, $matches)) {
+			$new_status = intval($matches[1]);
+			if (!in_array($new_status, [1, 2, 3, 4])) {
+				echo json_encode(['status' => 400, 'message' => 'Trạng thái không hợp lệ!']);
+				return;
+			}
+			if ($is_btv && ($new_status === 3 || $new_status === 4)) {
+				echo json_encode(['status' => 403, 'message' => 'Biên tập viên không có quyền phê duyệt hoặc phát hành bài viết!']);
+				return;
+			}
+			if ($is_btv) {
+				$db->query("SELECT COUNT(*) as cnt FROM hicrm_news WHERE id IN (".$ids_str.") AND author_id <> ".$user_id);
+				$invalid_count = intval($db->fetch_object(true)->cnt);
+				if ($invalid_count > 0) {
+					echo json_encode(['status' => 403, 'message' => 'Bạn không thể thay đổi trạng thái bài viết của người khác!']);
+					return;
+				}
+			}
+
+			$update_sql = "status = ".$new_status;
+			if ($new_status === 4) {
+				$update_sql .= ", published_at = NOW()";
+			}
+			$db->query("UPDATE hicrm_news SET ".$update_sql.", updated_at = NOW(), updated_by = ".$user_id." WHERE id IN (".$ids_str.")");
+			echo json_encode(['status' => 200, 'message' => 'Đã cập nhật trạng thái hàng loạt thành công!']);
+			return;
+		}
+
+		echo json_encode(['status' => 400, 'message' => 'Hành động không hợp lệ!']);
+	}
+
+	public function newsimageupload() {
+		header('Content-Type: application/json');
+		if(!(isset($_SESSION['user']['id']) && $_SESSION['user']['id'] != "")){ 
+			echo json_encode(['error' => ['message' => 'Vui lòng đăng nhập!']]); 
+			return; 
+		}
+		if (isset($_FILES['upload']) && $_FILES['upload']['error'] === 0) {
+			$file = $_FILES['upload'];
+			$ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+			if (in_array($ext, ['png', 'jpg', 'jpeg', 'gif', 'webp'])) {
+				$filename = md5(time() . rand(1, 10000)) . '.' . $ext;
+				$upload_path = "./uploads/news/" . $filename;
+				if (!is_dir('./uploads/news')) {
+					mkdir('./uploads/news', 0777, true);
+				}
+				if (move_uploaded_file($file['tmp_name'], $upload_path)) {
+					echo json_encode(['url' => XC_URL . '/uploads/news/' . $filename]);
+					exit();
+				}
+			}
+		}
+		echo json_encode(['error' => ['message' => 'Tải ảnh lên thất bại!']]);
+	}
+
+	public function savenewscategory() {
+		if(!(isset($_SESSION['user']['id']) && $_SESSION['user']['id'] != "")){ 
+			echo json_encode(['status' => 403, 'message' => 'Vui lòng đăng nhập!']); 
+			return; 
+		}
+		global $db;
+		$id = isset($_POST['id']) ? intval($_POST['id']) : 0;
+		$name = isset($_POST['name']) ? trim($_POST['name']) : '';
+		$icon = isset($_POST['icon']) ? trim($_POST['icon']) : '';
+		$sort_order = isset($_POST['sort_order']) ? intval($_POST['sort_order']) : 0;
+		$status = isset($_POST['status']) ? intval($_POST['status']) : 1;
+
+		if ($id <= 0) {
+			echo json_encode(['status' => 400, 'message' => 'Yêu cầu không hợp lệ!']);
+			return;
+		}
+		if (empty($name)) {
+			echo json_encode(['status' => 400, 'message' => 'Tên danh mục không được để trống!']);
+			return;
+		}
+
+		$db->query("SELECT * FROM hicrm_news_categories WHERE id = ".$id." LIMIT 1");
+		if ($db->num_row() <= 0) {
+			echo json_encode(['status' => 404, 'message' => 'Danh mục không tồn tại!']);
+			return;
+		}
+
+		$db->query("UPDATE hicrm_news_categories SET 
+			name = '".$db->escapestring($name)."',
+			icon = '".$db->escapestring($icon)."',
+			sort_order = ".$sort_order.",
+			status = ".$status."
+			WHERE id = ".$id);
+
+		echo json_encode([
+			'status' => 200, 
+			'message' => 'Cập nhật danh mục thành công!', 
+			'returnUrl' => XC_URL.'/admin/news-categories'
+		]);
+	}
 
 	//===== API events === 
 	public function events()
@@ -1622,13 +1984,24 @@ Class apiController extends baseController
 		$result = array('status' => 500, 'message' => 'Lỗi kết nối');
 
 		$user_id = isset($_SESSION['user']['id']) ? (int)$_SESSION['user']['id'] : 0;
-		$user_name = isset($_SESSION['user']['full_name']) ? $_SESSION['user']['full_name'] : (isset($_POST['user_name']) ? trim($_POST['user_name']) : 'Khách');
+		$user_name = !empty($_POST['user_name']) ? trim($_POST['user_name']) : (isset($_SESSION['user']['full_name']) ? $_SESSION['user']['full_name'] : 'Khách');
 		$user_email = isset($_SESSION['user']['email']) ? $_SESSION['user']['email'] : (isset($_POST['user_email']) ? trim($_POST['user_email']) : '');
 		
 		$title = isset($_POST['title']) ? trim($_POST['title']) : '';
 		$service_type = isset($_POST['service_type']) ? trim($_POST['service_type']) : 'CNTT';
 		$priority = isset($_POST['priority']) ? trim($_POST['priority']) : 'Normal';
 		$department = isset($_POST['department']) ? trim($_POST['department']) : '';
+		
+		if(empty($department) && $user_id > 0){
+			$db->query("SELECT u.*, d.depart_name FROM hicrm_users u 
+						LEFT JOIN hicrm_departments d ON u.user_department = d.id 
+						WHERE u.id = '".$user_id."' LIMIT 1");
+			$user_data = $db->fetch_object(true);
+			if($user_data && !empty($user_data->depart_name)){
+				$department = $user_data->depart_name;
+			}
+		}
+		
 		$content = isset($_POST['content']) ? trim($_POST['content']) : '';
 		$action_status = isset($_POST['action_status']) ? trim($_POST['action_status']) : 'sent';
 

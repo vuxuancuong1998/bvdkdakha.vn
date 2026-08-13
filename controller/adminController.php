@@ -1334,6 +1334,11 @@ Class adminController extends baseController
 			$user_category = $userModel->get_user_category();
 			$this->view->data['user_category'] = $user_category;
 			$this->view->data['roles'] = $admin_groups;
+			
+			$db->query("SELECT * FROM hicrm_departments WHERE depart_status NOT IN(99) ORDER BY depart_name ASC");
+			$departments = $db->fetch_object();
+			$this->view->data['departments'] = is_array($departments) ? $departments : array();
+
 			$this->view->data['pagetitle'] = 'Thêm tài khoản';
 			$this->view->admintmp("user-action");
 		}elseif(isset($para[1]) && $para[1] == "edit"){
@@ -1341,6 +1346,11 @@ Class adminController extends baseController
 			$this->view->data['user_categories'] = $userModel->get_user_category();
 			$this->view->data['roles'] = $admin_groups;
 			$this->view->data['user'] = $userModel->get_user($para[2]);
+			
+			$db->query("SELECT * FROM hicrm_departments WHERE depart_status NOT IN(99) ORDER BY depart_name ASC");
+			$departments = $db->fetch_object();
+			$this->view->data['departments'] = is_array($departments) ? $departments : array();
+
 			$this->view->data['pagetitle'] = 'Sửa tài khoản';
 			$this->view->admintmp("user-action");
 		}elseif(isset($para[1]) && $para[1] == "detail"){
@@ -1827,43 +1837,112 @@ Class adminController extends baseController
 	// }
 	public function news($para){
 		global $db;
-		$method = $para[1];
-		$id = $para[2];
-		// echo $id;
-		if(!(isset($_SESSION['user']['id']) && $_SESSION['user']['id'] != "")){ header("Location: ".XC_URL."/admin/login"); }
-		$db->query("SELECT *, n.id as nid FROM hicrm_news as n
-					LEFT JOIN hicrm_users as u ON n.new_user_created = u.id
-					LEFT JOIN hicrm_type as t ON n.new_type = t.type_detail WHERE new_status NOT IN (99) ORDER BY n.new_created_date DESC
-					");
-		$news = $db->fetch_object();
-		$db->query("SELECT * FROM hicrm_dmtype");
-		if(isset($method) && $method == 'add'){
-			$this->view->data['method'] = 'add';
+		if(!(isset($_SESSION['user']['id']) && $_SESSION['user']['id'] != "")){ header("Location: ".XC_URL."/admin/login"); exit(); }
+		
+		$method = isset($para[1]) ? trim($para[1]) : '';
+		$id = isset($para[2]) ? intval($para[2]) : 0;
+		$user_id = intval($_SESSION['user']['id']);
+		$is_btv = (intval($_SESSION['user']['group']) === 5);
+		$is_qtv = (intval($_SESSION['user']['group']) === 1);
+
+		// Handle CRUD Actions
+		if($method == 'add' || $method == 'edit') {
+			if($method == 'edit' && $id > 0) {
+				$db->query("SELECT * FROM hicrm_news WHERE id = '".$id."' LIMIT 1");
+				$news_item = $db->fetch_object(true);
+				if(!$news_item) { header("Location: ".XC_URL."/admin/news"); exit(); }
+				
+				if($is_btv) {
+					if(intval($news_item->author_id) !== $user_id) {
+						die("Bạn không có quyền sửa bài viết của người khác.");
+					}
+					if(intval($news_item->status) === 3 || intval($news_item->status) === 4) {
+						die("Bài viết đã được phê duyệt hoặc phát hành, không thể chỉnh sửa.");
+					}
+				}
+				$this->view->data['new_detail'] = $news_item;
+			}
 			
-			$this->view->show("backend/new-add");
-
-
-		}elseif(isset($method) && $method == 'edit'){
-			$db->query("SELECT * FROM hicrm_news WHERE id = '".$id."'");		
-			$new_detai = $db->fetch_object(true);
-			// echo $new_detai->new_name;
-			$this->view->data['new_detail'] = $new_detai;
-			$this->view->data['method'] = 'edit';
-			$this->view->show("backend/new-add");
-		}elseif(isset($method) && $method == 'detail'){
-			$db->query("SELECT * FROM hicrm_news WHERE id = '".$id."'");		
-			$new_detai = $db->fetch_object(true);
-			// echo $new_detai->new_name;
-			$this->view->data['new_detail'] = $new_detai;
-			$this->view->data['method'] = 'edit';
-			$this->view->show("backend/new-detail");
+			$this->view->data['method'] = $method;
+			$db->query("SELECT * FROM hicrm_news_categories WHERE status = 1 ORDER BY sort_order ASC");
+			$this->view->data['categories'] = $db->fetch_object();
+			
+			$this->view->show("backend/news-action");
+			return;
 		}
-		else{
-		$dmtype = $db->fetch_object();
+		
+		// List news
+		$db->query("SELECT * FROM hicrm_news_categories ORDER BY sort_order ASC");
+		$categories = $db->fetch_object();
+		
+		$where = ["n.status NOT IN (99)"];
+		$filter_cat = isset($_GET['category']) ? intval($_GET['category']) : 0;
+		$filter_status = isset($_GET['status']) ? intval($_GET['status']) : 0;
+		$filter_title = isset($_GET['title']) ? trim($_GET['title']) : '';
+		
+		if($filter_cat > 0) {
+			$where[] = "n.new_category = ".$filter_cat;
+		}
+		if($filter_status > 0) {
+			$where[] = "n.status = ".$filter_status;
+		}
+		if($filter_title !== '') {
+			$where[] = "n.title LIKE '%".$db->escapestring($filter_title)."%'";
+		}
+		
+		$where_sql = implode(' AND ', $where);
+		
+		$sort_by = isset($_GET['sort_by']) ? trim($_GET['sort_by']) : 'date_desc';
+		$order_sql = "COALESCE(n.published_at, n.created_at) DESC";
+		if($sort_by === 'date_asc') {
+			$order_sql = "COALESCE(n.published_at, n.created_at) ASC";
+		} elseif($sort_by === 'views_desc') {
+			$order_sql = "n.views_count DESC";
+		} elseif($sort_by === 'views_asc') {
+			$order_sql = "n.views_count ASC";
+		}
+		
+		$db->query("SELECT n.*, c.name as category_name, u.user_username as author_name, s.status_label, s.status_class 
+					FROM hicrm_news as n
+					LEFT JOIN hicrm_news_categories as c ON n.new_category = c.id
+					LEFT JOIN hicrm_users as u ON n.author_id = u.id
+					LEFT JOIN hicrm_status as s ON n.status = s.id
+					WHERE ".$where_sql." 
+					ORDER BY ".$order_sql.", n.id DESC");
+		$news = $db->fetch_object();
+		
 		$this->view->data["news"] = $news;
-		$this->view->data["dmtype"] = $dmtype;
+		$this->view->data["categories"] = $categories;
+		$this->view->data["filter_cat"] = $filter_cat;
+		$this->view->data["filter_status"] = $filter_status;
+		$this->view->data["filter_title"] = $filter_title;
+		$this->view->data["sort_by"] = $sort_by;
+		
 		$this->view->show("backend/news");
+	}
+
+	public function newsCategories($para = array()) {
+		global $db;
+		if(!(isset($_SESSION['user']['id']) && $_SESSION['user']['id'] != "")){ header("Location: ".XC_URL."/admin/login"); exit(); }
+		
+		$method = isset($para[1]) ? trim($para[1]) : '';
+		$id = isset($para[2]) ? intval($para[2]) : 0;
+
+		if ($method === 'edit' && $id > 0) {
+			$db->query("SELECT * FROM hicrm_news_categories WHERE id = ".$id." LIMIT 1");
+			$category = $db->fetch_object(true);
+			if (!$category) { header("Location: ".XC_URL."/admin/news-categories"); exit(); }
+			
+			$this->view->data['category'] = $category;
+			$this->view->show("backend/news-category-action");
+			return;
 		}
+
+		$db->query("SELECT * FROM hicrm_news_categories ORDER BY sort_order ASC, id ASC");
+		$categories = $db->fetch_object();
+
+		$this->view->data['categories'] = $categories;
+		$this->view->show("backend/news-categories");
 	}
 	public function events($para){
 		if(!$this->prepareAdminAccess('events')){ return; }

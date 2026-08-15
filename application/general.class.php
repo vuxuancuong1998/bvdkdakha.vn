@@ -410,7 +410,7 @@ Class general{
 			}
             case "event_detail":
 			{
-				$db->query("SELECT * FROM hicrm_events WHERE id = '".$id."");
+				$db->query("SELECT * FROM hicrm_events WHERE id = '".$id."'");
 				$bl = $db->fetch_object(true);
 				$fs = XC_URL."/chi-tiet-tin-tuc/".$bl->id."-".$this->bodau($bl->event_name).".html";
 				break;

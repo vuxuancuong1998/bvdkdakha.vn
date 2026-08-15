@@ -259,37 +259,23 @@ Class pageController extends baseController
 		$this->view->show("events");
 		}
 	}
-	public function services($para){
-		global $db;
-		$id = $para[1];
-		$proid = explode("-",$id);
-		$id = $proid[0];
-		if(isset($para[2])){
-			$id_detail = explode("-",$para[2]);
-			$id_detail = $id_detail[0];
-			$db->query("SELECT *,s.id as sid FROM hicrm_service as s 
-			LEFT JOIN hicrm_categories as c ON s.service_category = c.id
-			WHERE  s.service_status NOT IN (99) AND s.id = '".$id_detail."'");
-			
-			$service_detail = $db->fetch_object(true);
-			$db->query("SELECT *,s.id as sid FROM hicrm_service as s 
-				LEFT JOIN hicrm_categories as c ON s.service_category = c.id
-				WHERE  s.service_status NOT IN (99) AND s.service_category = '".$id."' AND s.id != '".$id_detail."' ORDER BY s.id ASC");
-				$service_other = $db->fetch_object();
-			$this->view->data['service_detail'] = $service_detail;
-			$this->view->data['service_other'] = $service_other;
-			$this->view->data['id_category'] = $id;
-			$this->view->show('service_detail');
-		}else{
-		$db->query("SELECT *,s.id as sid FROM hicrm_service as s 
-		LEFT JOIN hicrm_categories as c ON s.service_category = c.id
-		WHERE  s.service_status NOT IN (99) AND s.service_category = '".$id."' ORDER BY s.id ASC");
-		$services = $db->fetch_object();
-		$db->query("SELECT * FROM hicrm_categories WHERE id = '".$id."'");
-		$category_name = $db->fetch_object(true)->category_name;
-		$this->view->data['category_name'] = $category_name;
-		$this->view->data['services'] = $services;
-		$this->view->show('service');
+	public function services($para = array()){
+		$param1 = is_array($para) && isset($para[1]) ? trim($para[1]) : '';
+		
+		if (!empty($param1)) {
+			$slug = preg_replace('/\.html$/i', '', $param1);
+			$this->view->data['service_slug'] = $slug;
+			if (file_exists(__SITE_PATH . '/template/frontend/dich-vu-detail.php')) {
+				$this->view->show('dich-vu-detail');
+			} else {
+				$this->view->show('service_detail');
+			}
+		} else {
+			if (file_exists(__SITE_PATH . '/template/frontend/dich-vu-y-te.php')) {
+				$this->view->show('dich-vu-y-te');
+			} else {
+				$this->view->show('service');
+			}
 		}
 	}
 	

@@ -86,7 +86,7 @@ $adminCanAny = function($keys) use ($adminCan){
                 
                 
                 
-                <h4 class="logo-title">Cổng Việc làm</h4>
+                <h4 class="logo-title">Bệnh viện ĐKKV Đăk Hà</h4>
             </a>
             <div class="sidebar-toggle" data-toggle="sidebar" data-active="true">
                 <i class="icon">
@@ -133,68 +133,11 @@ $adminCanAny = function($keys) use ($adminCan){
                     <?php endif; ?>
                    
 
-                    <?php if($adminCan('employers') || $adminCan('employer_posts')): ?>
-                    <li class="nav-item">
-                        <a class="nav-link" data-bs-toggle="collapse" href="#sidebar-employee" role="button" aria-expanded="false" aria-controls="sidebar-user">
-                              <i class="fa-solid fa-city"></i>
-                            <span class="item-name ">Nhà tuyển dụng</span>
-                            <i class="right-icon">
-                                <svg class="icon-18" xmlns="http://www.w3.org/2000/svg" width="18" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                                </svg>
-                            </i>
-                        </a>
-                        <ul class="sub-nav collapse" id="sidebar-employee" data-bs-parent="#sidebar-menu">
-                            <?php if($adminCan('employers')): ?>
-                            <li class="nav-item">
-                                <a class="nav-link " href="<?php echo XC_URL;?>/admin/employers">
-                                    <i class="icon">
-                                        <svg class="icon-10" xmlns="http://www.w3.org/2000/svg" width="10" viewBox="0 0 24 24" fill="currentColor">
-                                            <g>
-                                            <circle cx="12" cy="12" r="8" fill="currentColor"></circle>
-                                            </g>
-                                        </svg>
-                                    </i>
-                                    <i class="sidenav-mini-icon"> U </i>
-                                    <span class="item-name <?php echo (isset($active_menu) && $active_menu == 'employers') ? 'active' : ''; ?>">QL nhà tuyển dụng</span>
-                                </a>
-                            </li>
-                            <?php endif; ?>
-                            <?php if($adminCan('employer_posts')): ?>
-                            <li class="nav-item">
-                                <a class="nav-link " href="<?php echo XC_URL;?>/admin/employers/posts">
-                                    <i class="icon">
-                                        <svg class="icon-10" xmlns="http://www.w3.org/2000/svg" width="10" viewBox="0 0 24 24" fill="currentColor">
-                                            <g>
-                                            <circle cx="12" cy="12" r="8" fill="currentColor"></circle>
-                                            </g>
-                                        </svg>
-                                    </i>
-                                    <i class="sidenav-mini-icon"> U </i>
-                                    <span class="item-name <?php echo (isset($active_menu) && $active_menu == 'post_employers') ? 'active' : ''; ?>">Quản lý bài đăng</span>
-                                </a>
-                            </li>
-                            <?php endif; ?>
-                         
-                        </ul>
-                    </li>
-                    <?php endif; ?>
-                     <?php if($adminCan('candidates')): ?>
-                     <li class="nav-item">
-                        <a class="nav-link <?php echo (isset($active_menu) && $active_menu == 'candidates') ? 'active' : ''; ?>"  href="<?php echo XC_URL;?>/admin/candidates">
-                          <i class="fa-solid fa-chalkboard-user"></i>
-                            <span class="item-name">Ứng viên</span>
-                        </a>
-                    </li>
-                    <?php endif; ?>
-                     <?php if($adminCan('students')): ?>
-                     <li class="nav-item">
-                        <a class="nav-link "  href="<?php echo XC_URL;?>/admin/students">
-                         <i class="fa-solid fa-user-graduate"></i>
-                            <span class="item-name">Sinh viên</span>
-                        </a>
-                    </li>
-                    <?php endif; ?>
+                  
+                            
+                    
+                   
+                    
                     <?php if($adminCan('tt25_documents')): ?>
                     <li class="nav-item">
                         <a class="nav-link <?php echo (isset($active_menu) && $active_menu == 'tt25documents') ? 'active' : ''; ?>" href="<?php echo XC_URL;?>/admin/tt25documents">
@@ -230,21 +173,7 @@ $adminCanAny = function($keys) use ($adminCan){
                                 </a>
                             </li>
                             <?php endif; ?>
-                             <?php if($adminCan('news_comments')): ?>
-                             <li class="nav-item">
-                                <a class="nav-link " href="<?php echo XC_URL;?>/admin/newscomments">
-                                    <i class="icon">
-                                        <svg class="icon-10" xmlns="http://www.w3.org/2000/svg" width="10" viewBox="0 0 24 24" fill="currentColor">
-                                            <g>
-                                            <circle cx="12" cy="12" r="8" fill="currentColor"></circle>
-                                            </g>
-                                        </svg>
-                                    </i>
-                                    <i class="sidenav-mini-icon"> U </i>
-                                    <span class="item-name <?php echo (isset($active_menu) && $active_menu == 'newscomments') ? 'active' : ''; ?>">QL Bình luận Tin tức</span>
-                                </a>
-                            </li>
-                            <?php endif; ?>
+                             
                          
                         </ul>
                     </li>
@@ -256,22 +185,7 @@ $adminCanAny = function($keys) use ($adminCan){
                             <span class="item-name">Bình luận tin tức</span>
                         </a>
                     </li> -->
-                    <?php if($adminCan('google_meet')): ?>
-                    <li class="nav-item">
-                        <a class="nav-link <?php echo (isset($active_menu) && $active_menu == 'googlemeet') ? 'active' : ''; ?>"  href="<?php echo XC_URL;?>/admin/googlemeet">
-                         <i class="fa-brands fa-google"></i>
-                            <span class="item-name">Sàn việc làm online</span>
-                        </a>
-                    </li>
-                    <?php endif; ?>
-                    <?php if($adminCan('market_results')): ?>
-                    <li class="nav-item">
-                        <a class="nav-link <?php echo (isset($active_menu) && $active_menu == 'marketresults') ? 'active' : ''; ?>"  href="<?php echo XC_URL;?>/admin/marketresults">
-                         <i class="fa-solid fa-chart-line"></i>
-                            <span class="item-name">Kết quả sàn</span>
-                        </a>
-                    </li>
-                    <?php endif; ?>
+                  
                     <?php if($adminCan('customer_feedbacks')): ?>
                     <li class="nav-item">
                         <a class="nav-link <?php echo (isset($active_menu) && $active_menu == 'customerfeedbacks') ? 'active' : ''; ?>"  href="<?php echo XC_URL;?>/admin/customerfeedbacks">
@@ -280,14 +194,7 @@ $adminCanAny = function($keys) use ($adminCan){
                         </a>
                     </li>
                     <?php endif; ?>
-                    <?php if($adminCan('job_support_customers')): ?>
-                    <li class="nav-item">
-                        <a class="nav-link <?php echo (isset($active_menu) && $active_menu == 'jobsupportcustomers') ? 'active' : ''; ?>" href="<?php echo XC_URL;?>/admin/jobsupportcustomers">
-                         <i class="fa-solid fa-address-book"></i>
-                            <span class="item-name">Khách hàng</span>
-                        </a>
-                    </li>
-                    <?php endif; ?>
+                    
                     <?php if($adminCan('users') || $adminCan('groups')): ?>
                     <li class="nav-item">
                         <a class="nav-link" data-bs-toggle="collapse" href="#sidebar-user" role="button" aria-expanded="false" aria-controls="sidebar-user">
@@ -380,15 +287,7 @@ $adminCanAny = function($keys) use ($adminCan){
                         </a>
                     </li>
                     <?php endif; ?>
-                    <?php if($adminCan('videos')): ?>
-                    <li class="nav-item">
-                        <a class="nav-link <?php echo (isset($active_menu) && $active_menu == 'videos') ? 'active' : ''; ?>" href="<?php echo XC_URL;?>/admin/videos">
-                            <i class="fa-solid fa-video">
-                            </i>
-                            <span class="item-name">Thư viện video</span>
-                        </a>
-                    </li>
-                    <?php endif; ?>
+                    
                     <?php endif; ?>
 
                     <?php if($adminCan('config') || $adminCan('settings')): ?>
@@ -410,13 +309,7 @@ $adminCanAny = function($keys) use ($adminCan){
                     </li>
                     <?php endif; ?>
                     <?php if($adminCan('settings')): ?>
-                    <li class="nav-item">
-                        <a class="nav-link" href="<?php echo XC_URL;?>/admin/settings">
-                            <i class="fa-solid fa-wrench">
-                            </i>
-                            <span class="item-name">Cài đặt hệ thống</span>
-                        </a>
-                    </li>
+                    
                     <?php endif; ?>
                     <?php endif; ?>
                    <br><br>

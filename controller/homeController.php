@@ -327,12 +327,12 @@ Class homeController Extends baseController
         //     $para['news_id'] = intval($matches[1] ?? $param1);
         //     return $this->news_detail($para);
         // }
+        
         $type = explode("-",$para[1]);
 		$event_type = $type[0];
         // 2. Retrieve search query, sort, and type filters from menu or GET parameters
         $q = isset($_GET['q']) ? trim($_GET['q']) : '';
         $sort = isset($_GET['sort']) ? trim($_GET['sort']) : 'newest';
-        $type_param = isset($_GET['type']) ? trim($_GET['type']) : (isset($_GET['cat']) ? trim($_GET['cat']) : $param1);
         
 
         // $event_type = 0;
@@ -411,14 +411,15 @@ Class homeController Extends baseController
         $this->view->show("tin-tuc");
     }
 
-    public function news_detail($para = array()){
+    public function news_detail($para){
         global $db;
-        $newsId = isset($para['news_id']) ? intval($para['news_id']) : 0;
-        if($newsId <= 0){ header("Location: ".XC_URL."/tin-tuc"); exit(); }
-        
+         
+        $newsId = explode("-",$para[1]);
+		$newsId = $newsId[0];
+        if($newsId <= 0){ header("Location: ".XC_URL); exit(); }
         // 1. Fetch details from hicrm_events with event_status = 4 ONLY
-        $db->query("SELECT * FROM hicrm_events WHERE id = '".$newsId."' AND event_status = 4 LIMIT 1");
-        if($db->num_row() <= 0){ header("Location: ".XC_URL."/tin-tuc"); exit(); }
+        $db->query("SELECT * FROM hicrm_events WHERE id = '".$newsId."' LIMIT 1");
+        if($db->num_row() <= 0){ header("Location: ".XC_URL); exit(); }
         $news = $db->fetch_object(true);
 
         // Map fields to match view expectations
@@ -430,7 +431,7 @@ Class homeController Extends baseController
         $news->created_at = $news->event_created_date;
         $news->views_count = isset($news->views_count) ? $news->views_count : 0;
         $news->new_category = $news->event_type ?? 1;
-        $news->category_name = 'Sự kiện - Tin tức';
+        // $news->category_name = 'Sự kiện - Tin tức';
         $news->author_name = 'Ban biên tập';
 
         // 2. Increase view count with cookie filter
@@ -440,20 +441,20 @@ Class homeController Extends baseController
         }
 
         // 3. Related articles from hicrm_events with event_status = 4
-        $db->query("SELECT * FROM hicrm_events WHERE event_status = 4 AND id <> '".$newsId."' AND event_type = '".intval($news->event_type)."' ORDER BY event_created_date DESC LIMIT 4");
+        $db->query("SELECT * FROM hicrm_events WHERE event_status = 4 AND id <> '".$newsId."' AND event_type = '".intval($news->event_type)."' ORDER BY event_created_date DESC LIMIT 15");
         $rel_raw = $db->fetch_object();
         if (empty($rel_raw) || !is_array($rel_raw)) {
-            $db->query("SELECT * FROM hicrm_events WHERE event_status = 4 AND id <> '".$newsId."' ORDER BY event_created_date DESC LIMIT 4");
+            $db->query("SELECT * FROM hicrm_events WHERE event_status = 4 AND id <> '".$newsId."' ORDER BY event_created_date DESC LIMIT 15");
             $rel_raw = $db->fetch_object();
         }
-        $related_news = array();
+        $related_news_list  = array();
         if (is_array($rel_raw)) {
             foreach ($rel_raw as $item) {
                 $item->title = $item->event_name;
                 $item->description = $item->event_description;
                 $item->thumbnail_url = !empty($item->event_image) ? (strpos($item->event_image, 'http') === 0 ? $item->event_image : '/uploads/events/'.$item->event_image) : '';
                 $item->published_at = $item->event_created_date;
-                $related_news[] = $item;
+                $related_news_list [] = $item;
             }
         }
 
@@ -471,7 +472,7 @@ Class homeController Extends baseController
         }
 
         $this->view->data['news_detail'] = $news;
-        $this->view->data['related_news'] = $related_news;
+        $this->view->data['related_news'] = $related_news_list;
         $this->view->data['popular_news'] = $popular_news;
         
         $this->view->show("tin-tuc-detail");

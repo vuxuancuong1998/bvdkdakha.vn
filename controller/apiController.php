@@ -627,12 +627,100 @@ Class apiController extends baseController
 	}
 	public function applogin()
 	{
+		global $db;
 		$result = array();
-		$result["status"] = 200;
-		$result["email"] = $_POST['email'];
-		$result["fullname"] = "Sang Test";
-		$result["uid"] = 1;
-		$result["token"] = "21231231238821";
+		$loginContext = isset($_POST['login_context']) ? trim((string)$_POST['login_context']) : '';
+		$isFrontendLogin = $loginContext === 'frontend';
+		$email = $db->escapestring(isset($_POST["email"]) ? trim($_POST["email"]) : '');
+		$password = $db->escapestring(isset($_POST["password"]) ? trim($_POST["password"]) : '');
+		if($email === '' || $password === ''){
+			$result["status"] = 500;
+			$result['message'] = 'Vui lòng nhập email và mật khẩu';
+			echo json_encode($result);
+			return;
+		}
+		
+		$password = md5($password);
+		$db->query("SELECT *
+			FROM hicrm_users 
+			WHERE (user_email = '".$email."' OR user_username = '".$email."')
+				AND user_password = '".$password."'
+				AND is_admin = 1
+				AND user_status = 1
+			LIMIT 1");
+			
+        if($db->num_row())
+        {
+            $row = $db->fetch_object(true);
+			$this->adminClearTwoFactorSession();
+			unset($_SESSION['user']);
+			unset($_SESSION['LoggedIn']);
+
+			if($this->frontendUserRequiresVerification($row)){
+				$this->frontendStorePendingVerification($row);
+				$result["status"] = 200;
+				$result["requires_verification"] = true;
+				$result["message"] = "Tài khoản của bạn chưa xác thực email.";
+				$result["user_id"] = intval($row->id);
+				$result["email"] = trim((string)$row->user_email);
+				$result["full_name"] = trim((string)$row->full_name);
+				$result["return_url"] = $this->frontendCurrentBaseUrl()."/tai-khoan-chua-xac-thuc.html";
+				echo json_encode($result);
+				return;
+			}
+
+			$this->frontendClearPendingVerification();
+			if($isFrontendLogin){
+				$userGroup = intval(isset($row->user_group) ? $row->user_group : 0);
+				if($userGroup === 1){
+					$result["status"] = 403;
+					$result["message"] = "Tài khoản quản trị không thể đăng nhập tại giao diện trang chủ. Vui lòng đăng nhập tại trang quản trị.";
+					echo json_encode($result);
+					return;
+				}
+				if(!in_array($userGroup, array(2, 3, 4), true)){
+					$result["status"] = 403;
+					$result["message"] = "Tài khoản này không được hỗ trợ đăng nhập tại giao diện trang chủ.";
+					echo json_encode($result);
+					return;
+				}
+			}
+			if(!$isFrontendLogin && !$this->adminAccountHasAccess(intval($row->user_group))){
+				$result["status"] = 403;
+				$result["message"] = "Tài khoản chưa được cấp quyền truy cập trang quản trị.";
+				echo json_encode($result);
+				return;
+			}
+			if(intval($row->user_group) === 1 && $this->adminTwoFactorConfigEnabled()){
+				$otpResult = $this->adminStartTwoFactorSession($row);
+				if(!$otpResult['status']){
+					$result["status"] = 500;
+					$result['message'] = $otpResult['message'];
+				}else{
+					$result["status"] = 202;
+					$result["require_2fa"] = true;
+					$result["message"] = "Mã xác thực đã được gửi về email của bạn. Mã có hiệu lực trong 2 phút.";
+					$result["expires_in"] = $this->adminGetTwoFactorRemainingSeconds();
+				}
+				echo json_encode($result);
+				return;
+			}
+
+			$this->adminSetLoggedInSession($row);
+			$result["status"] = 200;
+			$result["name"] = $_SESSION['user']['full_name'];
+			$result["message"] = "Đăng nhập thành công";
+			if($isFrontendLogin){
+				$result['return_url'] = $this->frontendLoginReturnUrl($row);
+			}else{
+				$result['return_url'] = (intval($row->is_admin) === 1) ? XC_URL.'/admin' : XC_URL.'/';
+			}
+        }
+		else
+		{
+			$result["status"] = "500";
+			$result['message'] = 'Thông tin tài khoản hoặc mật khẩu không chính xác';
+		}
 		echo json_encode($result);
 	}
 	//======================== user =================================//
@@ -4360,15 +4448,15 @@ Class apiController extends baseController
 			echo json_encode($result);
 			return;
 		}
-		$password = md5($password);
-		$db->query("SELECT u.*
-			FROM hicrm_users u
-			INNER JOIN hicrm_user_groups g ON u.user_group = g.id AND g.group_status NOT IN(99)
-			WHERE (u.user_email = '".$email."' OR u.user_username = '".$email."')
-				AND u.user_password = '".$password."'
-				AND u.user_status = 1
-			LIMIT 1");
 		
+		$password = md5($password);
+		$db->query("SELECT *
+			FROM hicrm_users 
+			WHERE (user_email = '".$email."' OR user_username = '".$email."')
+				AND user_password = '".$password."'
+				AND is_admin != 1
+				AND user_status = 1
+			LIMIT 1");
         if($db->num_row())
         {
             $row = $db->fetch_object(true);

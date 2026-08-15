@@ -121,22 +121,22 @@
             </li>
 
             <li class="nav-item">
-              <a href="<?php echo XC_URL; ?>/dich-vu-y-te.html" class="nav-link" aria-haspopup="true" aria-expanded="false">
+              <a href="<?php echo XC_URL; ?>/" class="nav-link" aria-haspopup="true" aria-expanded="false">
                 Dịch vụ Y tế
                 <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
                   <polyline points="6 9 12 15 18 9"/>
                 </svg>
               </a>
               <div class="dropdown" role="menu" aria-label="Menu dịch vụ">
-                <a href="<?php echo XC_URL; ?>/dich-vu-y-te.html#kham-chua-benh" role="menuitem">
+                <a href="<?php echo XC_URL; ?>/" role="menuitem">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
-                  Khám chữa bệnh
+                  Khám BHYT
                 </a>
-                <a href="<?php echo XC_URL; ?>/dich-vu-y-te.html#bang-gia" role="menuitem">
+                <a href="<?php echo XC_URL; ?>" role="menuitem">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 100 7h5a3.5 3.5 0 110 7H6"/></svg>
-                  Bảng giá dịch vụ
+                  Viện phí và dịch vụ
                 </a>
-                <a href="<?php echo XC_URL; ?>/dich-vu-y-te.html#goi-kham" role="menuitem">
+                <a href="<?php echo XC_URL; ?>" role="menuitem">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
                   Gói khám sức khỏe
                 </a>

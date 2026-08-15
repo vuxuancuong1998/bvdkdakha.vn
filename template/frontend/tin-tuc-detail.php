@@ -20,30 +20,7 @@ $created_date = $news_detail->event_created_date ?? $news_detail->published_at ?
 
 <main id="main-content" role="main" class="news-page news-detail-page">
 
-  <!-- ============================================================
-       BREADCRUMBS & BACKGROUND HEADER
-       ============================================================ -->
-  <section class="news-hero news-detail-hero" style="padding: 24px 0; background: linear-gradient(135deg, #075985 0%, #0369a1 100%);">
-    <div class="container">
-      <nav class="news-breadcrumbs" aria-label="Điều hướng trang">
-        <ol class="news-breadcrumbs-list" itemscope itemtype="https://schema.org/BreadcrumbList">
-          <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
-            <a href="<?php echo XC_URL; ?>" itemprop="item"><span itemprop="name">Trang chủ</span></a>
-            <meta itemprop="position" content="1" />
-          </li>
-          <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
-            <a href="<?php echo XC_URL; ?>/tin-tuc" itemprop="item"><span itemprop="name">Tin tức - Sự kiện</span></a>
-            <meta itemprop="position" content="2" />
-          </li>
-          <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
-            <span itemprop="name" style="color:rgba(255,255,255,0.7); display:inline-block; max-width:300px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; vertical-align:bottom;"><?php echo htmlspecialchars($title, ENT_QUOTES, 'UTF-8'); ?></span>
-            <meta itemprop="position" content="3" />
-          </li>
-        </ol>
-      </nav>
-    </div>
-  </section>
-
+  
   <!-- ============================================================
        MAIN CONTENT: Article body & Sidebar
        ============================================================ -->
@@ -90,7 +67,7 @@ $created_date = $news_detail->event_created_date ?? $news_detail->published_at ?
                  itemprop="image" />
           </div>
           <?php endif; ?>
-
+          <p></p>
           <!-- 5. event_content (Nội dung chi tiết bài viết) -->
           <div class="news-detail-body post-content text-dark mb-5" style="font-size:16px; line-height:1.8;" itemprop="articleBody">
             <?php echo $content; ?>
@@ -103,7 +80,7 @@ $created_date = $news_detail->event_created_date ?? $news_detail->published_at ?
             <a href="https://www.facebook.com/sharer/sharer.php?u=<?php echo urlencode($current_url); ?>" 
                target="_blank" rel="noopener noreferrer" 
                class="btn btn-sm text-white d-flex align-items-center gap-1 px-3" 
-               style="background:#1877f2; font-size:12px; border-radius:4px;">
+               style="background:#1877f2; font-size:12px; border-radius:4px;color: #fff;">
               <i class="fa-brands fa-facebook-f"></i> Facebook
             </a>
             
@@ -112,48 +89,11 @@ $created_date = $news_detail->event_created_date ?? $news_detail->published_at ?
                     style="font-size:12px; border-radius:4px;">
               <i class="fa-regular fa-copy"></i> Sao chép link
             </button>
-          </div>
-
-          <!-- RELATED ARTICLES (Khối "Tin liên quan") -->
-          <?php if (!empty($related_news) && is_array($related_news)): ?>
-          <div class="news-related">
-            <h3 class="h6 border-bottom pb-2 mb-3" style="font-weight:700;"><i class="fa-solid fa-link text-primary"></i> Tin liên quan</h3>
-            <div class="row">
-              <?php foreach ($related_news as $rel): 
-                $rel_slug = isset($rel->event_name) ? general::getInstance()->bodau($rel->event_name) : (isset($rel->title) ? general::getInstance()->bodau($rel->title) : 'bai-viet');
-                $rel_url = XC_URL . '/tin-tuc/' . $rel->id . '-' . $rel_slug . '.html';
-                $rel_title = $rel->event_name ?? $rel->title;
-                $rel_date = !empty($rel->event_created_date) ? date('d/m/Y', strtotime($rel->event_created_date)) : (!empty($rel->published_at) ? date('d/m/Y', strtotime($rel->published_at)) : '');
-                $rel_img = !empty($rel->event_image) ? (strpos($rel->event_image, 'http') === 0 ? $rel->event_image : XC_URL . '/uploads/events/' . $rel->event_image) : (!empty($rel->thumbnail_url) ? XC_URL . $rel->thumbnail_url : XC_URL . '/template/frontend/assets/images/banner-01.jpg');
-              ?>
-              <div class="col-md-6 mb-3">
-                <div class="card h-100 border-0 bg-light rounded overflow-hidden">
-                  <div class="row g-0 align-items-center h-100">
-                    <div class="col-4 h-100" style="aspect-ratio:4/3; overflow:hidden;">
-                      <a href="<?php echo $rel_url; ?>">
-                        <img src="<?php echo $rel_img; ?>" 
-                             alt="<?php echo htmlspecialchars($rel_title, ENT_QUOTES, 'UTF-8'); ?>"
-                             style="width:100%; height:100%; object-fit:cover;" />
-                      </a>
-                    </div>
-                    <div class="col-8">
-                      <div class="card-body p-2" style="font-size:12px;">
-                        <time class="text-muted" style="font-size:10px;"><?php echo $rel_date; ?></time>
-                        <h4 class="card-title h6 mb-0 mt-1" style="font-size:13px; line-height:1.3; font-weight:600; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;">
-                          <a href="<?php echo $rel_url; ?>" class="text-dark text-decoration-none"><?php echo htmlspecialchars($rel_title, ENT_QUOTES, 'UTF-8'); ?></a>
-                        </h4>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <?php endforeach; ?>
-            </div>
-          </div>
-          <?php endif; ?>
+          </div> 
+          
 
         </article><!-- /news-posts-col -->
-
+    
         <!-- ==================================================
              RIGHT COLUMN: SIDEBAR (Hiển thị các tin tức nổi bật khác)
              ================================================== -->
@@ -200,6 +140,144 @@ $created_date = $news_detail->event_created_date ?? $news_detail->published_at ?
     </div>
   </div>
 
+<?php
+// ============================================================
+// TIN LIÊN QUAN — Slider (15 tin mới nhất cùng event_type)
+// ============================================================
+$related_news_list = isset($related_news) && is_array($related_news) ? $related_news : [];
+if (!empty($related_news_list)):
+?>
+<section class="related-news-section" aria-label="Tin liên quan">
+  <div class="container">
+    <div class="related-news-header">
+      <span class="related-news-badge">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="16" height="16" aria-hidden="true"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+      </span>
+      <h2 class="related-news-title">Tin liên quan</h2>
+      <div class="related-nav-btns">
+        <button class="related-nav-btn" id="related-prev" aria-label="Tin trước">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="18" height="18" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>
+        </button>
+        <button class="related-nav-btn" id="related-next" aria-label="Tin tiếp">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="18" height="18" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <div class="related-slider-outer">
+      <div class="related-slider-track" id="related-slider-track">
+        <?php foreach ($related_news_list as $rel):
+          $rel_url      = $this->helper->permalink($rel->id, 'event_detail');
+          $rel_img      = !empty($rel->event_image)
+                          ? (strpos($rel->event_image, 'http') === 0 ? $rel->event_image : XC_URL . '/uploads/events/' . $rel->event_image)
+                          : XC_URL . '/template/frontend/assets/images/banner-01.jpg';
+          $rel_title    = htmlspecialchars($rel->event_name ?? '', ENT_QUOTES, 'UTF-8');
+          $rel_desc     = htmlspecialchars(mb_strimwidth(strip_tags($rel->event_description ?? ''), 0, 90, '…'), ENT_QUOTES, 'UTF-8');
+          $rel_date     = !empty($rel->event_created_date) ? date('d/m/Y', strtotime($rel->event_created_date)) : date('d/m/Y');
+          $rel_datetime = !empty($rel->event_created_date) ? date('Y-m-d', strtotime($rel->event_created_date)) : date('Y-m-d');
+        ?>
+        <div class="related-slide">
+          <article class="related-card" itemscope itemtype="https://schema.org/NewsArticle">
+            <a href="<?php echo $rel_url; ?>" class="related-card-img-link" tabindex="-1" aria-hidden="true">
+              <img src="<?php echo $rel_img; ?>"
+                   alt="<?php echo $rel_title; ?>"
+                   class="related-card-img"
+                   loading="lazy" width="320" height="200"
+                   itemprop="image" />
+            </a>
+            <div class="related-card-body">
+              <time class="related-card-date" datetime="<?php echo $rel_datetime; ?>" itemprop="datePublished"><?php echo $rel_date; ?></time>
+              <h3 class="related-card-title" itemprop="headline">
+                <a href="<?php echo $rel_url; ?>" itemprop="url"><?php echo $rel_title; ?></a>
+              </h3>
+              <p class="related-card-desc" itemprop="description"><?php echo $rel_desc; ?></p>
+            </div>
+          </article>
+        </div>
+        <?php endforeach; ?>
+      </div>
+    </div>
+
+    <div class="related-dots" id="related-dots" aria-label="Điều hướng slider"></div>
+  </div>
+</section>
+
+<script>
+(function() {
+  var track    = document.getElementById('related-slider-track');
+  var prevBtn  = document.getElementById('related-prev');
+  var nextBtn  = document.getElementById('related-next');
+  var dotsWrap = document.getElementById('related-dots');
+  if (!track || !prevBtn || !nextBtn) return;
+
+  var slides    = track.querySelectorAll('.related-slide');
+  var total     = slides.length;
+  var current   = 0;
+  var autoTimer = null;
+  var AUTO_DELAY = 4500;
+
+  function getVisible() {
+    var w = window.innerWidth;
+    if (w >= 1200) return 4;
+    if (w >= 900)  return 3;
+    if (w >= 600)  return 2;
+    return 1;
+  }
+
+  function maxIndex() { return Math.max(0, total - getVisible()); }
+
+  function updateSlider() {
+    var vis    = getVisible();
+    var pct    = 100 / vis;
+    var offset = current * pct;
+    track.style.transform = 'translateX(-' + offset + '%)';
+    slides.forEach(function(s) { s.style.flex = '0 0 ' + pct + '%'; s.style.maxWidth = pct + '%'; });
+    if (dotsWrap) {
+      dotsWrap.innerHTML = '';
+      for (var i = 0; i <= maxIndex(); i++) {
+        var d = document.createElement('button');
+        d.className = 'related-dot' + (i === current ? ' active' : '');
+        d.setAttribute('aria-label', 'Slide ' + (i + 1));
+        d.setAttribute('data-idx', i);
+        d.addEventListener('click', onDotClick);
+        dotsWrap.appendChild(d);
+      }
+    }
+    prevBtn.disabled = (current === 0);
+    nextBtn.disabled = (current >= maxIndex());
+    prevBtn.classList.toggle('disabled', current === 0);
+    nextBtn.classList.toggle('disabled', current >= maxIndex());
+  }
+
+  function onDotClick(e) {
+    current = parseInt(e.currentTarget.getAttribute('data-idx'));
+    updateSlider(); resetAuto();
+  }
+  function goNext() { current = current >= maxIndex() ? 0 : current + 1; updateSlider(); }
+  function goPrev() { current = current <= 0 ? maxIndex() : current - 1; updateSlider(); }
+  function startAuto() { clearInterval(autoTimer); autoTimer = setInterval(goNext, AUTO_DELAY); }
+  function resetAuto() { clearInterval(autoTimer); startAuto(); }
+
+  prevBtn.addEventListener('click', function() { goPrev(); resetAuto(); });
+  nextBtn.addEventListener('click', function() { goNext(); resetAuto(); });
+
+  var touchStartX = 0;
+  track.addEventListener('touchstart', function(e) { touchStartX = e.touches[0].clientX; }, {passive:true});
+  track.addEventListener('touchend', function(e) {
+    var diff = touchStartX - e.changedTouches[0].clientX;
+    if (Math.abs(diff) > 40) { diff > 0 ? goNext() : goPrev(); resetAuto(); }
+  });
+  window.addEventListener('resize', function() {
+    if (current > maxIndex()) current = maxIndex();
+    updateSlider();
+  });
+
+  updateSlider();
+  startAuto();
+})();
+</script>
+<?php endif; ?>
+
 </main>
 
 <script>
@@ -211,7 +289,7 @@ function copyArticleLink() {
     dummy.select();
     document.execCommand('copy');
     document.body.removeChild(dummy);
-    alert('Đã sao chép liên kết thành công!');
+    alert('\u0110\u00e3 sao ch\u00e9p li\u00ean k\u1ebft th\u00e0nh c\u00f4ng!');
 }
 </script>
 

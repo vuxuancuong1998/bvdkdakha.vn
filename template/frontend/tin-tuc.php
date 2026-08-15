@@ -31,7 +31,18 @@ if (!function_exists('get_event_img_url')) {
 }
 
 // Badge mappings for category/type
-
+$badge_names = [
+    1 => html_entity_decode('Ho&#7841;t &#273;&#7897;ng n&#7897;i b&#7897;', ENT_HTML5, 'UTF-8'),
+    2 => html_entity_decode('S&#7921; ki&#7879;n - H&#7897;i th&#7843;o', ENT_HTML5, 'UTF-8'),
+    3 => html_entity_decode('Th&#244;ng b&#225;o - H&#432;&#7899;ng d&#7851;n', ENT_HTML5, 'UTF-8'),
+    4 => html_entity_decode('Y t&#7871; c&#7897;ng &#273;&#7891;ng', ENT_HTML5, 'UTF-8'),
+];
+$badge_classes = [
+    1 => 'badge-blue',
+    2 => 'badge-orange',
+    3 => 'badge-purple',
+    4 => 'badge-green',
+];
 ?>
 
     <!-- ============================================================
@@ -51,51 +62,51 @@ if (!function_exists('get_event_img_url')) {
               <div class="posts-count">
                 <span>Hiển thị <strong><?php echo $start_record; ?>–<?php echo $end_record; ?></strong> trong tổng số <strong><?php echo $total; ?></strong> bài viết</span>
               </div>
-              <div class="posts-sort">
-                <label for="sort-select" class="sr-only">Sắp xếp theo</label>
-                <select id="sort-select" class="sort-select" aria-label="Sắp xếp bài viết" onchange="window.location.href='<?php echo XC_URL; ?>/tin-tuc<?php echo !empty($current_type_slug) ? '/'.$current_type_slug : ''; ?>?sort=' + this.value + '<?php echo $q !== '' ? '&q='.urlencode($q) : ''; ?>';">
-                  <option value="newest" <?php echo $sort === 'newest' ? 'selected' : ''; ?>>Mới nhất</option>
-                  <option value="oldest" <?php echo $sort === 'oldest' ? 'selected' : ''; ?>>Cũ nhất</option>
-                  <option value="popular" <?php echo $sort === 'popular' ? 'selected' : ''; ?>>Phổ biến nhất</option>
+              <!-- <div class="posts-sort">
+                <label for="sort-select" class="sr-only">Sáº¯p xáº¿p theo</label>
+                <select id="sort-select" class="sort-select" aria-label="Sáº¯p xáº¿p Bài viết" onchange="window.location.href='<?php echo XC_URL; ?>/tin-tuc<?php echo !empty($current_type_slug) ? '/'.$current_type_slug : ''; ?>?sort=' + this.value + '<?php echo $q !== '' ? '&q='.urlencode($q) : ''; ?>';">
+                  <option value="newest" <?php echo $sort === 'newest' ? 'selected' : ''; ?>>Má»›i nháº¥t</option>
+                  <option value="oldest" <?php echo $sort === 'oldest' ? 'selected' : ''; ?>>CÅ© nháº¥t</option>
+                  <option value="popular" <?php echo $sort === 'popular' ? 'selected' : ''; ?>>Phá»• biáº¿n nháº¥t</option>
                 </select>
-              </div>
+              </div> -->
             </div>
 
             <!-- ====================================================
-                 FEATURED POST (Bài viết nổi bật — dạng ngang lớn)
+                 FEATURED POST (Bài viết ná»•i báº­t â€” dáº¡ng ngang lá»›n)
                  ==================================================== -->
             <?php if ($featured_event): 
-              // $feat_url = get_event_url($featured_event);
+              $feat_url = $this->helper->permalink($featured_event->id,'event_detail');
               $feat_img = get_event_img_url($featured_event, '/template/frontend/assets/images/banner-03.jpg');
               $type_id = intval($featured_event->event_type ?? 1);
-              $cat_name = $badge_names[$type_id] ?? 'Y tế cộng đồng';
+              $cat_name = $badge_names[$type_id] ?? 'Y táº¿ cá»™ng Ä‘á»“ng';
               $badge_cls = $badge_classes[$type_id] ?? 'badge-green';
               $date_str = !empty($featured_event->event_created_date) ? date('d/m/Y', strtotime($featured_event->event_created_date)) : date('d/m/Y');
               $datetime_str = !empty($featured_event->event_created_date) ? date('Y-m-d', strtotime($featured_event->event_created_date)) : date('Y-m-d');
             ?>
-            <article class="post-featured" aria-label="Bài viết nổi bật" itemscope itemtype="https://schema.org/NewsArticle">
+            <article class="post-featured" aria-label="Bài viết ná»•i báº­t" itemscope itemtype="https://schema.org/NewsArticle">
               <div class="post-featured-inner">
                 <div class="post-featured-img-wrap">
-                  <a href="<?php echo $feat_url; ?>" aria-label="Xem bài viết nổi bật">
+                  <a href="<?php echo $feat_url; ?>" aria-label="Xem Bài viết ná»•i báº­t">
                     <img src="<?php echo $feat_img; ?>"
                          alt="<?php echo htmlspecialchars($featured_event->event_name, ENT_QUOTES, 'UTF-8'); ?>"
                          class="post-featured-img"
                          loading="eager" width="680" height="400"
                          itemprop="image" />
-                    <span class="post-cat-badge <?php echo $badge_cls; ?>"><?php echo htmlspecialchars($cat_name, ENT_QUOTES, 'UTF-8'); ?></span>
+                    <!-- <span class="post-cat-badge <?php echo $badge_cls; ?>"><?php echo htmlspecialchars($cat_name, ENT_QUOTES, 'UTF-8'); ?></span> -->
                   </a>
                 </div>
                 <div class="post-featured-content">
                   <div class="post-meta">
-                    <span class="post-cat-tag">
+                    <!-- <span class="post-cat-tag">
                       <svg viewBox="0 0 24 24" width="12" height="12" fill="currentColor" aria-hidden="true"><path d="M10 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/></svg>
                       <?php echo htmlspecialchars($cat_name, ENT_QUOTES, 'UTF-8'); ?>
-                    </span>
+                    </span> -->
                     <time class="post-date" datetime="<?php echo $datetime_str; ?>" itemprop="datePublished"><?php echo $date_str; ?></time>
-                    <span class="post-read-time">
+                    <!-- <span class="post-read-time">
                       <svg viewBox="0 0 24 24" width="12" height="12" fill="currentColor" aria-hidden="true"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67V7z"/></svg>
-                      5 phút đọc
-                    </span>
+                      5 phÃºt Ä‘á»c
+                    </span> -->
                   </div>
                   <h2 class="post-featured-title" itemprop="headline">
                     <a href="<?php echo $feat_url; ?>" itemprop="url">
@@ -113,7 +124,7 @@ if (!function_exists('get_event_img_url')) {
                       <span itemprop="author">Ban biên tập</span>
                     </div>
                     <a href="<?php echo $feat_url; ?>" class="btn btn-primary btn-sm" id="featured-readmore">
-                      Đọc bài viết
+                      Đọc Bài viết
                       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
                     </a>
                   </div>
@@ -133,7 +144,7 @@ if (!function_exists('get_event_img_url')) {
                   $item_url = $this->helper->permalink($ev->id,'event_detail');
                   $item_img = get_event_img_url($ev);
                   $type_id = intval($ev->event_type ?? 1);
-                  $cat_name = $badge_names[$type_id] ?? 'Hoạt động';
+                  $cat_name = $badge_names[$type_id] ?? 'Hoáº¡t Ä‘á»™ng';
                   $badge_cls = $badge_classes[$type_id] ?? '';
                   $date_str = !empty($ev->event_created_date) ? date('d/m/Y', strtotime($ev->event_created_date)) : date('d/m/Y');
                   $datetime_str = !empty($ev->event_created_date) ? date('Y-m-d', strtotime($ev->event_created_date)) : date('Y-m-d');
@@ -144,13 +155,13 @@ if (!function_exists('get_event_img_url')) {
                     <img src="<?php echo $item_img; ?>"
                          alt="<?php echo htmlspecialchars($ev->event_name, ENT_QUOTES, 'UTF-8'); ?>"
                          loading="lazy" width="380" height="230" itemprop="image" />
-                    <span class="post-cat-badge <?php echo $badge_cls; ?>"><?php echo htmlspecialchars($cat_name, ENT_QUOTES, 'UTF-8'); ?></span>
+                    <!-- <span class="post-cat-badge <?php echo $badge_cls; ?>"><?php echo htmlspecialchars($cat_name, ENT_QUOTES, 'UTF-8'); ?></span> -->
                   </a>
                 </div>
                 <div class="post-body">
                   <div class="post-meta">
                     <time datetime="<?php echo $datetime_str; ?>" itemprop="datePublished"><?php echo $date_str; ?></time>
-                    <span class="post-sep" aria-hidden="true">•</span>
+                    <!-- <span class="post-sep" aria-hidden="true">â€¢</span> -->
                     
                   </div>
                   <h3 class="post-title" itemprop="headline">
@@ -162,10 +173,10 @@ if (!function_exists('get_event_img_url')) {
                     <?php echo htmlspecialchars(mb_strimwidth(strip_tags($ev->event_description ?? ''), 0, 130, '...'), ENT_QUOTES, 'UTF-8'); ?>
                   </p>
                   <div class="post-footer">
-                    <span class="post-views">
+                    <!-- <span class="post-views">
                       <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-                      Lượt xem
-                    </span>
+                      LÆ°á»£t xem
+                    </span> -->
                     <a href="<?php echo $item_url; ?>" class="read-more-link" id="readmore-post-<?php echo $card_index; ?>">Đọc tiếp →</a>
                   </div>
                 </div>
@@ -176,7 +187,7 @@ if (!function_exists('get_event_img_url')) {
               else:
               ?>
               <div class="no-posts" style="grid-column: 1 / -1; padding: 40px 0; text-align: center; color: #64748b;">
-                <p>Không tìm thấy bài viết nào phù hợp.</p>
+                <p>KhÃ´ng tÃ¬m tháº¥y Bài viết nÃ o phÃ¹ há»£p.</p>
               </div>
               <?php endif; ?>
             </div><!-- /posts-grid -->
@@ -200,10 +211,10 @@ if (!function_exists('get_event_img_url')) {
                   }
               }
             ?>
-            <nav class="pagination-nav" aria-label="Phân trang bài viết">
+            <nav class="pagination-nav" aria-label="PhÃ¢n trang Bài viết">
               <div class="pagination-links">
                 <?php if ($page > 1): ?>
-                <a class="page-btn page-prev" href="<?php echo build_page_link($page - 1, $query_params, $current_type_slug); ?>" aria-label="Trang trước" style="margin-right:4px;">
+                <a class="page-btn page-prev" href="<?php echo build_page_link($page - 1, $query_params, $current_type_slug); ?>" aria-label="Trang trÆ°á»›c" style="margin-right:4px;">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true" style="transform:rotate(180deg);"><polyline points="9 18 15 12 9 6"/></svg>
                 </a>
                 <?php endif; ?>
@@ -219,15 +230,15 @@ if (!function_exists('get_event_img_url')) {
                       <a class="page-btn" href="<?php echo build_page_link($p, $query_params, $current_type_slug); ?>" aria-label="Trang <?php echo $p; ?>"><?php echo $p; ?></a>
                     <?php endif;
                   elseif ($p == 2 && $page - $range > 2): ?>
-                    <span class="page-dots" aria-hidden="true">…</span>
+                    <span class="page-dots" aria-hidden="true">..</span>
                   <?php elseif ($p == $total_pages - 1 && $page + $range < $total_pages - 1): ?>
-                    <span class="page-dots" aria-hidden="true">…</span>
+                    <span class="page-dots" aria-hidden="true">..</span>
                   <?php endif;
                 endfor; 
                 ?>
 
                 <?php if ($page < $total_pages): ?>
-                <a class="page-btn page-next" href="<?php echo build_page_link($page + 1, $query_params, $current_type_slug); ?>" aria-label="Trang tiếp theo">
+                <a class="page-btn page-next" href="<?php echo build_page_link($page + 1, $query_params, $current_type_slug); ?>" aria-label="Trang tiáº¿p theo">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
                 </a>
                 <?php endif; ?>
@@ -240,7 +251,7 @@ if (!function_exists('get_event_img_url')) {
           <!-- ==================================================
                RIGHT COLUMN: SIDEBAR
                ================================================== -->
-          <aside class="news-sidebar" aria-label="Thanh bên tin tức">
+          <aside class="news-sidebar" aria-label="Thanh bÃªn tin tá»©c">
 
             <!-- Widget: Tìm kiếm -->
             <div class="widget widget-search">
@@ -248,77 +259,70 @@ if (!function_exists('get_event_img_url')) {
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true" width="16" height="16"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
                 Tìm kiếm
               </h2>
-              <form class="search-form" role="search" action="<?php echo XC_URL; ?>/tin-tuc<?php echo !empty($current_type_slug) ? '/'.$current_type_slug : ''; ?>" method="get" aria-label="Tìm kiếm bài viết">
+              <form class="search-form" role="search" action="<?php echo XC_URL; ?>/tin-tuc<?php echo !empty($current_type_slug) ? '/'.$current_type_slug : ''; ?>" method="get" aria-label="Tìm kiếm Bài viết">
                 <div class="search-input-wrap">
-                  <label for="search-input" class="sr-only">Nhập từ khóa tìm kiếm</label>
+                  <label for="search-input" class="sr-only">Nhập từ khóa Tìm kiếm</label>
                   <input type="search" id="search-input" name="q" class="search-input"
-                         placeholder="Tìm kiếm bài viết..." autocomplete="off"
+                         placeholder="Tìm kiếm Bài viết..." autocomplete="off"
                          value="<?php echo htmlspecialchars($q, ENT_QUOTES, 'UTF-8'); ?>"
-                         aria-label="Từ khóa tìm kiếm" />
-                  <button type="submit" class="search-btn" aria-label="Thực hiện tìm kiếm">
+                         aria-label="Tìm kiếm" />
+                  <button type="submit" class="search-btn" aria-label="Thực hiện Tìm kiếm">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true" width="18" height="18"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
                   </button>
                 </div>
               </form>
             </div>
 
-            <!-- Widget: Đặt lịch khám nhanh -->
-            <div class="widget widget-appointment">
+            <!-- Widget: Äáº·t lá»‹ch khÃ¡m nhanh -->
+            <!-- <div class="widget widget-appointment">
               <h2 class="widget-title">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true" width="16" height="16"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-                Đặt lịch khám nhanh
+                Äáº·t lá»‹ch khÃ¡m nhanh
               </h2>
               <div class="widget-body">
-                <p class="widget-desc">Đặt lịch khám trực tuyến nhanh chóng, không cần chờ đợi.</p>
-                <form class="widget-form" id="sidebar-appointment-form" novalidate aria-label="Form đặt lịch nhanh">
+                <p class="widget-desc">Äáº·t lá»‹ch khÃ¡m trá»±c tuyáº¿n nhanh chÃ³ng, khÃ´ng cáº§n chá» Ä‘á»£i.</p>
+                <form class="widget-form" id="sidebar-appointment-form" novalidate aria-label="Form Ä‘áº·t lá»‹ch nhanh">
                   <div class="widget-form-group">
-                    <input type="text" id="appt-name" placeholder="Họ và tên *" required aria-label="Họ và tên" class="widget-input" autocomplete="name" />
+                    <input type="text" id="appt-name" placeholder="Há» vÃ  tÃªn *" required aria-label="Há» vÃ  tÃªn" class="widget-input" autocomplete="name" />
                   </div>
                   <div class="widget-form-group">
-                    <input type="tel" id="appt-phone" placeholder="Số điện thoại *" required aria-label="Số điện thoại" class="widget-input" autocomplete="tel" />
+                    <input type="tel" id="appt-phone" placeholder="Sá»‘ Ä‘iá»‡n thoáº¡i *" required aria-label="Sá»‘ Ä‘iá»‡n thoáº¡i" class="widget-input" autocomplete="tel" />
                   </div>
                   <div class="widget-form-group">
-                    <select id="appt-service" aria-label="Chọn dịch vụ" class="widget-input">
-                      <option value="">-- Chọn chuyên khoa --</option>
-                      <option>Nội khoa tổng quát</option>
-                      <option>Ngoại khoa</option>
-                      <option>Sản phụ khoa</option>
+                    <select id="appt-service" aria-label="Chá»n dá»‹ch vá»¥" class="widget-input">
+                      <option value="">-- Chá»n chuyÃªn khoa --</option>
+                      <option>Ná»™i khoa tá»•ng quÃ¡t</option>
+                      <option>Ngoáº¡i khoa</option>
+                      <option>Sáº£n phá»¥ khoa</option>
                       <option>Nhi khoa</option>
-                      <option>Mắt</option>
-                      <option>Tai mũi họng</option>
-                      <option>Răng hàm mặt</option>
-                      <option>Xét nghiệm - Chẩn đoán</option>
+                      <option>Máº¯t</option>
+                      <option>Tai mÅ©i há»ng</option>
+                      <option>RÄƒng hÃ m máº·t</option>
+                      <option>XÃ©t nghiá»‡m - Cháº©n Ä‘oÃ¡n</option>
                     </select>
                   </div>
                   <div class="widget-form-group">
-                    <input type="date" id="appt-date" aria-label="Ngày khám mong muốn" class="widget-input" />
+                    <input type="date" id="appt-date" aria-label="NgÃ y khÃ¡m mong muá»‘n" class="widget-input" />
                   </div>
                   <button type="submit" class="btn btn-accent" style="width:100%;justify-content:center;" id="sidebar-appt-submit">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" width="16" height="16"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-                    Đặt lịch ngay
+                    Äáº·t lá»‹ch ngay
                   </button>
                 </form>
               </div>
-            </div>
+            </div> -->
 
             <!-- Widget: Danh mục tin tức -->
             <div class="widget widget-categories">
               <h2 class="widget-title">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true" width="16" height="16"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg>
-                Chuyên mục tin tức
+               Chuyên mục tin tức
               </h2>
               <nav aria-label="Danh mục tin tức">
                 <ul class="cat-menu-list">
-                  <li class="cat-menu-item <?php echo $event_type === 0 ? 'active' : ''; ?>">
-                    <a href="<?php echo XC_URL; ?>/tin-tuc">
-                      <span class="cat-menu-icon" aria-hidden="true">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
-                      </span>
-                      <span>Tất cả tin tức</span>
-                    </a>
-                  </li>
+                  
                   <li class="cat-menu-item <?php echo $event_type === 1 ? 'active' : ''; ?>">
-                    <a href="<?php echo XC_URL; ?>/tin-tuc/tin-hoat-dong">
+                    <a href="<?php echo XC_URL; ?>/tin-tuc/1-tin-hoat-dong.html">
                       <span class="cat-menu-icon" aria-hidden="true">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/></svg>
                       </span>
@@ -326,7 +330,7 @@ if (!function_exists('get_event_img_url')) {
                     </a>
                   </li>
                   <li class="cat-menu-item <?php echo $event_type === 4 ? 'active' : ''; ?>">
-                    <a href="<?php echo XC_URL; ?>/tin-tuc/y-te-cong-dong">
+                    <a href="<?php echo XC_URL; ?>/tin-tuc/2-y-te-cong-dong.html">
                       <span class="cat-menu-icon" aria-hidden="true">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
                       </span>
@@ -334,7 +338,7 @@ if (!function_exists('get_event_img_url')) {
                     </a>
                   </li>
                   <li class="cat-menu-item <?php echo $event_type === 3 ? 'active' : ''; ?>">
-                    <a href="<?php echo XC_URL; ?>/tin-tuc/thong-bao-huong-dan">
+                    <a href="<?php echo XC_URL; ?>/tin-tuc/3-thong-bao-huong-dan.html">
                       <span class="cat-menu-icon" aria-hidden="true">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0"/></svg>
                       </span>
@@ -342,7 +346,7 @@ if (!function_exists('get_event_img_url')) {
                     </a>
                   </li>
                   <li class="cat-menu-item <?php echo $event_type === 2 ? 'active' : ''; ?>">
-                    <a href="<?php echo XC_URL; ?>/tin-tuc/su-kien-hoi-thao">
+                    <a href="<?php echo XC_URL; ?>/tin-tuc/4-su-kien-hoi-thao.html">
                       <span class="cat-menu-icon" aria-hidden="true">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
                       </span>
@@ -353,11 +357,11 @@ if (!function_exists('get_event_img_url')) {
               </nav>
             </div>
 
-            <!-- Widget: Tin nổi bật -->
+            <!-- Widget: Tin ná»•i báº­t -->
             <div class="widget widget-featured">
               <h2 class="widget-title">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true" width="16" height="16"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-                Tin nổi bật
+               Tin nổi bật
               </h2>
               <div class="widget-body">
                 <ol class="popular-posts" aria-label="Danh sách tin nổi bật">
@@ -365,7 +369,7 @@ if (!function_exists('get_event_img_url')) {
                   if (!empty($popular_events)):
                     $pop_rank = 1;
                     foreach ($popular_events as $pop):
-                      $pop_url = get_event_url($pop);
+                      $pop_url = $this->helper->permalink($pop->id,'event_detail');
                       $pop_img = get_event_img_url($pop);
                       $pop_date = !empty($pop->event_created_date) ? date('d/m/Y', strtotime($pop->event_created_date)) : date('d/m/Y');
                       $pop_datetime = !empty($pop->event_created_date) ? date('Y-m-d', strtotime($pop->event_created_date)) : date('Y-m-d');
@@ -374,7 +378,7 @@ if (!function_exists('get_event_img_url')) {
                     <a href="<?php echo $pop_url; ?>" class="popular-post-link" id="popular-<?php echo $pop_rank; ?>">
                       <div class="popular-post-img-wrap">
                         <img src="<?php echo $pop_img; ?>" alt="<?php echo htmlspecialchars($pop->event_name, ENT_QUOTES, 'UTF-8'); ?>" loading="lazy" width="70" height="52" class="popular-post-img" />
-                        <span class="popular-rank" aria-label="Vị trí <?php echo $pop_rank; ?>"><?php echo $pop_rank; ?></span>
+                        <span class="popular-rank" aria-label="Vá»‹ trÃ­ <?php echo $pop_rank; ?>"><?php echo $pop_rank; ?></span>
                       </div>
                       <div class="popular-post-text">
                         <span><?php echo htmlspecialchars($pop->event_name, ENT_QUOTES, 'UTF-8'); ?></span>
@@ -391,24 +395,7 @@ if (!function_exists('get_event_img_url')) {
               </div>
             </div>
 
-            <!-- Widget: Tags / Từ khóa -->
-            <div class="widget widget-tags">
-              <h2 class="widget-title">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true" width="16" height="16"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
-                Từ khóa
-              </h2>
-              <div class="tag-cloud" aria-label="Danh sách từ khóa">
-                <a href="<?php echo XC_URL; ?>/tin-tuc?q=tiem-chung" class="tag-item" id="tag-tiem-chung">Tiêm chủng</a>
-                <a href="<?php echo XC_URL; ?>/tin-tuc?q=phong-dich" class="tag-item" id="tag-phong-dich">Phòng dịch</a>
-                <a href="<?php echo XC_URL; ?>/tin-tuc?q=sot-xuat-huyet" class="tag-item" id="tag-sxh">Sốt xuất huyết</a>
-                <a href="<?php echo XC_URL; ?>/tin-tuc?q=suc-khoe" class="tag-item" id="tag-skcongdong">Sức khỏe cộng đồng</a>
-                <a href="<?php echo XC_URL; ?>/tin-tuc?q=tuyen-dung" class="tag-item" id="tag-tuyen-dung">Tuyển dụng</a>
-                <a href="<?php echo XC_URL; ?>/tin-tuc?q=hoi-thao" class="tag-item" id="tag-hoi-thao">Hội thảo</a>
-                <a href="<?php echo XC_URL; ?>/tin-tuc?q=cap-cuu" class="tag-item" id="tag-cap-cuu">Cấp cứu</a>
-                <a href="<?php echo XC_URL; ?>/tin-tuc?q=benh-lao" class="tag-item" id="tag-benh-lao">Bệnh lao</a>
-                <a href="<?php echo XC_URL; ?>/tin-tuc?q=an-toan-thuc-pham" class="tag-item" id="tag-attp">An toàn thực phẩm</a>
-              </div>
-            </div>
+            
 
             <!-- Widget: Hotline & Liên hệ -->
             <div class="widget widget-hotline">
@@ -433,7 +420,7 @@ if (!function_exists('get_event_img_url')) {
                   </span>
                   <span>
                     <strong>(0260) 386 2xxx</strong>
-                    <small>Cấp cứu 24/7</small>
+                    <small>Cáº¥p cá»©u 24/7</small>
                   </span>
                 </a>
               </div>

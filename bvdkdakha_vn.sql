@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Máy chủ: 127.0.0.1
--- Thời gian đã tạo: Th8 13, 2026 lúc 10:21 AM
+-- Thời gian đã tạo: Th8 15, 2026 lúc 04:53 PM
 -- Phiên bản máy phục vụ: 10.4.32-MariaDB
 -- Phiên bản PHP: 8.0.30
 
@@ -614,8 +614,8 @@ CREATE TABLE `hicrm_configs` (
 
 INSERT INTO `hicrm_configs` (`id`, `config_key`, `config_value`) VALUES
 (1, 'won_rate', '3765123123'),
-(2, 'website_name', 'Cổng thông tin việc làm trường Cao đẳng Kon Tum'),
-(3, 'website_description', 'Hệ thống cổng việc làm trường Cao đẳng Kon Tum .....'),
+(2, 'website_name', 'Bệnh viện đa khoa Khu vực Đăk Hà'),
+(3, 'website_description', 'Bệnh viện đa khoa Khu vực Đăk Hà'),
 (4, 'admin_email', 'vuxuancuong98gl@gmail.com'),
 (5, 'smtp_server', ''),
 (6, 'smtp_port', ''),
@@ -627,12 +627,12 @@ INSERT INTO `hicrm_configs` (`id`, `config_key`, `config_value`) VALUES
 (12, 'minimun_fee', '10000'),
 (13, 'admin_email.site_email', ''),
 (14, 'site_phone', '02603.861.450'),
-(15, 'site_email', 'truong@cdkontum.edu.vn'),
-(16, 'site_address', 'Số 14 Ngụy Như Kon Tum, phường Đăk Cấm, tỉnh Quảng Ngãi'),
+(15, 'site_email', 'admin@trungtamytedakha.vn'),
+(16, 'site_address', '05 Đào Duy Từ,xã Đăk Hà, tỉnh Quảng Ngãi'),
 (17, 'deposite_branch', ''),
 (18, 'deposite_bank', 'vcb'),
 (19, 'deposite_account', '8 6666 8888 1688'),
-(20, 'deposite_holder', 'Tran Tam'),
+(20, 'deposite_holder', 'Xuan Cuong'),
 (21, 'income_prefix', 'ALI'),
 (22, 'customer_prefix', 'KH'),
 (23, 'employee_prefix', 'BS'),
@@ -640,11 +640,11 @@ INSERT INTO `hicrm_configs` (`id`, `config_key`, `config_value`) VALUES
 (25, 'order_prefix', 'DH'),
 (26, 'company_name', 'Xuan Cuong Development'),
 (27, 'company_email', 'info@earthbornholistic.com.vn'),
-(28, 'site_hotline', ' 02606 558 568 hoặc 083 999 5775'),
+(28, 'site_hotline', '02603.822.128.'),
 (29, 'company_tax_id', '0315422622'),
 (30, 'company_address', 'Kon Tum, Quảng Ngãi'),
 (31, 'QUOTE_PREFIX', 'VMQ'),
-(32, 'site_facebook', 'https://www.facebook.com/profile.php?id=61583478166588'),
+(32, 'site_facebook', 'https://www.facebook.com/'),
 (33, 'site_phonezalo', '0839995775'),
 (34, 'P2A', '0'),
 (35, 'facebook_url', 'https://www.facebook.com/');
@@ -744,8 +744,7 @@ CREATE TABLE `hicrm_customer_feedback` (
 INSERT INTO `hicrm_customer_feedback` (`id`, `customer_name`, `customer_phone`, `customer_email`, `customer_address`, `content`, `status`, `rating`, `create_date`) VALUES
 (1, 'vũ Xuân CƯơng', '0929981213', 'asb_a@gmail.com', 'aasdasd ', '0', 0, 0, '2026-03-01 22:18:05'),
 (2, 'Vũ Xuân Cương', '0828228339', 'vuxuancuong98gl@gmail.com', 'Kon Tum, Quảng Ngãi', '0', 0, 0, '2026-03-04 23:17:38'),
-(3, 'NNT', '0963719679', 'vuxuancuong98gl@gmail.com', 'Quảng Ngãi', 'Tôi rất hài lòng', 0, 0, '2026-03-04 23:21:55'),
-(4, 'hà Văn An', '0828228339', 'vuxuancuong918gl@gmail.com', 'Kon Tum', 'Cần tìm việc', 0, 0, '2026-06-29 22:55:28');
+(3, 'NNT', '0963719679', 'vuxuancuong98gl@gmail.com', 'Quảng Ngãi', 'Tôi rất hài lòng', 0, 0, '2026-03-04 23:21:55');
 
 -- --------------------------------------------------------
 
@@ -5972,7 +5971,7 @@ CREATE TABLE `hicrm_users` (
 --
 
 INSERT INTO `hicrm_users` (`id`, `user_username`, `full_name`, `user_password`, `user_department`, `user_avatar_url`, `is_admin`, `user_phone`, `user_email`, `user_group`, `user_status`, `user_created_date`) VALUES
-(1, 'Vũ Xuân Cương', '', 'e10adc3949ba59abbe56e057f20f883e', 0, '', 0, '', 'vuxuancuong98gl@gmail.com', 1, 1, '0000-00-00'),
+(1, 'Vũ Xuân Cương', '', 'e10adc3949ba59abbe56e057f20f883e', 0, '', 1, '', 'vuxuancuong98gl@gmail.com', 1, 1, '0000-00-00'),
 (10, 'SV001', '', '50b95ae64dc93fb0f3d70f16ee0ed331', 0, '', 0, '', 'vxcuong@gmail.com', 3, 1, '2026-04-22'),
 (11, 'SV002', '', '229430317219801e49eb048aeaf50314', 0, '', 0, '', 'cuongvx2@gmail.com', 3, 1, '2026-04-27'),
 (12, 'cuongmedia@g33mail.com', '', 'e10adc3949ba59abbe56e057f20f883e', 0, '', 0, '', 'vu111xuancuong98gl@gmail.com', 1, 1, '0000-00-00'),
@@ -6107,9 +6106,6 @@ CREATE TABLE `hicrm_user_groups` (
 
 INSERT INTO `hicrm_user_groups` (`id`, `user_role_id`, `group_name`, `group_class`, `group_icon`, `group_status`) VALUES
 (1, 0, 'Quản trị viên', 'primary', '', 1),
-(2, 0, 'Nhà tuyển dụng', 'info', NULL, 1),
-(3, 0, 'Sinh viên', 'warning', NULL, 1),
-(4, 0, 'Ứng viên', 'primary', NULL, 1),
 (5, 0, 'Biên tập viên', '', '', 1);
 
 -- --------------------------------------------------------
@@ -6177,9 +6173,9 @@ CREATE TABLE `hicrm_user_role` (
 INSERT INTO `hicrm_user_role` (`id`, `role_name`, `user_role_key`, `role_status`) VALUES
 (1, 'Quản lý tài khoản', '', 1),
 (2, 'Phân quyền tài khoản', '', 1),
-(3, 'Quản lý nhà tuyển dụng', '', 1),
-(4, 'Quản lý ứng viên', '', 1),
-(5, 'Quản lý sinh viên', '', 1);
+(3, 'Tin tức sự kiện', '', 1),
+(4, 'Duyệt tin tức', '', 1),
+(5, 'TT25', '', 1);
 
 -- --------------------------------------------------------
 
@@ -6936,7 +6932,7 @@ ALTER TABLE `hicrm_accounts`
 -- AUTO_INCREMENT cho bảng `hicrm_admin_menu_permissions`
 --
 ALTER TABLE `hicrm_admin_menu_permissions`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8315;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9143;
 
 --
 -- AUTO_INCREMENT cho bảng `hicrm_banks`

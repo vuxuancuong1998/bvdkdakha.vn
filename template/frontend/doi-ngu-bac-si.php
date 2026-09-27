@@ -187,10 +187,6 @@ if (!function_exists('frontendDoctorPaginationItems')) {
              ============================================================ -->
         <?php if ($total_pages > 1): ?>
           <div class="doctor-pagination-wrap">
-            <div class="doctor-pagination-info">
-              Hiển thị từ <strong><?php echo $row_offset + 1; ?></strong> đến <strong><?php echo min($row_offset + $per_page, $total_doctors); ?></strong> trong tổng số <strong><?php echo $total_doctors; ?></strong> cán bộ / bác sĩ
-            </div>
-
             <nav class="doctor-pagination-nav" aria-label="Phân trang đội ngũ bác sĩ">
               <ul class="doctor-pagination-list">
                 <?php if ($page > 1): ?>
@@ -854,41 +850,30 @@ if (!function_exists('frontendDoctorPaginationItems')) {
    PAGINATION STYLES (8 BÁC SĨ / TRANG)
    ============================================================ */
 .doctor-pagination-wrap {
-  margin-top: 36px;
-  padding: 16px 22px;
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
-  border-radius: 14px;
-  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.04);
+  margin-top: 40px;
+  margin-bottom: 20px;
+  padding: 0;
+  background: transparent;
+  border: none;
+  box-shadow: none;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  flex-wrap: wrap;
-}
-
-.doctor-pagination-info {
-  font-size: 14px;
-  color: #64748b;
-  font-weight: 500;
-}
-
-.doctor-pagination-info strong {
-  color: #0f172a;
-  font-weight: 700;
+  justify-content: center;
 }
 
 .doctor-pagination-nav {
   display: flex;
+  justify-content: center;
 }
 
 .doctor-pagination-list {
   display: flex;
   align-items: center;
+  justify-content: center;
   list-style: none;
   margin: 0;
   padding: 0;
-  gap: 6px;
+  gap: 8px;
   flex-wrap: wrap;
 }
 
@@ -981,13 +966,13 @@ a.doctor-page-link:hover {
     white-space: normal;
   }
   .doctor-pagination-wrap {
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    padding: 16px;
+    margin-top: 28px;
+    margin-bottom: 12px;
+    padding: 0;
   }
   .doctor-pagination-list {
     justify-content: center;
+    gap: 6px;
   }
   .doctor-page-link {
     min-width: 34px;

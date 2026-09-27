@@ -178,7 +178,67 @@ $adminCanAny = function($keys) use ($adminCan){
                         </ul>
                     </li>
                     <?php endif; ?>
-                    
+
+                    <?php if($adminCan('staticpages') || $adminCan('staticpage_categories')): ?>
+                    <li class="nav-item">
+                        <a class="nav-link <?php echo (isset($active_menu) && in_array($active_menu, ['staticpages','staticpage_categories','staticpage_form'])) ? '' : ''; ?>"
+                           data-bs-toggle="collapse" href="#sidebar-staticpages" role="button"
+                           aria-expanded="<?php echo (isset($active_menu) && in_array($active_menu, ['staticpages','staticpage_categories','staticpage_form'])) ? 'true' : 'false'; ?>"
+                           aria-controls="sidebar-staticpages">
+                            <i class="fa-solid fa-file-lines"></i>
+                            <span class="item-name">Trang tĩnh (CMS)</span>
+                            <i class="right-icon">
+                                <svg class="icon-18" xmlns="http://www.w3.org/2000/svg" width="18" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                                </svg>
+                            </i>
+                        </a>
+                        <ul class="sub-nav collapse <?php echo (isset($active_menu) && in_array($active_menu, ['staticpages','staticpage_categories','staticpage_form'])) ? 'show' : ''; ?>"
+                            id="sidebar-staticpages" data-bs-parent="#sidebar-menu">
+                            <?php if($adminCan('staticpages')): ?>
+                            <li class="nav-item">
+                                <a class="nav-link <?php echo (isset($active_menu) && in_array($active_menu, ['staticpages','staticpage_form'])) ? 'active' : ''; ?>"
+                                   href="<?php echo XC_URL;?>/admin/staticpages">
+                                    <i class="icon">
+                                        <svg class="icon-10" xmlns="http://www.w3.org/2000/svg" width="10" viewBox="0 0 24 24" fill="currentColor">
+                                            <g><circle cx="12" cy="12" r="8" fill="currentColor"></circle></g>
+                                        </svg>
+                                    </i>
+                                    <i class="sidenav-mini-icon"> P </i>
+                                    <span class="item-name">Danh sách trang tĩnh</span>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link <?php echo (isset($active_menu) && $active_menu == 'staticpages') ? '' : ''; ?>"
+                                   href="<?php echo XC_URL;?>/admin/staticpages/add">
+                                    <i class="icon">
+                                        <svg class="icon-10" xmlns="http://www.w3.org/2000/svg" width="10" viewBox="0 0 24 24" fill="currentColor">
+                                            <g><circle cx="12" cy="12" r="8" fill="currentColor"></circle></g>
+                                        </svg>
+                                    </i>
+                                    <i class="sidenav-mini-icon"> + </i>
+                                    <span class="item-name">Thêm trang tĩnh mới</span>
+                                </a>
+                            </li>
+                            <?php endif; ?>
+                            <?php if($adminCan('staticpage_categories')): ?>
+                            <li class="nav-item">
+                                <a class="nav-link <?php echo (isset($active_menu) && $active_menu == 'staticpage_categories') ? 'active' : ''; ?>"
+                                   href="<?php echo XC_URL;?>/admin/staticpagecategories">
+                                    <i class="icon">
+                                        <svg class="icon-10" xmlns="http://www.w3.org/2000/svg" width="10" viewBox="0 0 24 24" fill="currentColor">
+                                            <g><circle cx="12" cy="12" r="8" fill="currentColor"></circle></g>
+                                        </svg>
+                                    </i>
+                                    <i class="sidenav-mini-icon"> C </i>
+                                    <span class="item-name">Danh mục trang tĩnh</span>
+                                </a>
+                            </li>
+                            <?php endif; ?>
+                        </ul>
+                    </li>
+                    <?php endif; ?>
+
                     <!-- <li class="nav-item">
                         <a class="nav-link <?php echo (isset($active_menu) && $active_menu == 'newscomments') ? 'active' : ''; ?>"  href="<?php echo XC_URL;?>/admin/newscomments">
                          <i class="fa-solid fa-comments"></i>

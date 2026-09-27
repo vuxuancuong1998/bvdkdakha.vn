@@ -482,15 +482,16 @@
           if (!empty($home_featured_news) && is_array($home_featured_news)): 
              $first_news = $home_featured_news[0];
              $side_news = array_slice($home_featured_news, 1);
-             $first_url = $this->url->permalink($first_news->id, 'news');
+             $first_url = $this->url->permalink($first_news->id, 'event_detail');
+             $first_img = !empty($first_news->thumbnail_url) ? (strpos($first_news->thumbnail_url, 'http') === 0 ? $first_news->thumbnail_url : (strpos($first_news->thumbnail_url, '/') === 0 ? XC_URL . $first_news->thumbnail_url : XC_URL . '/uploads/events/' . htmlspecialchars($first_news->thumbnail_url, ENT_QUOTES, 'UTF-8'))) : XC_URL . '/template/frontend/assets/images/banner-03.jpg';
           ?>
           <!-- Featured news -->
           <article class="news-card news-featured" itemscope itemtype="https://schema.org/NewsArticle">
             <div class="news-card-img-wrap">
               <a href="<?php echo $first_url; ?>">
                 <img
-                  src="<?php echo !empty($first_news->thumbnail_url) ? XC_URL . htmlspecialchars($first_news->thumbnail_url, ENT_QUOTES, 'UTF-8') : XC_URL . '/template/frontend/assets/images/banner-03.jpg'; ?>"
-                  alt="<?php echo htmlspecialchars($first_news->title, ENT_QUOTES, 'UTF-8'); ?>"
+                  src="<?php echo $first_img; ?>"
+                  alt="<?php echo htmlspecialchars($first_news->title ?? $first_news->event_name ?? '', ENT_QUOTES, 'UTF-8'); ?>"
                   class="news-card-img"
                   loading="lazy"
                   width="700"
@@ -501,24 +502,24 @@
             </div>
             <div class="news-card-body">
               <div class="news-card-meta">
-                <time datetime="<?php echo date('Y-m-d', strtotime($first_news->published_at ?? $first_news->created_at)); ?>" itemprop="datePublished">
+                <time datetime="<?php echo date('Y-m-d', strtotime($first_news->published_at ?? $first_news->event_created_date ?? $first_news->created_at)); ?>" itemprop="datePublished">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
                     <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
                     <line x1="16" y1="2" x2="16" y2="6"/>
                     <line x1="8" y1="2" x2="8" y2="6"/>
                     <line x1="3" y1="10" x2="21" y2="10"/>
                   </svg>
-                  <?php echo date('d/m/Y', strtotime($first_news->published_at ?? $first_news->created_at)); ?>
+                  <?php echo date('d/m/Y', strtotime($first_news->published_at ?? $first_news->event_created_date ?? $first_news->created_at)); ?>
                 </time>
-                <span><?php echo ($first_news->new_category == 3 && !empty($first_news->event_start_at)) ? 'Thời gian: ' . date('d/m/Y', strtotime($first_news->event_start_at)) : 'Ban biên tập'; ?></span>
+                <span>Ban biên tập</span>
               </div>
               <h3 class="news-card-title" itemprop="headline">
                 <a href="<?php echo $first_url; ?>" itemprop="url">
-                  <?php echo htmlspecialchars($first_news->title, ENT_QUOTES, 'UTF-8'); ?>
+                  <?php echo htmlspecialchars($first_news->title ?? $first_news->event_name ?? '', ENT_QUOTES, 'UTF-8'); ?>
                 </a>
               </h3>
               <p class="news-card-excerpt" itemprop="description">
-                <?php echo htmlspecialchars($first_news->description ?? '', ENT_QUOTES, 'UTF-8'); ?>
+                <?php echo htmlspecialchars($first_news->description ?? $first_news->event_description ?? '', ENT_QUOTES, 'UTF-8'); ?>
               </p>
               <div class="news-card-footer">
                 <a href="<?php echo $first_url; ?>" class="read-more" id="readmore-01">
@@ -534,25 +535,32 @@
           <!-- Side news list -->
           <aside class="news-side-list" aria-label="Tin tức khác">
             <?php foreach ($side_news as $s_item): 
-              $s_url = $this->url->permalink($s_item->id, 'news');
+              $s_url = $this->url->permalink($s_item->id, 'event_detail');
+              $s_img = !empty($s_item->thumbnail_url) ? (strpos($s_item->thumbnail_url, 'http') === 0 ? $s_item->thumbnail_url : (strpos($s_item->thumbnail_url, '/') === 0 ? XC_URL . $s_item->thumbnail_url : XC_URL . '/uploads/events/' . htmlspecialchars($s_item->thumbnail_url, ENT_QUOTES, 'UTF-8'))) : XC_URL . '/template/frontend/assets/images/banner-01.jpg';
             ?>
             <article class="news-side-item" itemscope itemtype="https://schema.org/NewsArticle">
               <a href="<?php echo $s_url; ?>">
                 <img
-                  src="<?php echo !empty($s_item->thumbnail_url) ? XC_URL . htmlspecialchars($s_item->thumbnail_url, ENT_QUOTES, 'UTF-8') : XC_URL . '/template/frontend/assets/images/banner-01.jpg'; ?>"
-                  alt="<?php echo htmlspecialchars($s_item->title, ENT_QUOTES, 'UTF-8'); ?>"
+                  src="<?php echo $s_img; ?>"
+                  alt="<?php echo htmlspecialchars($s_item->title ?? $s_item->event_name ?? '', ENT_QUOTES, 'UTF-8'); ?>"
                   class="news-side-thumb"
                   loading="lazy"
                   width="100"
                   height="80" />
               </a>
               <div class="news-side-body">
-                <time datetime="<?php echo date('Y-m-d', strtotime($s_item->published_at ?? $s_item->created_at)); ?>" itemprop="datePublished">
-                  <?php echo date('d/m/Y', strtotime($s_item->published_at ?? $s_item->created_at)); ?>
+                <time datetime="<?php echo date('Y-m-d', strtotime($s_item->published_at ?? $s_item->event_created_date ?? $s_item->created_at)); ?>" itemprop="datePublished">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" style="width:12px;height:12px;color:var(--color-primary);flex-shrink:0;">
+                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                    <line x1="16" y1="2" x2="16" y2="6"/>
+                    <line x1="8" y1="2" x2="8" y2="6"/>
+                    <line x1="3" y1="10" x2="21" y2="10"/>
+                  </svg>
+                  <?php echo date('d/m/Y', strtotime($s_item->published_at ?? $s_item->event_created_date ?? $s_item->created_at)); ?>
                 </time>
                 <h3>
                   <a href="<?php echo $s_url; ?>" itemprop="url">
-                    <?php echo htmlspecialchars($s_item->title, ENT_QUOTES, 'UTF-8'); ?>
+                    <?php echo htmlspecialchars($s_item->title ?? $s_item->event_name ?? '', ENT_QUOTES, 'UTF-8'); ?>
                   </a>
                 </h3>
               </div>
@@ -571,9 +579,9 @@
          ============================================================ -->
     <section class="bg-alt" aria-labelledby="faq-heading" itemscope itemtype="https://schema.org/FAQPage">
       <div class="container">
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:var(--space-16); align-items:start;">
+        <div class="faq-grid">
 
-          <div>
+          <div class="faq-intro-col">
             <div class="section-header" data-animate>
               <p class="section-label">Câu hỏi thường gặp</p>
               <h2 class="section-title" id="faq-heading">Bạn cần biết</h2>
@@ -581,7 +589,7 @@
                 Tìm câu trả lời nhanh cho các thắc mắc thường gặp về quy trình khám, dịch vụ và giờ làm việc.
               </p>
             </div>
-            <div style="margin-top:var(--space-6);">
+            <div class="faq-cta-wrap">
               <a href="pages/lien-he.html" class="btn btn-primary btn-lg" id="btn-gop-y">
                 Gửi câu hỏi của bạn →
               </a>

@@ -143,10 +143,20 @@ Class indexController Extends baseController
 			LIMIT 12");
 		$this->view->data['featured_candidates'] = $db->fetch_object();
 
-		$db->query("SELECT n.*, c.name AS category_name, c.code AS category_code FROM hicrm_news n
-			LEFT JOIN hicrm_news_categories c ON n.new_category = c.id
-			WHERE n.status = 4 AND (n.published_at IS NULL OR n.published_at <= NOW())
-			ORDER BY n.is_featured DESC, COALESCE(n.published_at, n.created_at) DESC, n.id DESC
+		$db->query("SELECT e.*, 
+				e.event_name AS title, 
+				e.event_description AS description, 
+				e.event_content AS content,
+				e.event_image AS thumbnail_url,
+				e.event_created_date AS published_at,
+				e.event_created_date AS created_at,
+				e.event_type AS new_category,
+				et.event_type_name AS category_name,
+				et.event_type_slug AS category_code
+			FROM hicrm_events e
+			LEFT JOIN hicrm_event_type et ON e.event_type = et.id
+			WHERE e.event_status = 4
+			ORDER BY e.event_hot DESC, e.event_created_date DESC, e.id DESC
 			LIMIT 5");
 		$this->view->data['home_featured_news'] = $db->fetch_object();
 

@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 5.2.1
+-- version 5.1.1
 -- https://www.phpmyadmin.net/
 --
 -- Máy chủ: 127.0.0.1
--- Thời gian đã tạo: Th8 15, 2026 lúc 04:53 PM
--- Phiên bản máy phục vụ: 10.4.32-MariaDB
--- Phiên bản PHP: 8.0.30
+-- Thời gian đã tạo: Th9 27, 2026 lúc 09:32 AM
+-- Phiên bản máy phục vụ: 10.4.21-MariaDB
+-- Phiên bản PHP: 7.3.30
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -36,7 +36,7 @@ CREATE TABLE `hicrm_accounts` (
   `account_description` text DEFAULT NULL,
   `account_status` int(11) NOT NULL DEFAULT 1 COMMENT '1 - đang sử dụng, 2 - ngưng sử dụng',
   `account_parent` int(11) NOT NULL DEFAULT 0
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Đang đổ dữ liệu cho bảng `hicrm_accounts`
@@ -192,9 +192,9 @@ INSERT INTO `hicrm_accounts` (`id`, `account_number`, `account_name`, `account_t
 
 CREATE TABLE `hicrm_admin_menu_permissions` (
   `id` int(11) NOT NULL,
-  `permission_key` varchar(100) NOT NULL,
-  `permission_name` varchar(255) NOT NULL,
-  `parent_key` varchar(100) DEFAULT NULL,
+  `permission_key` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `permission_name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `parent_key` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `sort_order` int(11) NOT NULL DEFAULT 0,
   `permission_status` int(11) NOT NULL DEFAULT 1
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -221,8 +221,8 @@ INSERT INTO `hicrm_admin_menu_permissions` (`id`, `permission_key`, `permission_
 (1576, 'customer_feedbacks', 'Quản lý phản hồi khách hàng', '', 54, 1),
 (1577, 'job_support_customers', 'Quản lý khách hàng hỗ trợ tìm việc', '', 55, 1),
 (1578, 'market_results', 'Quản lý kết quả sàn', '', 56, 1),
-(7900, 'staticpages', 'Quản lý trang tĩnh CMS', 'cms_section', 52, 0),
-(7901, 'staticpage_categories', 'Danh mục trang tĩnh', 'cms_section', 53, 0),
+(7900, 'staticpages', 'Quản lý trang tĩnh CMS', 'staticpages_section', 53, 1),
+(7901, 'staticpage_categories', 'Danh mục trang tĩnh', 'staticpages_section', 54, 1),
 (7902, 'support_requests', 'Quản lý yêu cầu hỗ trợ (Tickets)', 'support_section', 55, 0),
 (8161, 'tt25_documents', 'Quản lý giấy tờ TT25', '', 55, 1);
 
@@ -240,7 +240,7 @@ CREATE TABLE `hicrm_banks` (
   `bank_logo` text DEFAULT NULL,
   `bank_description` varchar(255) DEFAULT NULL,
   `bank_status` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Đang đổ dữ liệu cho bảng `hicrm_banks`
@@ -366,7 +366,7 @@ CREATE TABLE `hicrm_bank_accounts` (
   `ba_description` text DEFAULT NULL,
   `ba_status` int(11) NOT NULL,
   `ba_primary` tinyint(1) NOT NULL DEFAULT 0
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Đang đổ dữ liệu cho bảng `hicrm_bank_accounts`
@@ -399,7 +399,7 @@ CREATE TABLE `hicrm_bookings` (
   `booking_description` text DEFAULT NULL,
   `booking_created_date` datetime DEFAULT NULL,
   `booking_status` int(11) NOT NULL DEFAULT 1
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -412,7 +412,7 @@ CREATE TABLE `hicrm_booking_status` (
   `bk_status_label` varchar(80) NOT NULL,
   `bk_status_class` varchar(100) DEFAULT NULL,
   `bk_status_icon` varchar(255) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Đang đổ dữ liệu cho bảng `hicrm_booking_status`
@@ -433,26 +433,26 @@ INSERT INTO `hicrm_booking_status` (`id`, `bk_status_label`, `bk_status_class`, 
 CREATE TABLE `hicrm_candidates` (
   `id` bigint(20) UNSIGNED NOT NULL,
   `user_id` bigint(20) NOT NULL,
-  `full_name` varchar(150) NOT NULL COMMENT 'Họ và tên',
+  `full_name` varchar(150) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Họ và tên',
   `date_of_birth` date DEFAULT NULL,
-  `gender` enum('male','female','other') DEFAULT NULL,
-  `phone` varchar(20) DEFAULT NULL,
-  `avatar_url` varchar(500) DEFAULT NULL,
+  `gender` enum('male','female','other') COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `phone` varchar(20) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `avatar_url` varchar(500) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `province_id` int(11) DEFAULT NULL COMMENT 'Địa chỉ hiện tại',
-  `address_detail` varchar(500) DEFAULT NULL,
-  `degree` enum('high_school','intermediate','college','university','postgraduate','other') DEFAULT NULL COMMENT 'Bằng cấp cao nhất',
+  `address_detail` varchar(500) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `degree` enum('high_school','intermediate','college','university','postgraduate','other') COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Bằng cấp cao nhất',
   `major` int(11) DEFAULT NULL COMMENT 'Chuyên ngành',
   `graduation_year` year(4) DEFAULT NULL,
-  `school_name` varchar(255) DEFAULT NULL COMMENT 'Trường đã học',
-  `soft_skills` text DEFAULT NULL COMMENT 'JSON: [{skill, level}]',
-  `career_goal` text DEFAULT NULL COMMENT 'Mục tiêu',
-  `career_goal_short` text DEFAULT NULL,
-  `career_goal_long` text DEFAULT NULL,
-  `desired_position` varchar(255) DEFAULT NULL COMMENT 'Vị trí muốn ứng tuyển',
+  `school_name` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Trường đã học',
+  `soft_skills` text COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'JSON: [{skill, level}]',
+  `career_goal` text COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Mục tiêu',
+  `career_goal_short` text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `career_goal_long` text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `desired_position` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Vị trí muốn ứng tuyển',
   `desired_salary` int(11) DEFAULT NULL COMMENT 'Mức lương mong muốn',
   `desired_province_id` int(11) DEFAULT NULL COMMENT 'Địa điểm làm việc mong muốn',
-  `desired_work_type` enum('full_time','part_time','remote','hybrid','any') DEFAULT 'any',
-  `cv_url` varchar(500) DEFAULT NULL COMMENT 'File CV (PDF/DOCX)',
+  `desired_work_type` enum('full_time','part_time','remote','hybrid','any') COLLATE utf8mb4_unicode_ci DEFAULT 'any',
+  `cv_url` varchar(500) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'File CV (PDF/DOCX)',
   `cv_uploaded_at` datetime DEFAULT NULL,
   `is_seeking` tinyint(1) NOT NULL DEFAULT 1 COMMENT 'Đang tìm việc',
   `profile_completeness` tinyint(3) UNSIGNED DEFAULT 0 COMMENT 'Phần trăm hoàn thiện hồ sơ',
@@ -466,25 +466,25 @@ CREATE TABLE `hicrm_candidates` (
 --
 
 INSERT INTO `hicrm_candidates` (`id`, `user_id`, `full_name`, `date_of_birth`, `gender`, `phone`, `avatar_url`, `province_id`, `address_detail`, `degree`, `major`, `graduation_year`, `school_name`, `soft_skills`, `career_goal`, `career_goal_short`, `career_goal_long`, `desired_position`, `desired_salary`, `desired_province_id`, `desired_work_type`, `cv_url`, `cv_uploaded_at`, `is_seeking`, `profile_completeness`, `created_at`, `updated_at`, `status`) VALUES
-(1, 32, 'Cương Vũ Xuân', '1998-09-27', 'male', '0828228339', 'uploads/candidate-profiles/avatar_1_20260725014131_b9daeb1e1a50365a0c4ad9d6.png', 22, 'Hoàn Văn Thụ - Kon Tum', 'postgraduate', 1, '2024', 'Phân hiệu Đại học Đà Nẵng tại Kon Tum', '[\"excel\",\"english\",\"php\",\"python\",\"sql.\"]', 'Trở thành lập trình viên Backend vững chuyên môn, thành thạo PHP, MySQL và RESTful API, tham gia phát triển các hệ thống quản lý doanh nghiệp, không ngừng học hỏi công nghệ mới và nâng cao chất lượng mã nguồn', 'Trở thành lập trình viên Backend vững chuyên môn, thành thạo PHP, MySQL và RESTful API, tham gia phát triển các hệ thống quản lý doanh nghiệp, không ngừng học hỏi công nghệ mới và nâng cao chất lượng mã nguồn', 'Trở thành lập trình viên Backend vững chuyên môn, thành thạo PHP, MySQL và RESTful API, tham gia phát triển các hệ thống quản lý doanh nghiệp, không ngừng học hỏi công nghệ mới và nâng cao chất lượng mã nguồn', 'Nhân viên CNTT', 9, 22, 'full_time', 'uploads/candidate-profiles/cv_1_20260725014131_5de93b22fa1579aa16bf9655.pdf', '2026-07-25 01:41:31', 1, 100, '2026-06-20 09:15:37', '2026-07-24 18:43:14', 3),
-(2, 47, 'Vũ Xuân Cương', '1998-09-27', 'male', '0828228339', 'uploads/candidate-profiles/avatar_2_20260725013511_49f9a2073ac1dab211d5cf18.png', 22, 'Hoàn văn thụ - Kon tum', 'postgraduate', 1, '2024', 'Phân hiệu đại học đà nẵng Tại Kon Tum', '[\"excel\",\"english\",\"php\",\"python\",\"sql.\"]', 'Trở thành lập trình viên Backend vững chuyên môn, thành thạo PHP, MySQL và RESTful API, tham gia phát triển các hệ thống quản lý doanh nghiệp, không ngừng học hỏi công nghệ mới và nâng cao chất lượng mã nguồn', 'Trở thành lập trình viên Backend vững chuyên môn, thành thạo PHP, MySQL và RESTful API, tham gia phát triển các hệ thống quản lý doanh nghiệp, không ngừng học hỏi công nghệ mới và nâng cao chất lượng mã nguồn', 'Trở thành lập trình viên Backend vững chuyên môn, thành thạo PHP, MySQL và RESTful API, tham gia phát triển các hệ thống quản lý doanh nghiệp, không ngừng học hỏi công nghệ mới và nâng cao chất lượng mã nguồn', 'Nhân viên CNTT', 8, 22, 'any', 'uploads/candidate-profiles/cv_2_20260725013511_5f536e14f813d2e382247713.pdf', '2026-07-25 01:35:11', 1, 100, '2026-06-21 02:05:31', '2026-07-24 18:35:11', 99),
+(1, 32, 'Cương Vũ Xuân', '1998-09-27', 'male', '0828228339', 'uploads/candidate-profiles/avatar_1_20260725014131_b9daeb1e1a50365a0c4ad9d6.png', 22, 'Hoàn Văn Thụ - Kon Tum', 'postgraduate', 1, 2024, 'Phân hiệu Đại học Đà Nẵng tại Kon Tum', '[\"excel\",\"english\",\"php\",\"python\",\"sql.\"]', 'Trở thành lập trình viên Backend vững chuyên môn, thành thạo PHP, MySQL và RESTful API, tham gia phát triển các hệ thống quản lý doanh nghiệp, không ngừng học hỏi công nghệ mới và nâng cao chất lượng mã nguồn', 'Trở thành lập trình viên Backend vững chuyên môn, thành thạo PHP, MySQL và RESTful API, tham gia phát triển các hệ thống quản lý doanh nghiệp, không ngừng học hỏi công nghệ mới và nâng cao chất lượng mã nguồn', 'Trở thành lập trình viên Backend vững chuyên môn, thành thạo PHP, MySQL và RESTful API, tham gia phát triển các hệ thống quản lý doanh nghiệp, không ngừng học hỏi công nghệ mới và nâng cao chất lượng mã nguồn', 'Nhân viên CNTT', 9, 22, 'full_time', 'uploads/candidate-profiles/cv_1_20260725014131_5de93b22fa1579aa16bf9655.pdf', '2026-07-25 01:41:31', 1, 100, '2026-06-20 09:15:37', '2026-07-24 18:43:14', 3),
+(2, 47, 'Vũ Xuân Cương', '1998-09-27', 'male', '0828228339', 'uploads/candidate-profiles/avatar_2_20260725013511_49f9a2073ac1dab211d5cf18.png', 22, 'Hoàn văn thụ - Kon tum', 'postgraduate', 1, 2024, 'Phân hiệu đại học đà nẵng Tại Kon Tum', '[\"excel\",\"english\",\"php\",\"python\",\"sql.\"]', 'Trở thành lập trình viên Backend vững chuyên môn, thành thạo PHP, MySQL và RESTful API, tham gia phát triển các hệ thống quản lý doanh nghiệp, không ngừng học hỏi công nghệ mới và nâng cao chất lượng mã nguồn', 'Trở thành lập trình viên Backend vững chuyên môn, thành thạo PHP, MySQL và RESTful API, tham gia phát triển các hệ thống quản lý doanh nghiệp, không ngừng học hỏi công nghệ mới và nâng cao chất lượng mã nguồn', 'Trở thành lập trình viên Backend vững chuyên môn, thành thạo PHP, MySQL và RESTful API, tham gia phát triển các hệ thống quản lý doanh nghiệp, không ngừng học hỏi công nghệ mới và nâng cao chất lượng mã nguồn', 'Nhân viên CNTT', 8, 22, 'any', 'uploads/candidate-profiles/cv_2_20260725013511_5f536e14f813d2e382247713.pdf', '2026-07-25 01:35:11', 1, 100, '2026-06-21 02:05:31', '2026-07-24 18:35:11', 99),
 (3, 48, 'Phan Hùng Phúc', NULL, NULL, '0336579210', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'any', NULL, NULL, 1, 20, '2026-06-24 03:03:03', '2026-07-24 16:57:58', 99),
 (4, 1, 'Vũ Xuân Cương', NULL, NULL, '', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'any', NULL, NULL, 1, 15, '2026-06-28 06:53:56', '2026-07-24 16:58:24', 99),
 (5, 50, 'Vũ Xuân Cương test', NULL, NULL, '0828228339', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'any', NULL, NULL, 1, 20, '2026-07-06 13:59:12', '2026-07-24 16:58:04', 99),
-(6, 55, 'Hà Phú Quý', '1998-09-27', 'male', '08643616497', 'uploads/candidate-profiles/avatar_6_20260719154512_f6ed01d7e18311252ada8030.png', 32, 'Hoàn văn thụ - Kon tum', 'high_school', 66, '2026', 'Trường Cao đẳng Kon Tum', '[\"excel\",\"english\",\"php\",\"python\",\"sql.\"]', 'Trở thành quản lý trong 3 năm tới', 'Tôi mong muốn tìm được công việc và mức lương mong muốn', 'Trở thành quản lý trong 3 năm tới', 'Nhân viên CNTT', 8, 32, 'remote', 'uploads/candidate-profiles/avatar_6_20260719154512_f6ed01d7e18311252ada8030.png', '2026-07-19 15:45:12', 1, 100, '2026-07-10 15:40:08', '2026-08-02 13:57:56', 1),
-(7, 60, 'Công Hải', '2004-02-07', 'male', '0353878958', 'uploads/candidate-profiles/avatar_7_20260724012055_ec0d8ab3389c48a17c15aad3.png', 28, '48 Nguyễn Bặc, Phường Đắk Bla, Tỉnh Quảng Ngãi', 'university', 66, '2026', 'Phân hiệu Đại học Đà Nẵng tại Kon Tum', '[\"Thành thạo Word\",\"Thành thạo Excel\"]', 'Với kinh nghiệm và nền tảng hiện tại, mục tiêu của tôi là vừa làm việc vừa học hỏi, tích cực trao đổi kiến ​​thức và kinh nghiệm khi gia nhập công ty, nhằm không ngừng nâng cao kỹ năng chuyên môn.', 'Với kinh nghiệm và nền tảng hiện tại, mục tiêu của tôi là vừa làm việc vừa học hỏi, tích cực trao đổi kiến ​​thức và kinh nghiệm khi gia nhập công ty, nhằm không ngừng nâng cao kỹ năng chuyên môn.', 'Với kinh nghiệm và nền tảng hiện tại, mục tiêu của tôi là vừa làm việc vừa học hỏi, tích cực trao đổi kiến ​​thức và kinh nghiệm khi gia nhập công ty, nhằm không ngừng nâng cao kỹ năng chuyên môn.', 'THỰC TẬP SINH CNTT', 11, 22, 'full_time', 'uploads/candidate-profiles/cv_7_20260724012055_3fc8a6d2d783cf0ad455ae5f.pdf', '2026-07-24 01:20:55', 1, 100, '2026-07-23 15:28:32', '2026-07-25 19:50:16', 3),
-(8, 65, 'Phan Hoàng Anh', '2004-08-30', 'male', '0976543218', 'uploads/candidate-profiles/avatar_8_20260725014726_ca227482c2b2d7668ed6d57c.jpg', 28, '42 Đại lộ Bình Dương, TP. Thủ Dầu Một, Bình Dương', 'college', 20, '2026', 'Cao đẳng Việt Nam - Singapore', '[\"Đàm phán\",\"Giao tiếp\",\"Chăm sóc khách hàng\",\"Excel\",\"Bán hàng\"]', 'Trở thành Trưởng nhóm Kinh doanh, xây dựng đội ngũ bán hàng chuyên nghiệp.', 'Hoàn thành vượt chỉ tiêu doanh số, mở rộng mạng lưới khách hàng doanh nghiệp.', 'Trở thành Trưởng nhóm Kinh doanh, xây dựng đội ngũ bán hàng chuyên nghiệp.', 'Nhân viên Kinh doanh', 6, 28, 'full_time', 'uploads/candidate-profiles/cv_8_20260725014726_52ce36f609ec9325affd7d74.pdf', '2026-07-25 01:47:26', 1, 100, '2026-07-23 15:50:52', '2026-07-24 18:47:36', 3),
-(9, 63, 'Lương Văn Sang', '2004-04-18', 'male', '0987654322', 'uploads/candidate-profiles/avatar_9_20260724000609_453b0ca0682547c43c59d527.png', 22, 'Phường Kon Tum, Tỉnh Quảng Ngãi', 'university', 1, '2026', 'Phân hiệu Đại học Đà Nẵng tại Kon Tum', '[\"Thành thạo Word\",\"Thành thạo Excel\"]', 'Sinh viên năm cuối ngành Công nghệ Thông tin đang tìm kiếm vị trí thực tập sinh CNTT để áp dụng kiến ​​thức nền tảng về lập trình, cơ sở dữ liệu và phát triển phần mềm trong môi trường làm việc thực tế. Ở giai đoạn đầu, tôi mong muốn tích lũy kinh nghiệm thực tế, nâng cao kỹ năng kỹ thuật và phát triển thành Lập trình viên Junior trong tương lai.', 'Sinh viên năm cuối ngành Công nghệ Thông tin đang tìm kiếm vị trí thực tập sinh CNTT để áp dụng kiến ​​thức nền tảng về lập trình, cơ sở dữ liệu và phát triển phần mềm trong môi trường làm việc thực tế. Ở giai đoạn đầu, tôi mong muốn tích lũy kinh nghiệm thực tế, nâng cao kỹ năng kỹ thuật và phát triển thành Lập trình viên Junior trong tương lai.', 'Sinh viên năm cuối ngành Công nghệ Thông tin đang tìm kiếm vị trí thực tập sinh CNTT để áp dụng kiến ​​thức nền tảng về lập trình, cơ sở dữ liệu và phát triển phần mềm trong môi trường làm việc thực tế. Ở giai đoạn đầu, tôi mong muốn tích lũy kinh nghiệm thực tế, nâng cao kỹ năng kỹ thuật và phát triển thành Lập trình viên Junior trong tương lai.', 'THỰC TẬP SINH CNTT', 11, 28, 'full_time', 'uploads/candidate-profiles/cv_9_20260724000609_3bea6cc0d74c407201dea74a.pdf', '2026-07-24 00:06:09', 1, 100, '2026-07-23 15:51:01', '2026-07-23 17:06:17', 3),
-(10, 64, 'Đỗ Trúc Quyên', '2001-10-28', 'female', '0333940715', 'uploads/candidate-profiles/avatar_10_20260724002059_f799f8c04bd0c484cce15958.png', 21, 'Hà Huy Tập, Xuân Hà, Thanh Khê, Đà Nẵng', 'university', 44, '2023', 'Đại học Ngoại ngữ Huế', '[\"Thành thạo Word\",\"Thành thạo Excel\"]', 'Gắn bó lâu dài với công việc. Cống hiến năng lực, kinh nghiệm của bản thân để đảm bảo đem lại những lợi ích thiết thực cho khách hàng và giúp doanh nghiệm mở rộng tập khách hàng', 'Trở thành Nhân viên Lễ tân xuất sắc. Xử lý tốt các công việc của cấp trên giao và giải quyết yêu cầu\r\ntừ khách hàng.', 'Gắn bó lâu dài với công việc. Cống hiến năng lực, kinh nghiệm của bản thân để đảm bảo đem lại những lợi ích thiết thực cho khách hàng và giúp doanh nghiệm mở rộng tập khách hàng', 'NHÂN VIÊN LỄ TÂN', 11, 21, 'full_time', 'uploads/candidate-profiles/cv_10_20260724002059_b374d035fc3640213192a71f.pdf', '2026-07-24 00:20:59', 1, 100, '2026-07-23 15:51:08', '2026-07-23 17:23:48', 3),
-(11, 61, 'Đỗ Quỳnh Nhi', '2004-08-30', 'female', '0338110734', 'uploads/candidate-profiles/avatar_11_20260723231356_8c44d48d6547acbc144b87a5.jpg', 22, 'Lý Thường Kiệt, thành phố Hồ Chí Minh', 'university', 48, '2026', 'Đại học Duy Tân', '[\"Ngoại ngữ tiếng Anh và Trung\",\"Thành thạo Excel\",\"word\"]', 'Mục tiêu dài hạn: Trong 2- 3 năm trở thành chuyên viên Content Marketing chuyên nghiệp,\r\ncó khả năng xây dựng chiến lược nội dung hiệu quả và phát triển lên các vị trí quản lý trong\r\nlĩnh vực Marketing.', 'Mục tiêu ngắn hạn: 3 - 6 tháng đầu phát huy khả năng sáng tạo nội dung, học hỏi kinh\r\nnghiệm thực tế và nâng cao kỹ năng SEO, Social Media, Content Marketing.', 'Mục tiêu dài hạn: Trong 2- 3 năm trở thành chuyên viên Content Marketing chuyên nghiệp,\r\ncó khả năng xây dựng chiến lược nội dung hiệu quả và phát triển lên các vị trí quản lý trong\r\nlĩnh vực Marketing.', 'CONTENT MARKETING', 11, 28, 'full_time', 'uploads/candidate-profiles/cv_11_20260723231356_839d61ff701ef6493f21e708.pdf', '2026-07-23 23:13:56', 1, 100, '2026-07-23 15:51:17', '2026-07-23 16:21:53', 3),
-(12, 72, 'Nguyễn Minh Trang', '2003-12-06', 'female', '034612 6612', 'uploads/candidate-profiles/avatar_12_20260724231207_5e6ae6ab0817107ba5d18560.jpg', 1, 'Thanh Xuân, Hà Nội', 'university', 13, '2025', 'Đại học Ngoại thương Hà Nội', '[\"Thành thạo Word\"]', 'Xây dựng sự nghiệp trong lĩnh vực Kiểm toán và Tài chính, trong môi trường làm việc chuyên nghiệp.', 'Là một sinh viên năm cuối trường đại học Ngoại thương, tự tin với khả năng nghiên cứu, phân tích và tổng hợp thông tin; khả năng giao tiếp và truyền cảm hứng, luôn đề cao kỷ luật và trách nhiệm trong công việc.\r\nMục tiêu ngắn hạn:\r\nĐạt 8.0 IELTS; Tốt nghiệp đại học Ngoại thương bằng Xuất sắc\r\nThành công gia nhập một công ty có môi trường làm việc chuyên nghiệp trong lĩnh vực Kiểm toán.', 'Xây dựng sự nghiệp trong lĩnh vực Kiểm toán và Tài chính, trong môi trường làm việc chuyên nghiệp.', 'Audit intern', 5, 1, 'full_time', 'uploads/candidate-profiles/cv_12_20260724231207_bad84cacfbe96a5c34dd1b53.pdf', '2026-07-24 23:12:07', 1, 100, '2026-07-24 15:28:29', '2026-07-24 16:13:25', 3),
-(13, 69, 'Đào Nguyễn Quốc Chân', '2001-02-13', 'male', '0839219271', 'uploads/candidate-profiles/avatar_13_20260724233326_2390e8f03970189fadd3130b.png', 28, 'Số762, CMT8,phường Phong Toàn, thành phố Bà Rịa Vũng Tàu', 'college', 25, '2021', 'Cao đẳng Dầu Khí', '[\"Thành thạo Word\"]', 'Trở thành chuyên gia vận hành hệ thống, có khả năng quản lý và tối ưu hạ tầng CNTT, ứng dụng tự động hóa trong vận hành, góp phần nâng cao tính ổn định, bảo mật và hiệu quả của hệ thống, đồng thời phát triển lên vị trí quản lý kỹ thuật trong tương lai.', 'Nắm vững quy trình vận hành hệ thống, đảm bảo hệ thống hoạt động ổn định, xử lý sự cố nhanh chóng, nâng cao chất lượng hỗ trợ người dùng và chuẩn hóa quy trình vận hành.', 'Trở thành chuyên gia vận hành hệ thống, có khả năng quản lý và tối ưu hạ tầng CNTT, ứng dụng tự động hóa trong vận hành, góp phần nâng cao tính ổn định, bảo mật và hiệu quả của hệ thống, đồng thời phát triển lên vị trí quản lý kỹ thuật trong tương lai.', 'Nhân viên vận hành hệ thống', 7, 28, 'full_time', 'uploads/candidate-profiles/cv_13_20260724233326_e8f14989847d2ab5da0716ae.pdf', '2026-07-24 23:33:26', 1, 100, '2026-07-24 16:14:50', '2026-07-24 16:35:29', 3),
-(14, 70, 'NGUYỄN LÊ BẢO NGỌC', '2000-04-19', 'female', '0353878959', 'uploads/candidate-profiles/avatar_14_20260724235608_3f6d11358274278469ddbba3.png', 28, '11 Doan Van Bo, Quận 4, Hồ Chí Minh, Việt Nam', 'university', 2, '2020', 'Đại học Kinh tế Quốc Dân', '[\"Thành thạo Word\",\"Thành thạo Excel\"]', 'Tôi là một người quản lý sản phẩm năng động và có tầm nhìn xa, với 7 năm kinh nghiệm trong môi trường SaaS năng động. Tôi rất mong muốn hỗ trợ đội ngũ của SefTech bằng vai trò lãnh đạo và hướng dẫn trong nhiều nỗ lực phát triển sản phẩm. Trong các vai trò trước đây, tôi đã giảm thời gian giao hàng xuống 20% ​​và điều phối được 95% tiến độ hoàn thành sản phẩm theo đúng lộ trình của công ty.', 'Tôi là một người quản lý sản phẩm năng động và có tầm nhìn xa, với 7 năm kinh nghiệm trong môi trường SaaS năng động. Tôi rất mong muốn hỗ trợ đội ngũ của SefTech bằng vai trò lãnh đạo và hướng dẫn trong nhiều nỗ lực phát triển sản phẩm. Trong các vai trò trước đây, tôi đã giảm thời gian giao hàng xuống 20% ​​và điều phối được 95% tiến độ hoàn thành sản phẩm theo đúng lộ trình của công ty.', 'Tôi là một người quản lý sản phẩm năng động và có tầm nhìn xa, với 7 năm kinh nghiệm trong môi trường SaaS năng động. Tôi rất mong muốn hỗ trợ đội ngũ của SefTech bằng vai trò lãnh đạo và hướng dẫn trong nhiều nỗ lực phát triển sản phẩm. Trong các vai trò trước đây, tôi đã giảm thời gian giao hàng xuống 20% ​​và điều phối được 95% tiến độ hoàn thành sản phẩm theo đúng lộ trình của công ty.', 'Quản lý sản phẩm cấp cao', 8, 28, 'full_time', 'uploads/candidate-profiles/cv_14_20260724235608_c8bc8ed75921943e475f5ef1.pdf', '2026-07-24 23:56:08', 1, 100, '2026-07-24 16:47:07', '2026-07-24 16:56:36', 3),
-(15, 71, 'Nguyễn Văn Minh', '1999-08-15', 'male', '0983124567', 'uploads/candidate-profiles/avatar_15_20260725005134_d37ab4bc524c9ad3eda419ca.jpg', 28, '120 Nguyễn Văn Linh, Phường Tân Thuận, TP. Hồ Chí Minh', 'university', 1, '2022', 'Đại học Công nghiệp TP. Hồ Chí Minh', '[\"Giao tiếp\",\"Làm việc nhóm\",\"Tin học văn phòng\",\"Excel\",\"Tiếng Anh\",\"Giải quyết vấn đề\"]', 'Trở thành Quản trị hệ thống hoặc DevOps Engineer, tham gia xây dựng hạ tầng CNTT quy mô lớn.', 'Tích lũy kinh nghiệm vận hành và quản trị hệ thống doanh nghiệp, nâng cao kỹ năng xử lý sự cố.', 'Trở thành Quản trị hệ thống hoặc DevOps Engineer, tham gia xây dựng hạ tầng CNTT quy mô lớn.', 'Nhân viên Vận hành Hệ thống', 7, 28, 'full_time', 'uploads/candidate-profiles/cv_15_20260725005134_95e727e41cb215dd426714bd.pdf', '2026-07-25 00:51:34', 1, 100, '2026-07-24 16:59:41', '2026-07-24 17:52:15', 3),
-(16, 59, 'Trần Thị Lan', '2000-11-20', 'female', '0915678234', 'uploads/candidate-profiles/avatar_16_20260725011936_877ef380c09f903055b1495f.jpg', 21, '52 Lê Duẩn, Hải Châu, Đà Nẵng', 'university', 11, '2023', 'Đại học Kinh tế Đà Nẵng', '[\"Excel\",\"Giao tiếp\",\"Làm việc nhóm\",\"Cẩn thận\",\"Quản lý thời gian\"]', 'Phát triển lên vị trí Kế toán trưởng và có chứng chỉ CPA.', 'Trở thành nhân viên kế toán tổng hợp, nâng cao kỹ năng nghiệp vụ và sử dụng thành thạo phần mềm kế toán.', 'Phát triển lên vị trí Kế toán trưởng và có chứng chỉ CPA.', 'Nhân viên Kế toán', 6, 21, 'full_time', 'uploads/candidate-profiles/cv_16_20260725011936_ca98802331af8283404878a3.pdf', '2026-07-25 01:19:36', 1, 100, '2026-07-24 18:15:39', '2026-07-24 18:19:56', 3),
-(17, 68, 'Lê Quốc Huy', '1998-04-03', 'male', '0968234561', 'uploads/candidate-profiles/avatar_17_20260725012521_d66a637184bd24d84980750a.jpg', 1, '86 Cầu Giấy, Hà Nội', 'university', 2, '2021', 'Đại học FPT', '[\"PHP\",\"Laravel\",\"MySQL\",\"Git\",\"Giao tiếp\",\"Làm việc nhóm\"]', 'Trở thành Technical Leader, dẫn dắt đội ngũ phát triển phần mềm.', 'Tham gia các dự án phần mềm thực tế, nâng cao kỹ năng backend và tối ưu hệ thống.', 'Trở thành Technical Leader, dẫn dắt đội ngũ phát triển phần mềm.', 'Lập trình viên PHP Backend', 8, 1, 'full_time', 'uploads/candidate-profiles/cv_17_20260725012521_da4c71328c61fbedaae1cd28.pdf', '2026-07-25 01:25:21', 1, 100, '2026-07-24 18:20:54', '2026-07-24 18:25:37', 3),
+(6, 55, 'Hà Phú Quý', '1998-09-27', 'male', '08643616497', 'uploads/candidate-profiles/avatar_6_20260719154512_f6ed01d7e18311252ada8030.png', 32, 'Hoàn văn thụ - Kon tum', 'high_school', 66, 2026, 'Trường Cao đẳng Kon Tum', '[\"excel\",\"english\",\"php\",\"python\",\"sql.\"]', 'Trở thành quản lý trong 3 năm tới', 'Tôi mong muốn tìm được công việc và mức lương mong muốn', 'Trở thành quản lý trong 3 năm tới', 'Nhân viên CNTT', 8, 32, 'remote', 'uploads/candidate-profiles/avatar_6_20260719154512_f6ed01d7e18311252ada8030.png', '2026-07-19 15:45:12', 1, 100, '2026-07-10 15:40:08', '2026-08-02 13:57:56', 1),
+(7, 60, 'Công Hải', '2004-02-07', 'male', '0353878958', 'uploads/candidate-profiles/avatar_7_20260724012055_ec0d8ab3389c48a17c15aad3.png', 28, '48 Nguyễn Bặc, Phường Đắk Bla, Tỉnh Quảng Ngãi', 'university', 66, 2026, 'Phân hiệu Đại học Đà Nẵng tại Kon Tum', '[\"Thành thạo Word\",\"Thành thạo Excel\"]', 'Với kinh nghiệm và nền tảng hiện tại, mục tiêu của tôi là vừa làm việc vừa học hỏi, tích cực trao đổi kiến ​​thức và kinh nghiệm khi gia nhập công ty, nhằm không ngừng nâng cao kỹ năng chuyên môn.', 'Với kinh nghiệm và nền tảng hiện tại, mục tiêu của tôi là vừa làm việc vừa học hỏi, tích cực trao đổi kiến ​​thức và kinh nghiệm khi gia nhập công ty, nhằm không ngừng nâng cao kỹ năng chuyên môn.', 'Với kinh nghiệm và nền tảng hiện tại, mục tiêu của tôi là vừa làm việc vừa học hỏi, tích cực trao đổi kiến ​​thức và kinh nghiệm khi gia nhập công ty, nhằm không ngừng nâng cao kỹ năng chuyên môn.', 'THỰC TẬP SINH CNTT', 11, 22, 'full_time', 'uploads/candidate-profiles/cv_7_20260724012055_3fc8a6d2d783cf0ad455ae5f.pdf', '2026-07-24 01:20:55', 1, 100, '2026-07-23 15:28:32', '2026-07-25 19:50:16', 3),
+(8, 65, 'Phan Hoàng Anh', '2004-08-30', 'male', '0976543218', 'uploads/candidate-profiles/avatar_8_20260725014726_ca227482c2b2d7668ed6d57c.jpg', 28, '42 Đại lộ Bình Dương, TP. Thủ Dầu Một, Bình Dương', 'college', 20, 2026, 'Cao đẳng Việt Nam - Singapore', '[\"Đàm phán\",\"Giao tiếp\",\"Chăm sóc khách hàng\",\"Excel\",\"Bán hàng\"]', 'Trở thành Trưởng nhóm Kinh doanh, xây dựng đội ngũ bán hàng chuyên nghiệp.', 'Hoàn thành vượt chỉ tiêu doanh số, mở rộng mạng lưới khách hàng doanh nghiệp.', 'Trở thành Trưởng nhóm Kinh doanh, xây dựng đội ngũ bán hàng chuyên nghiệp.', 'Nhân viên Kinh doanh', 6, 28, 'full_time', 'uploads/candidate-profiles/cv_8_20260725014726_52ce36f609ec9325affd7d74.pdf', '2026-07-25 01:47:26', 1, 100, '2026-07-23 15:50:52', '2026-07-24 18:47:36', 3),
+(9, 63, 'Lương Văn Sang', '2004-04-18', 'male', '0987654322', 'uploads/candidate-profiles/avatar_9_20260724000609_453b0ca0682547c43c59d527.png', 22, 'Phường Kon Tum, Tỉnh Quảng Ngãi', 'university', 1, 2026, 'Phân hiệu Đại học Đà Nẵng tại Kon Tum', '[\"Thành thạo Word\",\"Thành thạo Excel\"]', 'Sinh viên năm cuối ngành Công nghệ Thông tin đang tìm kiếm vị trí thực tập sinh CNTT để áp dụng kiến ​​thức nền tảng về lập trình, cơ sở dữ liệu và phát triển phần mềm trong môi trường làm việc thực tế. Ở giai đoạn đầu, tôi mong muốn tích lũy kinh nghiệm thực tế, nâng cao kỹ năng kỹ thuật và phát triển thành Lập trình viên Junior trong tương lai.', 'Sinh viên năm cuối ngành Công nghệ Thông tin đang tìm kiếm vị trí thực tập sinh CNTT để áp dụng kiến ​​thức nền tảng về lập trình, cơ sở dữ liệu và phát triển phần mềm trong môi trường làm việc thực tế. Ở giai đoạn đầu, tôi mong muốn tích lũy kinh nghiệm thực tế, nâng cao kỹ năng kỹ thuật và phát triển thành Lập trình viên Junior trong tương lai.', 'Sinh viên năm cuối ngành Công nghệ Thông tin đang tìm kiếm vị trí thực tập sinh CNTT để áp dụng kiến ​​thức nền tảng về lập trình, cơ sở dữ liệu và phát triển phần mềm trong môi trường làm việc thực tế. Ở giai đoạn đầu, tôi mong muốn tích lũy kinh nghiệm thực tế, nâng cao kỹ năng kỹ thuật và phát triển thành Lập trình viên Junior trong tương lai.', 'THỰC TẬP SINH CNTT', 11, 28, 'full_time', 'uploads/candidate-profiles/cv_9_20260724000609_3bea6cc0d74c407201dea74a.pdf', '2026-07-24 00:06:09', 1, 100, '2026-07-23 15:51:01', '2026-07-23 17:06:17', 3),
+(10, 64, 'Đỗ Trúc Quyên', '2001-10-28', 'female', '0333940715', 'uploads/candidate-profiles/avatar_10_20260724002059_f799f8c04bd0c484cce15958.png', 21, 'Hà Huy Tập, Xuân Hà, Thanh Khê, Đà Nẵng', 'university', 44, 2023, 'Đại học Ngoại ngữ Huế', '[\"Thành thạo Word\",\"Thành thạo Excel\"]', 'Gắn bó lâu dài với công việc. Cống hiến năng lực, kinh nghiệm của bản thân để đảm bảo đem lại những lợi ích thiết thực cho khách hàng và giúp doanh nghiệm mở rộng tập khách hàng', 'Trở thành Nhân viên Lễ tân xuất sắc. Xử lý tốt các công việc của cấp trên giao và giải quyết yêu cầu\r\ntừ khách hàng.', 'Gắn bó lâu dài với công việc. Cống hiến năng lực, kinh nghiệm của bản thân để đảm bảo đem lại những lợi ích thiết thực cho khách hàng và giúp doanh nghiệm mở rộng tập khách hàng', 'NHÂN VIÊN LỄ TÂN', 11, 21, 'full_time', 'uploads/candidate-profiles/cv_10_20260724002059_b374d035fc3640213192a71f.pdf', '2026-07-24 00:20:59', 1, 100, '2026-07-23 15:51:08', '2026-07-23 17:23:48', 3),
+(11, 61, 'Đỗ Quỳnh Nhi', '2004-08-30', 'female', '0338110734', 'uploads/candidate-profiles/avatar_11_20260723231356_8c44d48d6547acbc144b87a5.jpg', 22, 'Lý Thường Kiệt, thành phố Hồ Chí Minh', 'university', 48, 2026, 'Đại học Duy Tân', '[\"Ngoại ngữ tiếng Anh và Trung\",\"Thành thạo Excel\",\"word\"]', 'Mục tiêu dài hạn: Trong 2- 3 năm trở thành chuyên viên Content Marketing chuyên nghiệp,\r\ncó khả năng xây dựng chiến lược nội dung hiệu quả và phát triển lên các vị trí quản lý trong\r\nlĩnh vực Marketing.', 'Mục tiêu ngắn hạn: 3 - 6 tháng đầu phát huy khả năng sáng tạo nội dung, học hỏi kinh\r\nnghiệm thực tế và nâng cao kỹ năng SEO, Social Media, Content Marketing.', 'Mục tiêu dài hạn: Trong 2- 3 năm trở thành chuyên viên Content Marketing chuyên nghiệp,\r\ncó khả năng xây dựng chiến lược nội dung hiệu quả và phát triển lên các vị trí quản lý trong\r\nlĩnh vực Marketing.', 'CONTENT MARKETING', 11, 28, 'full_time', 'uploads/candidate-profiles/cv_11_20260723231356_839d61ff701ef6493f21e708.pdf', '2026-07-23 23:13:56', 1, 100, '2026-07-23 15:51:17', '2026-07-23 16:21:53', 3),
+(12, 72, 'Nguyễn Minh Trang', '2003-12-06', 'female', '034612 6612', 'uploads/candidate-profiles/avatar_12_20260724231207_5e6ae6ab0817107ba5d18560.jpg', 1, 'Thanh Xuân, Hà Nội', 'university', 13, 2025, 'Đại học Ngoại thương Hà Nội', '[\"Thành thạo Word\"]', 'Xây dựng sự nghiệp trong lĩnh vực Kiểm toán và Tài chính, trong môi trường làm việc chuyên nghiệp.', 'Là một sinh viên năm cuối trường đại học Ngoại thương, tự tin với khả năng nghiên cứu, phân tích và tổng hợp thông tin; khả năng giao tiếp và truyền cảm hứng, luôn đề cao kỷ luật và trách nhiệm trong công việc.\r\nMục tiêu ngắn hạn:\r\nĐạt 8.0 IELTS; Tốt nghiệp đại học Ngoại thương bằng Xuất sắc\r\nThành công gia nhập một công ty có môi trường làm việc chuyên nghiệp trong lĩnh vực Kiểm toán.', 'Xây dựng sự nghiệp trong lĩnh vực Kiểm toán và Tài chính, trong môi trường làm việc chuyên nghiệp.', 'Audit intern', 5, 1, 'full_time', 'uploads/candidate-profiles/cv_12_20260724231207_bad84cacfbe96a5c34dd1b53.pdf', '2026-07-24 23:12:07', 1, 100, '2026-07-24 15:28:29', '2026-07-24 16:13:25', 3),
+(13, 69, 'Đào Nguyễn Quốc Chân', '2001-02-13', 'male', '0839219271', 'uploads/candidate-profiles/avatar_13_20260724233326_2390e8f03970189fadd3130b.png', 28, 'Số762, CMT8,phường Phong Toàn, thành phố Bà Rịa Vũng Tàu', 'college', 25, 2021, 'Cao đẳng Dầu Khí', '[\"Thành thạo Word\"]', 'Trở thành chuyên gia vận hành hệ thống, có khả năng quản lý và tối ưu hạ tầng CNTT, ứng dụng tự động hóa trong vận hành, góp phần nâng cao tính ổn định, bảo mật và hiệu quả của hệ thống, đồng thời phát triển lên vị trí quản lý kỹ thuật trong tương lai.', 'Nắm vững quy trình vận hành hệ thống, đảm bảo hệ thống hoạt động ổn định, xử lý sự cố nhanh chóng, nâng cao chất lượng hỗ trợ người dùng và chuẩn hóa quy trình vận hành.', 'Trở thành chuyên gia vận hành hệ thống, có khả năng quản lý và tối ưu hạ tầng CNTT, ứng dụng tự động hóa trong vận hành, góp phần nâng cao tính ổn định, bảo mật và hiệu quả của hệ thống, đồng thời phát triển lên vị trí quản lý kỹ thuật trong tương lai.', 'Nhân viên vận hành hệ thống', 7, 28, 'full_time', 'uploads/candidate-profiles/cv_13_20260724233326_e8f14989847d2ab5da0716ae.pdf', '2026-07-24 23:33:26', 1, 100, '2026-07-24 16:14:50', '2026-07-24 16:35:29', 3),
+(14, 70, 'NGUYỄN LÊ BẢO NGỌC', '2000-04-19', 'female', '0353878959', 'uploads/candidate-profiles/avatar_14_20260724235608_3f6d11358274278469ddbba3.png', 28, '11 Doan Van Bo, Quận 4, Hồ Chí Minh, Việt Nam', 'university', 2, 2020, 'Đại học Kinh tế Quốc Dân', '[\"Thành thạo Word\",\"Thành thạo Excel\"]', 'Tôi là một người quản lý sản phẩm năng động và có tầm nhìn xa, với 7 năm kinh nghiệm trong môi trường SaaS năng động. Tôi rất mong muốn hỗ trợ đội ngũ của SefTech bằng vai trò lãnh đạo và hướng dẫn trong nhiều nỗ lực phát triển sản phẩm. Trong các vai trò trước đây, tôi đã giảm thời gian giao hàng xuống 20% ​​và điều phối được 95% tiến độ hoàn thành sản phẩm theo đúng lộ trình của công ty.', 'Tôi là một người quản lý sản phẩm năng động và có tầm nhìn xa, với 7 năm kinh nghiệm trong môi trường SaaS năng động. Tôi rất mong muốn hỗ trợ đội ngũ của SefTech bằng vai trò lãnh đạo và hướng dẫn trong nhiều nỗ lực phát triển sản phẩm. Trong các vai trò trước đây, tôi đã giảm thời gian giao hàng xuống 20% ​​và điều phối được 95% tiến độ hoàn thành sản phẩm theo đúng lộ trình của công ty.', 'Tôi là một người quản lý sản phẩm năng động và có tầm nhìn xa, với 7 năm kinh nghiệm trong môi trường SaaS năng động. Tôi rất mong muốn hỗ trợ đội ngũ của SefTech bằng vai trò lãnh đạo và hướng dẫn trong nhiều nỗ lực phát triển sản phẩm. Trong các vai trò trước đây, tôi đã giảm thời gian giao hàng xuống 20% ​​và điều phối được 95% tiến độ hoàn thành sản phẩm theo đúng lộ trình của công ty.', 'Quản lý sản phẩm cấp cao', 8, 28, 'full_time', 'uploads/candidate-profiles/cv_14_20260724235608_c8bc8ed75921943e475f5ef1.pdf', '2026-07-24 23:56:08', 1, 100, '2026-07-24 16:47:07', '2026-07-24 16:56:36', 3),
+(15, 71, 'Nguyễn Văn Minh', '1999-08-15', 'male', '0983124567', 'uploads/candidate-profiles/avatar_15_20260725005134_d37ab4bc524c9ad3eda419ca.jpg', 28, '120 Nguyễn Văn Linh, Phường Tân Thuận, TP. Hồ Chí Minh', 'university', 1, 2022, 'Đại học Công nghiệp TP. Hồ Chí Minh', '[\"Giao tiếp\",\"Làm việc nhóm\",\"Tin học văn phòng\",\"Excel\",\"Tiếng Anh\",\"Giải quyết vấn đề\"]', 'Trở thành Quản trị hệ thống hoặc DevOps Engineer, tham gia xây dựng hạ tầng CNTT quy mô lớn.', 'Tích lũy kinh nghiệm vận hành và quản trị hệ thống doanh nghiệp, nâng cao kỹ năng xử lý sự cố.', 'Trở thành Quản trị hệ thống hoặc DevOps Engineer, tham gia xây dựng hạ tầng CNTT quy mô lớn.', 'Nhân viên Vận hành Hệ thống', 7, 28, 'full_time', 'uploads/candidate-profiles/cv_15_20260725005134_95e727e41cb215dd426714bd.pdf', '2026-07-25 00:51:34', 1, 100, '2026-07-24 16:59:41', '2026-07-24 17:52:15', 3),
+(16, 59, 'Trần Thị Lan', '2000-11-20', 'female', '0915678234', 'uploads/candidate-profiles/avatar_16_20260725011936_877ef380c09f903055b1495f.jpg', 21, '52 Lê Duẩn, Hải Châu, Đà Nẵng', 'university', 11, 2023, 'Đại học Kinh tế Đà Nẵng', '[\"Excel\",\"Giao tiếp\",\"Làm việc nhóm\",\"Cẩn thận\",\"Quản lý thời gian\"]', 'Phát triển lên vị trí Kế toán trưởng và có chứng chỉ CPA.', 'Trở thành nhân viên kế toán tổng hợp, nâng cao kỹ năng nghiệp vụ và sử dụng thành thạo phần mềm kế toán.', 'Phát triển lên vị trí Kế toán trưởng và có chứng chỉ CPA.', 'Nhân viên Kế toán', 6, 21, 'full_time', 'uploads/candidate-profiles/cv_16_20260725011936_ca98802331af8283404878a3.pdf', '2026-07-25 01:19:36', 1, 100, '2026-07-24 18:15:39', '2026-07-24 18:19:56', 3),
+(17, 68, 'Lê Quốc Huy', '1998-04-03', 'male', '0968234561', 'uploads/candidate-profiles/avatar_17_20260725012521_d66a637184bd24d84980750a.jpg', 1, '86 Cầu Giấy, Hà Nội', 'university', 2, 2021, 'Đại học FPT', '[\"PHP\",\"Laravel\",\"MySQL\",\"Git\",\"Giao tiếp\",\"Làm việc nhóm\"]', 'Trở thành Technical Leader, dẫn dắt đội ngũ phát triển phần mềm.', 'Tham gia các dự án phần mềm thực tế, nâng cao kỹ năng backend và tối ưu hệ thống.', 'Trở thành Technical Leader, dẫn dắt đội ngũ phát triển phần mềm.', 'Lập trình viên PHP Backend', 8, 1, 'full_time', 'uploads/candidate-profiles/cv_17_20260725012521_da4c71328c61fbedaae1cd28.pdf', '2026-07-25 01:25:21', 1, 100, '2026-07-24 18:20:54', '2026-07-24 18:25:37', 3),
 (19, 54, 'Lý Thu Yến', NULL, NULL, '0935423978', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'any', NULL, NULL, 1, 20, '2026-07-25 20:51:09', '2026-07-25 20:51:09', 1),
-(21, 62, 'Phan Hoàng Anh', '2004-08-30', 'male', '0976543218', 'uploads/candidate-profiles/avatar_8_20260725014726_ca227482c2b2d7668ed6d57c.jpg', 28, '42 Đại lộ Bình Dương, TP. Thủ Dầu Một, Bình Dương', 'college', 20, '2026', 'Cao đẳng Việt Nam - Singapore', '[\"Đàm phán\",\"Giao tiếp\",\"Chăm sóc khách hàng\",\"Excel\",\"Bán hàng\"]', 'Trở thành Trưởng nhóm Kinh doanh, xây dựng đội ngũ bán hàng chuyên nghiệp.', 'Hoàn thành vượt chỉ tiêu doanh số, mở rộng mạng lưới khách hàng doanh nghiệp.', 'Trở thành Trưởng nhóm Kinh doanh, xây dựng đội ngũ bán hàng chuyên nghiệp.', 'Nhân viên Kinh doanh', 6, 28, 'full_time', 'uploads/candidate-profiles/cv_8_20260725014726_52ce36f609ec9325affd7d74.pdf', '2026-07-25 01:47:26', 1, 100, '2026-07-23 15:50:52', '2026-07-24 18:47:36', 3);
+(21, 62, 'Phan Hoàng Anh', '2004-08-30', 'male', '0976543218', 'uploads/candidate-profiles/avatar_8_20260725014726_ca227482c2b2d7668ed6d57c.jpg', 28, '42 Đại lộ Bình Dương, TP. Thủ Dầu Một, Bình Dương', 'college', 20, 2026, 'Cao đẳng Việt Nam - Singapore', '[\"Đàm phán\",\"Giao tiếp\",\"Chăm sóc khách hàng\",\"Excel\",\"Bán hàng\"]', 'Trở thành Trưởng nhóm Kinh doanh, xây dựng đội ngũ bán hàng chuyên nghiệp.', 'Hoàn thành vượt chỉ tiêu doanh số, mở rộng mạng lưới khách hàng doanh nghiệp.', 'Trở thành Trưởng nhóm Kinh doanh, xây dựng đội ngũ bán hàng chuyên nghiệp.', 'Nhân viên Kinh doanh', 6, 28, 'full_time', 'uploads/candidate-profiles/cv_8_20260725014726_52ce36f609ec9325affd7d74.pdf', '2026-07-25 01:47:26', 1, 100, '2026-07-23 15:50:52', '2026-07-24 18:47:36', 3);
 
 -- --------------------------------------------------------
 
@@ -495,11 +495,11 @@ INSERT INTO `hicrm_candidates` (`id`, `user_id`, `full_name`, `date_of_birth`, `
 CREATE TABLE `hicrm_candidate_certificates` (
   `id` bigint(20) UNSIGNED NOT NULL,
   `candidate_id` bigint(20) UNSIGNED NOT NULL,
-  `cert_name` varchar(255) NOT NULL COMMENT 'Tên chứng chỉ/bằng cấp ngắn hạn',
-  `issuer` varchar(255) DEFAULT NULL COMMENT 'Tổ chức cấp',
+  `cert_name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Tên chứng chỉ/bằng cấp ngắn hạn',
+  `issuer` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Tổ chức cấp',
   `issued_date` date DEFAULT NULL,
   `expiry_date` date DEFAULT NULL,
-  `cert_url` varchar(500) DEFAULT NULL COMMENT 'File/link chứng chỉ',
+  `cert_url` varchar(500) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'File/link chứng chỉ',
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Chứng chỉ của ứng viên';
 
@@ -532,11 +532,11 @@ INSERT INTO `hicrm_candidate_certificates` (`id`, `candidate_id`, `cert_name`, `
 CREATE TABLE `hicrm_candidate_experiences` (
   `id` bigint(20) UNSIGNED NOT NULL,
   `candidate_id` bigint(20) UNSIGNED NOT NULL,
-  `company_name` varchar(255) NOT NULL COMMENT 'Tên công ty cũ',
-  `position` varchar(255) NOT NULL COMMENT 'Vị trí/chức danh',
+  `company_name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Tên công ty cũ',
+  `position` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Vị trí/chức danh',
   `start_date` date NOT NULL,
   `end_date` date DEFAULT NULL COMMENT 'NULL = hiện tại',
-  `description` text DEFAULT NULL COMMENT 'Mô tả nhiệm vụ chính',
+  `description` text COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Mô tả nhiệm vụ chính',
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Kinh nghiệm làm việc của ứng viên';
 
@@ -578,7 +578,7 @@ CREATE TABLE `hicrm_categories` (
   `category_parent` int(11) NOT NULL,
   `category_orderby` int(11) DEFAULT 0,
   `category_status` int(11) NOT NULL DEFAULT 1
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Đang đổ dữ liệu cho bảng `hicrm_categories`
@@ -606,7 +606,7 @@ CREATE TABLE `hicrm_configs` (
   `id` int(11) NOT NULL,
   `config_key` varchar(255) NOT NULL,
   `config_value` text NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Đang đổ dữ liệu cho bảng `hicrm_configs`
@@ -679,30 +679,30 @@ CREATE TABLE `hicrm_customers` (
   `customer_created_date` datetime NOT NULL DEFAULT current_timestamp(),
   `customer_last_update` datetime DEFAULT NULL,
   `customer_status` int(11) NOT NULL DEFAULT 1
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Đang đổ dữ liệu cho bảng `hicrm_customers`
 --
 
 INSERT INTO `hicrm_customers` (`id`, `customer_uid`, `customer_branch_id`, `customer_code`, `customer_tax_code`, `customer_name`, `customer_title`, `customer_address`, `customer_phone`, `customer_email`, `customer_group`, `customer_type`, `customer_is_vendor`, `customer_loyalty_point`, `customer_staff`, `customer_note`, `customer_payment_policy`, `customer_debit`, `customer_credit`, `customer_debt`, `customer_created_date`, `customer_last_update`, `customer_status`) VALUES
-(1, 1, 1, 'KH0000001', '5901157710', 'Công ty TNHH Công nghệ và Đầu tư VCF', 'Thái Đình Sang', '86 Cách Mạng Tháng Tám, P. Hoa Lư, TP. Pleiku, Gia Lai', '02693883456', 'info@vcfmedia.com', 1, 1, 1, 0, 1, NULL, 1, 1111, 1111, 0.00, '2021-08-18 21:41:08', NULL, 1),
-(2, 0, 0, 'KH0000002', '5901157710', 'Công ty TNHH Công nghệ và Đầu tư VCF', '', '86 Cách Mạng Tháng Tám, P. Hoa Lư, TP. Pleiku, Gia Lai', '02693883456', 'info@vcfmedia.com', 1, 1, 1, 0, 1, '', 1, 1111, 1111, 0.00, '2021-08-18 23:33:50', NULL, 99),
-(3, 0, 0, 'KH0000003', '5901157710', 'Công ty TNHH Công nghệ và Đầu tư VCF', '', '86 Cách Mạng Tháng Tám, P. Hoa Lư, TP. Pleiku, Gia Lai', '02693883456', 'info@vcfmedia.com', 1, 1, 1, 0, 1, '', 1, 1111, 1111, 0.00, '2021-08-18 23:34:21', NULL, 99),
-(4, 1, 0, 'KH0000004', '5901157710', 'Công ty TNHH Công nghệ và Đầu tư Phần mềm', '', '86 Cách Mạng Tháng Tám, P. Hoa Lư, TP. Pleiku, Gia Lai', '02693883456', 'info@vcfmedia.com', 1, 1, 1, 0, 1, '', 1, 1111, 1111, 0.00, '2021-08-18 23:35:06', NULL, 1),
-(5, 0, 0, 'KH0000005', '5901157710', 'Công ty TNHH Công nghệ và Đầu tư VCF', '', '86 Cách Mạng Tháng Tám, P. Hoa Lư, TP. Pleiku, Gia Lai', '02693883456', 'info@vcfmedia.com', 1, 1, 1, 0, 1, '', 1, 1111, 1111, 0.00, '2021-08-19 00:05:33', NULL, 1),
-(6, 0, 0, 'KH0000006', '5901157710', 'Công ty TNHH Công nghệ và Đầu tư VCF', '', '86 Cách Mạng Tháng Tám, P. Hoa Lư, TP. Pleiku, Gia Lai', '02693883456', 'info@vcfmedia.com', 1, 1, 1, 0, 1, '', 1, 1111, 1111, 0.00, '2021-08-19 00:13:11', NULL, 2),
-(7, 0, 0, 'KH0000007', '5901157710', 'Công ty TNHH Công nghệ và Đầu tư VCF', '', '86 Cách Mạng Tháng Tám, P. Hoa Lư, TP. Pleiku, Gia Lai', '02693883456', 'info@vcfmedia.com', 1, 1, 1, 0, 1, '', 1, 1111, 1111, 0.00, '2021-08-19 00:13:15', NULL, 1),
-(8, 0, 0, 'KH0000008', '5901157710', 'Công ty TNHH Công nghệ và Đầu tư VCF', '', '86 Cách Mạng Tháng Tám, P. Hoa Lư, TP. Pleiku, Gia Lai', '02693883456', 'info@vcfmedia.com', 2, 1, 1, 0, 1, '', 1, 1111, 1111, 0.00, '2021-08-19 00:13:21', NULL, 1),
-(9, 0, 0, 'KH0000009', '7712312', 'Vcf Media', 'Nguyễn Trần Nhân Hậu', '86, Cách mạng tháng 8, Pleiku', '0997123123', 'Vuxuancuong@gmail.com', 1, 2, 2, 0, 1, 'Ghi chú ghi ở đây', 1, 1111, 1111, 0.00, '2021-08-19 13:57:47', '2021-08-19 13:57:47', 1),
-(10, 0, 0, 'KH0000009', '7712312', 'Vcf Media', 'Nguyễn Trần Nhân Hậu', '86, Cách mạng tháng 8, Pleiku', '0997123123', 'Vuxuancuong@gmail.com', 1, 2, 2, 0, 1, 'Ghi chú ghi ở đây', 1, 1111, 1111, 0.00, '2021-08-19 13:58:18', '2021-08-19 13:58:18', 1),
-(11, 0, 0, 'KH0000010', '77123122', 'Công ty TNHH Vcf Media Tây Nguyên', 'Nguyễn Trần Nhân Hậu', '86 - CMT8 - Hoa Lư - Pleiku', '0927123123', 'nguyentrannhanhau@gmail.com', 1, 2, 2, 0, 1, 'Nôi dung 1', 1, 1111, 1111, 0.00, '2021-08-19 14:05:32', '2021-08-19 14:05:32', 1),
-(12, 0, 0, 'KH0000011', '5901157710', 'Công ty TNHH Công nghệ và Đầu tư VCF', '', '86 Cách Mạng Tháng Tám, P. Hoa Lư, TP. Pleiku, Gia Lai', '02693883456', 'info@vcfmedia.com', 1, 1, 1, 0, 1, '', 1, 1111, 1111, 0.00, '2021-08-20 10:06:18', NULL, 1),
-(13, 0, 0, 'KH0000012', '77123122', 'Công ty TNHH Vcf Media Tây Nguyên', 'Nguyễn Trần Nhân Hậu', '86 - CMT8 - Hoa Lư - Pleiku', '0927123123', 'nguyentrannhanhau@gmail.com', 1, 2, 2, 0, 1, 'Nôi dung 1', 1, 1111, 1111, 0.00, '2021-08-21 10:49:21', NULL, 1),
-(14, 0, 0, 'KH0000013', '5901157710', 'Công ty TNHH Công nghệ và Đầu tư VCF', '', '86 Cách Mạng Tháng Tám, P. Hoa Lư, TP. Pleiku, Gia Lai', '02693883456', 'info@vcfmedia.com', 1, 1, 1, 0, 1, '', 1, 1111, 1111, 0.00, '2021-08-22 15:32:28', NULL, 1),
-(15, 0, 0, 'KH0000014', '7712312', 'Công ty TNHH Công nghệ và Đầu tư VCF', 'Nguyễn Trần Nhân Hậu', '86 Cách Mạng Tháng Tám, P. Hoa Lư, TP. Pleiku, Gia Lai', '02693883456', 'info@vcfmedia.com', 1, 1, 0, 0, 1, '', 1, 1111, 1111, 0.00, '2021-08-23 10:13:48', '2021-09-07 13:35:39', 1),
-(16, 0, 0, 'KH0000015', '5901157710', 'Công ty TNHH Công nghệ và Đầu tư VCF', '', '86 Cách Mạng Tháng Tám, P. Hoa Lư, TP. Pleiku, Gia Lai', '02693883456', 'info@vcfmedia.com', 1, 1, 1, 0, 1, '', 1, 1111, 1111, 0.00, '2021-09-07 10:15:18', NULL, 99),
-(17, 24, NULL, 'KH0000016', '7712312', 'Công ty TNHH Công nghệ và Đầu tư VCF', 'Nguyễn Trần Nhân Hậu', '86 Cách Mạng Tháng Tám, P. Hoa Lư, TP. Pleiku, Gia Lai', '02693883456', 'info@vcfmedia.com', 1, 1, 0, 0, 1, '', 1, 1111, 1111, 0.00, '2025-11-19 22:54:28', NULL, 2);
+(1, 1, 1, 'KH0000001', '5901157710', 'Công ty TNHH Công nghệ và Đầu tư VCF', 'Thái Đình Sang', '86 Cách Mạng Tháng Tám, P. Hoa Lư, TP. Pleiku, Gia Lai', '02693883456', 'info@vcfmedia.com', 1, 1, 1, 0, 1, NULL, 1, 1111, 1111, '0.00', '2021-08-18 21:41:08', NULL, 1),
+(2, 0, 0, 'KH0000002', '5901157710', 'Công ty TNHH Công nghệ và Đầu tư VCF', '', '86 Cách Mạng Tháng Tám, P. Hoa Lư, TP. Pleiku, Gia Lai', '02693883456', 'info@vcfmedia.com', 1, 1, 1, 0, 1, '', 1, 1111, 1111, '0.00', '2021-08-18 23:33:50', NULL, 99),
+(3, 0, 0, 'KH0000003', '5901157710', 'Công ty TNHH Công nghệ và Đầu tư VCF', '', '86 Cách Mạng Tháng Tám, P. Hoa Lư, TP. Pleiku, Gia Lai', '02693883456', 'info@vcfmedia.com', 1, 1, 1, 0, 1, '', 1, 1111, 1111, '0.00', '2021-08-18 23:34:21', NULL, 99),
+(4, 1, 0, 'KH0000004', '5901157710', 'Công ty TNHH Công nghệ và Đầu tư Phần mềm', '', '86 Cách Mạng Tháng Tám, P. Hoa Lư, TP. Pleiku, Gia Lai', '02693883456', 'info@vcfmedia.com', 1, 1, 1, 0, 1, '', 1, 1111, 1111, '0.00', '2021-08-18 23:35:06', NULL, 1),
+(5, 0, 0, 'KH0000005', '5901157710', 'Công ty TNHH Công nghệ và Đầu tư VCF', '', '86 Cách Mạng Tháng Tám, P. Hoa Lư, TP. Pleiku, Gia Lai', '02693883456', 'info@vcfmedia.com', 1, 1, 1, 0, 1, '', 1, 1111, 1111, '0.00', '2021-08-19 00:05:33', NULL, 1),
+(6, 0, 0, 'KH0000006', '5901157710', 'Công ty TNHH Công nghệ và Đầu tư VCF', '', '86 Cách Mạng Tháng Tám, P. Hoa Lư, TP. Pleiku, Gia Lai', '02693883456', 'info@vcfmedia.com', 1, 1, 1, 0, 1, '', 1, 1111, 1111, '0.00', '2021-08-19 00:13:11', NULL, 2),
+(7, 0, 0, 'KH0000007', '5901157710', 'Công ty TNHH Công nghệ và Đầu tư VCF', '', '86 Cách Mạng Tháng Tám, P. Hoa Lư, TP. Pleiku, Gia Lai', '02693883456', 'info@vcfmedia.com', 1, 1, 1, 0, 1, '', 1, 1111, 1111, '0.00', '2021-08-19 00:13:15', NULL, 1),
+(8, 0, 0, 'KH0000008', '5901157710', 'Công ty TNHH Công nghệ và Đầu tư VCF', '', '86 Cách Mạng Tháng Tám, P. Hoa Lư, TP. Pleiku, Gia Lai', '02693883456', 'info@vcfmedia.com', 2, 1, 1, 0, 1, '', 1, 1111, 1111, '0.00', '2021-08-19 00:13:21', NULL, 1),
+(9, 0, 0, 'KH0000009', '7712312', 'Vcf Media', 'Nguyễn Trần Nhân Hậu', '86, Cách mạng tháng 8, Pleiku', '0997123123', 'Vuxuancuong@gmail.com', 1, 2, 2, 0, 1, 'Ghi chú ghi ở đây', 1, 1111, 1111, '0.00', '2021-08-19 13:57:47', '2021-08-19 13:57:47', 1),
+(10, 0, 0, 'KH0000009', '7712312', 'Vcf Media', 'Nguyễn Trần Nhân Hậu', '86, Cách mạng tháng 8, Pleiku', '0997123123', 'Vuxuancuong@gmail.com', 1, 2, 2, 0, 1, 'Ghi chú ghi ở đây', 1, 1111, 1111, '0.00', '2021-08-19 13:58:18', '2021-08-19 13:58:18', 1),
+(11, 0, 0, 'KH0000010', '77123122', 'Công ty TNHH Vcf Media Tây Nguyên', 'Nguyễn Trần Nhân Hậu', '86 - CMT8 - Hoa Lư - Pleiku', '0927123123', 'nguyentrannhanhau@gmail.com', 1, 2, 2, 0, 1, 'Nôi dung 1', 1, 1111, 1111, '0.00', '2021-08-19 14:05:32', '2021-08-19 14:05:32', 1),
+(12, 0, 0, 'KH0000011', '5901157710', 'Công ty TNHH Công nghệ và Đầu tư VCF', '', '86 Cách Mạng Tháng Tám, P. Hoa Lư, TP. Pleiku, Gia Lai', '02693883456', 'info@vcfmedia.com', 1, 1, 1, 0, 1, '', 1, 1111, 1111, '0.00', '2021-08-20 10:06:18', NULL, 1),
+(13, 0, 0, 'KH0000012', '77123122', 'Công ty TNHH Vcf Media Tây Nguyên', 'Nguyễn Trần Nhân Hậu', '86 - CMT8 - Hoa Lư - Pleiku', '0927123123', 'nguyentrannhanhau@gmail.com', 1, 2, 2, 0, 1, 'Nôi dung 1', 1, 1111, 1111, '0.00', '2021-08-21 10:49:21', NULL, 1),
+(14, 0, 0, 'KH0000013', '5901157710', 'Công ty TNHH Công nghệ và Đầu tư VCF', '', '86 Cách Mạng Tháng Tám, P. Hoa Lư, TP. Pleiku, Gia Lai', '02693883456', 'info@vcfmedia.com', 1, 1, 1, 0, 1, '', 1, 1111, 1111, '0.00', '2021-08-22 15:32:28', NULL, 1),
+(15, 0, 0, 'KH0000014', '7712312', 'Công ty TNHH Công nghệ và Đầu tư VCF', 'Nguyễn Trần Nhân Hậu', '86 Cách Mạng Tháng Tám, P. Hoa Lư, TP. Pleiku, Gia Lai', '02693883456', 'info@vcfmedia.com', 1, 1, 0, 0, 1, '', 1, 1111, 1111, '0.00', '2021-08-23 10:13:48', '2021-09-07 13:35:39', 1),
+(16, 0, 0, 'KH0000015', '5901157710', 'Công ty TNHH Công nghệ và Đầu tư VCF', '', '86 Cách Mạng Tháng Tám, P. Hoa Lư, TP. Pleiku, Gia Lai', '02693883456', 'info@vcfmedia.com', 1, 1, 1, 0, 1, '', 1, 1111, 1111, '0.00', '2021-09-07 10:15:18', NULL, 99),
+(17, 24, NULL, 'KH0000016', '7712312', 'Công ty TNHH Công nghệ và Đầu tư VCF', 'Nguyễn Trần Nhân Hậu', '86 Cách Mạng Tháng Tám, P. Hoa Lư, TP. Pleiku, Gia Lai', '02693883456', 'info@vcfmedia.com', 1, 1, 0, 0, 1, '', 1, 1111, 1111, '0.00', '2025-11-19 22:54:28', NULL, 2);
 
 -- --------------------------------------------------------
 
@@ -717,7 +717,7 @@ CREATE TABLE `hicrm_customer_banks` (
   `bank_holder` varchar(255) NOT NULL,
   `bank_id` int(11) NOT NULL,
   `bank_branch` varchar(255) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -727,11 +727,11 @@ CREATE TABLE `hicrm_customer_banks` (
 
 CREATE TABLE `hicrm_customer_feedback` (
   `id` int(11) NOT NULL,
-  `customer_name` varchar(255) NOT NULL,
-  `customer_phone` varchar(255) NOT NULL,
-  `customer_email` varchar(255) NOT NULL,
-  `customer_address` varchar(255) NOT NULL,
-  `content` text NOT NULL,
+  `customer_name` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `customer_phone` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `customer_email` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `customer_address` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `content` text COLLATE utf8_unicode_ci NOT NULL,
   `status` int(11) NOT NULL COMMENT '0: Chờ duyệt, 1: Đã duyệt, 2: Không duyệt 99: Ẩn',
   `rating` int(11) DEFAULT 0 COMMENT '1-5 sao',
   `create_date` datetime NOT NULL
@@ -759,7 +759,7 @@ CREATE TABLE `hicrm_customer_groups` (
   `group_color` varchar(20) DEFAULT NULL,
   `group_description` text DEFAULT NULL,
   `group_status` int(11) NOT NULL DEFAULT 1
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Đang đổ dữ liệu cho bảng `hicrm_customer_groups`
@@ -797,7 +797,7 @@ CREATE TABLE `hicrm_departments` (
   `depart_name` varchar(255) NOT NULL,
   `depart_image` varchar(255) DEFAULT NULL,
   `depart_status` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Đang đổ dữ liệu cho bảng `hicrm_departments`
@@ -822,7 +822,7 @@ CREATE TABLE `hicrm_district` (
   `district_name` varchar(100) NOT NULL,
   `district_keyword` varchar(100) NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Đang đổ dữ liệu cho bảng `hicrm_district`
@@ -4163,22 +4163,22 @@ INSERT INTO `hicrm_district` (`id`, `province_id`, `district_code`, `district_na
 
 CREATE TABLE `hicrm_employers` (
   `id` bigint(20) UNSIGNED NOT NULL,
-  `company_name` varchar(255) NOT NULL COMMENT 'Tên công ty/đơn vị',
-  `logo_url` varchar(500) DEFAULT NULL COMMENT 'Logo công ty',
-  `cover_url` varchar(500) DEFAULT NULL COMMENT 'Ảnh bìa',
-  `tax_code` varchar(20) DEFAULT NULL COMMENT 'Mã số thuế',
+  `company_name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Tên công ty/đơn vị',
+  `logo_url` varchar(500) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Logo công ty',
+  `cover_url` varchar(500) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Ảnh bìa',
+  `tax_code` varchar(20) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Mã số thuế',
   `job_category_id` int(11) DEFAULT NULL COMMENT 'Lĩnh vực hoạt động',
-  `company_size` varchar(255) DEFAULT NULL,
-  `description` text DEFAULT NULL COMMENT 'Mô tả ngắn về công ty',
-  `website_url` varchar(500) DEFAULT NULL,
-  `fanpage_url` varchar(500) DEFAULT NULL,
+  `company_size` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `description` text COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Mô tả ngắn về công ty',
+  `website_url` varchar(500) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `fanpage_url` varchar(500) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `province_id` int(11) DEFAULT NULL,
-  `address_detail` varchar(500) DEFAULT NULL COMMENT 'Địa chỉ chi tiết trụ sở',
+  `address_detail` varchar(500) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Địa chỉ chi tiết trụ sở',
   `is_linked_school` tinyint(1) NOT NULL DEFAULT 0 COMMENT 'Đã liên kết với trường CĐ Kon Tum',
-  `link_summary` text DEFAULT NULL COMMENT 'Nội dung ngắn gọn về liên kết',
-  `link_document_url` varchar(500) DEFAULT NULL COMMENT 'File đính kèm hợp đồng/biên bản',
-  `verified_status` enum('pending','verified','rejected') NOT NULL DEFAULT 'pending',
-  `reject_reason` text DEFAULT NULL COMMENT 'Lý do từ chối (nếu bị rejected)',
+  `link_summary` text COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Nội dung ngắn gọn về liên kết',
+  `link_document_url` varchar(500) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'File đính kèm hợp đồng/biên bản',
+  `verified_status` enum('pending','verified','rejected') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'pending',
+  `reject_reason` text COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Lý do từ chối (nếu bị rejected)',
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Thông tin nhà tuyển dụng/doanh nghiệp';
@@ -4218,22 +4218,22 @@ INSERT INTO `hicrm_employers` (`id`, `company_name`, `logo_url`, `cover_url`, `t
 
 CREATE TABLE `hicrm_employers_old` (
   `id` bigint(20) UNSIGNED NOT NULL,
-  `company_name` varchar(255) NOT NULL COMMENT 'Tên công ty/đơn vị',
-  `logo_url` varchar(500) DEFAULT NULL COMMENT 'Logo công ty',
-  `cover_url` varchar(500) DEFAULT NULL COMMENT 'Ảnh bìa',
-  `tax_code` varchar(20) DEFAULT NULL COMMENT 'Mã số thuế',
+  `company_name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Tên công ty/đơn vị',
+  `logo_url` varchar(500) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Logo công ty',
+  `cover_url` varchar(500) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Ảnh bìa',
+  `tax_code` varchar(20) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Mã số thuế',
   `job_category_id` int(11) DEFAULT NULL COMMENT 'Lĩnh vực hoạt động',
-  `company_size` varchar(255) DEFAULT NULL,
-  `description` text DEFAULT NULL COMMENT 'Mô tả ngắn về công ty',
-  `website_url` varchar(500) DEFAULT NULL,
-  `fanpage_url` varchar(500) DEFAULT NULL,
+  `company_size` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `description` text COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Mô tả ngắn về công ty',
+  `website_url` varchar(500) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `fanpage_url` varchar(500) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `province_id` int(11) DEFAULT NULL,
-  `address_detail` varchar(500) DEFAULT NULL COMMENT 'Địa chỉ chi tiết trụ sở',
+  `address_detail` varchar(500) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Địa chỉ chi tiết trụ sở',
   `is_linked_school` tinyint(1) NOT NULL DEFAULT 0 COMMENT 'Đã liên kết với trường CĐ Kon Tum',
-  `link_summary` text DEFAULT NULL COMMENT 'Nội dung ngắn gọn về liên kết',
-  `link_document_url` varchar(500) DEFAULT NULL COMMENT 'File đính kèm hợp đồng/biên bản',
-  `verified_status` enum('pending','verified','rejected') NOT NULL DEFAULT 'pending',
-  `reject_reason` text DEFAULT NULL COMMENT 'Lý do từ chối (nếu bị rejected)',
+  `link_summary` text COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Nội dung ngắn gọn về liên kết',
+  `link_document_url` varchar(500) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'File đính kèm hợp đồng/biên bản',
+  `verified_status` enum('pending','verified','rejected') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'pending',
+  `reject_reason` text COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Lý do từ chối (nếu bị rejected)',
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Thông tin nhà tuyển dụng/doanh nghiệp';
@@ -4285,7 +4285,7 @@ CREATE TABLE `hicrm_events` (
   `event_user_created` int(11) NOT NULL,
   `event_status` int(11) NOT NULL,
   `event_created_date` datetime NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Đang đổ dữ liệu cho bảng `hicrm_events`
@@ -4384,7 +4384,7 @@ CREATE TABLE `hicrm_event_comments` (
   `created_at` datetime NOT NULL DEFAULT current_timestamp(),
   `updated_at` datetime DEFAULT NULL,
   `replied_at` datetime DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Đang đổ dữ liệu cho bảng `hicrm_event_comments`
@@ -4415,7 +4415,7 @@ CREATE TABLE `hicrm_event_type` (
   `event_type_color` varchar(255) DEFAULT NULL,
   `event_type_slug` varchar(255) NOT NULL,
   `event_stt` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Đang đổ dữ liệu cho bảng `hicrm_event_type`
@@ -4438,9 +4438,9 @@ CREATE TABLE `hicrm_google_meets` (
   `meeting_time` datetime NOT NULL,
   `employer_id` bigint(20) NOT NULL,
   `job_post_id` bigint(20) NOT NULL,
-  `candidate_emails` text NOT NULL,
-  `meet_url` varchar(500) NOT NULL,
-  `status` varchar(20) NOT NULL DEFAULT 'scheduled',
+  `candidate_emails` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `meet_url` varchar(500) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `status` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'scheduled',
   `created_by` bigint(20) DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
@@ -4468,7 +4468,7 @@ CREATE TABLE `hicrm_images` (
   `image_user_created` int(11) NOT NULL,
   `image_created_date` datetime NOT NULL DEFAULT current_timestamp(),
   `image_status` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Đang đổ dữ liệu cho bảng `hicrm_images`
@@ -4552,7 +4552,7 @@ CREATE TABLE `hicrm_introduce` (
   `introduce_uid` int(11) NOT NULL,
   `introduce_orderby` int(11) NOT NULL,
   `introduce_created_date` datetime NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Đang đổ dữ liệu cho bảng `hicrm_introduce`
@@ -4579,7 +4579,7 @@ CREATE TABLE `hicrm_job_applications` (
   `user_id` bigint(20) UNSIGNED DEFAULT NULL,
   `job_post_id` bigint(20) NOT NULL,
   `employer_id` bigint(20) UNSIGNED DEFAULT NULL,
-  `status` enum('submitted','reviewing','interview','offered','rejected','withdrawn') NOT NULL DEFAULT 'submitted',
+  `status` enum('submitted','reviewing','interview','offered','rejected','withdrawn') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'submitted',
   `applied_at` datetime NOT NULL DEFAULT current_timestamp(),
   `created_at` datetime DEFAULT current_timestamp(),
   `updated_at` datetime NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
@@ -4610,7 +4610,7 @@ CREATE TABLE `hicrm_job_categories` (
   `job_category_icon` varchar(100) DEFAULT NULL,
   `job_category_keyword` varchar(255) NOT NULL COMMENT 'Tên không dấu, viết thường, nối bằng dấu _',
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Đang đổ dữ liệu cho bảng `hicrm_job_categories`
@@ -4761,7 +4761,7 @@ CREATE TABLE `hicrm_job_posts` (
   `views_count` int(11) DEFAULT 0,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` datetime DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Đang đổ dữ liệu cho bảng `hicrm_job_posts`
@@ -4931,7 +4931,7 @@ CREATE TABLE `hicrm_job_posts_old` (
   `views_count` int(11) DEFAULT 0,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` datetime DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Đang đổ dữ liệu cho bảng `hicrm_job_posts_old`
@@ -5073,11 +5073,11 @@ INSERT INTO `hicrm_job_posts_old` (`id`, `employer_id`, `candidate_id`, `job_cat
 CREATE TABLE `hicrm_job_support_requests` (
   `id` bigint(20) NOT NULL,
   `job_id` bigint(20) NOT NULL,
-  `full_name` varchar(150) NOT NULL,
-  `phone` varchar(20) NOT NULL,
-  `email` varchar(191) NOT NULL,
-  `session_id` varchar(128) NOT NULL,
-  `ip_address` varchar(45) DEFAULT NULL,
+  `full_name` varchar(150) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `phone` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `email` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `session_id` varchar(128) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `ip_address` varchar(45) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `created_at` datetime NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -5096,18 +5096,18 @@ INSERT INTO `hicrm_job_support_requests` (`id`, `job_id`, `full_name`, `phone`, 
 
 CREATE TABLE `hicrm_market_results` (
   `id` bigint(20) UNSIGNED NOT NULL,
-  `result_title` varchar(255) NOT NULL,
-  `result_summary` text DEFAULT NULL,
-  `result_content` longtext DEFAULT NULL,
-  `result_image` varchar(500) DEFAULT NULL,
+  `result_title` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `result_summary` text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `result_content` longtext COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `result_image` varchar(500) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `result_date` date DEFAULT NULL,
   `company_total` int(11) NOT NULL DEFAULT 0,
   `position_total` int(11) NOT NULL DEFAULT 0,
   `profile_total` int(11) NOT NULL DEFAULT 0,
   `interview_total` int(11) NOT NULL DEFAULT 0,
-  `implementation_content` longtext DEFAULT NULL,
-  `highlight_content` longtext DEFAULT NULL,
-  `note_content` text DEFAULT NULL,
+  `implementation_content` longtext COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `highlight_content` longtext COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `note_content` text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `result_status` tinyint(4) NOT NULL DEFAULT 1,
   `created_by` bigint(20) UNSIGNED DEFAULT NULL,
   `created_at` datetime DEFAULT current_timestamp(),
@@ -5147,7 +5147,7 @@ CREATE TABLE `hicrm_news` (
   `event_location` varchar(500) DEFAULT NULL,
   `slug` varchar(255) DEFAULT NULL,
   `updated_by` bigint(20) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -5162,7 +5162,7 @@ CREATE TABLE `hicrm_news_categories` (
   `icon` varchar(100) DEFAULT NULL,
   `sort_order` int(11) DEFAULT 0,
   `status` int(11) DEFAULT 1
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Đang đổ dữ liệu cho bảng `hicrm_news_categories`
@@ -5185,10 +5185,10 @@ CREATE TABLE `hicrm_news_comments` (
   `news_id` bigint(20) DEFAULT NULL,
   `user_id` bigint(20) DEFAULT NULL,
   `parent_id` bigint(20) DEFAULT NULL,
-  `author_name` varchar(190) DEFAULT NULL,
-  `author_email` varchar(190) DEFAULT NULL,
-  `comment_content` text NOT NULL,
-  `admin_reply` text DEFAULT NULL,
+  `author_name` varchar(190) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `author_email` varchar(190) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `comment_content` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `admin_reply` text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `comment_status` tinyint(4) NOT NULL DEFAULT 1,
   `created_at` datetime DEFAULT current_timestamp(),
   `updated_at` datetime DEFAULT current_timestamp() ON UPDATE current_timestamp()
@@ -5215,7 +5215,7 @@ CREATE TABLE `hicrm_orders` (
   `order_delivery_date` date NOT NULL COMMENT 'Ngày giao hàng',
   `order_create_date` datetime NOT NULL DEFAULT current_timestamp(),
   `order_status` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Đang đổ dữ liệu cho bảng `hicrm_orders`
@@ -5243,14 +5243,14 @@ CREATE TABLE `hicrm_order_details` (
   `order_product_price` decimal(10,0) NOT NULL,
   `order_product_vat_tax` int(11) NOT NULL,
   `order_product_discount` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Đang đổ dữ liệu cho bảng `hicrm_order_details`
 --
 
 INSERT INTO `hicrm_order_details` (`id`, `order_id`, `order_product_id`, `order_product_quantity`, `order_product_price`, `order_product_vat_tax`, `order_product_discount`) VALUES
-(1, 6, 17, 2, 3500000, 10, 10);
+(1, 6, 17, 2, '3500000', 10, 10);
 
 -- --------------------------------------------------------
 
@@ -5262,7 +5262,7 @@ CREATE TABLE `hicrm_permissions` (
   `id` int(11) NOT NULL,
   `permission_name` varchar(255) NOT NULL,
   `permission_level` int(11) NOT NULL DEFAULT 1
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Đang đổ dữ liệu cho bảng `hicrm_permissions`
@@ -5287,7 +5287,7 @@ CREATE TABLE `hicrm_permission_datas` (
   `id` int(11) NOT NULL,
   `depart` int(11) NOT NULL,
   `permission_id` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Đang đổ dữ liệu cho bảng `hicrm_permission_datas`
@@ -5307,7 +5307,7 @@ INSERT INTO `hicrm_permission_datas` (`id`, `depart`, `permission_id`) VALUES
 CREATE TABLE `hicrm_positions` (
   `id` int(11) NOT NULL,
   `position_title` varchar(255) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Đang đổ dữ liệu cho bảng `hicrm_positions`
@@ -5344,17 +5344,17 @@ CREATE TABLE `hicrm_products` (
   `product_image` text DEFAULT NULL,
   `product_created_time` datetime NOT NULL DEFAULT current_timestamp(),
   `product_status` int(11) NOT NULL DEFAULT 1 COMMENT '1 - Đang bán, 2 - Không bán'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Đang đổ dữ liệu cho bảng `hicrm_products`
 --
 
 INSERT INTO `hicrm_products` (`id`, `product_name`, `product_spec`, `product_code`, `product_barcode`, `product_vat_name`, `product_unit`, `product_category`, `product_price`, `product_discount`, `product_tax_id`, `product_description`, `product_image`, `product_created_time`, `product_status`) VALUES
-(1, 'Sản phẩm 1', NULL, 'SP0001', NULL, '', 2, 1, 650000.00, 2.00, 1, 'hức ăn cho chó mọi độ tuổi, không độn ngũ cốc, không phẩm màu và chất bảo quản nhân tạo.\r\n\r\nTHÀNH PHẦN: Bột thịt gà, Khoai tây, Mỡ gà (được bảo quản với Tocopherols hỗn hợp), Bột thịt cá trắng, Trứng, Cà chua, Đậu Hà Lan, Sợi việt quất, Sợi nam việt quất, Táo, Việt quất, Cà rốt, Rau bina, Nam Việt quất, DL-Methionine, L-Lysine, Taurine, Beta-Carotene, L-Carnitine, Yucca, Cây hương thảo, Vitamin, Khoáng chất , Probiotics.\r\n\r\nBỔ SUNG (TRÊN MỖI KG): Vitamin A 12.000 IU/kg, Vitamin D3 750 IU/kg, Vitamin C 100 mg/kg, Vitamin E (α-tocopherol) 250 IU/kg, Đồng (đồng sunfat) 16 mg/kg, Omega-6 >3,3%, Omega-3 >0,4%, Methionine 1,2%, Lysine 2,1%, Taurine 0,05%, L-Carnitine 50 mg/kg, Beta-Carotene 10 mg/kg, Axit Docosahexaenoic (DHA) >0,05%.\r\n\r\nTHÀNH PHẦN PHÂN TÍCH: Đạm 38%, Chất béo 20%, Tro 10,2%, Chất xơ 2,5%, Độ ẩm 10%, Natri 0,3%, Canxi 1,5%, Phốt pho 1,0%. Kilocalories/kg: 3.800', 'abc.png', '2021-10-30 16:19:28', 99),
-(2, 'Kháng sinh', NULL, '01', '', '', 1, 2, 1000000.00, 0.00, 0, '<p>ấc</p>', 'ecd99574ee4d8c7ffa4412b6aeb4b771-2908_02_b73c39a223.jpg', '2026-01-14 23:02:57', 1),
-(3, 'Tiêu chảy â aa', NULL, '002', '', '', 1, 3, 555555.00, 3.00, 0, 'Thuốc điều trị tiêu chảy cấp\r\n\r\n', 'd8535c8a19519afd8bb5b91220665a62-2908_02_b73c39a223.jpg', '2026-01-14 23:07:04', 1),
-(4, 'Amocinin', NULL, '003', '', '', 1, 3, 90000.00, 5.00, 0, '<p>Thuốc amocinin trị đau họng</p>', '14b0c8d644d55be8208a4ed9793a544f-thuoc-tri-viem-hong-hat-1.jpeg', '2026-01-18 22:20:03', 1);
+(1, 'Sản phẩm 1', NULL, 'SP0001', NULL, '', 2, 1, '650000.00', '2.00', 1, 'hức ăn cho chó mọi độ tuổi, không độn ngũ cốc, không phẩm màu và chất bảo quản nhân tạo.\r\n\r\nTHÀNH PHẦN: Bột thịt gà, Khoai tây, Mỡ gà (được bảo quản với Tocopherols hỗn hợp), Bột thịt cá trắng, Trứng, Cà chua, Đậu Hà Lan, Sợi việt quất, Sợi nam việt quất, Táo, Việt quất, Cà rốt, Rau bina, Nam Việt quất, DL-Methionine, L-Lysine, Taurine, Beta-Carotene, L-Carnitine, Yucca, Cây hương thảo, Vitamin, Khoáng chất , Probiotics.\r\n\r\nBỔ SUNG (TRÊN MỖI KG): Vitamin A 12.000 IU/kg, Vitamin D3 750 IU/kg, Vitamin C 100 mg/kg, Vitamin E (α-tocopherol) 250 IU/kg, Đồng (đồng sunfat) 16 mg/kg, Omega-6 >3,3%, Omega-3 >0,4%, Methionine 1,2%, Lysine 2,1%, Taurine 0,05%, L-Carnitine 50 mg/kg, Beta-Carotene 10 mg/kg, Axit Docosahexaenoic (DHA) >0,05%.\r\n\r\nTHÀNH PHẦN PHÂN TÍCH: Đạm 38%, Chất béo 20%, Tro 10,2%, Chất xơ 2,5%, Độ ẩm 10%, Natri 0,3%, Canxi 1,5%, Phốt pho 1,0%. Kilocalories/kg: 3.800', 'abc.png', '2021-10-30 16:19:28', 99),
+(2, 'Kháng sinh', NULL, '01', '', '', 1, 2, '1000000.00', '0.00', 0, '<p>ấc</p>', 'ecd99574ee4d8c7ffa4412b6aeb4b771-2908_02_b73c39a223.jpg', '2026-01-14 23:02:57', 1),
+(3, 'Tiêu chảy â aa', NULL, '002', '', '', 1, 3, '555555.00', '3.00', 0, 'Thuốc điều trị tiêu chảy cấp\r\n\r\n', 'd8535c8a19519afd8bb5b91220665a62-2908_02_b73c39a223.jpg', '2026-01-14 23:07:04', 1),
+(4, 'Amocinin', NULL, '003', '', '', 1, 3, '90000.00', '5.00', 0, '<p>Thuốc amocinin trị đau họng</p>', '14b0c8d644d55be8208a4ed9793a544f-thuoc-tri-viem-hong-hat-1.jpeg', '2026-01-18 22:20:03', 1);
 
 -- --------------------------------------------------------
 
@@ -5373,7 +5373,7 @@ CREATE TABLE `hicrm_products_bk` (
   `product_vat_tax` int(11) NOT NULL,
   `product_status` int(11) NOT NULL,
   `product_create_date` datetime NOT NULL DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -5387,7 +5387,7 @@ CREATE TABLE `hicrm_product_warehouses` (
   `wareid` int(11) NOT NULL,
   `ware_instock` int(11) NOT NULL DEFAULT 0,
   `ware_alert` int(11) NOT NULL DEFAULT 0
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Đang đổ dữ liệu cho bảng `hicrm_product_warehouses`
@@ -5425,15 +5425,15 @@ CREATE TABLE `hicrm_promotions` (
   `promo_customers` text DEFAULT NULL,
   `promo_products` text DEFAULT NULL,
   `promo_max_apply` int(11) NOT NULL DEFAULT 1
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Đang đổ dữ liệu cho bảng `hicrm_promotions`
 --
 
 INSERT INTO `hicrm_promotions` (`id`, `promo_type`, `promo_name`, `promo_code`, `promo_discount_type`, `promo_discount_value`, `promo_qty`, `promo_used`, `promo_reuse`, `promo_created_by`, `promo_from`, `promo_to`, `promo_expried`, `promo_created_time`, `promo_status`, `promo_for`, `promo_all_order`, `promo_order_min`, `promo_order_max`, `promo_customers`, `promo_products`, `promo_max_apply`) VALUES
-(1, 1, 'Tri ân năm mới', '', 2, 10.00, 0, 0, 1, 1, '2021-10-30 14:47:48', '2022-01-01 14:47:48', 1, '2021-10-30 14:49:11', 1, 1, 1, 0.00, 0.00, NULL, NULL, 1),
-(2, 2, 'Khách hàng mới', 'NEWCUSTOMER', 1, 100000.00, 20, 3, 0, 1, '2021-10-30 15:03:53', NULL, 2, '2021-10-30 15:05:44', 1, 2, 0, 1000000.00, 0.00, NULL, NULL, 1);
+(1, 1, 'Tri ân năm mới', '', 2, '10.00', 0, 0, 1, 1, '2021-10-30 14:47:48', '2022-01-01 14:47:48', 1, '2021-10-30 14:49:11', 1, 1, 1, '0.00', '0.00', NULL, NULL, 1),
+(2, 2, 'Khách hàng mới', 'NEWCUSTOMER', 1, '100000.00', 20, 3, 0, 1, '2021-10-30 15:03:53', NULL, 2, '2021-10-30 15:05:44', 1, 2, 0, '1000000.00', '0.00', NULL, NULL, 1);
 
 -- --------------------------------------------------------
 
@@ -5447,7 +5447,7 @@ CREATE TABLE `hicrm_provinces` (
   `province_name` varchar(100) NOT NULL,
   `province_keyword` varchar(100) NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Đang đổ dữ liệu cho bảng `hicrm_provinces`
@@ -5497,7 +5497,7 @@ INSERT INTO `hicrm_provinces` (`id`, `province_code`, `province_name`, `province
 
 CREATE TABLE `hicrm_salary` (
   `id` int(10) UNSIGNED NOT NULL,
-  `salary_name` varchar(100) NOT NULL COMMENT 'Tên mức lương',
+  `salary_name` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Tên mức lương',
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Danh mục mức lương';
 
@@ -5532,7 +5532,7 @@ CREATE TABLE `hicrm_service` (
   `service_category` int(11) NOT NULL,
   `service_created_date` datetime NOT NULL,
   `service_status` int(11) DEFAULT 1
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Đang đổ dữ liệu cho bảng `hicrm_service`
@@ -5569,7 +5569,7 @@ CREATE TABLE `hicrm_staff` (
   `staff_fullname` varchar(255) NOT NULL,
   `staff_position` varchar(255) DEFAULT NULL,
   `staff_status` int(11) DEFAULT 1
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Đang đổ dữ liệu cho bảng `hicrm_staff`
@@ -5588,16 +5588,17 @@ INSERT INTO `hicrm_staff` (`id`, `staff_department`, `staff_fullname`, `staff_po
 CREATE TABLE `hicrm_static_pages` (
   `id` int(11) NOT NULL,
   `category_id` int(11) NOT NULL DEFAULT 0,
-  `page_title` varchar(255) NOT NULL,
-  `page_slug` varchar(255) NOT NULL,
-  `hashtag` varchar(100) DEFAULT NULL,
-  `link_url` varchar(255) DEFAULT NULL,
-  `page_summary` text DEFAULT NULL,
-  `page_content` longtext DEFAULT NULL,
-  `banner_image` varchar(255) DEFAULT NULL,
-  `meta_title` varchar(255) DEFAULT NULL,
-  `meta_keywords` text DEFAULT NULL,
-  `meta_description` text DEFAULT NULL,
+  `page_title` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `page_slug` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `hashtag` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `link_url` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `page_summary` text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `page_content` longtext COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `static_files` longtext COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `banner_image` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `meta_title` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `meta_keywords` text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `meta_description` text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `sort_order` int(11) NOT NULL DEFAULT 0,
   `page_status` tinyint(4) NOT NULL DEFAULT 1,
   `created_at` datetime DEFAULT current_timestamp(),
@@ -5608,9 +5609,10 @@ CREATE TABLE `hicrm_static_pages` (
 -- Đang đổ dữ liệu cho bảng `hicrm_static_pages`
 --
 
-INSERT INTO `hicrm_static_pages` (`id`, `category_id`, `page_title`, `page_slug`, `hashtag`, `link_url`, `page_summary`, `page_content`, `banner_image`, `meta_title`, `meta_keywords`, `meta_description`, `sort_order`, `page_status`, `created_at`, `updated_at`) VALUES
-(1, 1, 'Giới thiệu Bệnh viện đa khoa khu vực Đắk Hà', 'gioi-thieu', '#gioi-thieu', '/trang/gioi-thieu', 'Thông tin tổng quan, lịch sử hình thành, sứ mệnh và tầm nhìn của Bệnh viện đa khoa khu vực Đắk Hà.', '<h2>Về Bệnh viện đa khoa khu vực Đắk Hà</h2>\n<p>Bệnh viện đa khoa khu vực Đắk Hà là cơ sở y tế công lập hạng II chịu trách nhiệm chăm sóc sức khỏe toàn diện cho nhân dân huyện Đắk Hà và các vùng lân cận thuộc tỉnh Kon Tum.</p>\n<h3>Sứ mệnh & Tầm nhìn</h3>\n<ul>\n<li><strong>Sứ mệnh:</strong> Mang lại dịch vụ y tế chất lượng cao, an toàn, hiệu quả và nhân văn cho mọi bệnh nhân.</li>\n<li><strong>Tầm nhìn:</strong> Xây dựng Bệnh viện trở thành trung tâm y tế hàng đầu khu vực Tây Nguyên, áp dụng công nghệ hiện đại.</li>\n</ul>\n<p><img src=\"http://localhost/bvdkdakha.vn/template/frontend/assets/images/banner-01.jpg\" alt=\"Bệnh viện đa khoa khu vực Đắk Hà\" style=\"max-width:100%; border-radius:12px;\" /></p>', 'assets/images/banner-01.jpg', NULL, NULL, NULL, 0, 1, '2026-08-08 16:17:03', '2026-08-08 16:17:03'),
-(2, 2, 'Cơ cấu tổ chức & Sơ đồ bộ máy', 'co-cau-to-chuc', '#co-cau-to-chuc', '/trang/co-cau-to-chuc', 'Sơ đồ bộ máy ban giám đốc, các phòng chức năng và khoa lâm sàng thuộc bệnh viện.', '', 'assets/images/banner-02.jpg', '', '', '', 0, 1, '2026-08-08 16:17:03', '2026-08-09 22:26:59');
+INSERT INTO `hicrm_static_pages` (`id`, `category_id`, `page_title`, `page_slug`, `hashtag`, `link_url`, `page_summary`, `page_content`, `static_files`, `banner_image`, `meta_title`, `meta_keywords`, `meta_description`, `sort_order`, `page_status`, `created_at`, `updated_at`) VALUES
+(1, 1, 'Giới thiệu Bệnh viện đa khoa khu vực Đắk Hà', 'gioi-thieu', '#gioi-thieu', '/trang/gioi-thieu', 'Thông tin tổng quan, lịch sử hình thành, sứ mệnh và tầm nhìn của Bệnh viện đa khoa khu vực Đắk Hà.', '<h2>Về Bệnh viện đa khoa khu vực Đắk Hà</h2>\n<p>Bệnh viện đa khoa khu vực Đắk Hà là cơ sở y tế công lập hạng II chịu trách nhiệm chăm sóc sức khỏe toàn diện cho nhân dân huyện Đắk Hà và các vùng lân cận thuộc tỉnh Kon Tum.</p>\n<h3>Sứ mệnh & Tầm nhìn</h3>\n<ul>\n<li><strong>Sứ mệnh:</strong> Mang lại dịch vụ y tế chất lượng cao, an toàn, hiệu quả và nhân văn cho mọi bệnh nhân.</li>\n<li><strong>Tầm nhìn:</strong> Xây dựng Bệnh viện trở thành trung tâm y tế hàng đầu khu vực Tây Nguyên, áp dụng công nghệ hiện đại.</li>\n</ul>\n<p><img src=\"http://localhost/bvdkdakha.vn/template/frontend/assets/images/banner-01.jpg\" alt=\"Bệnh viện đa khoa khu vực Đắk Hà\" style=\"max-width:100%; border-radius:12px;\" /></p>', NULL, 'assets/images/banner-01.jpg', NULL, NULL, NULL, 0, 1, '2026-08-08 16:17:03', '2026-08-08 16:17:03'),
+(2, 2, 'Cơ cấu tổ chức & Sơ đồ bộ máy', 'co-cau-to-chuc', '#co-cau-to-chuc', '/trang/co-cau-to-chuc', 'Sơ đồ bộ máy ban giám đốc, các phòng chức năng và khoa lâm sàng thuộc bệnh viện.', '', NULL, 'assets/images/banner-02.jpg', '', '', '', 0, 1, '2026-08-08 16:17:03', '2026-08-09 22:26:59'),
+(3, 4, 'Khám BHYT', 'kham-bhyt', '#kham-bhyt', 'kham-bhyt.html', 'abc', '', '[{\"id\":\"att_1786811773_413_0\",\"file_path\":\"uploads\\/attachments\\/file_1786811773_0_388.pdf\",\"file_name\":\"KQ_XET_NGHIEM_1786692850710.pdf\",\"file_size\":424255,\"file_ext\":\"pdf\",\"created_at\":\"2026-08-15 23:36:13\"}]', '', '', '', '', 0, 1, '2026-08-15 23:15:29', '2026-08-15 23:36:13');
 
 -- --------------------------------------------------------
 
@@ -5620,9 +5622,9 @@ INSERT INTO `hicrm_static_pages` (`id`, `category_id`, `page_title`, `page_slug`
 
 CREATE TABLE `hicrm_static_page_categories` (
   `id` int(11) NOT NULL,
-  `category_name` varchar(255) NOT NULL,
-  `category_slug` varchar(255) NOT NULL,
-  `category_description` text DEFAULT NULL,
+  `category_name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `category_slug` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `category_description` text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `category_status` tinyint(4) NOT NULL DEFAULT 1,
   `created_at` datetime DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -5634,7 +5636,8 @@ CREATE TABLE `hicrm_static_page_categories` (
 INSERT INTO `hicrm_static_page_categories` (`id`, `category_name`, `category_slug`, `category_description`, `category_status`, `created_at`) VALUES
 (1, 'Giới thiệu', 'gioi-thieu', 'Các trang giới thiệu tổng quan về Bệnh viện đa khoa khu vực Đắk Hà', 1, '2026-08-08 16:17:03'),
 (2, 'Tổ chức & Bộ máy', 'to-chuc-bo-may', 'Thông tin cơ cấu tổ chức, sơ đồ phòng ban và ban giám đốc', 1, '2026-08-08 16:17:03'),
-(3, 'Hướng dẫn & Quy trình', 'huong-dan-quy-trinh', 'Các bài hướng dẫn khám chữa bệnh, bảo hiểm y tế và dịch vụ', 1, '2026-08-08 16:17:03');
+(3, 'Hướng dẫn & Quy trình', 'huong-dan-quy-trinh', 'Các bài hướng dẫn khám chữa bệnh, bảo hiểm y tế và dịch vụ', 1, '2026-08-08 16:17:03'),
+(4, 'Khám BHYT', 'kham-bhyt', '', 1, '2026-08-15 23:10:02');
 
 -- --------------------------------------------------------
 
@@ -5648,7 +5651,7 @@ CREATE TABLE `hicrm_status` (
   `status_class` varchar(255) DEFAULT NULL,
   `status_icon` varchar(255) DEFAULT NULL,
   `status_type` int(11) NOT NULL COMMENT '1 Chung, 2 báo giá, 3 đơn hàng'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Đang đổ dữ liệu cho bảng `hicrm_status`
@@ -5683,7 +5686,7 @@ CREATE TABLE `hicrm_student_profile` (
   `student_rank` varchar(255) DEFAULT NULL,
   `student_description` text DEFAULT NULL,
   `student_is_register` int(11) DEFAULT 0
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Đang đổ dữ liệu cho bảng `hicrm_student_profile`
@@ -5693,58 +5696,58 @@ INSERT INTO `hicrm_student_profile` (`id`, `student_code`, `student_name`, `stud
 (1, 'SV_001', 'Vũ Xuân Cương', '', '', '1', '2016-04-07', 0, 'aaaa', 1, NULL, '', '', 0),
 (2, 'SV00121', 'Vũ', '098939128', 'vxcuong@gmail.com', '12', '2016-04-07', 1, NULL, 1, NULL, 'Xuất xắc', 'aaaaa', 1),
 (3, 'SV01102', 'Vũ Xuân Cương 2', '0963781278', 'vxcuong02@gmail.com', '2', '2016-04-07', 1, NULL, 1, NULL, 'Xuất sắc', NULL, 1),
-(7, 'SV000001', 'Phan Hùng Phúc', '0336579210', 'phuc1@email.com', '1', '1998-08-01', 1, '', 8, 0, '0', 'abc', 1),
+(7, 'SV000001', 'Phan Hùng Phúc', '0336579210', 'phuc1@email.com', '1', '1998-08-01', 1, '', 8, '0', '0', 'abc', 1),
 (8, 'MSV1', 'Nguyễn Văn Lưu', '', '', 'K10TT', '2001-06-11', 1, '', 1, NULL, '', '', 1),
-(9, 'SV001', 'Ngô Tuấn An', '0916503271', 'sv001@example.com', 'DLKS01', '2002-01-01', 1, NULL, 63, 8, 'Gioi', 'Sinh viên năm cuối', 0),
-(10, 'SV002', 'Võ Thu Anh', '0919120284', 'sv002@example.com', 'YDUOC01', '2003-09-17', 2, NULL, 73, 7, 'Kha', 'Ứng viên tiềm năng', 0),
-(11, 'SV003', 'Đặng Gia Cường', '0940573895', 'sv003@example.com', 'DLKS01', '2004-08-10', 1, NULL, 57, 7, 'Kha', 'Sinh viên năm cuối', 0),
-(12, 'SV004', 'Huỳnh Thu Dung', '0949995859', 'sv004@example.com', 'MKT01', '2001-05-16', 2, NULL, 64, 9, 'Xuat sac', 'Ứng viên tiềm năng', 0),
-(13, 'SV005', 'Phạm Thanh Đạt', '0968869881', 'sv005@example.com', 'CNTT03', '2002-11-15', 1, NULL, 71, 8, 'Kha', 'Sinh viên có nhu cầu tìm việc', 0),
-(14, 'SV006', 'Lê Hoài Hà', '0939834840', 'sv006@example.com', 'DLKS01', '2003-11-04', 2, NULL, 20, 7, 'Kha', 'Ứng viên tiềm năng', 0),
-(15, 'SV007', 'Hồ Anh Hưng', '0970708594', 'sv007@example.com', 'DTVT01', '2004-03-12', 1, NULL, 55, 7, 'Kha', 'Sinh viên có nhu cầu tìm việc', 0),
-(16, 'SV008', 'Lê Khánh Hoa', '0937163656', 'sv008@example.com', 'QTKD01', '2001-10-07', 2, NULL, 57, 7, 'Kha', 'Sinh viên năm cuối', 0),
-(17, 'SV009', 'Ngô Minh Long', '0949018347', 'sv009@example.com', 'QTKD01', '2002-10-25', 1, NULL, 57, 8, 'Gioi', 'Ứng viên tiềm năng', 0),
-(18, 'SV010', 'Dương Mai Linh', '0973622598', 'sv010@example.com', 'YDUOC01', '2003-03-05', 2, NULL, 7, 8, 'Kha', 'Ứng viên tiềm năng', 0),
-(19, 'SV011', 'Huỳnh Hữu Phong', '0989908691', 'sv011@example.com', 'CNTT02', '2004-05-21', 1, NULL, 54, 7, 'Kha', 'Sinh viên năm cuối', 0),
-(20, 'SV012', 'Lê Thanh My', '0920623330', 'sv012@example.com', 'CNTT02', '2001-03-17', 2, NULL, 48, 8, 'Kha', 'Sinh viên có nhu cầu tìm việc', 0),
-(21, 'SV013', 'Trần Đức Sơn', '0959202580', 'sv013@example.com', 'QTKD01', '2002-01-19', 1, NULL, 20, 9, 'Xuat sac', 'Sinh viên có nhu cầu tìm việc', 0),
-(22, 'SV014', 'Phan Khánh Ngân', '0975866039', 'sv014@example.com', 'CNTT01', '2003-12-06', 2, NULL, 66, 7, 'Kha', 'Sinh viên thực tập', 0),
-(23, 'SV015', 'Trần Văn Trí', '0922897772', 'sv015@example.com', 'MKT01', '2004-02-15', 1, NULL, 72, 7, 'Kha', 'Sinh viên có nhu cầu tìm việc', 0),
-(24, 'SV016', 'Đặng Thu Nhi', '0945198846', 'sv016@example.com', 'KETOAN01', '2001-05-14', 2, NULL, 54, 8, 'Kha', 'Sinh viên năm cuối', 0),
-(25, 'SV017', 'Đặng Tuấn Việt', '0980333596', 'sv017@example.com', 'KETOAN01', '2002-07-14', 1, NULL, 66, 8, 'Gioi', 'Ứng viên tiềm năng', 0),
-(26, 'SV018', 'Võ Bảo Quỳnh', '0979015938', 'sv018@example.com', 'CNTT01', '2003-04-11', 2, NULL, 56, 8, 'Kha', 'Sinh viên thực tập', 0),
-(27, 'SV019', 'Đỗ Thanh Duy', '0941816037', 'sv019@example.com', 'YDUOC01', '2004-04-05', 1, NULL, 64, 7, 'Kha', 'Sinh viên có nhu cầu tìm việc', 0),
-(28, 'SV020', 'Hồ Thu Trang', '0938424508', 'sv020@example.com', 'KETOAN01', '2001-06-13', 2, NULL, 71, 8, 'Gioi', 'Sinh viên có nhu cầu tìm việc', 0),
-(29, 'SV021', 'Phan Hữu Lâm', '0983335486', 'sv021@example.com', 'YDUOC01', '2002-03-09', 1, NULL, 20, 8, 'Gioi', 'Ứng viên tiềm năng', 0),
-(30, 'SV022', 'Đỗ Bảo Tú', '0985505307', 'sv022@example.com', 'CNTT01', '2003-09-15', 2, NULL, 63, 7, 'Kha', 'Sinh viên năm cuối', 0),
-(31, 'SV023', 'Ngô Hữu Toàn', '0974586432', 'sv023@example.com', 'CNTT02', '2004-06-28', 1, NULL, 70, 7, 'Kha', 'Sinh viên thực tập', 0),
-(32, 'SV024', 'Bùi Thu Vy', '0974634650', 'sv024@example.com', 'QTKD01', '2001-06-15', 2, NULL, 70, 9, 'Xuat sac', 'Sinh viên thực tập', 0),
-(33, 'SV025', 'Phạm Quang Khoa', '0956884358', 'sv025@example.com', 'TMĐT01', '2002-09-16', 1, NULL, 7, 8, 'Kha', 'Sinh viên thực tập', 0),
-(34, 'SV026', 'Bùi Mai An', '0919954771', 'sv026@example.com', 'MKT01', '2003-06-07', 2, NULL, 55, 7, 'Kha', 'Sinh viên thực tập', 0),
-(35, 'SV027', 'Phan Minh Bình', '0966418108', 'sv027@example.com', 'MKT01', '2004-10-19', 1, NULL, 63, 8, 'Gioi', 'Sinh viên có nhu cầu tìm việc', 0),
-(36, 'SV028', 'Ngô Thị Chi', '0955782854', 'sv028@example.com', 'DLKS01', '2001-04-08', 2, NULL, 20, 7, 'Kha', 'Sinh viên có nhu cầu tìm việc', 0),
-(37, 'SV029', 'Lê Hữu Dũng', '0948599486', 'sv029@example.com', 'QTKD01', '2002-06-08', 1, NULL, 48, 8, 'Gioi', 'Sinh viên năm cuối', 0),
-(38, 'SV030', 'Lê Khánh Giang', '0921527675', 'sv030@example.com', 'CNTT03', '2003-04-15', 2, NULL, 63, 8, 'Gioi', 'Sinh viên năm cuối', 0),
-(39, 'SV031', 'Lý Anh Hải', '0964787024', 'sv031@example.com', 'DLKS01', '2004-09-08', 1, NULL, 70, 7, 'Kha', 'Sinh viên năm cuối', 0),
-(40, 'SV032', 'Lê Khánh Hạnh', '0986369166', 'sv032@example.com', 'CNTT02', '2001-06-28', 2, NULL, 72, 9, 'Xuat sac', 'Sinh viên năm cuối', 0),
-(41, 'SV033', 'Nguyễn Anh Khang', '0963601081', 'sv033@example.com', 'DLKS01', '2002-09-19', 1, NULL, 85, 8, 'Gioi', 'Sinh viên thực tập', 0),
-(42, 'SV034', 'Phạm Bảo Hương', '0953626322', 'sv034@example.com', 'YDUOC01', '2003-10-13', 2, NULL, 56, 7, 'Kha', 'Ứng viên tiềm năng', 0),
-(43, 'SV035', 'Dương Hữu Nam', '0995213496', 'sv035@example.com', 'YDUOC01', '2004-11-07', 1, NULL, 66, 8, 'Kha', 'Sinh viên năm cuối', 0),
-(44, 'SV036', 'Ngô Minh Mai', '0936018603', 'sv036@example.com', 'CNTT02', '2001-05-10', 2, NULL, 66, 7, 'Kha', 'Sinh viên năm cuối', 0),
-(45, 'SV037', 'Trần Quang Quân', '0928628865', 'sv037@example.com', 'DTVT01', '2002-06-09', 1, NULL, 56, 7, 'Kha', 'Sinh viên năm cuối', 0),
-(46, 'SV038', 'Võ Thu Nga', '0985663330', 'sv038@example.com', 'DLKS01', '2003-06-20', 2, NULL, 55, 7, 'Kha', 'Sinh viên thực tập', 0),
-(47, 'SV039', 'Võ Tuấn Thắng', '0999817671', 'sv039@example.com', 'DLKS01', '2004-10-08', 1, NULL, 85, 9, 'Gioi', 'Sinh viên có nhu cầu tìm việc', 0),
-(48, 'SV040', 'Dương Thị Ngọc', '0979875545', 'sv040@example.com', 'CNTT03', '2001-08-05', 2, NULL, 63, 7, 'Kha', 'Sinh viên có nhu cầu tìm việc', 0),
-(49, 'SV041', 'Ngô Gia Tú', '0961445099', 'sv041@example.com', 'TMĐT01', '2002-12-10', 1, NULL, 63, 8, 'Gioi', 'Ứng viên tiềm năng', 0),
-(50, 'SV042', 'Phan Thị Phương', '0985188061', 'sv042@example.com', 'DTVT01', '2003-03-08', 2, NULL, 20, 7, 'Kha', 'Sinh viên năm cuối', 0),
-(51, 'SV043', 'Huỳnh Hữu Vinh', '0912196590', 'sv043@example.com', 'CNTT01', '2004-11-02', 1, NULL, 48, 9, 'Gioi', 'Sinh viên có nhu cầu tìm việc', 0),
-(52, 'SV044', 'Hoàng Khánh Thảo', '0962277410', 'sv044@example.com', 'CNTT03', '2001-05-21', 2, NULL, 64, 7, 'Kha', 'Sinh viên thực tập', 0),
-(53, 'SV045', 'Lý Văn Kiên', '0997924366', 'sv045@example.com', 'CNTT01', '2002-10-14', 1, NULL, 70, 8, 'Gioi', 'Sinh viên có nhu cầu tìm việc', 0),
-(54, 'SV046', 'Hoàng Thanh Trâm', '0939011170', 'sv046@example.com', 'YDUOC01', '2003-07-10', 2, NULL, 66, 8, 'Gioi', 'Sinh viên năm cuối', 0),
-(55, 'SV047', 'Dương Văn Tài', '0921869335', 'sv047@example.com', 'DLKS01', '2004-11-04', 1, NULL, 56, 9, 'Xuat sac', 'Sinh viên năm cuối', 0),
-(56, 'SV048', 'Hoàng Minh Uyên', '0958294948', 'sv048@example.com', 'YDUOC01', '2001-08-08', 2, NULL, 71, 9, 'Gioi', 'Sinh viên có nhu cầu tìm việc', 0),
-(57, 'SV049', 'Vũ Tuấn Hiếu', '0912009939', 'sv049@example.com', 'CNTT01', '2002-07-17', 1, NULL, 48, 9, 'Gioi', 'Sinh viên năm cuối', 1),
-(58, 'SV050', 'Lý Thu Yến', '0935423978', 'sv050@example.com', 'CNTT03', '2003-08-25', 2, NULL, 48, 9, 'Gioi', 'Sinh viên có nhu cầu tìm việc', 1),
+(9, 'SV001', 'Ngô Tuấn An', '0916503271', 'sv001@example.com', 'DLKS01', '2002-01-01', 1, NULL, 63, '8', 'Gioi', 'Sinh viên năm cuối', 0),
+(10, 'SV002', 'Võ Thu Anh', '0919120284', 'sv002@example.com', 'YDUOC01', '2003-09-17', 2, NULL, 73, '7', 'Kha', 'Ứng viên tiềm năng', 0),
+(11, 'SV003', 'Đặng Gia Cường', '0940573895', 'sv003@example.com', 'DLKS01', '2004-08-10', 1, NULL, 57, '7', 'Kha', 'Sinh viên năm cuối', 0),
+(12, 'SV004', 'Huỳnh Thu Dung', '0949995859', 'sv004@example.com', 'MKT01', '2001-05-16', 2, NULL, 64, '9', 'Xuat sac', 'Ứng viên tiềm năng', 0),
+(13, 'SV005', 'Phạm Thanh Đạt', '0968869881', 'sv005@example.com', 'CNTT03', '2002-11-15', 1, NULL, 71, '8', 'Kha', 'Sinh viên có nhu cầu tìm việc', 0),
+(14, 'SV006', 'Lê Hoài Hà', '0939834840', 'sv006@example.com', 'DLKS01', '2003-11-04', 2, NULL, 20, '7', 'Kha', 'Ứng viên tiềm năng', 0),
+(15, 'SV007', 'Hồ Anh Hưng', '0970708594', 'sv007@example.com', 'DTVT01', '2004-03-12', 1, NULL, 55, '7', 'Kha', 'Sinh viên có nhu cầu tìm việc', 0),
+(16, 'SV008', 'Lê Khánh Hoa', '0937163656', 'sv008@example.com', 'QTKD01', '2001-10-07', 2, NULL, 57, '7', 'Kha', 'Sinh viên năm cuối', 0),
+(17, 'SV009', 'Ngô Minh Long', '0949018347', 'sv009@example.com', 'QTKD01', '2002-10-25', 1, NULL, 57, '8', 'Gioi', 'Ứng viên tiềm năng', 0),
+(18, 'SV010', 'Dương Mai Linh', '0973622598', 'sv010@example.com', 'YDUOC01', '2003-03-05', 2, NULL, 7, '8', 'Kha', 'Ứng viên tiềm năng', 0),
+(19, 'SV011', 'Huỳnh Hữu Phong', '0989908691', 'sv011@example.com', 'CNTT02', '2004-05-21', 1, NULL, 54, '7', 'Kha', 'Sinh viên năm cuối', 0),
+(20, 'SV012', 'Lê Thanh My', '0920623330', 'sv012@example.com', 'CNTT02', '2001-03-17', 2, NULL, 48, '8', 'Kha', 'Sinh viên có nhu cầu tìm việc', 0),
+(21, 'SV013', 'Trần Đức Sơn', '0959202580', 'sv013@example.com', 'QTKD01', '2002-01-19', 1, NULL, 20, '9', 'Xuat sac', 'Sinh viên có nhu cầu tìm việc', 0),
+(22, 'SV014', 'Phan Khánh Ngân', '0975866039', 'sv014@example.com', 'CNTT01', '2003-12-06', 2, NULL, 66, '7', 'Kha', 'Sinh viên thực tập', 0),
+(23, 'SV015', 'Trần Văn Trí', '0922897772', 'sv015@example.com', 'MKT01', '2004-02-15', 1, NULL, 72, '7', 'Kha', 'Sinh viên có nhu cầu tìm việc', 0),
+(24, 'SV016', 'Đặng Thu Nhi', '0945198846', 'sv016@example.com', 'KETOAN01', '2001-05-14', 2, NULL, 54, '8', 'Kha', 'Sinh viên năm cuối', 0),
+(25, 'SV017', 'Đặng Tuấn Việt', '0980333596', 'sv017@example.com', 'KETOAN01', '2002-07-14', 1, NULL, 66, '8', 'Gioi', 'Ứng viên tiềm năng', 0),
+(26, 'SV018', 'Võ Bảo Quỳnh', '0979015938', 'sv018@example.com', 'CNTT01', '2003-04-11', 2, NULL, 56, '8', 'Kha', 'Sinh viên thực tập', 0),
+(27, 'SV019', 'Đỗ Thanh Duy', '0941816037', 'sv019@example.com', 'YDUOC01', '2004-04-05', 1, NULL, 64, '7', 'Kha', 'Sinh viên có nhu cầu tìm việc', 0),
+(28, 'SV020', 'Hồ Thu Trang', '0938424508', 'sv020@example.com', 'KETOAN01', '2001-06-13', 2, NULL, 71, '8', 'Gioi', 'Sinh viên có nhu cầu tìm việc', 0),
+(29, 'SV021', 'Phan Hữu Lâm', '0983335486', 'sv021@example.com', 'YDUOC01', '2002-03-09', 1, NULL, 20, '8', 'Gioi', 'Ứng viên tiềm năng', 0),
+(30, 'SV022', 'Đỗ Bảo Tú', '0985505307', 'sv022@example.com', 'CNTT01', '2003-09-15', 2, NULL, 63, '7', 'Kha', 'Sinh viên năm cuối', 0),
+(31, 'SV023', 'Ngô Hữu Toàn', '0974586432', 'sv023@example.com', 'CNTT02', '2004-06-28', 1, NULL, 70, '7', 'Kha', 'Sinh viên thực tập', 0),
+(32, 'SV024', 'Bùi Thu Vy', '0974634650', 'sv024@example.com', 'QTKD01', '2001-06-15', 2, NULL, 70, '9', 'Xuat sac', 'Sinh viên thực tập', 0),
+(33, 'SV025', 'Phạm Quang Khoa', '0956884358', 'sv025@example.com', 'TMĐT01', '2002-09-16', 1, NULL, 7, '8', 'Kha', 'Sinh viên thực tập', 0),
+(34, 'SV026', 'Bùi Mai An', '0919954771', 'sv026@example.com', 'MKT01', '2003-06-07', 2, NULL, 55, '7', 'Kha', 'Sinh viên thực tập', 0),
+(35, 'SV027', 'Phan Minh Bình', '0966418108', 'sv027@example.com', 'MKT01', '2004-10-19', 1, NULL, 63, '8', 'Gioi', 'Sinh viên có nhu cầu tìm việc', 0),
+(36, 'SV028', 'Ngô Thị Chi', '0955782854', 'sv028@example.com', 'DLKS01', '2001-04-08', 2, NULL, 20, '7', 'Kha', 'Sinh viên có nhu cầu tìm việc', 0),
+(37, 'SV029', 'Lê Hữu Dũng', '0948599486', 'sv029@example.com', 'QTKD01', '2002-06-08', 1, NULL, 48, '8', 'Gioi', 'Sinh viên năm cuối', 0),
+(38, 'SV030', 'Lê Khánh Giang', '0921527675', 'sv030@example.com', 'CNTT03', '2003-04-15', 2, NULL, 63, '8', 'Gioi', 'Sinh viên năm cuối', 0),
+(39, 'SV031', 'Lý Anh Hải', '0964787024', 'sv031@example.com', 'DLKS01', '2004-09-08', 1, NULL, 70, '7', 'Kha', 'Sinh viên năm cuối', 0),
+(40, 'SV032', 'Lê Khánh Hạnh', '0986369166', 'sv032@example.com', 'CNTT02', '2001-06-28', 2, NULL, 72, '9', 'Xuat sac', 'Sinh viên năm cuối', 0),
+(41, 'SV033', 'Nguyễn Anh Khang', '0963601081', 'sv033@example.com', 'DLKS01', '2002-09-19', 1, NULL, 85, '8', 'Gioi', 'Sinh viên thực tập', 0),
+(42, 'SV034', 'Phạm Bảo Hương', '0953626322', 'sv034@example.com', 'YDUOC01', '2003-10-13', 2, NULL, 56, '7', 'Kha', 'Ứng viên tiềm năng', 0),
+(43, 'SV035', 'Dương Hữu Nam', '0995213496', 'sv035@example.com', 'YDUOC01', '2004-11-07', 1, NULL, 66, '8', 'Kha', 'Sinh viên năm cuối', 0),
+(44, 'SV036', 'Ngô Minh Mai', '0936018603', 'sv036@example.com', 'CNTT02', '2001-05-10', 2, NULL, 66, '7', 'Kha', 'Sinh viên năm cuối', 0),
+(45, 'SV037', 'Trần Quang Quân', '0928628865', 'sv037@example.com', 'DTVT01', '2002-06-09', 1, NULL, 56, '7', 'Kha', 'Sinh viên năm cuối', 0),
+(46, 'SV038', 'Võ Thu Nga', '0985663330', 'sv038@example.com', 'DLKS01', '2003-06-20', 2, NULL, 55, '7', 'Kha', 'Sinh viên thực tập', 0),
+(47, 'SV039', 'Võ Tuấn Thắng', '0999817671', 'sv039@example.com', 'DLKS01', '2004-10-08', 1, NULL, 85, '9', 'Gioi', 'Sinh viên có nhu cầu tìm việc', 0),
+(48, 'SV040', 'Dương Thị Ngọc', '0979875545', 'sv040@example.com', 'CNTT03', '2001-08-05', 2, NULL, 63, '7', 'Kha', 'Sinh viên có nhu cầu tìm việc', 0),
+(49, 'SV041', 'Ngô Gia Tú', '0961445099', 'sv041@example.com', 'TMĐT01', '2002-12-10', 1, NULL, 63, '8', 'Gioi', 'Ứng viên tiềm năng', 0),
+(50, 'SV042', 'Phan Thị Phương', '0985188061', 'sv042@example.com', 'DTVT01', '2003-03-08', 2, NULL, 20, '7', 'Kha', 'Sinh viên năm cuối', 0),
+(51, 'SV043', 'Huỳnh Hữu Vinh', '0912196590', 'sv043@example.com', 'CNTT01', '2004-11-02', 1, NULL, 48, '9', 'Gioi', 'Sinh viên có nhu cầu tìm việc', 0),
+(52, 'SV044', 'Hoàng Khánh Thảo', '0962277410', 'sv044@example.com', 'CNTT03', '2001-05-21', 2, NULL, 64, '7', 'Kha', 'Sinh viên thực tập', 0),
+(53, 'SV045', 'Lý Văn Kiên', '0997924366', 'sv045@example.com', 'CNTT01', '2002-10-14', 1, NULL, 70, '8', 'Gioi', 'Sinh viên có nhu cầu tìm việc', 0),
+(54, 'SV046', 'Hoàng Thanh Trâm', '0939011170', 'sv046@example.com', 'YDUOC01', '2003-07-10', 2, NULL, 66, '8', 'Gioi', 'Sinh viên năm cuối', 0),
+(55, 'SV047', 'Dương Văn Tài', '0921869335', 'sv047@example.com', 'DLKS01', '2004-11-04', 1, NULL, 56, '9', 'Xuat sac', 'Sinh viên năm cuối', 0),
+(56, 'SV048', 'Hoàng Minh Uyên', '0958294948', 'sv048@example.com', 'YDUOC01', '2001-08-08', 2, NULL, 71, '9', 'Gioi', 'Sinh viên có nhu cầu tìm việc', 0),
+(57, 'SV049', 'Vũ Tuấn Hiếu', '0912009939', 'sv049@example.com', 'CNTT01', '2002-07-17', 1, NULL, 48, '9', 'Gioi', 'Sinh viên năm cuối', 1),
+(58, 'SV050', 'Lý Thu Yến', '0935423978', 'sv050@example.com', 'CNTT03', '2003-08-25', 2, NULL, 48, '9', 'Gioi', 'Sinh viên có nhu cầu tìm việc', 1),
 (59, 'MSV001', 'Nguyễn Văn Huy', '09637168277', 'MSV001@gmail.com', NULL, NULL, 0, NULL, 0, NULL, NULL, NULL, 0),
 (60, 'MSV001', 'Nguyễn Văn Huy', '0963718368', 'MSV001@gmail.com', NULL, '2002-08-13', 1, NULL, 8, NULL, NULL, NULL, 0);
 
@@ -5756,18 +5759,18 @@ INSERT INTO `hicrm_student_profile` (`id`, `student_code`, `student_name`, `stud
 
 CREATE TABLE `hicrm_support_requests` (
   `id` int(11) NOT NULL,
-  `request_code` varchar(50) NOT NULL,
+  `request_code` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
   `user_id` int(11) NOT NULL DEFAULT 0,
-  `user_name` varchar(255) NOT NULL,
-  `user_email` varchar(255) DEFAULT NULL,
-  `department` varchar(255) DEFAULT NULL,
-  `service_type` varchar(100) NOT NULL DEFAULT 'CNTT',
-  `priority` varchar(50) NOT NULL DEFAULT 'Normal',
-  `title` varchar(255) NOT NULL,
-  `content` text DEFAULT NULL,
-  `attachment` varchar(255) DEFAULT NULL,
-  `resolution_note` text DEFAULT NULL,
-  `status` varchar(50) NOT NULL DEFAULT 'sent',
+  `user_name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `user_email` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `department` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `service_type` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'CNTT',
+  `priority` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'Normal',
+  `title` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `content` text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `attachment` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `resolution_note` text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `status` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'sent',
   `created_at` datetime DEFAULT current_timestamp(),
   `updated_at` datetime DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -5797,7 +5800,7 @@ CREATE TABLE `hicrm_templates` (
   `template_name` varchar(255) NOT NULL,
   `template_type` int(11) NOT NULL,
   `template_html` text NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Đang đổ dữ liệu cho bảng `hicrm_templates`
@@ -5819,7 +5822,7 @@ CREATE TABLE `hicrm_template_types` (
   `template_type_name` varchar(255) NOT NULL,
   `template_type_description` text DEFAULT NULL,
   `template_type_status` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Đang đổ dữ liệu cho bảng `hicrm_template_types`
@@ -5870,9 +5873,9 @@ INSERT INTO `hicrm_template_types` (`id`, `template_type_code`, `template_type_n
 
 CREATE TABLE `hicrm_tt25_categories` (
   `id` int(11) NOT NULL,
-  `code` varchar(50) NOT NULL,
-  `name` varchar(255) NOT NULL,
-  `description` text DEFAULT NULL,
+  `code` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `description` text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `sort_order` int(11) NOT NULL DEFAULT 0,
   `status` tinyint(4) NOT NULL DEFAULT 1,
   `created_at` datetime DEFAULT current_timestamp()
@@ -5898,16 +5901,16 @@ INSERT INTO `hicrm_tt25_categories` (`id`, `code`, `name`, `description`, `sort_
 
 CREATE TABLE `hicrm_tt25_requests` (
   `id` bigint(20) UNSIGNED NOT NULL,
-  `fullname` varchar(255) NOT NULL,
-  `cccd` varchar(50) NOT NULL,
+  `fullname` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `cccd` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
   `dob` date NOT NULL,
-  `phone` varchar(20) NOT NULL,
-  `bhyt_code` varchar(50) DEFAULT NULL,
-  `email` varchar(255) NOT NULL,
+  `phone` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `bhyt_code` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `email` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `category_id` int(11) NOT NULL,
-  `category_name` varchar(255) NOT NULL,
+  `category_name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `status` tinyint(4) NOT NULL DEFAULT 0 COMMENT '0: Mới tiếp nhận, 1: Hoàn thành, 2: Từ chối',
-  `note` text DEFAULT NULL,
+  `note` text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `created_at` datetime DEFAULT current_timestamp(),
   `updated_at` datetime DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -5934,7 +5937,7 @@ CREATE TABLE `hicrm_type` (
   `type_name` varchar(255) NOT NULL,
   `type_detail` int(11) NOT NULL COMMENT '1. Giới thiệu\r\n2. Dịch vụ\r\n3. Chuyên khoa\r\n4. Nhà thuốc',
   `type_status` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Đang đổ dữ liệu cho bảng `hicrm_type`
@@ -5964,7 +5967,7 @@ CREATE TABLE `hicrm_users` (
   `user_group` int(11) NOT NULL,
   `user_status` int(11) NOT NULL,
   `user_created_date` date NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Đang đổ dữ liệu cho bảng `hicrm_users`
@@ -6012,7 +6015,7 @@ CREATE TABLE `hicrm_users_old-1` (
   `user_updated_at` datetime NOT NULL,
   `user_deleted_at` datetime DEFAULT NULL COMMENT 'Soft delete',
   `user_is_subscribed` tinyint(4) DEFAULT 0
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Đang đổ dữ liệu cho bảng `hicrm_users_old-1`
@@ -6073,7 +6076,7 @@ CREATE TABLE `hicrm_user_category` (
   `user_category_icon` varchar(255) NOT NULL,
   `user_category_class` varchar(255) NOT NULL,
   `user_category_status` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Đang đổ dữ liệu cho bảng `hicrm_user_category`
@@ -6098,7 +6101,7 @@ CREATE TABLE `hicrm_user_groups` (
   `group_class` varchar(255) DEFAULT NULL,
   `group_icon` varchar(255) DEFAULT NULL,
   `group_status` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Đang đổ dữ liệu cho bảng `hicrm_user_groups`
@@ -6164,7 +6167,7 @@ CREATE TABLE `hicrm_user_role` (
   `role_name` varchar(255) NOT NULL,
   `user_role_key` varchar(255) NOT NULL,
   `role_status` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Đang đổ dữ liệu cho bảng `hicrm_user_role`
@@ -6191,7 +6194,7 @@ CREATE TABLE `hicrm_videos` (
   `video_description` text NOT NULL,
   `video_status` int(11) NOT NULL DEFAULT 2,
   `video_created_at` datetime NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Đang đổ dữ liệu cho bảng `hicrm_videos`
@@ -6216,7 +6219,7 @@ CREATE TABLE `hicrm_website_active_sessions` (
   `session_id` varchar(128) NOT NULL,
   `expires_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Đang đổ dữ liệu cho bảng `hicrm_website_active_sessions`
@@ -6240,7 +6243,7 @@ CREATE TABLE `hicrm_website_visits` (
   `visit_date` date NOT NULL,
   `first_seen` datetime NOT NULL DEFAULT current_timestamp(),
   `last_seen` datetime NOT NULL DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Đang đổ dữ liệu cho bảng `hicrm_website_visits`
@@ -6331,7 +6334,7 @@ CREATE TABLE `hicrm_website_visit_daily` (
   `visit_date` date NOT NULL,
   `visit_count` bigint(20) UNSIGNED NOT NULL DEFAULT 0,
   `updated_at` datetime NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Đang đổ dữ liệu cho bảng `hicrm_website_visit_daily`
@@ -6372,7 +6375,7 @@ CREATE TABLE `hicrm_website_visit_stats` (
   `stat_key` varchar(50) NOT NULL,
   `stat_value` bigint(20) UNSIGNED NOT NULL DEFAULT 0,
   `updated_at` datetime NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Đang đổ dữ liệu cho bảng `hicrm_website_visit_stats`
@@ -6392,7 +6395,7 @@ CREATE TABLE `system_otp` (
   `otp_code` varchar(6) NOT NULL,
   `otp_uid` bigint(20) NOT NULL,
   `otp_exp` datetime NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Đang đổ dữ liệu cho bảng `system_otp`
@@ -6422,7 +6425,7 @@ CREATE TABLE `system_page` (
   `page_uid` int(11) NOT NULL,
   `page_status` int(11) NOT NULL,
   `page_created_date` datetime NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Đang đổ dữ liệu cho bảng `system_page`
@@ -6932,7 +6935,7 @@ ALTER TABLE `hicrm_accounts`
 -- AUTO_INCREMENT cho bảng `hicrm_admin_menu_permissions`
 --
 ALTER TABLE `hicrm_admin_menu_permissions`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9143;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9901;
 
 --
 -- AUTO_INCREMENT cho bảng `hicrm_banks`
@@ -7196,13 +7199,13 @@ ALTER TABLE `hicrm_staff`
 -- AUTO_INCREMENT cho bảng `hicrm_static_pages`
 --
 ALTER TABLE `hicrm_static_pages`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT cho bảng `hicrm_static_page_categories`
 --
 ALTER TABLE `hicrm_static_page_categories`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT cho bảng `hicrm_student_profile`

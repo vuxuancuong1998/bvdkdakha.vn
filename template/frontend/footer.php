@@ -12,20 +12,20 @@
               <div class="logo-icon" aria-hidden="true">
                 <img
                   src="<?php echo XC_URL; ?>/template/frontend/assets/images/logo.png"
-                  alt="Logo Bệnh viện đa khoa khu vực Đắk Hà"
+                  alt="Logo Bệnh viện đa khoa khu vực Đăk Hà"
                   width="48"
                   height="48"
                   loading="lazy"
                   itemprop="logo" />
               </div>
               <div class="logo-text">
-                <span class="name">Bệnh viện đa khoa khu vực Đắk Hà</span>
+                <span class="name">Bệnh viện đa khoa khu vực Đăk Hà</span>
                 <span class="sub">Sở Y tế tỉnh Quảng Ngãi</span>
               </div>
             </a>
             <p class="footer-desc">
-              Bệnh viện đa khoa khu vực Đắk Hà là đơn vị sự nghiệp y tế công lập, chịu trách nhiệm
-              chăm sóc sức khỏe toàn diện cho nhân dân huyện Đắk Hà, tỉnh Kon Tum.
+              Bệnh viện đa khoa khu vực Đăk Hà là đơn vị sự nghiệp y tế công lập, chịu trách nhiệm
+              chăm sóc sức khỏe toàn diện cho nhân dân huyện Đăk Hà, tỉnh Kon Tum.
             </p>
             <nav class="footer-socials" aria-label="Mạng xã hội">
               <a href="https://www.facebook.com/ttytdakha" target="_blank" rel="noopener noreferrer"
@@ -76,7 +76,7 @@
                   <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/>
                   <circle cx="12" cy="10" r="3"/>
                 </svg>
-                <span itemprop="streetAddress">Đường Trần Phú, Thị trấn Đắk Hà, Xã Đắk Hà, tỉnh Quảng Ngãi</span>
+                <span itemprop="streetAddress">Đường Trần Phú, Thị trấn Đăk Hà, Xã Đăk Hà, tỉnh Quảng Ngãi</span>
               </div>
               <div class="footer-contact-item">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
@@ -113,7 +113,7 @@
                  style="height:180px;background:var(--color-primary);border-radius:var(--radius-md);overflow:hidden;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:8px;"
                  data-src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3867.1!2d107.9!3d14.7!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMTTCsDQyJzAwLjAiTiAxMDfCsDU0JzAwLjAiRQ!5e0!3m2!1svi!2svn!4v1000000000000"
                  role="img"
-                 aria-label="Bản đồ vị trí Bệnh viện đa khoa khu vực Đắk Hà (sẽ tải khi cuộn đến)">
+                 aria-label="Bản đồ vị trí Bệnh viện đa khoa khu vực Đăk Hà (sẽ tải khi cuộn đến)">
               <svg viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="1.5" aria-hidden="true">
                 <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/>
               </svg>
@@ -138,9 +138,9 @@
       <div class="container">
         <div class="footer-bottom-inner">
           <p>
-            © <time datetime="2026">2026</time> Bệnh viện đa khoa khu vực Đắk Hà — Thuộc
+            © <time datetime="2026">2026</time> Bệnh viện đa khoa khu vực Đăk Hà — Thuộc
             <a href="https://soytekontum.gov.vn" target="_blank" rel="noopener noreferrer">Sở Y tế tỉnh Quảng Ngãi</a>.
-            Thiết kế & Phát triển bởi <abbr title="Bộ phận Công nghệ thông tin">CNTT TTYT Đắk Hà</abbr>.
+            Thiết kế & Phát triển bởi <abbr title="Bộ phận Công nghệ thông tin">CNTT TTYT Đăk Hà</abbr>.
           </p>
           <nav aria-label="Liên kết pháp lý">
             <a href="<?php echo XC_URL; ?>/trang/chinh-sach-bao-mat">Chính sách bảo mật</a>

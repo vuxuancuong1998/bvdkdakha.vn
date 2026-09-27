@@ -14,19 +14,19 @@
         <div class="topbar-right">
           <nav class="topbar-socials" aria-label="Mạng xã hội">
             <a href="https://www.facebook.com/ttytdakha" target="_blank" rel="noopener noreferrer"
-               aria-label="Trang Facebook Bệnh viện đa khoa Đắk Hà">
+               aria-label="Trang Facebook Bệnh viện đa khoa Đăk Hà">
               <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                 <path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/>
               </svg>
             </a>
             <a href="https://zalo.me/ttytdakha" target="_blank" rel="noopener noreferrer"
-               aria-label="Trang Zalo Bệnh viện đa khoa Đắk Hà">
+               aria-label="Trang Zalo Bệnh viện đa khoa Đăk Hà">
               <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                 <path d="M12 2C6.477 2 2 6.477 2 12c0 1.89.525 3.66 1.438 5.168L2 22l4.832-1.438A9.955 9.955 0 0012 22c5.523 0 10-4.477 10-10S17.523 2 12 2zm-1 13H9V9h2v6zm3.5 0h-2V9h2v6z"/>
               </svg>
             </a>
             <a href="https://youtube.com" target="_blank" rel="noopener noreferrer"
-               aria-label="Kênh YouTube Bệnh viện đa khoa Đắk Hà">
+               aria-label="Kênh YouTube Bệnh viện đa khoa Đăk Hà">
               <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                 <path d="M22.54 6.42a2.78 2.78 0 00-1.94-1.96C18.88 4 12 4 12 4s-6.88 0-8.6.46A2.78 2.78 0 001.46 6.42 29 29 0 001 12a29 29 0 00.46 5.58 2.78 2.78 0 001.94 1.96C5.12 20 12 20 12 20s6.88 0 8.6-.46a2.78 2.78 0 001.94-1.96A29 29 0 0023 12a29 29 0 00-.46-5.58z"/>
                 <polygon points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02" fill="white"/>
@@ -54,18 +54,18 @@
       <div class="header-inner">
 
         <!-- Logo -->
-        <a href="<?php echo XC_URL; ?>/" class="logo" aria-label="Trang chủ Bệnh viện đa khoa khu vực Đắk Hà">
+        <a href="<?php echo XC_URL; ?>/" class="logo" aria-label="Trang chủ Bệnh viện đa khoa khu vực Đăk Hà">
           <div class="logo-icon" aria-hidden="true">
            <img
                   src="<?php echo XC_URL;?>/template/frontend/assets/images/logo.png"
-                  alt="Logo Bệnh viện đa khoa khu vực Đắk Hà"
+                  alt="Logo Bệnh viện đa khoa khu vực Đăk Hà"
                   width="48"
                   height="48"
                   loading="lazy"
                   itemprop="logo" />
           </div>
           <div class="logo-text" itemprop="name">
-            <span class="name">Bệnh viện đa khoa khu vực Đắk Hà</span>
+            <span class="name">Bệnh viện đa khoa khu vực Đăk Hà</span>
             <span class="sub">Sở Y tế tỉnh Quảng Ngãi</span>
           </div>
         </a>
@@ -260,13 +260,13 @@
         <div class="logo-icon" aria-hidden="true">
           <img
                   src="<?php echo XC_URL; ?>/template/frontend/assets/images/logo.png"
-                  alt="Logo Bệnh viện đa khoa khu vực Đắk Hà"
+                  alt="Logo Bệnh viện đa khoa khu vực Đăk Hà"
                   width="48"
                   height="48"
                   loading="lazy" />
         </div>
         <div class="logo-text">
-          <span class="name">Đắk Hà Medical</span>
+          <span class="name">Đăk Hà Medical</span>
           <span class="sub">Menu chính</span>
         </div>
       </a>
@@ -323,11 +323,11 @@
         </svg>
       </button>
       <div class="mobile-submenu" id="sub-tintuc" role="menu">
-        <a href="<?php echo XC_URL; ?>/tin-tuc/tin-hoat-dong">Tin hoạt động nội bộ</a>
-        <a href="<?php echo XC_URL; ?>/tin-tuc/y-hoc-thuong-thuc">Y học thường thức</a>
-        <a href="<?php echo XC_URL; ?>/tin-tuc/thong-bao-huong-dan">Thông báo - Hướng dẫn</a>
-        <a href="<?php echo XC_URL; ?>/tin-tuc/su-kien-hoi-thao">Sự kiện - Hội thảo</a>
-      </div>
+        <?php foreach( $item_events as $item){ ?>
+        <a href="<?php echo XC_URL; ?>/tin-tuc/<?php echo $item->id;?>-<?php echo $item->event_type_slug; ?>.html"><?php echo $item->event_type_name; ?>
+          
+                <?php }?>
+        </div>
 
       <button class="mobile-nav-link" data-submenu="sub-dichvu" aria-expanded="false">
         Dịch vụ Y tế
@@ -341,7 +341,7 @@
         <a href="<?php echo XC_URL; ?>/dich-vu-y-te.html#goi-kham">Gói khám sức khỏe</a>
       </div>
 
-      <a href="<?php echo XC_URL; ?>/lay-giay-tt25" class="mobile-nav-link fw-bold text-primary">Lấy giấy TT25</a>
+      <a href="<?php echo XC_URL; ?>/lay-giay-tt25" class="mobile-nav-link fw-bold text-primary">Chế độ BHXH</a>
       <a href="<?php echo XC_URL; ?>/hoat-dong.html" class="mobile-nav-link">Hoạt động</a>
       <a href="<?php echo XC_URL; ?>/trang/van-ban" class="mobile-nav-link">Văn bản</a>
       <a href="<?php echo XC_URL; ?>/lien-he.html" class="mobile-nav-link">Liên hệ</a>
@@ -383,7 +383,7 @@
             </div>
             <div class="custom-modal-title-group">
               <h5 class="custom-modal-title">Đăng nhập Cán bộ / NVYT</h5>
-              <span class="custom-modal-subtitle">Bệnh viện đa khoa khu vực Đắk Hà</span>
+              <span class="custom-modal-subtitle">Bệnh viện đa khoa khu vực Đăk Hà</span>
             </div>
           </div>
           <button type="button" class="custom-modal-close" onclick="closeLoginModal()" aria-label="Đóng">

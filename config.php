@@ -43,7 +43,7 @@ if (!defined('XVN_CONFIG_LOADED')) {
 	define('AdminThemeMaster', 'backend'); //Replace xpanel by your admin theme's name
 
 	/*** define site path ***/
-	define('XC_URL','https://seeker-fabric-cached-explore.trycloudflare.com/bvdkdakha.vn'); //Replace by your site url
+	define('XC_URL','http://localhost/bvdkdakha.vn'); //Replace by your site url
 }
 
 $siteurl = XC_URL;

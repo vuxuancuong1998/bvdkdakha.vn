@@ -44,6 +44,8 @@ Class adminController extends baseController
 			array('key' => 'groups', 'name' => 'Quản lý nhóm quyền', 'parent' => 'account_section', 'sort' => 71),
 			array('key' => 'images', 'name' => 'Thư viện hình ảnh', 'parent' => '', 'sort' => 80),
 			array('key' => 'videos', 'name' => 'Thư viện video', 'parent' => '', 'sort' => 90),
+			array('key' => 'staticpages', 'name' => 'Quản lý trang tĩnh CMS', 'parent' => 'staticpages_section', 'sort' => 53),
+			array('key' => 'staticpage_categories', 'name' => 'Danh mục trang tĩnh', 'parent' => 'staticpages_section', 'sort' => 54),
 			array('key' => 'config', 'name' => 'Danh mục tham số', 'parent' => 'system_section', 'sort' => 100),
 			array('key' => 'settings', 'name' => 'Cài đặt hệ thống', 'parent' => 'system_section', 'sort' => 101)
 		);
@@ -156,7 +158,7 @@ Class adminController extends baseController
 			$this->view->admintmp('index');
 			return;
 		}
-		$routes = array('employers'=>'/admin/employers','employer_posts'=>'/admin/employers/posts','candidates'=>'/admin/candidates','students'=>'/admin/students','events'=>'/admin/events','news_comments'=>'/admin/newscomments','customer_feedbacks'=>'/admin/customerfeedbacks','tt25_documents'=>'/admin/tt25documents','job_support_customers'=>'/admin/jobsupportcustomers','market_results'=>'/admin/marketresults','google_meet'=>'/admin/googlemeet','users'=>'/admin/users','groups'=>'/admin/groups','images'=>'/admin/images','videos'=>'/admin/videos','config'=>'/admin/config','settings'=>'/admin/settings');
+		$routes = array('employers'=>'/admin/employers','employer_posts'=>'/admin/employers/posts','candidates'=>'/admin/candidates','students'=>'/admin/students','events'=>'/admin/events','news_comments'=>'/admin/newscomments','staticpages'=>'/admin/staticpages','staticpage_categories'=>'/admin/staticpagecategories','customer_feedbacks'=>'/admin/customerfeedbacks','tt25_documents'=>'/admin/tt25documents','job_support_customers'=>'/admin/jobsupportcustomers','market_results'=>'/admin/marketresults','google_meet'=>'/admin/googlemeet','users'=>'/admin/users','groups'=>'/admin/groups','images'=>'/admin/images','videos'=>'/admin/videos','config'=>'/admin/config','settings'=>'/admin/settings');
 		foreach($routes as $key => $route){
 			if($this->adminHasMenuPermission($allowed, $key)){ header('Location: '.XC_URL.$route); return; }
 		}
@@ -3711,6 +3713,153 @@ Class adminController extends baseController
 			}
 			
 			return $removed_files;
+		}
+	}
+	public function staticpages($para = array())
+	{
+		if(!$this->prepareAdminAccess('staticpages')){ return; }
+		global $db;
+
+		$this->ensureStaticPagesTables();
+
+		$method = isset($para[1]) ? trim($para[1]) : '';
+		$id     = isset($para[2]) ? intval($para[2]) : 0;
+
+		// Load categories for dropdown
+		$db->query("SELECT * FROM hicrm_static_page_categories WHERE category_status NOT IN (99) ORDER BY category_name ASC");
+		$categories = $db->fetch_object();
+
+		if ($method === 'add' || $method === 'edit') {
+			$page_detail = null;
+			$page_attachments = array();
+			if ($method === 'edit' && $id > 0) {
+				$db->query("SELECT sp.*, spc.category_name FROM hicrm_static_pages sp LEFT JOIN hicrm_static_page_categories spc ON spc.id = sp.category_id WHERE sp.id = '".$id."' AND sp.page_status NOT IN (99) LIMIT 1");
+				$page_detail = $db->fetch_object(true);
+				if (!$page_detail) { header("Location: ".XC_URL."/admin/staticpages"); exit(); }
+
+				if (!empty($page_detail->static_files)) {
+					$decoded = json_decode($page_detail->static_files);
+					if (is_array($decoded)) { $page_attachments = $decoded; }
+				}
+			}
+			$this->view->data['method']           = $method;
+			$this->view->data['page_detail']      = $page_detail;
+			$this->view->data['page_attachments'] = $page_attachments;
+			$this->view->data['categories']       = $categories;
+			$this->view->admintmp('static-page-form');
+			return;
+		}
+
+		// List with search + filter + pagination
+		$search     = isset($_GET['q'])   ? trim($_GET['q'])   : '';
+		$cat_filter = isset($_GET['cat']) ? intval($_GET['cat']) : 0;
+		$page       = (isset($_GET['page']) && intval($_GET['page']) > 0) ? intval($_GET['page']) : 1;
+		$per_page   = 20;
+
+		$where = array("sp.page_status NOT IN (99)");
+		if ($search !== '') {
+			$kw = $db->escapestring($search);
+			$where[] = "(sp.page_title LIKE '%".$kw."%' OR sp.hashtag LIKE '%".$kw."%' OR sp.page_slug LIKE '%".$kw."%')";
+		}
+		if ($cat_filter > 0) {
+			$where[] = "sp.category_id = '".$cat_filter."'";
+		}
+		$where_sql = implode(' AND ', $where);
+
+		$db->query("SELECT COUNT(sp.id) AS total FROM hicrm_static_pages sp WHERE ".$where_sql);
+		$count_row    = $db->fetch_object(true);
+		$total_items  = $count_row ? (int)$count_row->total : 0;
+		$total_pages  = max(1, ceil($total_items / $per_page));
+		if ($page > $total_pages) { $page = $total_pages; }
+		$offset = ($page - 1) * $per_page;
+
+		$db->query("SELECT sp.*, spc.category_name
+			FROM hicrm_static_pages sp
+			LEFT JOIN hicrm_static_page_categories spc ON spc.id = sp.category_id
+			WHERE ".$where_sql."
+			ORDER BY sp.sort_order ASC, sp.id DESC
+			LIMIT ".$offset.",".$per_page);
+		$pages = $db->fetch_object();
+
+		$this->view->data['pages']       = is_array($pages) ? $pages : array();
+		$this->view->data['categories']  = $categories;
+		$this->view->data['search']      = $search;
+		$this->view->data['cat_filter']  = $cat_filter;
+		$this->view->data['page']        = $page;
+		$this->view->data['per_page']    = $per_page;
+		$this->view->data['total_items'] = $total_items;
+		$this->view->data['total_pages'] = $total_pages;
+		$this->view->admintmp('static-pages');
+	}
+
+	public function staticpagecategories($para = array())
+	{
+		if(!$this->prepareAdminAccess('staticpage_categories')){ return; }
+		global $db;
+
+		$this->ensureStaticPagesTables();
+
+		$method = isset($para[1]) ? trim($para[1]) : '';
+		$id     = isset($para[2]) ? intval($para[2]) : 0;
+
+		// Soft-delete
+		if ($method === 'delete' && $id > 0) {
+			$db->query("UPDATE hicrm_static_page_categories SET category_status = 99 WHERE id = '".$id."' LIMIT 1");
+			header("Location: ".XC_URL."/admin/staticpagecategories");
+			exit();
+		}
+
+		$db->query("SELECT spc.*, COUNT(sp.id) AS total_pages
+			FROM hicrm_static_page_categories spc
+			LEFT JOIN hicrm_static_pages sp ON sp.category_id = spc.id AND sp.page_status NOT IN (99)
+			WHERE spc.category_status NOT IN (99)
+			GROUP BY spc.id
+			ORDER BY spc.id ASC");
+		$categories = $db->fetch_object();
+
+		$this->view->data['categories'] = is_array($categories) ? $categories : array();
+		$this->view->admintmp('static-page-categories');
+	}
+
+	private function ensureStaticPagesTables()
+	{
+		global $db;
+		$db->query("CREATE TABLE IF NOT EXISTS hicrm_static_page_categories (
+			id int(11) NOT NULL AUTO_INCREMENT,
+			category_name varchar(255) NOT NULL,
+			category_slug varchar(255) NOT NULL DEFAULT '',
+			category_description text DEFAULT NULL,
+			category_status int(11) NOT NULL DEFAULT 1,
+			created_at datetime DEFAULT NULL,
+			PRIMARY KEY (id)
+		) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+
+		$db->query("CREATE TABLE IF NOT EXISTS hicrm_static_pages (
+			id int(11) NOT NULL AUTO_INCREMENT,
+			category_id int(11) NOT NULL DEFAULT 0,
+			page_title varchar(255) NOT NULL,
+			page_slug varchar(255) NOT NULL DEFAULT '',
+			hashtag varchar(255) DEFAULT '',
+			link_url varchar(512) DEFAULT '',
+			page_summary text DEFAULT NULL,
+			page_content longtext DEFAULT NULL,
+			static_files longtext DEFAULT NULL,
+			banner_image varchar(512) DEFAULT '',
+			meta_title varchar(255) DEFAULT '',
+			meta_keywords varchar(512) DEFAULT '',
+			meta_description text DEFAULT NULL,
+			sort_order int(11) NOT NULL DEFAULT 0,
+			page_status int(11) NOT NULL DEFAULT 1,
+			created_at datetime DEFAULT NULL,
+			PRIMARY KEY (id),
+			KEY idx_category_id (category_id),
+			KEY idx_page_status (page_status)
+		) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+
+		// Kiểm tra bổ sung cột static_files nếu bảng hicrm_static_pages đã tạo từ trước
+		$db->query("SHOW COLUMNS FROM hicrm_static_pages LIKE 'static_files'");
+		if(!$db->fetch_object(true)){
+			$db->query("ALTER TABLE hicrm_static_pages ADD COLUMN static_files longtext DEFAULT NULL AFTER page_content");
 		}
 	}
 }

@@ -1,4 +1,4 @@
-<?php require "header.php"; ?>
+<?php $active_menu = 'staticpages'; require "header.php"; ?>
 
 <div class="conatiner-fluid content-inner mt-n5 py-0">
    <div class="row">

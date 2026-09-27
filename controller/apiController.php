@@ -1968,14 +1968,90 @@ Class apiController extends baseController
 		$e_mkey = $db->escapestring($meta_keywords);
 		$e_mdesc = $db->escapestring($meta_description);
 
+		// Đảm bảo cột static_files trong bảng hicrm_static_pages tồn tại
+		$db->query("SHOW COLUMNS FROM hicrm_static_pages LIKE 'static_files'");
+		if(!$db->fetch_object(true)){
+			$db->query("ALTER TABLE hicrm_static_pages ADD COLUMN static_files longtext DEFAULT NULL AFTER page_content");
+		}
+
+		$existing_files = array();
+		if($id > 0){
+			$db->query("SELECT static_files FROM hicrm_static_pages WHERE id = '".$id."' LIMIT 1");
+			$cur_page = $db->fetch_object(true);
+			if($cur_page && !empty($cur_page->static_files)){
+				$decoded = json_decode($cur_page->static_files, true);
+				if(is_array($decoded)){ $existing_files = $decoded; }
+			}
+		}
+
+		// Xóa các file đính kèm đã chọn xóa
+		if(!empty($_POST['delete_attachments'])){
+			$delete_list = is_array($_POST['delete_attachments']) ? $_POST['delete_attachments'] : array($_POST['delete_attachments']);
+			$filtered_files = array();
+			foreach($existing_files as $f_item){
+				$f_id = isset($f_item['id']) ? (string)$f_item['id'] : (isset($f_item['file_path']) ? (string)$f_item['file_path'] : '');
+				if(in_array($f_id, $delete_list, true) || in_array(strval(isset($f_item['id']) ? $f_item['id'] : ''), $delete_list, true)){
+					if(!empty($f_item['file_path'])){
+						$full_del_path = __SITE_PATH . '/' . ltrim($f_item['file_path'], '/');
+						if(file_exists($full_del_path)){
+							@unlink($full_del_path);
+						}
+					}
+				} else {
+					$filtered_files[] = $f_item;
+				}
+			}
+			$existing_files = $filtered_files;
+		}
+
+		// Tải lên các file mới
+		if(isset($_FILES['attachments']) && !empty($_FILES['attachments']['name'])){
+			$upload_dir = __SITE_PATH . '/uploads/attachments/';
+			if(!file_exists($upload_dir)){
+				@mkdir($upload_dir, 0777, true);
+			}
+
+			$names  = is_array($_FILES['attachments']['name']) ? $_FILES['attachments']['name'] : array($_FILES['attachments']['name']);
+			$tmps   = is_array($_FILES['attachments']['tmp_name']) ? $_FILES['attachments']['tmp_name'] : array($_FILES['attachments']['tmp_name']);
+			$errors = is_array($_FILES['attachments']['error']) ? $_FILES['attachments']['error'] : array($_FILES['attachments']['error']);
+			$sizes  = is_array($_FILES['attachments']['size']) ? $_FILES['attachments']['size'] : array($_FILES['attachments']['size']);
+
+			$file_count = count($names);
+			for($i = 0; $i < $file_count; $i++){
+				if(!empty($names[$i]) && isset($errors[$i]) && $errors[$i] == 0){
+					$orig_name = $names[$i];
+					$tmp_path  = $tmps[$i];
+					$file_size = $sizes[$i];
+					$ext       = strtolower(pathinfo($orig_name, PATHINFO_EXTENSION));
+					
+					$new_filename    = 'file_'.time().'_'.$i.'_'.rand(100,999).'.'.$ext;
+					$rel_target_path = 'uploads/attachments/'.$new_filename;
+					$full_dest_path  = __SITE_PATH . '/' . $rel_target_path;
+					
+					if(move_uploaded_file($tmp_path, $full_dest_path)){
+						$existing_files[] = array(
+							'id' => 'att_'.time().'_'.rand(100,999).'_'.$i,
+							'file_path' => $rel_target_path,
+							'file_name' => $orig_name,
+							'file_size' => $file_size,
+							'file_ext' => $ext,
+							'created_at' => date('Y-m-d H:i:s')
+						);
+					}
+				}
+			}
+		}
+
+		$e_static_files = $db->escapestring(json_encode($existing_files, JSON_UNESCAPED_UNICODE));
+
 		if($id == 0){
 			$db->query("SELECT id FROM hicrm_static_pages WHERE page_slug = '".$e_slug."' LIMIT 1");
 			if($db->fetch_object(true)){
 				$e_slug .= '-'.time();
 			}
 			
-			$db->query("INSERT INTO hicrm_static_pages (category_id, page_title, page_slug, hashtag, link_url, page_summary, page_content, banner_image, meta_title, meta_keywords, meta_description, sort_order, page_status, created_at)
-			VALUES ('".$category_id."', '".$e_title."', '".$e_slug."', '".$e_hashtag."', '".$e_link."', '".$e_summary."', '".$e_content."', '".$banner_image."', '".$e_mtitle."', '".$e_mkey."', '".$e_mdesc."', '".$sort_order."', '".$page_status."', NOW())");
+			$db->query("INSERT INTO hicrm_static_pages (category_id, page_title, page_slug, hashtag, link_url, page_summary, page_content, static_files, banner_image, meta_title, meta_keywords, meta_description, sort_order, page_status, created_at)
+			VALUES ('".$category_id."', '".$e_title."', '".$e_slug."', '".$e_hashtag."', '".$e_link."', '".$e_summary."', '".$e_content."', '".$e_static_files."', '".$banner_image."', '".$e_mtitle."', '".$e_mkey."', '".$e_mdesc."', '".$sort_order."', '".$page_status."', NOW())");
 			
 			$result['status'] = 200;
 			$result['message'] = 'Thêm trang tĩnh thành công!';
@@ -1990,6 +2066,7 @@ Class apiController extends baseController
 				link_url = '".$e_link."',
 				page_summary = '".$e_summary."',
 				page_content = '".$e_content."',
+				static_files = '".$e_static_files."',
 				meta_title = '".$e_mtitle."',
 				meta_keywords = '".$e_mkey."',
 				meta_description = '".$e_mdesc."',
@@ -2062,7 +2139,29 @@ Class apiController extends baseController
 
 		echo json_encode($result);
 	}
+
+	public function deletestaticpagecategory()
+	{
+		header('Content-Type: application/json; charset=utf-8');
+		if(!$this->requireAdminApiPermission('staticpage_categories', false)){ return; }
+		global $db;
+		$id = isset($_POST['id']) ? (int)$_POST['id'] : 0;
+		if($id > 0){
+			// Kiểm tra xem danh mục có trang tĩnh đang active không
+			$db->query("SELECT COUNT(id) AS cnt FROM hicrm_static_pages WHERE category_id = '".$id."' AND page_status NOT IN (99)");
+			$row = $db->fetch_object(true);
+			if($row && (int)$row->cnt > 0){
+				echo json_encode(array('status' => 400, 'message' => 'Danh mục này còn '.(int)$row->cnt.' trang tĩnh. Hãy chuyển các trang sang danh mục khác trước khi xóa!'));
+				return;
+			}
+			$db->query("UPDATE hicrm_static_page_categories SET category_status = 99 WHERE id = '".$id."' LIMIT 1");
+			echo json_encode(array('status' => 200, 'message' => 'Đã xóa danh mục thành công!'));
+		} else {
+			echo json_encode(array('status' => 400, 'message' => 'ID không hợp lệ!'));
+		}
+	}
 	//====END CMS STATIC PAGES====/
+
 
 	//======= API Support Requests (Quản lý Yêu cầu) ==========//
 	public function submitrequest()

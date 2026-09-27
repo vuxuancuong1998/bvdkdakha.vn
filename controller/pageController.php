@@ -45,7 +45,14 @@ Class pageController extends baseController
 			ORDER BY sort_order ASC, id DESC LIMIT 10");
 		$other_pages = $db->fetch_object();
 
+		$attachments = array();
+		if($page_data && !empty($page_data->static_files)){
+			$decoded = json_decode($page_data->static_files);
+			if(is_array($decoded)){ $attachments = $decoded; }
+		}
+
 		$this->view->data['page'] = $page_data;
+		$this->view->data['attachments'] = $attachments;
 		$this->view->data['other_pages'] = is_array($other_pages) ? $other_pages : array();
 		$this->view->show("trangtinh");
 	}

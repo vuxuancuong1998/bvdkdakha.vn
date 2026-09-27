@@ -1,4 +1,4 @@
-<?php require "header.php"; ?>
+<?php $active_menu = 'staticpage_categories'; require "header.php"; ?>
 
 <div class="conatiner-fluid content-inner mt-n5 py-0">
    <div class="row">
@@ -189,7 +189,7 @@ $('#formCategory').on('submit', function(e) {
 function deleteCategory(id, name) {
    Swal.fire({
       title: 'Xác nhận xóa?',
-      html: `Bạn có chắc muốn xóa danh mục <strong>"${name}"</strong>?`,
+      html: `Bạn có chắc muốn xóa danh mục <strong>"${name}"</strong>?<br><small class="text-muted">Lưu ý: Không thể xóa danh mục đang có trang tĩnh.</small>`,
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#d33',
@@ -197,7 +197,24 @@ function deleteCategory(id, name) {
       cancelButtonText: 'Hủy'
    }).then((result) => {
       if (result.isConfirmed) {
-         window.location.href = '<?php echo XC_URL; ?>/admin/staticpagecategories/delete/' + id;
+         $.ajax({
+            url: '<?php echo XC_URL; ?>/api/deletestaticpagecategory',
+            type: 'POST',
+            data: { id: id },
+            dataType: 'json',
+            success: function(res) {
+               if (res.status == 200) {
+                  Swal.fire('Thành công!', res.message, 'success').then(() => {
+                     location.reload();
+                  });
+               } else {
+                  Swal.fire('Không thể xóa', res.message, 'warning');
+               }
+            },
+            error: function() {
+               Swal.fire('Lỗi', 'Không thể kết nối tới máy chủ', 'error');
+            }
+         });
       }
    });
 }

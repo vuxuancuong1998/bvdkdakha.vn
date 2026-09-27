@@ -375,8 +375,25 @@
             $avatarUrl = $hasAvatar 
               ? XC_URL . '/uploads/doctors/' . htmlspecialchars($doc->avatar, ENT_QUOTES, 'UTF-8')
               : XC_URL . '/template/frontend/assets/images/doctor-0' . (($idx % 3) + 1) . '.jpg';
+            
+            $docData = array(
+              'fullname' => (string)$doc->fullname,
+              'dob' => (!empty($doc->dob) && $doc->dob !== '0000-00-00') ? date('d/m/Y', strtotime($doc->dob)) : 'Chưa cập nhật',
+              'hometown' => !empty($doc->hometown) ? (string)$doc->hometown : 'Chưa cập nhật',
+              'cccd' => !empty($doc->cccd) ? (string)$doc->cccd : 'Chưa cập nhật',
+              'position' => (string)$doc->position,
+              'job_title_code' => !empty($doc->job_title_code) ? (string)$doc->job_title_code : (!empty($doc->cchn) ? (string)$doc->cchn : 'Chưa cập nhật'),
+              'department' => !empty($doc->depart_name) ? (string)$doc->depart_name : 'Bệnh viện Đa khoa Khu vực Đắk Hà',
+              'workplace' => !empty($doc->workplace) ? (string)$doc->workplace : 'Bệnh viện Đa khoa Khu vực Đắk Hà',
+              'code' => !empty($doc->code) ? (string)$doc->code : (!empty($doc->cchn) ? (string)$doc->cchn : 'Chưa cập nhật'),
+              'avatar' => $avatarUrl
+            );
           ?>
-          <article class="doctor-card" data-animate <?php echo $delay > 0 ? 'data-animate-delay="'.$delay.'"' : ''; ?> itemscope itemtype="https://schema.org/Physician">
+          <article class="doctor-card doctor-card-clickable" 
+                   data-doctor='<?php echo htmlspecialchars(json_encode($docData, JSON_UNESCAPED_UNICODE), ENT_QUOTES, 'UTF-8'); ?>'
+                   onclick="openDoctorModal(this)"
+                   data-animate <?php echo $delay > 0 ? 'data-animate-delay="'.$delay.'"' : ''; ?> 
+                   itemscope itemtype="https://schema.org/Physician">
             <div class="doctor-img-wrap">
               <img
                 src="<?php echo $avatarUrl; ?>"
@@ -387,13 +404,29 @@
                 height="373"
                 itemprop="image" />
               <div class="doctor-overlay" aria-hidden="true">
-                <a href="<?php echo XC_URL; ?>/bac-si?khoa=<?php echo (int)$doc->department_id; ?>" class="doctor-overlay-btn">Xem hồ sơ</a>
+                <span class="doctor-overlay-btn"><i class="fa-solid fa-circle-info"></i> Xem chi tiết</span>
               </div>
             </div>
             <div class="doctor-info">
               <span class="doctor-badge"><?php echo htmlspecialchars($doc->position, ENT_QUOTES, 'UTF-8'); ?></span>
               <h3 class="doctor-name" itemprop="name"><?php echo htmlspecialchars($doc->fullname, ENT_QUOTES, 'UTF-8'); ?></h3>
-              <p class="doctor-spec" itemprop="medicalSpecialty"><?php echo htmlspecialchars($doc->depart_name ?: 'Bệnh viện Đắk Hà', ENT_QUOTES, 'UTF-8'); ?></p>
+              
+              <div class="doctor-workplace-box">
+                <div class="doctor-dept-line">
+                  <i class="fa-solid fa-hospital-user"></i>
+                  <span><?php echo htmlspecialchars($doc->depart_name ?: 'Bệnh viện Đắk Hà', ENT_QUOTES, 'UTF-8'); ?></span>
+                </div>
+                <div class="doctor-workplace-line">
+                  <i class="fa-solid fa-hospital"></i>
+                  <span><?php echo htmlspecialchars(!empty($doc->workplace) ? $doc->workplace : 'Bệnh viện Đa khoa Khu vực Đắk Hà', ENT_QUOTES, 'UTF-8'); ?></span>
+                </div>
+              </div>
+
+              <div class="doctor-card-footer">
+                <span class="doctor-view-detail-btn">
+                  <i class="fa-solid fa-id-card"></i> Xem chi tiết hồ sơ
+                </span>
+              </div>
             </div>
           </article>
           <?php endforeach; ?>
@@ -409,13 +442,22 @@
                 height="373"
                 itemprop="image" />
               <div class="doctor-overlay" aria-hidden="true">
-                <a href="<?php echo XC_URL; ?>/bac-si" class="doctor-overlay-btn">Xem hồ sơ</a>
+                <span class="doctor-overlay-btn"><i class="fa-solid fa-circle-info"></i> Xem chi tiết</span>
               </div>
             </div>
             <div class="doctor-info">
               <span class="doctor-badge">Bác sĩ CKI</span>
               <h3 class="doctor-name" itemprop="name">Nguyễn Văn An</h3>
-              <p class="doctor-spec" itemprop="medicalSpecialty">Nội khoa tổng quát</p>
+              <div class="doctor-workplace-box">
+                <div class="doctor-dept-line">
+                  <i class="fa-solid fa-hospital-user"></i>
+                  <span>Nội khoa tổng quát</span>
+                </div>
+                <div class="doctor-workplace-line">
+                  <i class="fa-solid fa-hospital"></i>
+                  <span>Bệnh viện Đa khoa Khu vực Đắk Hà</span>
+                </div>
+              </div>
             </div>
           </article>
         <?php endif; ?>
@@ -425,8 +467,118 @@
           <a href="<?php echo XC_URL; ?>/bac-si" class="btn btn-outline btn-lg" id="btn-xem-het-bs">Xem tất cả đội ngũ</a>
         </div>
 
+        <!-- DOCTOR DETAIL MODAL POPUP FOR HOMEPAGE -->
+        <div id="doctorDetailModal" class="doctor-modal-backdrop" onclick="if(event.target === this) closeDoctorModal();" aria-hidden="true" role="dialog" aria-labelledby="modalDoctorName">
+          <div class="doctor-modal-dialog">
+            <button type="button" class="doctor-modal-close" aria-label="Đóng" onclick="closeDoctorModal()">&times;</button>
+            
+            <div class="doctor-modal-header">
+              <h3 class="doctor-modal-main-title"><i class="fa-solid fa-address-card"></i> Thông Tin Chi Tiết Cán Bộ / Bác Sĩ</h3>
+            </div>
+
+            <div class="doctor-modal-body">
+              <div class="doctor-modal-grid">
+                <div class="doctor-modal-avatar-col">
+                  <div class="doctor-modal-avatar-wrap">
+                    <img id="modalDoctorImg" src="" alt="" class="doctor-modal-avatar">
+                  </div>
+                  <div class="doctor-modal-status-badge">
+                    <i class="fa-solid fa-circle-check"></i> Đang công tác
+                  </div>
+                </div>
+
+                <div class="doctor-modal-info-col">
+                  <h2 id="modalDoctorName" class="doctor-modal-name"></h2>
+                  <div id="modalDoctorPosition" class="doctor-modal-pos-badge"></div>
+
+                  <table class="doctor-modal-table">
+                    <tbody>
+                      <tr>
+                        <th scope="row"><i class="fa-solid fa-hospital-user"></i> Phòng ban, đơn vị</th>
+                        <td id="modalDoctorDept"></td>
+                      </tr>
+                      <tr>
+                        <th scope="row"><i class="fa-solid fa-hospital"></i> Đơn vị công tác</th>
+                        <td id="modalDoctorWorkplace"></td>
+                      </tr>
+                      <tr>
+                        <th scope="row"><i class="fa-solid fa-calendar-day"></i> Ngày sinh</th>
+                        <td id="modalDoctorDob"></td>
+                      </tr>
+                      <tr>
+                        <th scope="row"><i class="fa-solid fa-map-location-dot"></i> Quê quán</th>
+                        <td id="modalDoctorHometown"></td>
+                      </tr>
+                      <tr>
+                        <th scope="row"><i class="fa-solid fa-id-badge"></i> Mã ngạch / CDNN</th>
+                        <td id="modalDoctorJobCode"></td>
+                      </tr>
+                      <tr>
+                        <th scope="row"><i class="fa-solid fa-barcode"></i> Mã số</th>
+                        <td id="modalDoctorCode"></td>
+                      </tr>
+                      <tr>
+                        <th scope="row"><i class="fa-solid fa-id-card"></i> Số CCCD</th>
+                        <td id="modalDoctorCccd"></td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+            <div class="doctor-modal-footer">
+              <button type="button" class="doctor-modal-btn-close" onclick="closeDoctorModal()">Đóng</button>
+            </div>
+          </div>
+        </div>
+
       </div>
     </section>
+
+    <script>
+    function openDoctorModal(cardEl) {
+      try {
+        var raw = cardEl.getAttribute('data-doctor');
+        if (!raw) return;
+        var data = JSON.parse(raw);
+        
+        document.getElementById('modalDoctorImg').src = data.avatar || '';
+        document.getElementById('modalDoctorImg').alt = data.fullname || '';
+        document.getElementById('modalDoctorName').textContent = data.fullname || '';
+        document.getElementById('modalDoctorPosition').textContent = data.position || '';
+        document.getElementById('modalDoctorDept').textContent = data.department || '-';
+        document.getElementById('modalDoctorWorkplace').textContent = data.workplace || '-';
+        document.getElementById('modalDoctorDob').textContent = data.dob || '-';
+        document.getElementById('modalDoctorHometown').textContent = data.hometown || '-';
+        document.getElementById('modalDoctorJobCode').textContent = data.job_title_code || '-';
+        document.getElementById('modalDoctorCode').textContent = data.code || '-';
+        document.getElementById('modalDoctorCccd').textContent = data.cccd || '-';
+        
+        var modal = document.getElementById('doctorDetailModal');
+        if (modal) {
+          modal.classList.add('active');
+          document.body.style.overflow = 'hidden';
+        }
+      } catch (err) {
+        console.error('Error opening doctor modal:', err);
+      }
+    }
+
+    function closeDoctorModal() {
+      var modal = document.getElementById('doctorDetailModal');
+      if (modal) {
+        modal.classList.remove('active');
+        document.body.style.overflow = '';
+      }
+    }
+
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        closeDoctorModal();
+      }
+    });
+    </script>
 
     <!-- ============================================================
          NEWS SECTION

@@ -670,9 +670,13 @@ Class adminController extends baseController
 			department_id int(11) NOT NULL,
 			fullname varchar(255) NOT NULL,
 			dob date DEFAULT NULL,
+			hometown varchar(255) DEFAULT NULL,
 			cccd varchar(20) DEFAULT NULL,
 			cchn varchar(100) DEFAULT NULL,
 			position varchar(255) NOT NULL,
+			job_title_code varchar(100) DEFAULT NULL,
+			workplace varchar(255) DEFAULT 'Bệnh viện Đa khoa Khu vực Đắk Hà',
+			code varchar(100) DEFAULT NULL,
 			avatar varchar(255) DEFAULT NULL,
 			status tinyint(1) NOT NULL DEFAULT 1,
 			created_at datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -681,6 +685,21 @@ Class adminController extends baseController
 			KEY idx_department (department_id),
 			KEY idx_status (status)
 		) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+
+		// Auto-migrate new columns if missing
+		$doctorCols = array(
+			'hometown' => 'VARCHAR(255) NULL AFTER `dob`',
+			'job_title_code' => 'VARCHAR(100) NULL AFTER `position`',
+			'workplace' => "VARCHAR(255) NULL DEFAULT 'Bệnh viện Đa khoa Khu vực Đắk Hà' AFTER `job_title_code`",
+			'code' => 'VARCHAR(100) NULL AFTER `workplace`'
+		);
+		foreach($doctorCols as $colName => $colDef){
+			$db->query("SHOW COLUMNS FROM hicrm_doctors LIKE '".$colName."'");
+			$cCheck = $db->fetch_object();
+			if(empty($cCheck)){
+				$db->query("ALTER TABLE hicrm_doctors ADD COLUMN `".$colName."` ".$colDef);
+			}
+		}
 	}
 
 	private function adminStatusLabel($status)
@@ -2975,8 +2994,12 @@ Class adminController extends baseController
 				$department_id = isset($_POST['department_id']) ? intval($_POST['department_id']) : 0;
 				$position = $db->escapestring(trim(isset($_POST['position']) ? $_POST['position'] : ''));
 				$dob = trim(isset($_POST['dob']) ? $_POST['dob'] : '');
+				$hometown = $db->escapestring(trim(isset($_POST['hometown']) ? $_POST['hometown'] : ''));
 				$cccd = $db->escapestring(trim(isset($_POST['cccd']) ? $_POST['cccd'] : ''));
 				$cchn = $db->escapestring(trim(isset($_POST['cchn']) ? $_POST['cchn'] : ''));
+				$job_title_code = $db->escapestring(trim(isset($_POST['job_title_code']) ? $_POST['job_title_code'] : ''));
+				$workplace = $db->escapestring(trim(isset($_POST['workplace']) && $_POST['workplace'] !== '' ? $_POST['workplace'] : 'Bệnh viện Đa khoa Khu vực Đắk Hà'));
+				$code = $db->escapestring(trim(isset($_POST['code']) ? $_POST['code'] : ''));
 				$status = isset($_POST['status']) ? intval($_POST['status']) : 1;
 
 				if($fullname === '' || $department_id <= 0 || $position === ''){
@@ -3013,8 +3036,12 @@ Class adminController extends baseController
 				}
 
 				$dobSql = ($dob !== '' && preg_match('/^\d{4}-\d{2}-\d{2}$/', $dob)) ? "'".$db->escapestring($dob)."'" : "NULL";
+				$hometownSql = ($hometown !== '') ? "'".$hometown."'" : "NULL";
 				$cccdSql = ($cccd !== '') ? "'".$cccd."'" : "NULL";
 				$cchnSql = ($cchn !== '') ? "'".$cchn."'" : "NULL";
+				$jobTitleCodeSql = ($job_title_code !== '') ? "'".$job_title_code."'" : "NULL";
+				$workplaceSql = "'".$workplace."'";
+				$codeSql = ($code !== '') ? "'".$code."'" : "NULL";
 
 				if($postId > 0){
 					$avatarUpdateSql = ($avatarName !== null) ? ", avatar = '".$avatarName."'" : "";
@@ -3022,9 +3049,13 @@ Class adminController extends baseController
 						department_id = '".$department_id."',
 						fullname = '".$fullname."',
 						dob = ".$dobSql.",
+						hometown = ".$hometownSql.",
 						cccd = ".$cccdSql.",
 						cchn = ".$cchnSql.",
 						position = '".$position."',
+						job_title_code = ".$jobTitleCodeSql.",
+						workplace = ".$workplaceSql.",
+						code = ".$codeSql.",
 						status = '".$status."'
 						".$avatarUpdateSql."
 						WHERE id = '".$postId."' LIMIT 1");
@@ -3032,9 +3063,9 @@ Class adminController extends baseController
 				} else {
 					$avatarInsertVal = ($avatarName !== null) ? "'".$avatarName."'" : "NULL";
 					$db->query("INSERT INTO hicrm_doctors(
-						department_id, fullname, dob, cccd, cchn, position, avatar, status, created_at, updated_at
+						department_id, fullname, dob, hometown, cccd, cchn, position, job_title_code, workplace, code, avatar, status, created_at, updated_at
 					) VALUES (
-						'".$department_id."', '".$fullname."', ".$dobSql.", ".$cccdSql.", ".$cchnSql.", '".$position."', ".$avatarInsertVal.", '".$status."', NOW(), NOW()
+						'".$department_id."', '".$fullname."', ".$dobSql.", ".$hometownSql.", ".$cccdSql.", ".$cchnSql.", '".$position."', ".$jobTitleCodeSql.", ".$workplaceSql.", ".$codeSql.", ".$avatarInsertVal.", '".$status."', NOW(), NOW()
 					)");
 					$this->setAdminFlash('success', 'Đã thêm bác sĩ mới thành công.');
 				}
@@ -3080,9 +3111,13 @@ Class adminController extends baseController
 				'department_id' => 0,
 				'fullname' => '',
 				'dob' => '',
+				'hometown' => '',
 				'cccd' => '',
 				'cchn' => '',
 				'position' => '',
+				'job_title_code' => '',
+				'workplace' => 'Bệnh viện Đa khoa Khu vực Đắk Hà',
+				'code' => '',
 				'avatar' => '',
 				'status' => 1
 			);
@@ -3115,7 +3150,7 @@ Class adminController extends baseController
 		$whereSql = "WHERE 1=1";
 		if($keyword !== ''){
 			$kw_esc = $db->escapestring($keyword);
-			$whereSql .= " AND (d.fullname LIKE '%".$kw_esc."%' OR d.cccd LIKE '%".$kw_esc."%' OR d.cchn LIKE '%".$kw_esc."%' OR d.position LIKE '%".$kw_esc."%')";
+			$whereSql .= " AND (d.fullname LIKE '%".$kw_esc."%' OR d.code LIKE '%".$kw_esc."%' OR d.cccd LIKE '%".$kw_esc."%' OR d.cchn LIKE '%".$kw_esc."%' OR d.position LIKE '%".$kw_esc."%' OR d.job_title_code LIKE '%".$kw_esc."%' OR d.hometown LIKE '%".$kw_esc."%')";
 		}
 		if($filterDept > 0){
 			$whereSql .= " AND d.department_id = '".$filterDept."'";

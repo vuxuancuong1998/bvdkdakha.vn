@@ -100,15 +100,18 @@ if (!function_exists('backendDoctorPaginationItems')) {
                <thead class="table-light">
                   <tr>
                      <th style="width: 50px;">STT</th>
-                     <th style="width: 80px;">Ảnh</th>
+                     <th style="width: 70px;">Ảnh</th>
                      <th>Họ và tên</th>
-                     <th>Chức vụ</th>
-                     <th>Khoa / Phòng</th>
                      <th>Ngày sinh</th>
-                     <th>CCCD</th>
-                     <th>CCHN</th>
+                     <th>Quê quán</th>
+                     <th>Số CCCD</th>
+                     <th>Chức vụ</th>
+                     <th>Mã ngạch/CDNN</th>
+                     <th>Phòng ban</th>
+                     <th>Đơn vị công tác</th>
+                     <th>Mã số</th>
                      <th>Trạng thái</th>
-                     <th style="width: 160px;" class="text-end">Thao tác</th>
+                     <th style="width: 130px;" class="text-end">Thao tác</th>
                   </tr>
                </thead>
                <tbody>
@@ -122,11 +125,22 @@ if (!function_exists('backendDoctorPaginationItems')) {
                         <tr>
                            <td><?php echo $stt++; ?></td>
                            <td>
-                              <img src="<?php echo $avatarSrc; ?>" alt="<?php echo htmlspecialchars($item->fullname, ENT_QUOTES, 'UTF-8'); ?>" class="rounded-circle border" style="width: 48px; height: 48px; object-fit: cover;">
+                              <img src="<?php echo $avatarSrc; ?>" alt="<?php echo htmlspecialchars($item->fullname, ENT_QUOTES, 'UTF-8'); ?>" class="rounded-circle border" style="width: 44px; height: 44px; object-fit: cover;">
                            </td>
                            <td>
                               <span class="fw-bold text-dark d-block"><?php echo htmlspecialchars($item->fullname, ENT_QUOTES, 'UTF-8'); ?></span>
-                              <small class="text-muted">ID: #<?php echo (int)$item->id; ?></small>
+                              <?php if(!empty($item->code)): ?>
+                                 <small class="badge bg-light text-secondary border">Mã: <?php echo htmlspecialchars($item->code, ENT_QUOTES, 'UTF-8'); ?></small>
+                              <?php endif; ?>
+                           </td>
+                           <td>
+                              <?php echo !empty($item->dob) && $item->dob !== '0000-00-00' ? htmlspecialchars(date('d/m/Y', strtotime($item->dob)), ENT_QUOTES, 'UTF-8') : '<span class="text-muted">-</span>'; ?>
+                           </td>
+                           <td>
+                              <?php echo !empty($item->hometown) ? htmlspecialchars($item->hometown, ENT_QUOTES, 'UTF-8') : '<span class="text-muted">-</span>'; ?>
+                           </td>
+                           <td>
+                              <?php echo !empty($item->cccd) ? htmlspecialchars($item->cccd, ENT_QUOTES, 'UTF-8') : '<span class="text-muted">-</span>'; ?>
                            </td>
                            <td>
                               <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-2 py-1">
@@ -134,18 +148,18 @@ if (!function_exists('backendDoctorPaginationItems')) {
                               </span>
                            </td>
                            <td>
+                              <?php echo !empty($item->job_title_code) ? '<span class="badge bg-info-subtle text-info border border-info-subtle">' . htmlspecialchars($item->job_title_code, ENT_QUOTES, 'UTF-8') . '</span>' : '<span class="text-muted">-</span>'; ?>
+                           </td>
+                           <td>
                               <span class="fw-semibold text-secondary">
                                  <?php echo htmlspecialchars($item->depart_name ?: 'Chưa phân khoa', ENT_QUOTES, 'UTF-8'); ?>
                               </span>
                            </td>
                            <td>
-                              <?php echo !empty($item->dob) && $item->dob !== '0000-00-00' ? htmlspecialchars(date('d/m/Y', strtotime($item->dob)), ENT_QUOTES, 'UTF-8') : '<span class="text-muted">-</span>'; ?>
+                              <small class="text-muted"><?php echo htmlspecialchars(!empty($item->workplace) ? $item->workplace : 'BVĐK Đắk Hà', ENT_QUOTES, 'UTF-8'); ?></small>
                            </td>
                            <td>
-                              <?php echo !empty($item->cccd) ? htmlspecialchars($item->cccd, ENT_QUOTES, 'UTF-8') : '<span class="text-muted">-</span>'; ?>
-                           </td>
-                           <td>
-                              <?php echo !empty($item->cchn) ? '<span class="badge bg-info-subtle text-info border border-info-subtle">' . htmlspecialchars($item->cchn, ENT_QUOTES, 'UTF-8') . '</span>' : '<span class="text-muted">-</span>'; ?>
+                              <?php echo !empty($item->code) ? htmlspecialchars($item->code, ENT_QUOTES, 'UTF-8') : (!empty($item->cchn) ? htmlspecialchars($item->cchn, ENT_QUOTES, 'UTF-8') : '<span class="text-muted">-</span>'); ?>
                            </td>
                            <td>
                               <?php if((int)$item->status === 1): ?>

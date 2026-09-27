@@ -4,9 +4,13 @@ $doctor_edit = isset($doctor_edit) && is_object($doctor_edit) ? $doctor_edit : (
 	'department_id' => 0,
 	'fullname' => '',
 	'dob' => '',
+	'hometown' => '',
 	'cccd' => '',
 	'cchn' => '',
 	'position' => '',
+	'job_title_code' => '',
+	'workplace' => 'Bệnh viện Đa khoa Khu vực Đắk Hà',
+	'code' => '',
 	'avatar' => '',
 	'status' => 1
 );
@@ -47,19 +51,44 @@ $avatarUrl = $hasAvatar
          <div class="col-lg-8">
             <div class="card mb-4">
                <div class="card-header bg-light">
-                  <h5 class="card-title mb-0"><i class="fa-solid fa-user-doctor me-2 text-primary"></i>Thông tin bác sĩ</h5>
+                  <h5 class="card-title mb-0"><i class="fa-solid fa-user-doctor me-2 text-primary"></i>Thông tin bác sĩ (Theo biểu mẫu)</h5>
                </div>
                <div class="card-body">
                   <div class="row g-3">
                      <div class="col-md-7">
-                        <label class="form-label fw-bold">Họ và tên bác sĩ <span class="text-danger">*</span></label>
+                        <label class="form-label fw-bold">Họ và tên <span class="text-danger">*</span></label>
                         <input type="text" class="form-control" name="fullname" value="<?php echo htmlspecialchars((string)$doctor_edit->fullname, ENT_QUOTES, 'UTF-8'); ?>" placeholder="Ví dụ: BSCKI. Nguyễn Văn An" required>
                      </div>
 
                      <div class="col-md-5">
-                        <label class="form-label fw-bold">Khoa / Phòng ban <span class="text-danger">*</span></label>
+                        <label class="form-label fw-bold">Ngày sinh</label>
+                        <input type="date" class="form-control" name="dob" value="<?php echo !empty($doctor_edit->dob) && $doctor_edit->dob !== '0000-00-00' ? htmlspecialchars(date('Y-m-d', strtotime($doctor_edit->dob)), ENT_QUOTES, 'UTF-8') : ''; ?>">
+                     </div>
+
+                     <div class="col-md-6">
+                        <label class="form-label">Quê quán</label>
+                        <input type="text" class="form-control" name="hometown" value="<?php echo htmlspecialchars((string)(isset($doctor_edit->hometown) ? $doctor_edit->hometown : ''), ENT_QUOTES, 'UTF-8'); ?>" placeholder="Ví dụ: Đắk Hà, Kon Tum">
+                     </div>
+
+                     <div class="col-md-6">
+                        <label class="form-label">Số căn cước công dân (CCCD)</label>
+                        <input type="text" class="form-control" name="cccd" value="<?php echo htmlspecialchars((string)$doctor_edit->cccd, ENT_QUOTES, 'UTF-8'); ?>" placeholder="Số CCCD 12 số">
+                     </div>
+
+                     <div class="col-md-6">
+                        <label class="form-label fw-bold">Chức vụ <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" name="position" value="<?php echo htmlspecialchars((string)$doctor_edit->position, ENT_QUOTES, 'UTF-8'); ?>" placeholder="Ví dụ: Giám đốc, Trưởng khoa, Bác sĩ CKI..." required>
+                     </div>
+
+                     <div class="col-md-6">
+                        <label class="form-label">Mã ngạch / mã chức danh nghề nghiệp</label>
+                        <input type="text" class="form-control" name="job_title_code" value="<?php echo htmlspecialchars((string)(isset($doctor_edit->job_title_code) ? $doctor_edit->job_title_code : ''), ENT_QUOTES, 'UTF-8'); ?>" placeholder="Ví dụ: V.08.01.02">
+                     </div>
+
+                     <div class="col-md-6">
+                        <label class="form-label fw-bold">Phòng ban, đơn vị công tác (Khoa/Phòng) <span class="text-danger">*</span></label>
                         <select name="department_id" class="form-select" required>
-                           <option value="">-- Chọn Khoa / Phòng --</option>
+                           <option value="">-- Chọn Khoa / Phòng ban --</option>
                            <?php foreach($departments as $dept): ?>
                               <option value="<?php echo (int)$dept->id; ?>" <?php echo (int)$doctor_edit->department_id === (int)$dept->id ? 'selected' : ''; ?>>
                                  <?php echo htmlspecialchars($dept->depart_name, ENT_QUOTES, 'UTF-8'); ?>
@@ -69,23 +98,18 @@ $avatarUrl = $hasAvatar
                      </div>
 
                      <div class="col-md-6">
-                        <label class="form-label fw-bold">Chức vụ / Học hàm học vị <span class="text-danger">*</span></label>
-                        <input type="text" class="form-control" name="position" value="<?php echo htmlspecialchars((string)$doctor_edit->position, ENT_QUOTES, 'UTF-8'); ?>" placeholder="Ví dụ: Bác sĩ CKI, Trưởng khoa, Bác sĩ điều trị..." required>
+                        <label class="form-label">Đơn vị công tác</label>
+                        <input type="text" class="form-control" name="workplace" value="<?php echo htmlspecialchars((string)(isset($doctor_edit->workplace) ? $doctor_edit->workplace : 'Bệnh viện Đa khoa Khu vực Đắk Hà'), ENT_QUOTES, 'UTF-8'); ?>" placeholder="Bệnh viện Đa khoa Khu vực Đắk Hà">
                      </div>
 
                      <div class="col-md-6">
-                        <label class="form-label fw-bold">Ngày tháng năm sinh</label>
-                        <input type="date" class="form-control" name="dob" value="<?php echo !empty($doctor_edit->dob) && $doctor_edit->dob !== '0000-00-00' ? htmlspecialchars(date('Y-m-d', strtotime($doctor_edit->dob)), ENT_QUOTES, 'UTF-8') : ''; ?>">
+                        <label class="form-label">Mã số (Mã nhân viên / Mã hồ sơ)</label>
+                        <input type="text" class="form-control" name="code" value="<?php echo htmlspecialchars((string)(isset($doctor_edit->code) ? $doctor_edit->code : ''), ENT_QUOTES, 'UTF-8'); ?>" placeholder="Ví dụ: BS-001 hoặc số mã số">
                      </div>
 
                      <div class="col-md-6">
-                        <label class="form-label">Căn cước công dân (CCCD)</label>
-                        <input type="text" class="form-control" name="cccd" value="<?php echo htmlspecialchars((string)$doctor_edit->cccd, ENT_QUOTES, 'UTF-8'); ?>" placeholder="Số CCCD (tùy chọn)">
-                     </div>
-
-                     <div class="col-md-6">
-                        <label class="form-label">Chứng chỉ hành nghề (CCHN)</label>
-                        <input type="text" class="form-control" name="cchn" value="<?php echo htmlspecialchars((string)$doctor_edit->cchn, ENT_QUOTES, 'UTF-8'); ?>" placeholder="Số CCHN (Ví dụ: 001234/QNG-CCHN)">
+                        <label class="form-label">Số chứng chỉ hành nghề (CCHN - tùy chọn)</label>
+                        <input type="text" class="form-control" name="cchn" value="<?php echo htmlspecialchars((string)$doctor_edit->cchn, ENT_QUOTES, 'UTF-8'); ?>" placeholder="Ví dụ: 012345/QNG-CCHN">
                      </div>
                   </div>
                </div>

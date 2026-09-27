@@ -348,7 +348,7 @@ Class pageController extends baseController
 		$keyword = isset($_GET['q']) ? trim((string)$_GET['q']) : '';
 		if($keyword !== '') {
 			$kw_esc = $db->escapestring($keyword);
-			$whereSql .= " AND (d.fullname LIKE '%".$kw_esc."%' OR d.position LIKE '%".$kw_esc."%' OR d.cchn LIKE '%".$kw_esc."%')";
+			$whereSql .= " AND (d.fullname LIKE '%".$kw_esc."%' OR d.position LIKE '%".$kw_esc."%' OR d.code LIKE '%".$kw_esc."%' OR d.job_title_code LIKE '%".$kw_esc."%' OR d.hometown LIKE '%".$kw_esc."%' OR d.cchn LIKE '%".$kw_esc."%')";
 		}
 		
 		// 4. Lấy danh sách bác sĩ

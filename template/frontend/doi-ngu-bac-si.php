@@ -86,8 +86,24 @@ $keyword = isset($keyword) ? (string)$keyword : '';
             $avatarSrc = $hasAvatar 
               ? XC_URL . '/uploads/doctors/' . htmlspecialchars($doc->avatar, ENT_QUOTES, 'UTF-8')
               : XC_URL . '/template/frontend/assets/images/doctor-0' . (($idx % 3) + 1) . '.jpg';
+            
+            $docData = array(
+              'fullname' => (string)$doc->fullname,
+              'dob' => (!empty($doc->dob) && $doc->dob !== '0000-00-00') ? date('d/m/Y', strtotime($doc->dob)) : 'Chưa cập nhật',
+              'hometown' => !empty($doc->hometown) ? (string)$doc->hometown : 'Chưa cập nhật',
+              'cccd' => !empty($doc->cccd) ? (string)$doc->cccd : 'Chưa cập nhật',
+              'position' => (string)$doc->position,
+              'job_title_code' => !empty($doc->job_title_code) ? (string)$doc->job_title_code : (!empty($doc->cchn) ? (string)$doc->cchn : 'Chưa cập nhật'),
+              'department' => !empty($doc->depart_name) ? (string)$doc->depart_name : 'Bệnh viện Đa khoa Khu vực Đắk Hà',
+              'workplace' => !empty($doc->workplace) ? (string)$doc->workplace : 'Bệnh viện Đa khoa Khu vực Đắk Hà',
+              'code' => !empty($doc->code) ? (string)$doc->code : (!empty($doc->cchn) ? (string)$doc->cchn : 'Chưa cập nhật'),
+              'avatar' => $avatarSrc
+            );
           ?>
-          <article class="doctor-card" itemscope itemtype="https://schema.org/Physician">
+          <article class="doctor-card doctor-card-clickable" 
+                   data-doctor='<?php echo htmlspecialchars(json_encode($docData, JSON_UNESCAPED_UNICODE), ENT_QUOTES, 'UTF-8'); ?>'
+                   onclick="openDoctorModal(this)"
+                   itemscope itemtype="https://schema.org/Physician">
             <div class="doctor-img-wrap">
               <img 
                 src="<?php echo $avatarSrc; ?>" 
@@ -95,30 +111,29 @@ $keyword = isset($keyword) ? (string)$keyword : '';
                 class="doctor-img" 
                 loading="lazy">
               <div class="doctor-overlay" aria-hidden="true">
-                <a href="<?php echo XC_URL; ?>/lien-he" class="doctor-overlay-btn">Đặt lịch khám</a>
+                <span class="doctor-overlay-btn"><i class="fa-solid fa-circle-info"></i> Xem chi tiết</span>
               </div>
             </div>
 
             <div class="doctor-info">
               <span class="doctor-badge"><?php echo htmlspecialchars($doc->position, ENT_QUOTES, 'UTF-8'); ?></span>
               <h3 class="doctor-name" itemprop="name"><?php echo htmlspecialchars($doc->fullname, ENT_QUOTES, 'UTF-8'); ?></h3>
-              <p class="doctor-spec" itemprop="medicalSpecialty">
-                <i class="fa-solid fa-stethoscope"></i> <?php echo htmlspecialchars($doc->depart_name ?: 'Bệnh viện Đắk Hà', ENT_QUOTES, 'UTF-8'); ?>
-              </p>
-
-              <?php if(!empty($doc->cchn)): ?>
-                <div class="doctor-cchn-tag">
-                  <i class="fa-solid fa-certificate"></i> CCHN: <?php echo htmlspecialchars($doc->cchn, ENT_QUOTES, 'UTF-8'); ?>
+              
+              <div class="doctor-workplace-box">
+                <div class="doctor-dept-line">
+                  <i class="fa-solid fa-hospital-user"></i>
+                  <span><?php echo htmlspecialchars($doc->depart_name ?: 'Bệnh viện Đắk Hà', ENT_QUOTES, 'UTF-8'); ?></span>
                 </div>
-              <?php endif; ?>
+                <div class="doctor-workplace-line">
+                  <i class="fa-solid fa-hospital"></i>
+                  <span><?php echo htmlspecialchars(!empty($doc->workplace) ? $doc->workplace : 'Bệnh viện Đa khoa Khu vực Đắk Hà', ENT_QUOTES, 'UTF-8'); ?></span>
+                </div>
+              </div>
 
               <div class="doctor-card-footer">
-                <span class="doctor-status-text">
-                  <i class="fa-solid fa-circle-check"></i> Đang công tác
+                <span class="doctor-view-detail-btn">
+                  <i class="fa-solid fa-id-card"></i> Xem chi tiết hồ sơ
                 </span>
-                <a href="<?php echo XC_URL; ?>/lien-he" class="doctor-contact-link">
-                  Liên hệ <i class="fa-solid fa-arrow-right"></i>
-                </a>
               </div>
             </div>
           </article>
@@ -137,6 +152,74 @@ $keyword = isset($keyword) ? (string)$keyword : '';
         </div>
       <?php endif; ?>
     </section>
+
+    <!-- ============================================================
+         DOCTOR DETAIL MODAL POPUP
+         ============================================================ -->
+    <div id="doctorDetailModal" class="doctor-modal-backdrop" onclick="if(event.target === this) closeDoctorModal();" aria-hidden="true" role="dialog" aria-labelledby="modalDoctorName">
+      <div class="doctor-modal-dialog">
+        <button type="button" class="doctor-modal-close" aria-label="Đóng" onclick="closeDoctorModal()">&times;</button>
+        
+        <div class="doctor-modal-header">
+          <h3 class="doctor-modal-main-title"><i class="fa-solid fa-address-card"></i> Thông Tin Chi Tiết Cán Bộ / Bác Sĩ</h3>
+        </div>
+
+        <div class="doctor-modal-body">
+          <div class="doctor-modal-grid">
+            <div class="doctor-modal-avatar-col">
+              <div class="doctor-modal-avatar-wrap">
+                <img id="modalDoctorImg" src="" alt="" class="doctor-modal-avatar">
+              </div>
+              <div class="doctor-modal-status-badge">
+                <i class="fa-solid fa-circle-check"></i> Đang công tác
+              </div>
+            </div>
+
+            <div class="doctor-modal-info-col">
+              <h2 id="modalDoctorName" class="doctor-modal-name"></h2>
+              <div id="modalDoctorPosition" class="doctor-modal-pos-badge"></div>
+
+              <table class="doctor-modal-table">
+                <tbody>
+                  <tr>
+                    <th scope="row"><i class="fa-solid fa-hospital-user"></i> Phòng ban, đơn vị</th>
+                    <td id="modalDoctorDept"></td>
+                  </tr>
+                  <tr>
+                    <th scope="row"><i class="fa-solid fa-hospital"></i> Đơn vị công tác</th>
+                    <td id="modalDoctorWorkplace"></td>
+                  </tr>
+                  <tr>
+                    <th scope="row"><i class="fa-solid fa-calendar-day"></i> Ngày sinh</th>
+                    <td id="modalDoctorDob"></td>
+                  </tr>
+                  <tr>
+                    <th scope="row"><i class="fa-solid fa-map-location-dot"></i> Quê quán</th>
+                    <td id="modalDoctorHometown"></td>
+                  </tr>
+                  <tr>
+                    <th scope="row"><i class="fa-solid fa-id-badge"></i> Mã ngạch / CDNN</th>
+                    <td id="modalDoctorJobCode"></td>
+                  </tr>
+                  <tr>
+                    <th scope="row"><i class="fa-solid fa-barcode"></i> Mã số</th>
+                    <td id="modalDoctorCode"></td>
+                  </tr>
+                  <tr>
+                    <th scope="row"><i class="fa-solid fa-id-card"></i> Số CCCD</th>
+                    <td id="modalDoctorCccd"></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div class="doctor-modal-footer">
+          <button type="button" class="doctor-modal-btn-close" onclick="closeDoctorModal()">Đóng</button>
+        </div>
+      </div>
+    </div>
 
   </div>
 </main>
@@ -366,6 +449,17 @@ $keyword = isset($keyword) ? (string)$keyword : '';
   gap: 24px;
 }
 
+/* Clickable card */
+.doctor-card-clickable {
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.doctor-card-clickable:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 16px 32px rgba(2, 132, 199, 0.12);
+}
+
 /* Card customizations for list */
 .doctors-page-grid .doctor-card {
   display: flex;
@@ -384,66 +478,53 @@ $keyword = isset($keyword) ? (string)$keyword : '';
 .doctors-page-grid .doctor-name {
   font-size: 17px;
   font-weight: 700;
-  margin: 0 0 6px 0;
+  margin: 0 0 8px 0;
   color: #0f172a;
 }
 
-.doctors-page-grid .doctor-spec {
+.doctor-workplace-box {
+  margin-bottom: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.doctor-dept-line {
   font-size: 13px;
   color: #0284c7;
   font-weight: 600;
-  margin: 0 0 10px 0;
   display: flex;
   align-items: center;
   gap: 6px;
 }
 
-.doctor-cchn-tag {
-  display: inline-flex;
+.doctor-workplace-line {
+  font-size: 12px;
+  color: #64748b;
+  font-weight: 500;
+  display: flex;
   align-items: center;
   gap: 6px;
-  background: #fffbeb;
-  color: #b45309;
-  border: 1px solid #fef3c7;
-  border-radius: 6px;
-  padding: 4px 8px;
-  font-size: 11px;
-  font-weight: 600;
-  margin-bottom: 12px;
 }
 
 .doctor-card-footer {
   margin-top: auto;
-  padding-top: 12px;
+  padding-top: 10px;
   border-top: 1px solid #f1f5f9;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
 }
 
-.doctor-status-text {
-  font-size: 11px;
-  color: #16a34a;
-  font-weight: 600;
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-}
-
-.doctor-contact-link {
+.doctor-view-detail-btn {
   font-size: 12px;
   color: #0284c7;
-  font-weight: 600;
-  text-decoration: none;
+  font-weight: 700;
   display: inline-flex;
   align-items: center;
-  gap: 4px;
-  transition: transform 0.2s, color 0.2s;
+  gap: 6px;
+  transition: color 0.2s;
 }
 
-.doctor-contact-link:hover {
+.doctor-card:hover .doctor-view-detail-btn {
   color: #0369a1;
-  transform: translateX(2px);
 }
 
 /* Empty State */
@@ -475,6 +556,203 @@ $keyword = isset($keyword) ? (string)$keyword : '';
   margin: 0 0 24px 0;
 }
 
+/* ============================================================
+   DOCTOR MODAL STYLES (100% Native CSS)
+   ============================================================ */
+.doctor-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.7);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  z-index: 999999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.25s ease, visibility 0.25s ease;
+}
+
+.doctor-modal-backdrop.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.doctor-modal-dialog {
+  background: #ffffff;
+  border-radius: 20px;
+  max-width: 720px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.3);
+  transform: translateY(20px) scale(0.96);
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  padding: 24px 28px;
+  box-sizing: border-box;
+}
+
+.doctor-modal-backdrop.active .doctor-modal-dialog {
+  transform: translateY(0) scale(1);
+}
+
+.doctor-modal-close {
+  position: absolute;
+  top: 16px;
+  right: 18px;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #f1f5f9;
+  border: none;
+  font-size: 24px;
+  line-height: 1;
+  color: #64748b;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.doctor-modal-close:hover {
+  background: #e2e8f0;
+  color: #0f172a;
+}
+
+.doctor-modal-header {
+  border-bottom: 2px solid #f1f5f9;
+  padding-bottom: 14px;
+  margin-bottom: 20px;
+}
+
+.doctor-modal-main-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: #0284c7;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.doctor-modal-grid {
+  display: grid;
+  grid-template-columns: 210px 1fr;
+  gap: 24px;
+  align-items: start;
+}
+
+.doctor-modal-avatar-wrap {
+  width: 100%;
+  aspect-ratio: 3/4;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e2e8f0;
+  background: #f8fafc;
+}
+
+.doctor-modal-avatar {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.doctor-modal-status-badge {
+  margin-top: 12px;
+  text-align: center;
+  background: #f0fdf4;
+  color: #16a34a;
+  border: 1px solid #bbf7d0;
+  padding: 6px 12px;
+  border-radius: 9999px;
+  font-size: 12px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.doctor-modal-name {
+  font-size: 22px;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0 0 8px 0;
+  line-height: 1.25;
+}
+
+.doctor-modal-pos-badge {
+  display: inline-block;
+  background: #e0f2fe;
+  color: #0369a1;
+  font-size: 13px;
+  font-weight: 700;
+  padding: 4px 12px;
+  border-radius: 9999px;
+  margin-bottom: 16px;
+}
+
+.doctor-modal-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13.5px;
+}
+
+.doctor-modal-table th {
+  text-align: left;
+  padding: 8px 10px;
+  font-weight: 600;
+  color: #475569;
+  width: 44%;
+  background: #f8fafc;
+  border-bottom: 1px solid #edf2f7;
+  white-space: nowrap;
+}
+
+.doctor-modal-table th i {
+  color: #0284c7;
+  width: 16px;
+  margin-right: 6px;
+}
+
+.doctor-modal-table td {
+  padding: 8px 10px;
+  color: #1e293b;
+  font-weight: 500;
+  border-bottom: 1px solid #edf2f7;
+}
+
+.doctor-modal-footer {
+  margin-top: 20px;
+  padding-top: 14px;
+  border-top: 1px solid #f1f5f9;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.doctor-modal-btn-close {
+  background: #f1f5f9;
+  color: #475569;
+  border: 1px solid #cbd5e1;
+  border-radius: 9999px;
+  padding: 8px 22px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.doctor-modal-btn-close:hover {
+  background: #e2e8f0;
+  color: #0f172a;
+}
+
 @media (max-width: 640px) {
   .doctor-search-bar {
     flex-direction: column;
@@ -486,7 +764,63 @@ $keyword = isset($keyword) ? (string)$keyword : '';
   .doctors-page-grid {
     grid-template-columns: 1fr;
   }
+  .doctor-modal-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  .doctor-modal-avatar-col {
+    max-width: 180px;
+    margin: 0 auto;
+  }
+  .doctor-modal-table th {
+    width: 46%;
+    white-space: normal;
+  }
 }
 </style>
+
+<script>
+function openDoctorModal(cardEl) {
+  try {
+    var raw = cardEl.getAttribute('data-doctor');
+    if (!raw) return;
+    var data = JSON.parse(raw);
+    
+    document.getElementById('modalDoctorImg').src = data.avatar || '';
+    document.getElementById('modalDoctorImg').alt = data.fullname || '';
+    document.getElementById('modalDoctorName').textContent = data.fullname || '';
+    document.getElementById('modalDoctorPosition').textContent = data.position || '';
+    document.getElementById('modalDoctorDept').textContent = data.department || '-';
+    document.getElementById('modalDoctorWorkplace').textContent = data.workplace || '-';
+    document.getElementById('modalDoctorDob').textContent = data.dob || '-';
+    document.getElementById('modalDoctorHometown').textContent = data.hometown || '-';
+    document.getElementById('modalDoctorJobCode').textContent = data.job_title_code || '-';
+    document.getElementById('modalDoctorCode').textContent = data.code || '-';
+    document.getElementById('modalDoctorCccd').textContent = data.cccd || '-';
+    
+    var modal = document.getElementById('doctorDetailModal');
+    if (modal) {
+      modal.classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+  } catch (err) {
+    console.error('Error opening doctor modal:', err);
+  }
+}
+
+function closeDoctorModal() {
+  var modal = document.getElementById('doctorDetailModal');
+  if (modal) {
+    modal.classList.remove('active');
+    document.body.style.overflow = '';
+  }
+}
+
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') {
+    closeDoctorModal();
+  }
+});
+</script>
 
 <?php require_once "footer.php"; ?>

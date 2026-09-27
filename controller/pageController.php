@@ -330,33 +330,40 @@ Class pageController extends baseController
 		
 		$this->view->show("lichcongtac");
 	}
-	public function doctors($para){
-		$proid = $para[1];
-		$proid = explode("-",$proid);
-		$id = $proid[0];
+	public function doctors($para = array()){
 		global $db;
-		if (isset($id) && ctype_digit($id)) {
-			
-			$db->query("SELECT *, e.id as eid FROM hicrm_employees as e 
-					LEFT JOIN hicrm_departments as d ON e.employee_department = d.id
-		 WHERE e.employee_status NOT IN (99) AND e.id = '".$id."'");
-		 	$this->view->data['doctor_detail'] = $db->fetch_object(true);
-			$db->query("SELECT *, e.id as eid FROM hicrm_employees as e 
-					LEFT JOIN hicrm_departments as d ON e.employee_department = d.id
-		 WHERE e.employee_status NOT IN (99) AND e.id != '".$id."'");
-		 	$this->view->data['doctor_other'] = $db->fetch_object();
-			// $this->view->data['id'] = $id;
-			$this->view->show("doctor_detail");
-		}else{
-		$db->query("SELECT * FROM hicrm_departments WHERE depart_status NOT IN (99)");
-		$this->view->data['depart'] = $db->fetch_object();
-		$db->query("SELECT *, e.id as eid FROM hicrm_employees as e 
-					LEFT JOIN hicrm_departments as d ON e.employee_department = d.id
-		 WHERE e.employee_status NOT IN (99)");
-		$this->view->data['employess'] = $db->fetch_object();
-		$this->view->data['id'] = $id;
-		$this->view->show("doctors");
+		
+		// 1. Lấy danh sách chuyên khoa đang hoạt động
+		$db->query("SELECT * FROM hicrm_departments WHERE depart_status != 99 ORDER BY id ASC");
+		$departments = $db->fetch_object();
+		
+		// 2. Lọc theo khoa nếu có
+		$dept_id = isset($_GET['khoa']) ? intval($_GET['khoa']) : (isset($_GET['department']) ? intval($_GET['department']) : 0);
+		$whereSql = "WHERE d.status = 1";
+		if($dept_id > 0) {
+			$whereSql .= " AND d.department_id = '".$dept_id."'";
 		}
+		
+		// 3. Lọc theo từ khóa tìm kiếm
+		$keyword = isset($_GET['q']) ? trim((string)$_GET['q']) : '';
+		if($keyword !== '') {
+			$kw_esc = $db->escapestring($keyword);
+			$whereSql .= " AND (d.fullname LIKE '%".$kw_esc."%' OR d.position LIKE '%".$kw_esc."%' OR d.cchn LIKE '%".$kw_esc."%')";
+		}
+		
+		// 4. Lấy danh sách bác sĩ
+		$db->query("SELECT d.*, dept.depart_name 
+					FROM hicrm_doctors d 
+					LEFT JOIN hicrm_departments dept ON d.department_id = dept.id 
+					".$whereSql." 
+					ORDER BY d.id DESC");
+		$doctors = $db->fetch_object();
+		
+		$this->view->data['departments'] = is_array($departments) ? $departments : array();
+		$this->view->data['doctors'] = is_array($doctors) ? $doctors : array();
+		$this->view->data['selected_dept'] = $dept_id;
+		$this->view->data['keyword'] = $keyword;
+		$this->view->show("doi-ngu-bac-si");
 	}
 	public function chuyenkhoa($para){
 		$proid = $para[1];
@@ -593,6 +600,5 @@ Class pageController extends baseController
 		//$result = curl_exec($ch);
 		//curl_close($ch);
 		//$result = json_decode($result,true);
-		//var_dump($result);
 	}
 }

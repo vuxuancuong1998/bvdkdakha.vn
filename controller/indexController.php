@@ -166,6 +166,13 @@ Class indexController Extends baseController
 			ORDER BY video_created_at DESC, id DESC");
 		$this->view->data['home_videos'] = $db->fetch_object();
 
+		$db->query("SELECT d.*, dept.depart_name 
+			FROM hicrm_doctors d 
+			LEFT JOIN hicrm_departments dept ON d.department_id = dept.id 
+			WHERE d.status = 1 
+			ORDER BY d.id DESC LIMIT 8");
+		$this->view->data['featured_doctors'] = $db->fetch_object();
+
 		$this->view->show("index");
 		
 	}

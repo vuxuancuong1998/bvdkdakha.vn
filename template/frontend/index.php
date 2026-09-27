@@ -368,7 +368,36 @@
         </header>
 
         <div class="doctors-track">
-
+        <?php if (!empty($featured_doctors) && is_array($featured_doctors)): ?>
+          <?php foreach($featured_doctors as $idx => $doc): 
+            $delay = ($idx % 4) * 100;
+            $hasAvatar = !empty($doc->avatar) && file_exists(__SITE_PATH . '/uploads/doctors/' . $doc->avatar);
+            $avatarUrl = $hasAvatar 
+              ? XC_URL . '/uploads/doctors/' . htmlspecialchars($doc->avatar, ENT_QUOTES, 'UTF-8')
+              : XC_URL . '/template/frontend/assets/images/doctor-0' . (($idx % 3) + 1) . '.jpg';
+          ?>
+          <article class="doctor-card" data-animate <?php echo $delay > 0 ? 'data-animate-delay="'.$delay.'"' : ''; ?> itemscope itemtype="https://schema.org/Physician">
+            <div class="doctor-img-wrap">
+              <img
+                src="<?php echo $avatarUrl; ?>"
+                alt="<?php echo htmlspecialchars($doc->position . ' ' . $doc->fullname, ENT_QUOTES, 'UTF-8'); ?>"
+                class="doctor-img"
+                loading="lazy"
+                width="280"
+                height="373"
+                itemprop="image" />
+              <div class="doctor-overlay" aria-hidden="true">
+                <a href="<?php echo XC_URL; ?>/bac-si?khoa=<?php echo (int)$doc->department_id; ?>" class="doctor-overlay-btn">Xem hồ sơ</a>
+              </div>
+            </div>
+            <div class="doctor-info">
+              <span class="doctor-badge"><?php echo htmlspecialchars($doc->position, ENT_QUOTES, 'UTF-8'); ?></span>
+              <h3 class="doctor-name" itemprop="name"><?php echo htmlspecialchars($doc->fullname, ENT_QUOTES, 'UTF-8'); ?></h3>
+              <p class="doctor-spec" itemprop="medicalSpecialty"><?php echo htmlspecialchars($doc->depart_name ?: 'Bệnh viện Đắk Hà', ENT_QUOTES, 'UTF-8'); ?></p>
+            </div>
+          </article>
+          <?php endforeach; ?>
+        <?php else: ?>
           <article class="doctor-card" data-animate itemscope itemtype="https://schema.org/Physician">
             <div class="doctor-img-wrap">
               <img
@@ -380,7 +409,7 @@
                 height="373"
                 itemprop="image" />
               <div class="doctor-overlay" aria-hidden="true">
-                <a href="pages/ban-lanh-dao.html#bs-an" class="doctor-overlay-btn" id="btn-bs-an">Xem hồ sơ</a>
+                <a href="<?php echo XC_URL; ?>/bac-si" class="doctor-overlay-btn">Xem hồ sơ</a>
               </div>
             </div>
             <div class="doctor-info">
@@ -389,74 +418,11 @@
               <p class="doctor-spec" itemprop="medicalSpecialty">Nội khoa tổng quát</p>
             </div>
           </article>
-
-          <article class="doctor-card" data-animate data-animate-delay="100" itemscope itemtype="https://schema.org/Physician">
-            <div class="doctor-img-wrap">
-              <img
-                src="<?php echo XC_URL; ?>/template/frontend/assets/images/doctor-02.jpg"
-                alt="Bác sĩ CKII Trần Thị Bình — Chuyên khoa Sản phụ khoa"
-                class="doctor-img"
-                loading="lazy"
-                width="280"
-                height="373"
-                itemprop="image" />
-              <div class="doctor-overlay" aria-hidden="true">
-                <a href="pages/ban-lanh-dao.html#bs-binh" class="doctor-overlay-btn" id="btn-bs-binh">Xem hồ sơ</a>
-              </div>
-            </div>
-            <div class="doctor-info">
-              <span class="doctor-badge">Bác sĩ CKII</span>
-              <h3 class="doctor-name" itemprop="name">Trần Thị Bình</h3>
-              <p class="doctor-spec" itemprop="medicalSpecialty">Sản phụ khoa</p>
-            </div>
-          </article>
-
-          <article class="doctor-card" data-animate data-animate-delay="200" itemscope itemtype="https://schema.org/Physician">
-            <div class="doctor-img-wrap">
-              <img
-                src="<?php echo XC_URL; ?>/template/frontend/assets/images/doctor-03.jpg"
-                alt="Thạc sĩ, Bác sĩ Lê Minh Cường — Trưởng khoa Ngoại tổng hợp"
-                class="doctor-img"
-                loading="lazy"
-                width="280"
-                height="373"
-                itemprop="image" />
-              <div class="doctor-overlay" aria-hidden="true">
-                <a href="pages/ban-lanh-dao.html#bs-cuong" class="doctor-overlay-btn" id="btn-bs-cuong">Xem hồ sơ</a>
-              </div>
-            </div>
-            <div class="doctor-info">
-              <span class="doctor-badge">Ths. Bác sĩ</span>
-              <h3 class="doctor-name" itemprop="name">Lê Minh Cường</h3>
-              <p class="doctor-spec" itemprop="medicalSpecialty">Ngoại tổng hợp</p>
-            </div>
-          </article>
-
-          <article class="doctor-card" data-animate data-animate-delay="300" itemscope itemtype="https://schema.org/Physician">
-            <div class="doctor-img-wrap">
-              <img
-                src="<?php echo XC_URL; ?>/template/frontend/assets/images/doctor-01.jpg"
-                alt="Bác sĩ CKI Phạm Thu Hà — Chuyên khoa Nhi"
-                class="doctor-img"
-                loading="lazy"
-                width="280"
-                height="373"
-                itemprop="image" />
-              <div class="doctor-overlay" aria-hidden="true">
-                <a href="pages/ban-lanh-dao.html#bs-ha" class="doctor-overlay-btn" id="btn-bs-ha">Xem hồ sơ</a>
-              </div>
-            </div>
-            <div class="doctor-info">
-              <span class="doctor-badge">Bác sĩ CKI</span>
-              <h3 class="doctor-name" itemprop="name">Phạm Thu Hà</h3>
-              <p class="doctor-spec" itemprop="medicalSpecialty">Nhi khoa</p>
-            </div>
-          </article>
-
+        <?php endif; ?>
         </div>
 
         <div style="text-align:center; margin-top:var(--space-10);">
-          <a href="pages/ban-lanh-dao.html" class="btn btn-outline btn-lg" id="btn-xem-het-bs">Xem tất cả đội ngũ</a>
+          <a href="<?php echo XC_URL; ?>/bac-si" class="btn btn-outline btn-lg" id="btn-xem-het-bs">Xem tất cả đội ngũ</a>
         </div>
 
       </div>

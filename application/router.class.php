@@ -213,6 +213,14 @@ private function getController() {
 				$this->args = $packArgs($parts, 1);
 			}
 		}
+		elseif($segment0 == "bac-si" || $segment0 == "bac-si.html" || $segment0 == "doi-ngu-bac-si" || $segment0 == "doi-ngu-bac-si.html")
+		{
+			$this->controller = "page";
+			$this->action = "doctors";
+			if(isset($parts[1])) {
+				$this->args = $packArgs($parts, 1);
+			}
+		}
 		elseif($segment0 == "tin-tuc-su-kien.html" || $segment0 == "tin-tuc-su-kien" || $segment0 == "tin-tuc.html" || $segment0 == "tin-tuc")
 		{
 			$this->controller = "home";

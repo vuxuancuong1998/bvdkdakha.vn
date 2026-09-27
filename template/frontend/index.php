@@ -371,21 +371,31 @@
         <?php if (!empty($featured_doctors) && is_array($featured_doctors)): ?>
           <?php foreach($featured_doctors as $idx => $doc): 
             $delay = ($idx % 4) * 100;
-            $hasAvatar = !empty($doc->avatar) && file_exists(__SITE_PATH . '/uploads/doctors/' . $doc->avatar);
+            $docName = !empty($doc->doctor_name) ? $doc->doctor_name : (!empty($doc->fullname) ? $doc->fullname : '');
+            $docPosition = !empty($doc->doctor_position) ? $doc->doctor_position : (!empty($doc->position) ? $doc->position : 'Cán bộ y tế');
+            $docWorkplace = !empty($doc->doctor_workplace) ? $doc->doctor_workplace : (!empty($doc->workplace) ? $doc->workplace : 'Bệnh viện Đa khoa khu vực Đắk Hà');
+            $docAvatar = !empty($doc->doctor_avatar) ? $doc->doctor_avatar : (!empty($doc->avatar) ? $doc->avatar : '');
+            $docDob = !empty($doc->doctor_dob) ? $doc->doctor_dob : (!empty($doc->dob) ? $doc->dob : '');
+            $docHometown = !empty($doc->doctor_hometown) ? $doc->doctor_hometown : (!empty($doc->hometown) ? $doc->hometown : '');
+            $docCccd = !empty($doc->doctor_cccd) ? $doc->doctor_cccd : (!empty($doc->cccd) ? $doc->cccd : '');
+            $docJobCode = !empty($doc->doctor_job_title_code) ? $doc->doctor_job_title_code : (!empty($doc->job_title_code) ? $doc->job_title_code : (!empty($doc->doctor_cchn) ? $doc->doctor_cchn : ''));
+            $docCode = !empty($doc->doctor_code) ? $doc->doctor_code : (!empty($doc->code) ? $doc->code : '');
+
+            $hasAvatar = !empty($docAvatar) && file_exists(__SITE_PATH . '/uploads/doctors/' . $docAvatar);
             $avatarUrl = $hasAvatar 
-              ? XC_URL . '/uploads/doctors/' . htmlspecialchars($doc->avatar, ENT_QUOTES, 'UTF-8')
+              ? XC_URL . '/uploads/doctors/' . htmlspecialchars($docAvatar, ENT_QUOTES, 'UTF-8')
               : XC_URL . '/template/frontend/assets/images/doctor-0' . (($idx % 3) + 1) . '.jpg';
             
             $docData = array(
-              'fullname' => (string)$doc->fullname,
-              'dob' => (!empty($doc->dob) && $doc->dob !== '0000-00-00') ? date('d/m/Y', strtotime($doc->dob)) : 'Chưa cập nhật',
-              'hometown' => !empty($doc->hometown) ? (string)$doc->hometown : 'Chưa cập nhật',
-              'cccd' => !empty($doc->cccd) ? (string)$doc->cccd : 'Chưa cập nhật',
-              'position' => (string)$doc->position,
-              'job_title_code' => !empty($doc->job_title_code) ? (string)$doc->job_title_code : (!empty($doc->cchn) ? (string)$doc->cchn : 'Chưa cập nhật'),
-              'department' => !empty($doc->depart_name) ? (string)$doc->depart_name : 'Bệnh viện Đa khoa Khu vực Đắk Hà',
-              'workplace' => !empty($doc->workplace) ? (string)$doc->workplace : 'Bệnh viện Đa khoa Khu vực Đắk Hà',
-              'code' => !empty($doc->code) ? (string)$doc->code : (!empty($doc->cchn) ? (string)$doc->cchn : 'Chưa cập nhật'),
+              'fullname' => (string)$docName,
+              'dob' => (!empty($docDob) && $docDob !== '0000-00-00') ? date('d/m/Y', strtotime($docDob)) : 'Chưa cập nhật',
+              'hometown' => !empty($docHometown) ? (string)$docHometown : 'Chưa cập nhật',
+              'cccd' => !empty($docCccd) ? (string)$docCccd : 'Chưa cập nhật',
+              'position' => (string)$docPosition,
+              'job_title_code' => !empty($docJobCode) ? (string)$docJobCode : 'Chưa cập nhật',
+              'department' => !empty($doc->depart_name) ? (string)$doc->depart_name : 'Bệnh viện Đa khoa khu vực Đắk Hà',
+              'workplace' => (string)$docWorkplace,
+              'code' => !empty($docCode) ? (string)$docCode : 'Chưa cập nhật',
               'avatar' => $avatarUrl
             );
           ?>
@@ -397,7 +407,7 @@
             <div class="doctor-img-wrap">
               <img
                 src="<?php echo $avatarUrl; ?>"
-                alt="<?php echo htmlspecialchars($doc->position . ' ' . $doc->fullname, ENT_QUOTES, 'UTF-8'); ?>"
+                alt="<?php echo htmlspecialchars($docPosition . ' ' . $docName, ENT_QUOTES, 'UTF-8'); ?>"
                 class="doctor-img"
                 loading="lazy"
                 width="280"
@@ -408,8 +418,8 @@
               </div>
             </div>
             <div class="doctor-info">
-              <span class="doctor-badge"><?php echo htmlspecialchars($doc->position, ENT_QUOTES, 'UTF-8'); ?></span>
-              <h3 class="doctor-name" itemprop="name"><?php echo htmlspecialchars($doc->fullname, ENT_QUOTES, 'UTF-8'); ?></h3>
+              <span class="doctor-badge"><?php echo htmlspecialchars($docPosition, ENT_QUOTES, 'UTF-8'); ?></span>
+              <h3 class="doctor-name" itemprop="name"><?php echo htmlspecialchars($docName, ENT_QUOTES, 'UTF-8'); ?></h3>
               
               <div class="doctor-workplace-box">
                 <div class="doctor-dept-line">
@@ -418,7 +428,7 @@
                 </div>
                 <div class="doctor-workplace-line">
                   <i class="fa-solid fa-hospital"></i>
-                  <span><?php echo htmlspecialchars(!empty($doc->workplace) ? $doc->workplace : 'Bệnh viện Đa khoa Khu vực Đắk Hà', ENT_QUOTES, 'UTF-8'); ?></span>
+                  <span><?php echo htmlspecialchars($docWorkplace, ENT_QUOTES, 'UTF-8'); ?></span>
                 </div>
               </div>
 

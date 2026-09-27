@@ -667,37 +667,55 @@ Class adminController extends baseController
 
 		$db->query("CREATE TABLE IF NOT EXISTS hicrm_doctors (
 			id int(11) unsigned NOT NULL AUTO_INCREMENT,
-			department_id int(11) NOT NULL,
-			fullname varchar(255) NOT NULL,
-			dob date DEFAULT NULL,
-			hometown varchar(255) DEFAULT NULL,
-			cccd varchar(20) DEFAULT NULL,
-			cchn varchar(100) DEFAULT NULL,
-			position varchar(255) NOT NULL,
-			job_title_code varchar(100) DEFAULT NULL,
-			workplace varchar(255) DEFAULT 'Bệnh viện Đa khoa Khu vực Đắk Hà',
-			code varchar(100) DEFAULT NULL,
-			avatar varchar(255) DEFAULT NULL,
-			status tinyint(1) NOT NULL DEFAULT 1,
-			created_at datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-			updated_at datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+			doctor_department_id int(11) DEFAULT NULL,
+			doctor_name varchar(255) NOT NULL,
+			doctor_dob date DEFAULT NULL,
+			doctor_hometown varchar(255) DEFAULT NULL,
+			doctor_cccd varchar(20) DEFAULT NULL,
+			doctor_cchn varchar(100) DEFAULT NULL,
+			doctor_position varchar(255) NOT NULL,
+			doctor_job_title_code varchar(50) DEFAULT NULL,
+			doctor_workplace varchar(255) NOT NULL DEFAULT 'Bệnh viện Đa khoa khu vực Đắk Hà',
+			doctor_code varchar(50) DEFAULT NULL,
+			doctor_avatar varchar(255) DEFAULT NULL,
+			doctor_status tinyint(1) NOT NULL DEFAULT 1,
+			doctor_created_at datetime DEFAULT NULL,
+			doctor_updated_at datetime DEFAULT NULL,
 			PRIMARY KEY (id),
-			KEY idx_department (department_id),
-			KEY idx_status (status)
+			KEY idx_doctor_department (doctor_department_id),
+			KEY idx_doctor_status (doctor_status)
 		) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
 
-		// Auto-migrate new columns if missing
-		$doctorCols = array(
-			'hometown' => 'VARCHAR(255) NULL AFTER `dob`',
-			'job_title_code' => 'VARCHAR(100) NULL AFTER `position`',
-			'workplace' => "VARCHAR(255) NULL DEFAULT 'Bệnh viện Đa khoa Khu vực Đắk Hà' AFTER `job_title_code`",
-			'code' => 'VARCHAR(100) NULL AFTER `workplace`'
+		// Auto-migrate legacy columns if present
+		$renameMap = array(
+			'department_id'  => array('doctor_department_id', 'INT(11) NULL DEFAULT NULL'),
+			'fullname'       => array('doctor_name', 'VARCHAR(255) NOT NULL'),
+			'dob'            => array('doctor_dob', 'DATE NULL DEFAULT NULL'),
+			'hometown'       => array('doctor_hometown', 'VARCHAR(255) NULL DEFAULT NULL'),
+			'cccd'           => array('doctor_cccd', 'VARCHAR(20) NULL DEFAULT NULL'),
+			'cchn'           => array('doctor_cchn', 'VARCHAR(100) NULL DEFAULT NULL'),
+			'position'       => array('doctor_position', 'VARCHAR(255) NOT NULL'),
+			'job_title_code' => array('doctor_job_title_code', 'VARCHAR(50) NULL DEFAULT NULL'),
+			'workplace'      => array('doctor_workplace', "VARCHAR(255) NOT NULL DEFAULT 'Bệnh viện Đa khoa khu vực Đắk Hà'"),
+			'code'           => array('doctor_code', 'VARCHAR(50) NULL DEFAULT NULL'),
+			'avatar'         => array('doctor_avatar', 'VARCHAR(255) NULL DEFAULT NULL'),
+			'status'         => array('doctor_status', 'TINYINT(1) NOT NULL DEFAULT 1'),
+			'created_at'     => array('doctor_created_at', 'DATETIME NULL DEFAULT NULL'),
+			'updated_at'     => array('doctor_updated_at', 'DATETIME NULL DEFAULT NULL')
 		);
-		foreach($doctorCols as $colName => $colDef){
-			$db->query("SHOW COLUMNS FROM hicrm_doctors LIKE '".$colName."'");
-			$cCheck = $db->fetch_object();
-			if(empty($cCheck)){
-				$db->query("ALTER TABLE hicrm_doctors ADD COLUMN `".$colName."` ".$colDef);
+		foreach($renameMap as $oldCol => $targetInfo){
+			$newCol = $targetInfo[0];
+			$colDef = $targetInfo[1];
+			$db->query("SHOW COLUMNS FROM hicrm_doctors LIKE '".$oldCol."'");
+			$oldCheck = $db->fetch_object();
+			if(!empty($oldCheck)){
+				$db->query("ALTER TABLE hicrm_doctors CHANGE COLUMN `".$oldCol."` `".$newCol."` ".$colDef);
+			} else {
+				$db->query("SHOW COLUMNS FROM hicrm_doctors LIKE '".$newCol."'");
+				$newCheck = $db->fetch_object();
+				if(empty($newCheck)){
+					$db->query("ALTER TABLE hicrm_doctors ADD COLUMN `".$newCol."` ".$colDef);
+				}
 			}
 		}
 	}
@@ -2990,20 +3008,20 @@ Class adminController extends baseController
 			$postId = isset($_POST['id']) ? intval($_POST['id']) : 0;
 
 			if($action === 'save'){
-				$fullname = $db->escapestring(trim(isset($_POST['fullname']) ? $_POST['fullname'] : ''));
-				$department_id = isset($_POST['department_id']) ? intval($_POST['department_id']) : 0;
-				$position = $db->escapestring(trim(isset($_POST['position']) ? $_POST['position'] : ''));
-				$dob = trim(isset($_POST['dob']) ? $_POST['dob'] : '');
-				$hometown = $db->escapestring(trim(isset($_POST['hometown']) ? $_POST['hometown'] : ''));
-				$cccd = $db->escapestring(trim(isset($_POST['cccd']) ? $_POST['cccd'] : ''));
-				$cchn = $db->escapestring(trim(isset($_POST['cchn']) ? $_POST['cchn'] : ''));
-				$job_title_code = $db->escapestring(trim(isset($_POST['job_title_code']) ? $_POST['job_title_code'] : ''));
-				$workplace = $db->escapestring(trim(isset($_POST['workplace']) && $_POST['workplace'] !== '' ? $_POST['workplace'] : 'Bệnh viện Đa khoa Khu vực Đắk Hà'));
-				$code = $db->escapestring(trim(isset($_POST['code']) ? $_POST['code'] : ''));
-				$status = isset($_POST['status']) ? intval($_POST['status']) : 1;
+				$doctor_name = $db->escapestring(trim(isset($_POST['doctor_name']) ? $_POST['doctor_name'] : (isset($_POST['fullname']) ? $_POST['fullname'] : '')));
+				$department_id = isset($_POST['doctor_department_id']) ? intval($_POST['doctor_department_id']) : (isset($_POST['department_id']) ? intval($_POST['department_id']) : 0);
+				$position = $db->escapestring(trim(isset($_POST['doctor_position']) ? $_POST['doctor_position'] : (isset($_POST['position']) ? $_POST['position'] : '')));
+				$dob = trim(isset($_POST['doctor_dob']) ? $_POST['doctor_dob'] : (isset($_POST['dob']) ? $_POST['dob'] : ''));
+				$hometown = $db->escapestring(trim(isset($_POST['doctor_hometown']) ? $_POST['doctor_hometown'] : (isset($_POST['hometown']) ? $_POST['hometown'] : '')));
+				$cccd = $db->escapestring(trim(isset($_POST['doctor_cccd']) ? $_POST['doctor_cccd'] : (isset($_POST['cccd']) ? $_POST['cccd'] : '')));
+				$cchn = $db->escapestring(trim(isset($_POST['doctor_cchn']) ? $_POST['doctor_cchn'] : (isset($_POST['cchn']) ? $_POST['cchn'] : '')));
+				$job_title_code = $db->escapestring(trim(isset($_POST['doctor_job_title_code']) ? $_POST['doctor_job_title_code'] : (isset($_POST['job_title_code']) ? $_POST['job_title_code'] : '')));
+				$workplace = $db->escapestring(trim(isset($_POST['doctor_workplace']) && $_POST['doctor_workplace'] !== '' ? $_POST['doctor_workplace'] : (isset($_POST['workplace']) && $_POST['workplace'] !== '' ? $_POST['workplace'] : 'Bệnh viện Đa khoa khu vực Đắk Hà')));
+				$code = $db->escapestring(trim(isset($_POST['doctor_code']) ? $_POST['doctor_code'] : (isset($_POST['code']) ? $_POST['code'] : '')));
+				$status = isset($_POST['doctor_status']) ? intval($_POST['doctor_status']) : (isset($_POST['status']) ? intval($_POST['status']) : 1);
 
-				if($fullname === '' || $department_id <= 0 || $position === ''){
-					$this->setAdminFlash('danger', 'Vui lòng nhập đầy đủ Họ tên, Chuyên khoa và Chức vụ.');
+				if($doctor_name === '' || $position === '' || $workplace === ''){
+					$this->setAdminFlash('danger', 'Vui lòng nhập đầy đủ Họ tên, Chức vụ và Đơn vị công tác.');
 					$this->adminRedirect($postId > 0 ? '/admin/doctors/edit/'.$postId : '/admin/doctors/add');
 					return;
 				}
@@ -3025,16 +3043,17 @@ Class adminController extends baseController
 							$avatarName = $newName;
 							// If editing, remove old avatar
 							if($postId > 0){
-								$db->query("SELECT avatar FROM hicrm_doctors WHERE id = '".$postId."' LIMIT 1");
+								$db->query("SELECT doctor_avatar FROM hicrm_doctors WHERE id = '".$postId."' LIMIT 1");
 								$oldDoc = $db->fetch_object(true);
-								if($oldDoc && !empty($oldDoc->avatar) && file_exists($uploadDir . $oldDoc->avatar)){
-									@unlink($uploadDir . $oldDoc->avatar);
+								if($oldDoc && !empty($oldDoc->doctor_avatar) && file_exists($uploadDir . $oldDoc->doctor_avatar)){
+									@unlink($uploadDir . $oldDoc->doctor_avatar);
 								}
 							}
 						}
 					}
 				}
 
+				$deptSql = ($department_id > 0) ? "'".$department_id."'" : "NULL";
 				$dobSql = ($dob !== '' && preg_match('/^\d{4}-\d{2}-\d{2}$/', $dob)) ? "'".$db->escapestring($dob)."'" : "NULL";
 				$hometownSql = ($hometown !== '') ? "'".$hometown."'" : "NULL";
 				$cccdSql = ($cccd !== '') ? "'".$cccd."'" : "NULL";
@@ -3044,30 +3063,31 @@ Class adminController extends baseController
 				$codeSql = ($code !== '') ? "'".$code."'" : "NULL";
 
 				if($postId > 0){
-					$avatarUpdateSql = ($avatarName !== null) ? ", avatar = '".$avatarName."'" : "";
+					$avatarUpdateSql = ($avatarName !== null) ? ", doctor_avatar = '".$avatarName."'" : "";
 					$db->query("UPDATE hicrm_doctors SET
-						department_id = '".$department_id."',
-						fullname = '".$fullname."',
-						dob = ".$dobSql.",
-						hometown = ".$hometownSql.",
-						cccd = ".$cccdSql.",
-						cchn = ".$cchnSql.",
-						position = '".$position."',
-						job_title_code = ".$jobTitleCodeSql.",
-						workplace = ".$workplaceSql.",
-						code = ".$codeSql.",
-						status = '".$status."'
+						doctor_department_id = ".$deptSql.",
+						doctor_name = '".$doctor_name."',
+						doctor_dob = ".$dobSql.",
+						doctor_hometown = ".$hometownSql.",
+						doctor_cccd = ".$cccdSql.",
+						doctor_cchn = ".$cchnSql.",
+						doctor_position = '".$position."',
+						doctor_job_title_code = ".$jobTitleCodeSql.",
+						doctor_workplace = ".$workplaceSql.",
+						doctor_code = ".$codeSql.",
+						doctor_status = '".$status."',
+						doctor_updated_at = NOW()
 						".$avatarUpdateSql."
 						WHERE id = '".$postId."' LIMIT 1");
-					$this->setAdminFlash('success', 'Đã cập nhật thông tin bác sĩ thành công.');
+					$this->setAdminFlash('success', 'Đã cập nhật thông tin cán bộ/bác sĩ thành công.');
 				} else {
 					$avatarInsertVal = ($avatarName !== null) ? "'".$avatarName."'" : "NULL";
 					$db->query("INSERT INTO hicrm_doctors(
-						department_id, fullname, dob, hometown, cccd, cchn, position, job_title_code, workplace, code, avatar, status, created_at, updated_at
+						doctor_department_id, doctor_name, doctor_dob, doctor_hometown, doctor_cccd, doctor_cchn, doctor_position, doctor_job_title_code, doctor_workplace, doctor_code, doctor_avatar, doctor_status, doctor_created_at, doctor_updated_at
 					) VALUES (
-						'".$department_id."', '".$fullname."', ".$dobSql.", ".$hometownSql.", ".$cccdSql.", ".$cchnSql.", '".$position."', ".$jobTitleCodeSql.", ".$workplaceSql.", ".$codeSql.", ".$avatarInsertVal.", '".$status."', NOW(), NOW()
+						".$deptSql.", '".$doctor_name."', ".$dobSql.", ".$hometownSql.", ".$cccdSql.", ".$cchnSql.", '".$position."', ".$jobTitleCodeSql.", ".$workplaceSql.", ".$codeSql.", ".$avatarInsertVal.", '".$status."', NOW(), NOW()
 					)");
-					$this->setAdminFlash('success', 'Đã thêm bác sĩ mới thành công.');
+					$this->setAdminFlash('success', 'Đã thêm cán bộ/bác sĩ mới thành công.');
 				}
 				$this->adminRedirect('/admin/doctors');
 				return;
@@ -3076,24 +3096,24 @@ Class adminController extends baseController
 
 		// 2. Handle Toggle status
 		if($method === 'toggle' && $id > 0){
-			$db->query("UPDATE hicrm_doctors SET status = 1 - status WHERE id = '".$id."' LIMIT 1");
-			$this->setAdminFlash('success', 'Đã chuyển đổi trạng thái bác sĩ.');
+			$db->query("UPDATE hicrm_doctors SET doctor_status = 1 - doctor_status, doctor_updated_at = NOW() WHERE id = '".$id."' LIMIT 1");
+			$this->setAdminFlash('success', 'Đã chuyển đổi trạng thái hiển thị của cán bộ/bác sĩ.');
 			$this->adminRedirect('/admin/doctors');
 			return;
 		}
 
 		// 3. Handle Delete
 		if($method === 'delete' && $id > 0){
-			$db->query("SELECT avatar FROM hicrm_doctors WHERE id = '".$id."' LIMIT 1");
+			$db->query("SELECT doctor_avatar FROM hicrm_doctors WHERE id = '".$id."' LIMIT 1");
 			$doc = $db->fetch_object(true);
-			if($doc && !empty($doc->avatar)){
-				$filePath = __SITE_PATH . '/uploads/doctors/' . $doc->avatar;
+			if($doc && !empty($doc->doctor_avatar)){
+				$filePath = __SITE_PATH . '/uploads/doctors/' . $doc->doctor_avatar;
 				if(file_exists($filePath)){
 					@unlink($filePath);
 				}
 			}
 			$db->query("DELETE FROM hicrm_doctors WHERE id = '".$id."' LIMIT 1");
-			$this->setAdminFlash('success', 'Đã xóa bác sĩ thành công.');
+			$this->setAdminFlash('success', 'Đã xóa cán bộ/bác sĩ thành công.');
 			$this->adminRedirect('/admin/doctors');
 			return;
 		}
@@ -3108,6 +3128,19 @@ Class adminController extends baseController
 			$this->view->data['active_menu'] = 'doctors';
 			$this->view->data['doctor_edit'] = (object) array(
 				'id' => 0,
+				'doctor_department_id' => 0,
+				'doctor_name' => '',
+				'doctor_dob' => '',
+				'doctor_hometown' => '',
+				'doctor_cccd' => '',
+				'doctor_cchn' => '',
+				'doctor_position' => '',
+				'doctor_job_title_code' => '',
+				'doctor_workplace' => 'Bệnh viện Đa khoa khu vực Đắk Hà',
+				'doctor_code' => '',
+				'doctor_avatar' => '',
+				'doctor_status' => 1,
+				// Legacy aliases for backward compatibility
 				'department_id' => 0,
 				'fullname' => '',
 				'dob' => '',
@@ -3116,7 +3149,7 @@ Class adminController extends baseController
 				'cchn' => '',
 				'position' => '',
 				'job_title_code' => '',
-				'workplace' => 'Bệnh viện Đa khoa Khu vực Đắk Hà',
+				'workplace' => 'Bệnh viện Đa khoa khu vực Đắk Hà',
 				'code' => '',
 				'avatar' => '',
 				'status' => 1
@@ -3131,7 +3164,7 @@ Class adminController extends baseController
 			$db->query("SELECT * FROM hicrm_doctors WHERE id = '".$id."' LIMIT 1");
 			$editDoc = $db->fetch_object(true);
 			if(!$editDoc){
-				$this->setAdminFlash('danger', 'Không tìm thấy bác sĩ cần chỉnh sửa.');
+				$this->setAdminFlash('danger', 'Không tìm thấy thông tin cán bộ/bác sĩ.');
 				$this->adminRedirect('/admin/doctors');
 				return;
 			}
@@ -3150,13 +3183,13 @@ Class adminController extends baseController
 		$whereSql = "WHERE 1=1";
 		if($keyword !== ''){
 			$kw_esc = $db->escapestring($keyword);
-			$whereSql .= " AND (d.fullname LIKE '%".$kw_esc."%' OR d.code LIKE '%".$kw_esc."%' OR d.cccd LIKE '%".$kw_esc."%' OR d.cchn LIKE '%".$kw_esc."%' OR d.position LIKE '%".$kw_esc."%' OR d.job_title_code LIKE '%".$kw_esc."%' OR d.hometown LIKE '%".$kw_esc."%')";
+			$whereSql .= " AND (d.doctor_name LIKE '%".$kw_esc."%' OR d.doctor_code LIKE '%".$kw_esc."%' OR d.doctor_cccd LIKE '%".$kw_esc."%' OR d.doctor_cchn LIKE '%".$kw_esc."%' OR d.doctor_position LIKE '%".$kw_esc."%' OR d.doctor_job_title_code LIKE '%".$kw_esc."%' OR d.doctor_hometown LIKE '%".$kw_esc."%' OR d.doctor_workplace LIKE '%".$kw_esc."%')";
 		}
 		if($filterDept > 0){
-			$whereSql .= " AND d.department_id = '".$filterDept."'";
+			$whereSql .= " AND d.doctor_department_id = '".$filterDept."'";
 		}
 		if($filterStatus >= 0){
-			$whereSql .= " AND d.status = '".$filterStatus."'";
+			$whereSql .= " AND d.doctor_status = '".$filterStatus."'";
 		}
 
 		$page = (isset($_GET['page']) && intval($_GET['page']) > 0) ? intval($_GET['page']) : 1;
@@ -3170,9 +3203,9 @@ Class adminController extends baseController
 
 		$db->query("SELECT d.*, dept.depart_name 
 			FROM hicrm_doctors d 
-			LEFT JOIN hicrm_departments dept ON d.department_id = dept.id 
+			LEFT JOIN hicrm_departments dept ON d.doctor_department_id = dept.id 
 			".$whereSql." 
-			ORDER BY d.code ASC, d.id ASC LIMIT ".$offset.",".$perPage);
+			ORDER BY d.doctor_code ASC, d.id ASC LIMIT ".$offset.",".$perPage);
 		$items = $db->fetch_object();
 
 		$this->view->data['active_menu'] = 'doctors';

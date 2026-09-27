@@ -336,40 +336,40 @@ Class pageController extends baseController
 		// 1. Lấy danh sách chuyên khoa đang có bác sĩ hoạt động
 		$db->query("SELECT DISTINCT dept.id, dept.depart_name 
 					FROM hicrm_departments dept 
-					INNER JOIN hicrm_doctors d ON d.department_id = dept.id 
-					WHERE d.status = 1 AND dept.depart_status != 99 
+					INNER JOIN hicrm_doctors d ON d.doctor_department_id = dept.id 
+					WHERE d.doctor_status = 1 AND dept.depart_status != 99 
 					ORDER BY dept.id ASC");
 		$departments = $db->fetch_object();
 		
 		// 2. Lọc theo khoa nếu có
 		$dept_id = isset($_GET['khoa']) ? intval($_GET['khoa']) : (isset($_GET['department']) ? intval($_GET['department']) : 0);
-		$whereSql = "WHERE d.status = 1";
+		$whereSql = "WHERE d.doctor_status = 1";
 		if($dept_id > 0) {
-			$whereSql .= " AND d.department_id = '".$dept_id."'";
+			$whereSql .= " AND d.doctor_department_id = '".$dept_id."'";
 		}
 		
 		// 3. Lọc theo từ khóa tìm kiếm
 		$keyword = isset($_GET['q']) ? trim((string)$_GET['q']) : '';
 		if($keyword !== '') {
 			$kw_esc = $db->escapestring($keyword);
-			$whereSql .= " AND (d.fullname LIKE '%".$kw_esc."%' OR d.position LIKE '%".$kw_esc."%' OR d.code LIKE '%".$kw_esc."%' OR d.job_title_code LIKE '%".$kw_esc."%' OR d.hometown LIKE '%".$kw_esc."%' OR d.cchn LIKE '%".$kw_esc."%')";
+			$whereSql .= " AND (d.doctor_name LIKE '%".$kw_esc."%' OR d.doctor_position LIKE '%".$kw_esc."%' OR d.doctor_code LIKE '%".$kw_esc."%' OR d.doctor_job_title_code LIKE '%".$kw_esc."%' OR d.doctor_hometown LIKE '%".$kw_esc."%' OR d.doctor_cchn LIKE '%".$kw_esc."%' OR d.doctor_workplace LIKE '%".$kw_esc."%')";
 		}
 		
 		// 4. Lấy danh sách bác sĩ
 		$db->query("SELECT d.*, dept.depart_name 
 					FROM hicrm_doctors d 
-					LEFT JOIN hicrm_departments dept ON d.department_id = dept.id 
+					LEFT JOIN hicrm_departments dept ON d.doctor_department_id = dept.id 
 					".$whereSql." 
 					ORDER BY 
 						CASE 
-							WHEN d.position = 'Giám đốc' THEN 1 
-							WHEN d.position = 'Phó giám đốc' THEN 2 
-							WHEN d.position LIKE 'Trưởng%' THEN 3 
-							WHEN d.position = 'Kế toán trưởng' THEN 4
-							WHEN d.position LIKE 'Phó%' THEN 5 
+							WHEN d.doctor_position = 'Giám đốc' THEN 1 
+							WHEN d.doctor_position = 'Phó giám đốc' THEN 2 
+							WHEN d.doctor_position LIKE 'Trưởng%' THEN 3 
+							WHEN d.doctor_position = 'Kế toán trưởng' THEN 4
+							WHEN d.doctor_position LIKE 'Phó%' THEN 5 
 							ELSE 6 
 						END ASC,
-						d.department_id ASC,
+						d.doctor_department_id ASC,
 						d.id ASC");
 		$doctors = $db->fetch_object();
 		

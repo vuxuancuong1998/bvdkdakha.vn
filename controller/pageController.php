@@ -355,7 +355,30 @@ Class pageController extends baseController
 			$whereSql .= " AND (d.doctor_name LIKE '%".$kw_esc."%' OR d.doctor_position LIKE '%".$kw_esc."%' OR d.doctor_code LIKE '%".$kw_esc."%' OR d.doctor_job_title_code LIKE '%".$kw_esc."%' OR d.doctor_hometown LIKE '%".$kw_esc."%' OR d.doctor_cchn LIKE '%".$kw_esc."%' OR d.doctor_workplace LIKE '%".$kw_esc."%')";
 		}
 		
-		// 4. Lấy danh sách bác sĩ
+		// 4. Phân trang: 8 bác sĩ / trang
+		$perPage = 8;
+		$page = 1;
+		if (isset($_GET['page']) && intval($_GET['page']) > 0) {
+			$page = intval($_GET['page']);
+		} elseif (isset($_GET['trang']) && intval($_GET['trang']) > 0) {
+			$page = intval($_GET['trang']);
+		} elseif (isset($para[1]) && !empty($para[1])) {
+			if (preg_match('/^(?:page|trang)-?(\d+)$/i', $para[1], $m)) {
+				$page = intval($m[1]);
+			} elseif (is_numeric($para[1]) && intval($para[1]) > 0) {
+				$page = intval($para[1]);
+			}
+		}
+
+		$db->query("SELECT COUNT(d.id) AS total FROM hicrm_doctors d ".$whereSql);
+		$totalDoctors = intval($db->fetch_object(true)->total);
+		$totalPages = max(1, (int)ceil($totalDoctors / $perPage));
+		if ($page > $totalPages) {
+			$page = $totalPages;
+		}
+		$offset = ($page - 1) * $perPage;
+
+		// 5. Lấy danh sách bác sĩ theo phân trang
 		$db->query("SELECT d.*, dept.depart_name 
 					FROM hicrm_doctors d 
 					LEFT JOIN hicrm_departments dept ON d.doctor_department_id = dept.id 
@@ -370,13 +393,18 @@ Class pageController extends baseController
 							ELSE 6 
 						END ASC,
 						d.doctor_department_id ASC,
-						d.id ASC");
+						d.id ASC
+					LIMIT ".$offset.", ".$perPage);
 		$doctors = $db->fetch_object();
 		
 		$this->view->data['departments'] = is_array($departments) ? $departments : array();
 		$this->view->data['doctors'] = is_array($doctors) ? $doctors : array();
 		$this->view->data['selected_dept'] = $dept_id;
 		$this->view->data['keyword'] = $keyword;
+		$this->view->data['doctor_page'] = $page;
+		$this->view->data['doctor_per_page'] = $perPage;
+		$this->view->data['doctor_total'] = $totalDoctors;
+		$this->view->data['doctor_total_pages'] = $totalPages;
 		$this->view->show("doi-ngu-bac-si");
 	}
 	public function chuyenkhoa($para){

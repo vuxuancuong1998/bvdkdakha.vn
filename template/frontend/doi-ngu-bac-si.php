@@ -3,6 +3,38 @@ $doctors = is_array($doctors) ? $doctors : array();
 $departments = is_array($departments) ? $departments : array();
 $selected_dept = isset($selected_dept) ? (int)$selected_dept : 0;
 $keyword = isset($keyword) ? (string)$keyword : '';
+$page = isset($doctor_page) ? (int)$doctor_page : 1;
+$per_page = isset($doctor_per_page) ? (int)$doctor_per_page : 8;
+$total_doctors = isset($doctor_total) ? (int)$doctor_total : count($doctors);
+$total_pages = isset($doctor_total_pages) ? (int)$doctor_total_pages : 1;
+$row_offset = max(0, ($page - 1) * $per_page);
+
+if (!function_exists('frontendDoctorPageUrl')) {
+	function frontendDoctorPageUrl($targetPage, $deptId, $keyword) {
+		$params = array();
+		if ((int)$targetPage > 1) {
+			$params['page'] = (int)$targetPage;
+		}
+		if ((int)$deptId > 0) {
+			$params['khoa'] = (int)$deptId;
+		}
+		if (trim((string)$keyword) !== '') {
+			$params['q'] = trim((string)$keyword);
+		}
+		return XC_URL . '/bac-si' . (!empty($params) ? '?' . http_build_query($params) : '');
+	}
+}
+
+if (!function_exists('frontendDoctorPaginationItems')) {
+	function frontendDoctorPaginationItems($currentPage, $totalPages) {
+		$currentPage = max(1, (int)$currentPage);
+		$totalPages = max(1, (int)$totalPages);
+		if ($totalPages <= 7) { return range(1, $totalPages); }
+		if ($currentPage <= 4) { return array(1, 2, 3, 4, 5, 'ellipsis', $totalPages); }
+		if ($currentPage >= $totalPages - 3) { return array(1, 'ellipsis', $totalPages - 4, $totalPages - 3, $totalPages - 2, $totalPages - 1, $totalPages); }
+		return array(1, 'ellipsis', $currentPage - 1, $currentPage, $currentPage + 1, 'ellipsis', $totalPages);
+	}
+}
 ?>
 
 <main id="main-content" role="main" class="doctors-page py-4">
@@ -149,6 +181,61 @@ $keyword = isset($keyword) ? (string)$keyword : '';
           </article>
           <?php endforeach; ?>
         </div>
+
+        <!-- ============================================================
+             PAGINATION BAR (8 BÁC SĨ / TRANG)
+             ============================================================ -->
+        <?php if ($total_pages > 1): ?>
+          <div class="doctor-pagination-wrap">
+            <div class="doctor-pagination-info">
+              Hiển thị từ <strong><?php echo $row_offset + 1; ?></strong> đến <strong><?php echo min($row_offset + $per_page, $total_doctors); ?></strong> trong tổng số <strong><?php echo $total_doctors; ?></strong> cán bộ / bác sĩ
+            </div>
+
+            <nav class="doctor-pagination-nav" aria-label="Phân trang đội ngũ bác sĩ">
+              <ul class="doctor-pagination-list">
+                <?php if ($page > 1): ?>
+                  <li class="doctor-page-item">
+                    <a href="<?php echo frontendDoctorPageUrl($page - 1, $selected_dept, $keyword); ?>" class="doctor-page-link prev" aria-label="Trang trước">
+                      <i class="fa-solid fa-chevron-left"></i> Trước
+                    </a>
+                  </li>
+                <?php else: ?>
+                  <li class="doctor-page-item disabled">
+                    <span class="doctor-page-link prev"><i class="fa-solid fa-chevron-left"></i> Trước</span>
+                  </li>
+                <?php endif; ?>
+
+                <?php foreach(frontendDoctorPaginationItems($page, $total_pages) as $pItem): ?>
+                  <?php if ($pItem === 'ellipsis'): ?>
+                    <li class="doctor-page-item ellipsis"><span class="doctor-page-link">…</span></li>
+                  <?php else: ?>
+                    <li class="doctor-page-item <?php echo (int)$pItem === $page ? 'active' : ''; ?>">
+                      <?php if ((int)$pItem === $page): ?>
+                        <span class="doctor-page-link" aria-current="page"><?php echo $pItem; ?></span>
+                      <?php else: ?>
+                        <a href="<?php echo frontendDoctorPageUrl($pItem, $selected_dept, $keyword); ?>" class="doctor-page-link">
+                          <?php echo $pItem; ?>
+                        </a>
+                      <?php endif; ?>
+                    </li>
+                  <?php endif; ?>
+                <?php endforeach; ?>
+
+                <?php if ($page < $total_pages): ?>
+                  <li class="doctor-page-item">
+                    <a href="<?php echo frontendDoctorPageUrl($page + 1, $selected_dept, $keyword); ?>" class="doctor-page-link next" aria-label="Trang tiếp">
+                      Sau <i class="fa-solid fa-chevron-right"></i>
+                    </a>
+                  </li>
+                <?php else: ?>
+                  <li class="doctor-page-item disabled">
+                    <span class="doctor-page-link next">Sau <i class="fa-solid fa-chevron-right"></i></span>
+                  </li>
+                <?php endif; ?>
+              </ul>
+            </nav>
+          </div>
+        <?php endif; ?>
       <?php else: ?>
         <div class="doctor-empty-state">
           <div class="doctor-empty-icon">
@@ -763,6 +850,113 @@ $keyword = isset($keyword) ? (string)$keyword : '';
   color: #0f172a;
 }
 
+/* ============================================================
+   PAGINATION STYLES (8 BÁC SĨ / TRANG)
+   ============================================================ */
+.doctor-pagination-wrap {
+  margin-top: 36px;
+  padding: 16px 22px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.04);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.doctor-pagination-info {
+  font-size: 14px;
+  color: #64748b;
+  font-weight: 500;
+}
+
+.doctor-pagination-info strong {
+  color: #0f172a;
+  font-weight: 700;
+}
+
+.doctor-pagination-nav {
+  display: flex;
+}
+
+.doctor-pagination-list {
+  display: flex;
+  align-items: center;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.doctor-page-item {
+  display: inline-block;
+  margin: 0;
+  padding: 0;
+}
+
+.doctor-page-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 38px;
+  height: 38px;
+  padding: 0 10px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #334155;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+a.doctor-page-link:hover {
+  background: #0284c7;
+  color: #ffffff;
+  border-color: #0284c7;
+  box-shadow: 0 4px 10px rgba(2, 132, 199, 0.25);
+  transform: translateY(-1px);
+}
+
+.doctor-page-link.prev,
+.doctor-page-link.next {
+  padding: 0 14px;
+  gap: 6px;
+  font-weight: 600;
+}
+
+.doctor-page-item.active .doctor-page-link {
+  background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+  color: #ffffff;
+  border-color: #0284c7;
+  box-shadow: 0 4px 12px rgba(2, 132, 199, 0.35);
+  cursor: default;
+}
+
+.doctor-page-item.disabled .doctor-page-link {
+  background: #f1f5f9;
+  color: #94a3b8;
+  border-color: #e2e8f0;
+  cursor: not-allowed;
+  opacity: 0.65;
+  pointer-events: none;
+}
+
+.doctor-page-item.ellipsis .doctor-page-link {
+  background: transparent;
+  border-color: transparent;
+  color: #94a3b8;
+  cursor: default;
+  min-width: 28px;
+  padding: 0;
+}
+
 @media (max-width: 640px) {
   .doctor-search-bar {
     flex-direction: column;
@@ -785,6 +979,25 @@ $keyword = isset($keyword) ? (string)$keyword : '';
   .doctor-modal-table th {
     width: 46%;
     white-space: normal;
+  }
+  .doctor-pagination-wrap {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 16px;
+  }
+  .doctor-pagination-list {
+    justify-content: center;
+  }
+  .doctor-page-link {
+    min-width: 34px;
+    height: 34px;
+    font-size: 13px;
+    padding: 0 8px;
+  }
+  .doctor-page-link.prev,
+  .doctor-page-link.next {
+    padding: 0 10px;
   }
 }
 </style>

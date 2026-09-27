@@ -2955,6 +2955,205 @@ Class adminController extends baseController
 		$this->view->admintmp("market-results");
 	}
 
+	public function doctors($para = array())
+	{
+		if(!$this->prepareAdminAccess('doctors')){ return; }
+		global $db;
+		if(!(isset($_SESSION['user']['id']) && $_SESSION['user']['id'] != "")){ $this->adminRedirect('/admin/login'); }
+		$this->ensureAdminFeatureTables();
+
+		$method = isset($para[1]) ? trim((string)$para[1]) : '';
+		$id = isset($para[2]) ? intval($para[2]) : 0;
+
+		// 1. Handle POST submission (Save / Update)
+		if($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['doctor_action'])){
+			$action = trim((string)$_POST['doctor_action']);
+			$postId = isset($_POST['id']) ? intval($_POST['id']) : 0;
+
+			if($action === 'save'){
+				$fullname = $db->escapestring(trim(isset($_POST['fullname']) ? $_POST['fullname'] : ''));
+				$department_id = isset($_POST['department_id']) ? intval($_POST['department_id']) : 0;
+				$position = $db->escapestring(trim(isset($_POST['position']) ? $_POST['position'] : ''));
+				$dob = trim(isset($_POST['dob']) ? $_POST['dob'] : '');
+				$cccd = $db->escapestring(trim(isset($_POST['cccd']) ? $_POST['cccd'] : ''));
+				$cchn = $db->escapestring(trim(isset($_POST['cchn']) ? $_POST['cchn'] : ''));
+				$status = isset($_POST['status']) ? intval($_POST['status']) : 1;
+
+				if($fullname === '' || $department_id <= 0 || $position === ''){
+					$this->setAdminFlash('danger', 'Vui lòng nhập đầy đủ Họ tên, Chuyên khoa và Chức vụ.');
+					$this->adminRedirect($postId > 0 ? '/admin/doctors/edit/'.$postId : '/admin/doctors/add');
+					return;
+				}
+
+				// Handle image upload
+				$avatarName = null;
+				if(isset($_FILES['avatar']) && $_FILES['avatar']['error'] === UPLOAD_ERR_OK){
+					$fileTmp = $_FILES['avatar']['tmp_name'];
+					$origName = $_FILES['avatar']['name'];
+					$fileExt = strtolower(pathinfo($origName, PATHINFO_EXTENSION));
+					$allowedExts = array('jpg', 'jpeg', 'png', 'webp');
+					if(in_array($fileExt, $allowedExts, true)){
+						$uploadDir = __SITE_PATH . '/uploads/doctors/';
+						if(!is_dir($uploadDir)){
+							mkdir($uploadDir, 0777, true);
+						}
+						$newName = md5(time() . uniqid((string)mt_rand(), true)) . '.' . $fileExt;
+						if(move_uploaded_file($fileTmp, $uploadDir . $newName)){
+							$avatarName = $newName;
+							// If editing, remove old avatar
+							if($postId > 0){
+								$db->query("SELECT avatar FROM hicrm_doctors WHERE id = '".$postId."' LIMIT 1");
+								$oldDoc = $db->fetch_object(true);
+								if($oldDoc && !empty($oldDoc->avatar) && file_exists($uploadDir . $oldDoc->avatar)){
+									@unlink($uploadDir . $oldDoc->avatar);
+								}
+							}
+						}
+					}
+				}
+
+				$dobSql = ($dob !== '' && preg_match('/^\d{4}-\d{2}-\d{2}$/', $dob)) ? "'".$db->escapestring($dob)."'" : "NULL";
+				$cccdSql = ($cccd !== '') ? "'".$cccd."'" : "NULL";
+				$cchnSql = ($cchn !== '') ? "'".$cchn."'" : "NULL";
+
+				if($postId > 0){
+					$avatarUpdateSql = ($avatarName !== null) ? ", avatar = '".$avatarName."'" : "";
+					$db->query("UPDATE hicrm_doctors SET
+						department_id = '".$department_id."',
+						fullname = '".$fullname."',
+						dob = ".$dobSql.",
+						cccd = ".$cccdSql.",
+						cchn = ".$cchnSql.",
+						position = '".$position."',
+						status = '".$status."'
+						".$avatarUpdateSql."
+						WHERE id = '".$postId."' LIMIT 1");
+					$this->setAdminFlash('success', 'Đã cập nhật thông tin bác sĩ thành công.');
+				} else {
+					$avatarInsertVal = ($avatarName !== null) ? "'".$avatarName."'" : "NULL";
+					$db->query("INSERT INTO hicrm_doctors(
+						department_id, fullname, dob, cccd, cchn, position, avatar, status, created_at, updated_at
+					) VALUES (
+						'".$department_id."', '".$fullname."', ".$dobSql.", ".$cccdSql.", ".$cchnSql.", '".$position."', ".$avatarInsertVal.", '".$status."', NOW(), NOW()
+					)");
+					$this->setAdminFlash('success', 'Đã thêm bác sĩ mới thành công.');
+				}
+				$this->adminRedirect('/admin/doctors');
+				return;
+			}
+		}
+
+		// 2. Handle Toggle status
+		if($method === 'toggle' && $id > 0){
+			$db->query("UPDATE hicrm_doctors SET status = 1 - status WHERE id = '".$id."' LIMIT 1");
+			$this->setAdminFlash('success', 'Đã chuyển đổi trạng thái bác sĩ.');
+			$this->adminRedirect('/admin/doctors');
+			return;
+		}
+
+		// 3. Handle Delete
+		if($method === 'delete' && $id > 0){
+			$db->query("SELECT avatar FROM hicrm_doctors WHERE id = '".$id."' LIMIT 1");
+			$doc = $db->fetch_object(true);
+			if($doc && !empty($doc->avatar)){
+				$filePath = __SITE_PATH . '/uploads/doctors/' . $doc->avatar;
+				if(file_exists($filePath)){
+					@unlink($filePath);
+				}
+			}
+			$db->query("DELETE FROM hicrm_doctors WHERE id = '".$id."' LIMIT 1");
+			$this->setAdminFlash('success', 'Đã xóa bác sĩ thành công.');
+			$this->adminRedirect('/admin/doctors');
+			return;
+		}
+
+		// 4. Fetch Departments for dropdown
+		$db->query("SELECT * FROM hicrm_departments WHERE depart_status != 99 ORDER BY depart_name ASC");
+		$departments = $db->fetch_object();
+		$this->view->data['departments'] = is_array($departments) ? $departments : array();
+
+		// 5. Handle Add view
+		if($method === 'add'){
+			$this->view->data['active_menu'] = 'doctors';
+			$this->view->data['doctor_edit'] = (object) array(
+				'id' => 0,
+				'department_id' => 0,
+				'fullname' => '',
+				'dob' => '',
+				'cccd' => '',
+				'cchn' => '',
+				'position' => '',
+				'avatar' => '',
+				'status' => 1
+			);
+			$this->view->data['doctor_flash'] = $this->getAdminFlash();
+			$this->view->admintmp("doctor-form");
+			return;
+		}
+
+		// 6. Handle Edit view
+		if($method === 'edit' && $id > 0){
+			$db->query("SELECT * FROM hicrm_doctors WHERE id = '".$id."' LIMIT 1");
+			$editDoc = $db->fetch_object(true);
+			if(!$editDoc){
+				$this->setAdminFlash('danger', 'Không tìm thấy bác sĩ cần chỉnh sửa.');
+				$this->adminRedirect('/admin/doctors');
+				return;
+			}
+			$this->view->data['active_menu'] = 'doctors';
+			$this->view->data['doctor_edit'] = $editDoc;
+			$this->view->data['doctor_flash'] = $this->getAdminFlash();
+			$this->view->admintmp("doctor-form");
+			return;
+		}
+
+		// 7. Handle List view with filter & pagination
+		$keyword = isset($_GET['keyword']) ? trim((string)$_GET['keyword']) : '';
+		$filterDept = isset($_GET['department_id']) ? intval($_GET['department_id']) : 0;
+		$filterStatus = isset($_GET['status']) && $_GET['status'] !== '' ? intval($_GET['status']) : -1;
+
+		$whereSql = "WHERE 1=1";
+		if($keyword !== ''){
+			$kw_esc = $db->escapestring($keyword);
+			$whereSql .= " AND (d.fullname LIKE '%".$kw_esc."%' OR d.cccd LIKE '%".$kw_esc."%' OR d.cchn LIKE '%".$kw_esc."%' OR d.position LIKE '%".$kw_esc."%')";
+		}
+		if($filterDept > 0){
+			$whereSql .= " AND d.department_id = '".$filterDept."'";
+		}
+		if($filterStatus >= 0){
+			$whereSql .= " AND d.status = '".$filterStatus."'";
+		}
+
+		$page = (isset($_GET['page']) && intval($_GET['page']) > 0) ? intval($_GET['page']) : 1;
+		$perPage = 20;
+
+		$db->query("SELECT COUNT(d.id) AS total FROM hicrm_doctors d ".$whereSql);
+		$totalResults = intval($db->fetch_object(true)->total);
+		$totalPages = max(1, ceil($totalResults / $perPage));
+		if($page > $totalPages){ $page = $totalPages; }
+		$offset = ($page - 1) * $perPage;
+
+		$db->query("SELECT d.*, dept.depart_name 
+			FROM hicrm_doctors d 
+			LEFT JOIN hicrm_departments dept ON d.department_id = dept.id 
+			".$whereSql." 
+			ORDER BY d.id DESC LIMIT ".$offset.",".$perPage);
+		$items = $db->fetch_object();
+
+		$this->view->data['active_menu'] = 'doctors';
+		$this->view->data['doctors'] = is_array($items) ? $items : array();
+		$this->view->data['doctor_page'] = $page;
+		$this->view->data['doctor_per_page'] = $perPage;
+		$this->view->data['doctor_total'] = $totalResults;
+		$this->view->data['doctor_total_pages'] = $totalPages;
+		$this->view->data['keyword'] = $keyword;
+		$this->view->data['selected_department_id'] = $filterDept;
+		$this->view->data['selected_status'] = $filterStatus;
+		$this->view->data['doctor_flash'] = $this->getAdminFlash();
+
+		$this->view->admintmp("doctors");
+	}
+
 	public function videos($para = array())
 	{
 		if(!$this->prepareAdminAccess('videos')){ return; }

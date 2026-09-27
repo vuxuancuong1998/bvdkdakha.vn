@@ -333,8 +333,12 @@ Class pageController extends baseController
 	public function doctors($para = array()){
 		global $db;
 		
-		// 1. Lấy danh sách chuyên khoa đang hoạt động
-		$db->query("SELECT * FROM hicrm_departments WHERE depart_status != 99 ORDER BY id ASC");
+		// 1. Lấy danh sách chuyên khoa đang có bác sĩ hoạt động
+		$db->query("SELECT DISTINCT dept.id, dept.depart_name 
+					FROM hicrm_departments dept 
+					INNER JOIN hicrm_doctors d ON d.department_id = dept.id 
+					WHERE d.status = 1 AND dept.depart_status != 99 
+					ORDER BY dept.id ASC");
 		$departments = $db->fetch_object();
 		
 		// 2. Lọc theo khoa nếu có

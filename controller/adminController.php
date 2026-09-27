@@ -3172,7 +3172,7 @@ Class adminController extends baseController
 			FROM hicrm_doctors d 
 			LEFT JOIN hicrm_departments dept ON d.department_id = dept.id 
 			".$whereSql." 
-			ORDER BY d.id DESC LIMIT ".$offset.",".$perPage);
+			ORDER BY d.code ASC, d.id ASC LIMIT ".$offset.",".$perPage);
 		$items = $db->fetch_object();
 
 		$this->view->data['active_menu'] = 'doctors';

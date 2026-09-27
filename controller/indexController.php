@@ -170,7 +170,18 @@ Class indexController Extends baseController
 			FROM hicrm_doctors d 
 			LEFT JOIN hicrm_departments dept ON d.department_id = dept.id 
 			WHERE d.status = 1 
-			ORDER BY d.id DESC LIMIT 8");
+			ORDER BY 
+				CASE 
+					WHEN d.position = 'Giám đốc' THEN 1 
+					WHEN d.position = 'Phó giám đốc' THEN 2 
+					WHEN d.position LIKE 'Trưởng%' THEN 3 
+					WHEN d.position = 'Kế toán trưởng' THEN 4
+					WHEN d.position LIKE 'Phó%' THEN 5 
+					ELSE 6 
+				END ASC,
+				d.department_id ASC,
+				d.id ASC
+			LIMIT 8");
 		$this->view->data['featured_doctors'] = $db->fetch_object();
 
 		$this->view->show("index");

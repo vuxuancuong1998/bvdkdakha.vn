@@ -45,6 +45,7 @@ Class adminController extends baseController
 			array('key' => 'images', 'name' => 'Thư viện hình ảnh', 'parent' => '', 'sort' => 80),
 			array('key' => 'videos', 'name' => 'Thư viện video', 'parent' => '', 'sort' => 90),
 			array('key' => 'staticpages', 'name' => 'Quản lý trang tĩnh CMS', 'parent' => 'staticpages_section', 'sort' => 53),
+			array('key' => 'doctors', 'name' => 'Quản lý đội ngũ bác sĩ', 'parent' => '', 'sort' => 52),
 			array('key' => 'staticpage_categories', 'name' => 'Danh mục trang tĩnh', 'parent' => 'staticpages_section', 'sort' => 54),
 			array('key' => 'config', 'name' => 'Danh mục tham số', 'parent' => 'system_section', 'sort' => 100),
 			array('key' => 'settings', 'name' => 'Cài đặt hệ thống', 'parent' => 'system_section', 'sort' => 101)
@@ -662,6 +663,23 @@ Class adminController extends baseController
 			updated_at datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 			PRIMARY KEY (id),
 			KEY idx_video_status (video_status)
+		) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+
+		$db->query("CREATE TABLE IF NOT EXISTS hicrm_doctors (
+			id int(11) unsigned NOT NULL AUTO_INCREMENT,
+			department_id int(11) NOT NULL,
+			fullname varchar(255) NOT NULL,
+			dob date DEFAULT NULL,
+			cccd varchar(20) DEFAULT NULL,
+			cchn varchar(100) DEFAULT NULL,
+			position varchar(255) NOT NULL,
+			avatar varchar(255) DEFAULT NULL,
+			status tinyint(1) NOT NULL DEFAULT 1,
+			created_at datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+			updated_at datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+			PRIMARY KEY (id),
+			KEY idx_department (department_id),
+			KEY idx_status (status)
 		) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
 	}
 

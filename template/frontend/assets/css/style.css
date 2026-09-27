@@ -1664,10 +1664,17 @@ section.bg-dark {
 }
 
 .doctors-track {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
   gap: var(--space-6);
   transition: transform var(--transition-slow);
+}
+
+.doctors-track .doctor-card {
+  flex: 0 1 calc(25% - var(--space-6) * 3 / 4);
+  min-width: 250px;
+  max-width: 285px;
 }
 
 .doctor-card {
@@ -1679,6 +1686,7 @@ section.bg-dark {
   transition: all var(--transition-normal);
   text-align: center;
   position: relative;
+  width: 100%;
 }
 
 .doctor-card:hover {
@@ -1689,14 +1697,15 @@ section.bg-dark {
 .doctor-img-wrap {
   position: relative;
   overflow: hidden;
+  width: 100%;
   aspect-ratio: 3/4;
-  max-height: 280px;
 }
 
 .doctor-img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  display: block;
   transition: transform var(--transition-slow);
 }
 

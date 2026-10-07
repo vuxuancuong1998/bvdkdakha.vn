@@ -9,6 +9,16 @@ $total_doctors = isset($doctor_total) ? (int)$doctor_total : count($doctors);
 $total_pages = isset($doctor_total_pages) ? (int)$doctor_total_pages : 1;
 $row_offset = max(0, ($page - 1) * $per_page);
 
+$selectedDeptName = '';
+if ($selected_dept > 0) {
+	foreach ($departments as $dept) {
+		if ((int)$dept->id === $selected_dept) {
+			$selectedDeptName = $dept->depart_name;
+			break;
+		}
+	}
+}
+
 if (!function_exists('frontendDoctorPageUrl')) {
 	function frontendDoctorPageUrl($targetPage, $deptId, $keyword) {
 		$params = array();
@@ -58,53 +68,106 @@ if (!function_exists('frontendDoctorPaginationItems')) {
     </section>
 
     <!-- ============================================================
-         FILTER & SEARCH PANEL
+         PROFESSIONAL FILTER & SEARCH PANEL
          ============================================================ -->
-    <section class="doctor-filter-panel">
-      <form method="get" action="<?php echo XC_URL; ?>/bac-si" class="doctor-search-bar">
-        <div class="doctor-input-wrap">
-          <i class="fa-solid fa-magnifying-glass doctor-search-icon"></i>
-          <input 
-            type="text" 
-            name="q" 
-            class="doctor-search-input" 
-            placeholder="Tìm tên bác sĩ, chức danh, số CCHN..." 
-            value="<?php echo htmlspecialchars($keyword, ENT_QUOTES, 'UTF-8'); ?>"
-            autocomplete="off">
-          <?php if($selected_dept > 0): ?>
-            <input type="hidden" name="khoa" value="<?php echo $selected_dept; ?>">
-          <?php endif; ?>
+    <section class="doctor-filter-panel" aria-label="Bộ lọc và tìm kiếm bác sĩ">
+      <div class="doctor-filter-top">
+        <div class="doctor-filter-title">
+          <i class="fa-solid fa-sliders"></i>
+          <span>Bộ lọc & Tìm kiếm bác sĩ</span>
         </div>
-
-        <button type="submit" class="doctor-btn-primary">
-          <i class="fa-solid fa-filter"></i> Tìm kiếm
-        </button>
-
-        <?php if($selected_dept > 0 || $keyword !== ''): ?>
-          <a href="<?php echo XC_URL; ?>/bac-si" class="doctor-btn-reset" title="Đặt lại bộ lọc">
-            <i class="fa-solid fa-rotate-left"></i> Tất cả
-          </a>
-        <?php endif; ?>
-      </form>
-
-      <!-- Department Filter Pills -->
-      <div class="doctor-pills-bar">
-        <span class="doctor-pills-label">
-          <i class="fa-solid fa-hospital-user"></i> Chuyên khoa:
-        </span>
-        <div class="doctor-pills-list">
-          <a href="<?php echo XC_URL; ?>/bac-si<?php echo $keyword !== '' ? '?q='.urlencode($keyword) : ''; ?>" 
-             class="doctor-pill <?php echo $selected_dept === 0 ? 'active' : ''; ?>">
-            Tất cả
-          </a>
-          <?php foreach($departments as $dept): ?>
-            <a href="<?php echo XC_URL; ?>/bac-si?khoa=<?php echo (int)$dept->id; ?><?php echo $keyword !== '' ? '&q='.urlencode($keyword) : ''; ?>" 
-               class="doctor-pill <?php echo $selected_dept === (int)$dept->id ? 'active' : ''; ?>">
-              <?php echo htmlspecialchars($dept->depart_name, ENT_QUOTES, 'UTF-8'); ?>
-            </a>
-          <?php endforeach; ?>
+        <div class="doctor-filter-stat">
+          <i class="fa-solid fa-user-doctor"></i>
+          <span>Tìm thấy <strong><?php echo $total_doctors; ?></strong> nhân sự</span>
         </div>
       </div>
+
+      <form method="get" action="<?php echo XC_URL; ?>/bac-si" class="doctor-filter-form">
+        <!-- Search Input Box -->
+        <div class="doctor-filter-field doctor-filter-search">
+          <label for="doctor-search-input" class="doctor-field-label">Từ khóa tìm kiếm</label>
+          <div class="doctor-input-container">
+            <i class="fa-solid fa-magnifying-glass doctor-field-icon"></i>
+            <input 
+              type="text" 
+              id="doctor-search-input"
+              name="q" 
+              class="doctor-search-input" 
+              placeholder="Nhập tên bác sĩ, chức danh, học vị..." 
+              value="<?php echo htmlspecialchars($keyword, ENT_QUOTES, 'UTF-8'); ?>"
+              autocomplete="off">
+            <?php if($keyword !== ''): ?>
+              <button type="button" class="doctor-input-clear-btn" onclick="document.getElementById('doctor-search-input').value=''; this.form.submit();" title="Xóa từ khóa">
+                <i class="fa-solid fa-xmark"></i>
+              </button>
+            <?php endif; ?>
+          </div>
+        </div>
+
+        <!-- Department Dropdown Box -->
+        <div class="doctor-filter-field doctor-filter-dept">
+          <label for="doctor-dept-select" class="doctor-field-label">Chuyên khoa / Phòng ban</label>
+          <div class="doctor-select-container">
+            <i class="fa-solid fa-hospital-user doctor-field-icon"></i>
+            <select name="khoa" id="doctor-dept-select" class="doctor-dept-select" onchange="this.form.submit()">
+              <option value="0">Tất cả chuyên khoa & phòng ban (<?php echo count($departments); ?> khoa/phòng)</option>
+              <?php foreach($departments as $dept): ?>
+                <option value="<?php echo (int)$dept->id; ?>" <?php echo $selected_dept === (int)$dept->id ? 'selected' : ''; ?>>
+                  <?php echo htmlspecialchars($dept->depart_name, ENT_QUOTES, 'UTF-8'); ?>
+                </option>
+              <?php endforeach; ?>
+            </select>
+            <i class="fa-solid fa-chevron-down doctor-select-arrow" aria-hidden="true"></i>
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="doctor-filter-actions">
+          <button type="submit" class="doctor-btn-search">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <span>Tìm kiếm</span>
+          </button>
+
+          <?php if($selected_dept > 0 || $keyword !== ''): ?>
+            <a href="<?php echo XC_URL; ?>/bac-si" class="doctor-btn-clear" title="Xóa toàn bộ bộ lọc">
+              <i class="fa-solid fa-arrow-rotate-left"></i>
+              <span>Đặt lại</span>
+            </a>
+          <?php endif; ?>
+        </div>
+      </form>
+
+      <!-- Active Filter Tags (if any filter is applied) -->
+      <?php if($selected_dept > 0 || $keyword !== ''): ?>
+        <div class="doctor-active-tags-bar">
+          <span class="doctor-active-tags-label"><i class="fa-solid fa-filter"></i> Đang lọc theo:</span>
+          <div class="doctor-active-tags-list">
+            <?php if($selected_dept > 0 && !empty($selectedDeptName)): ?>
+              <span class="doctor-active-tag">
+                <i class="fa-solid fa-hospital-user"></i>
+                Khoa: <strong><?php echo htmlspecialchars($selectedDeptName, ENT_QUOTES, 'UTF-8'); ?></strong>
+                <a href="<?php echo XC_URL; ?>/bac-si<?php echo $keyword !== '' ? '?q='.urlencode($keyword) : ''; ?>" title="Bỏ lọc khoa này">
+                  <i class="fa-solid fa-xmark"></i>
+                </a>
+              </span>
+            <?php endif; ?>
+
+            <?php if($keyword !== ''): ?>
+              <span class="doctor-active-tag">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                Từ khóa: <strong>"<?php echo htmlspecialchars($keyword, ENT_QUOTES, 'UTF-8'); ?>"</strong>
+                <a href="<?php echo XC_URL; ?>/bac-si<?php echo $selected_dept > 0 ? '?khoa='.(int)$selected_dept : ''; ?>" title="Bỏ từ khóa này">
+                  <i class="fa-solid fa-xmark"></i>
+                </a>
+              </span>
+            <?php endif; ?>
+
+            <a href="<?php echo XC_URL; ?>/bac-si" class="doctor-clear-all-link">
+              Xóa tất cả bộ lọc
+            </a>
+          </div>
+        </div>
+      <?php endif; ?>
     </section>
 
     <!-- ============================================================
@@ -145,37 +208,28 @@ if (!function_exists('frontendDoctorPaginationItems')) {
           <article class="doctor-card doctor-card-clickable" 
                    data-doctor='<?php echo htmlspecialchars(json_encode($docData, JSON_UNESCAPED_UNICODE), ENT_QUOTES, 'UTF-8'); ?>'
                    onclick="openDoctorModal(this)"
+                   role="button"
+                   tabindex="0"
+                   onkeydown="if(event.key==='Enter') openDoctorModal(this)"
                    itemscope itemtype="https://schema.org/Physician">
-            <div class="doctor-img-wrap">
+            <div class="doctor-avatar-circle">
               <img 
                 src="<?php echo $avatarSrc; ?>" 
-                alt="<?php echo htmlspecialchars($docPosition . ' ' . $docName, ENT_QUOTES, 'UTF-8'); ?>"
-                class="doctor-img" 
-                loading="lazy">
-              <div class="doctor-overlay" aria-hidden="true">
-                <span class="doctor-overlay-btn"><i class="fa-solid fa-circle-info"></i> Xem chi tiết</span>
-              </div>
+                alt="<?php echo htmlspecialchars($docName, ENT_QUOTES, 'UTF-8'); ?>"
+                class="doctor-avatar-img" 
+                loading="lazy"
+                itemprop="image">
             </div>
 
-            <div class="doctor-info">
-              <span class="doctor-badge"><?php echo htmlspecialchars($docPosition, ENT_QUOTES, 'UTF-8'); ?></span>
-              <h3 class="doctor-name" itemprop="name"><?php echo htmlspecialchars($docName, ENT_QUOTES, 'UTF-8'); ?></h3>
+            <div class="doctor-card-content">
+              <h3 class="doctor-card-name" itemprop="name"><?php echo htmlspecialchars($docName, ENT_QUOTES, 'UTF-8'); ?></h3>
               
-              <div class="doctor-workplace-box">
-                <div class="doctor-dept-line">
-                  <i class="fa-solid fa-hospital-user"></i>
-                  <span><?php echo htmlspecialchars($doc->depart_name ?: 'Bệnh viện Đắk Hà', ENT_QUOTES, 'UTF-8'); ?></span>
-                </div>
-                <div class="doctor-workplace-line">
-                  <i class="fa-solid fa-hospital"></i>
-                  <span><?php echo htmlspecialchars($docWorkplace, ENT_QUOTES, 'UTF-8'); ?></span>
-                </div>
+              <div class="doctor-card-dept">
+                <span>Chuyên khoa: <b><?php echo htmlspecialchars($doc->depart_name ?: 'Đa khoa', ENT_QUOTES, 'UTF-8'); ?></b></span>
               </div>
 
-              <div class="doctor-card-footer">
-                <span class="doctor-view-detail-btn">
-                  <i class="fa-solid fa-id-card"></i> Xem chi tiết hồ sơ
-                </span>
+              <div class="doctor-card-action">
+                <span class="doctor-card-link">Xem thêm bác sĩ <i class="fa-solid fa-angles-right"></i></span>
               </div>
             </div>
           </article>
@@ -283,25 +337,25 @@ if (!function_exists('frontendDoctorPaginationItems')) {
                     <td id="modalDoctorWorkplace"></td>
                   </tr>
                   <tr>
-                    <th scope="row"><i class="fa-solid fa-calendar-day"></i> Ngày sinh</th>
+                    <th scope="row"><i class="fa-solid fa-calendar-day"></i> Năm sinh</th>
                     <td id="modalDoctorDob"></td>
                   </tr>
                   <tr>
                     <th scope="row"><i class="fa-solid fa-map-location-dot"></i> Quê quán</th>
                     <td id="modalDoctorHometown"></td>
                   </tr>
-                  <tr>
-                    <th scope="row"><i class="fa-solid fa-id-badge"></i> Mã ngạch / CDNN</th>
+                  <!-- <tr>
+                    <th scope="row"><i class="fa-solid fa-id-badge"></i> CDNN / CCHN</th>
                     <td id="modalDoctorJobCode"></td>
-                  </tr>
+                  </tr> -->
                   <tr>
                     <th scope="row"><i class="fa-solid fa-barcode"></i> Mã số</th>
                     <td id="modalDoctorCode"></td>
                   </tr>
-                  <tr>
+                  <!-- <tr>
                     <th scope="row"><i class="fa-solid fa-id-card"></i> Số CCCD</th>
                     <td id="modalDoctorCccd"></td>
-                  </tr>
+                  </tr> -->
                 </tbody>
               </table>
             </div>
@@ -381,29 +435,92 @@ if (!function_exists('frontendDoctorPaginationItems')) {
   line-height: 1.6;
 }
 
-/* Filter Panel */
+/* ============================================================
+   PROFESSIONAL FILTER & SEARCH SUITE
+   ============================================================ */
 .doctor-filter-panel {
-  background: #fff;
-  border: 1px solid var(--color-border-light);
-  border-radius: var(--radius-xl);
-  padding: 20px 24px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 20px;
+  padding: 22px 26px;
   margin-bottom: 32px;
-  box-shadow: var(--shadow-card);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.04), 0 2px 8px rgba(0, 0, 0, 0.02);
+  position: relative;
 }
 
-.doctor-search-bar {
+.doctor-filter-top {
   display: flex;
-  gap: 12px;
+  justify-content: space-between;
   align-items: center;
+  margin-bottom: 18px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.doctor-filter-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: #1e293b;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.doctor-filter-title i {
+  color: #0284c7;
+  font-size: 15px;
+}
+
+.doctor-filter-stat {
+  font-size: 13.5px;
+  color: #64748b;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.doctor-filter-stat strong {
+  color: #0284c7;
+  font-weight: 700;
+}
+
+.doctor-filter-form {
+  display: flex;
+  gap: 16px;
+  align-items: flex-end;
   flex-wrap: wrap;
 }
 
-.doctor-input-wrap {
-  position: relative;
-  flex: 1 1 300px;
+.doctor-filter-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 }
 
-.doctor-search-icon {
+.doctor-filter-search {
+  flex: 1 1 320px;
+}
+
+.doctor-filter-dept {
+  flex: 1.1 1 340px;
+}
+
+.doctor-field-label {
+  font-size: 13px;
+  font-weight: 700;
+  color: #334155;
+  display: block;
+}
+
+.doctor-input-container,
+.doctor-select-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.doctor-field-icon {
   position: absolute;
   left: 16px;
   top: 50%;
@@ -411,34 +528,104 @@ if (!function_exists('frontendDoctorPaginationItems')) {
   color: #94a3b8;
   font-size: 15px;
   pointer-events: none;
+  transition: color 0.2s ease;
+  z-index: 2;
 }
 
-.doctor-search-input {
+.doctor-search-input,
+.doctor-dept-select {
   width: 100%;
-  padding: 12px 16px 12px 42px;
-  border: 1px solid #cbd5e1;
-  border-radius: var(--radius-full);
+  height: 48px;
+  padding: 0 16px 0 46px;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 12px;
   font-size: 14px;
   font-family: inherit;
-  color: var(--color-text);
+  color: #1e293b;
   background: #f8fafc;
   outline: none;
   transition: all 0.2s ease;
   box-sizing: border-box;
 }
 
-.doctor-search-input:focus {
-  background: #fff;
+.doctor-search-input:focus,
+.doctor-dept-select:focus {
+  background: #ffffff;
   border-color: #0284c7;
   box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.15);
 }
 
-.doctor-btn-primary {
-  background: #0284c7;
-  color: #fff;
+.doctor-input-container:focus-within .doctor-field-icon,
+.doctor-select-container:focus-within .doctor-field-icon {
+  color: #0284c7;
+}
+
+.doctor-dept-select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  cursor: pointer;
+  padding-right: 42px;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.doctor-select-arrow {
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #64748b;
+  font-size: 13px;
+  pointer-events: none;
+  transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.doctor-select-container:focus-within .doctor-select-arrow {
+  color: #0284c7;
+  transform: translateY(-50%) rotate(180deg);
+}
+
+.doctor-input-clear-btn {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: #e2e8f0;
   border: none;
-  border-radius: var(--radius-full);
-  padding: 12px 24px;
+  color: #64748b;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+  padding: 0;
+}
+
+.doctor-input-clear-btn:hover {
+  background: #cbd5e1;
+  color: #0f172a;
+}
+
+.doctor-filter-actions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.doctor-btn-search {
+  height: 48px;
+  padding: 0 24px;
+  background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+  color: #ffffff;
+  border: none;
+  border-radius: 12px;
   font-size: 14px;
   font-weight: 600;
   font-family: inherit;
@@ -446,27 +633,27 @@ if (!function_exists('frontendDoctorPaginationItems')) {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  text-decoration: none;
   transition: all 0.2s ease;
   box-shadow: 0 2px 8px rgba(2, 132, 199, 0.25);
   white-space: nowrap;
 }
 
-.doctor-btn-primary:hover {
-  background: #0369a1;
+.doctor-btn-search:hover {
+  background: linear-gradient(135deg, #0369a1 0%, #075985 100%);
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(2, 132, 199, 0.35);
-  color: #fff;
+  box-shadow: 0 4px 14px rgba(2, 132, 199, 0.35);
+  color: #ffffff;
 }
 
-.doctor-btn-reset {
+.doctor-btn-clear {
+  height: 48px;
+  padding: 0 18px;
   background: #f1f5f9;
   color: #475569;
-  border: 1px solid #cbd5e1;
-  border-radius: var(--radius-full);
-  padding: 11px 18px;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 12px;
   font-size: 14px;
-  font-weight: 500;
+  font-weight: 600;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
@@ -474,25 +661,27 @@ if (!function_exists('frontendDoctorPaginationItems')) {
   text-decoration: none;
   transition: all 0.2s ease;
   white-space: nowrap;
+  box-sizing: border-box;
 }
 
-.doctor-btn-reset:hover {
+.doctor-btn-clear:hover {
   background: #e2e8f0;
-  color: #1e293b;
+  color: #0f172a;
+  border-color: #94a3b8;
 }
 
-/* Pills Bar */
-.doctor-pills-bar {
+/* Active Filter Tags */
+.doctor-active-tags-bar {
+  margin-top: 18px;
+  padding-top: 14px;
   border-top: 1px solid #f1f5f9;
-  margin-top: 16px;
-  padding-top: 16px;
   display: flex;
   align-items: center;
   gap: 12px;
   flex-wrap: wrap;
 }
 
-.doctor-pills-label {
+.doctor-active-tags-label {
   font-size: 13px;
   font-weight: 700;
   color: #64748b;
@@ -501,38 +690,61 @@ if (!function_exists('frontendDoctorPaginationItems')) {
   gap: 6px;
 }
 
-.doctor-pills-list {
+.doctor-active-tags-list {
   display: flex;
+  align-items: center;
   gap: 8px;
   flex-wrap: wrap;
-  align-items: center;
 }
 
-.doctor-pill {
-  display: inline-block;
-  background: #f8fafc;
-  color: #475569;
-  border: 1px solid #e2e8f0;
-  border-radius: var(--radius-full);
-  padding: 6px 16px;
+.doctor-active-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #e0f2fe;
+  color: #0369a1;
+  border: 1px solid #bae6fd;
+  padding: 5px 12px;
+  border-radius: 9999px;
   font-size: 13px;
   font-weight: 500;
-  text-decoration: none;
-  transition: all 0.2s ease;
 }
 
-.doctor-pill:hover {
-  background: #e0f2fe;
+.doctor-active-tag strong {
+  color: #075985;
+  font-weight: 700;
+}
+
+.doctor-active-tag a {
   color: #0284c7;
-  border-color: #bae6fd;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  transition: all 0.15s;
+  margin-left: 2px;
+  text-decoration: none;
 }
 
-.doctor-pill.active {
+.doctor-active-tag a:hover {
   background: #0284c7;
-  color: #fff;
-  border-color: #0284c7;
+  color: #ffffff;
+}
+
+.doctor-clear-all-link {
+  font-size: 13px;
+  color: #ef4444;
   font-weight: 600;
-  box-shadow: 0 2px 6px rgba(2, 132, 199, 0.25);
+  text-decoration: none;
+  margin-left: 4px;
+  transition: color 0.15s;
+}
+
+.doctor-clear-all-link:hover {
+  color: #dc2626;
+  text-decoration: underline;
 }
 
 /* Grid layout */
@@ -542,82 +754,154 @@ if (!function_exists('frontendDoctorPaginationItems')) {
   gap: 24px;
 }
 
-/* Clickable card */
+/* ============================================================
+   DOCTOR CARD (CIRCULAR AVATAR DESIGN)
+   ============================================================ */
+.doctors-page-grid .doctor-card {
+  background: #ffffff;
+  border-radius: 20px;
+  border: 1px solid #e2e8f0;
+  padding: 28px 20px 22px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  text-align: center;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+}
+
 .doctor-card-clickable {
   cursor: pointer;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  user-select: none;
 }
 
-.doctor-card-clickable:hover {
+.doctor-card-clickable:hover,
+.doctors-page-grid .doctor-card:hover {
   transform: translateY(-6px);
-  box-shadow: 0 16px 32px rgba(2, 132, 199, 0.12);
+  box-shadow: 0 16px 32px rgba(2, 132, 199, 0.12), 0 4px 12px rgba(0, 0, 0, 0.04);
+  border-color: #cbd5e1;
 }
 
-/* Card customizations for list */
-.doctors-page-grid .doctor-card {
+/* Circular Avatar Frame */
+.doctor-avatar-circle {
+  width: 190px;
+  height: 190px;
+  max-width: 100%;
+  border-radius: 50%;
+  overflow: hidden;
+  margin: 0 auto 18px auto;
+  border: 4px solid #f8fafc;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
   display: flex;
-  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: #f1f5f9;
+  flex-shrink: 0;
+}
+
+.doctor-avatar-img {
+  width: 100%;
   height: 100%;
+  object-fit: cover;
+  object-position: center 15%;
+  border-radius: 50%;
+  display: block;
+  transition: transform 0.4s ease;
 }
 
-.doctors-page-grid .doctor-info {
+.doctor-card:hover .doctor-avatar-img {
+  transform: scale(1.05);
+}
+
+/* Card Content Body */
+.doctor-card-content {
   display: flex;
   flex-direction: column;
+  align-items: center;
+  width: 100%;
   flex-grow: 1;
-  padding: 18px 16px 14px 16px;
-  text-align: left;
 }
 
-.doctors-page-grid .doctor-name {
-  font-size: 17px;
+/* Doctor Name */
+.doctor-card-name {
+  font-family: inherit;
+  font-size: 19px;
+  font-weight: 800;
+  color: #1e293b;
+  text-transform: uppercase;
+  margin: 0 0 10px 0;
+  line-height: 1.35;
+  letter-spacing: -0.01em;
+  text-align: center;
+}
+
+/* Specialty / Department Line */
+.doctor-card-dept {
+  font-size: 15px;
+  color: #475569;
+  text-align: center;
+  line-height: 1.45;
+  margin-bottom: 22px;
+}
+
+.doctor-card-dept b {
+  color: #1e293b;
   font-weight: 700;
-  margin: 0 0 8px 0;
-  color: #0f172a;
 }
 
-.doctor-workplace-box {
-  margin-bottom: 12px;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.doctor-dept-line {
-  font-size: 13px;
-  color: #0284c7;
-  font-weight: 600;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.doctor-workplace-line {
-  font-size: 12px;
-  color: #64748b;
-  font-weight: 500;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.doctor-card-footer {
+/* Card Bottom Action Link */
+.doctor-card-action {
   margin-top: auto;
-  padding-top: 10px;
-  border-top: 1px solid #f1f5f9;
+  text-align: center;
+  padding-top: 4px;
 }
 
-.doctor-view-detail-btn {
-  font-size: 12px;
-  color: #0284c7;
-  font-weight: 700;
+.doctor-card-link {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  transition: color 0.2s;
+  justify-content: center;
+  gap: 8px;
+  font-size: 15px;
+  font-weight: 700;
+  color: #2b5292;
+  text-decoration: none;
+  transition: color 0.2s ease;
 }
 
-.doctor-card:hover .doctor-view-detail-btn {
-  color: #0369a1;
+.doctor-card-link i {
+  font-size: 13px;
+  transition: transform 0.2s ease;
+}
+
+.doctor-card:hover .doctor-card-link {
+  color: #0284c7;
+}
+
+.doctor-card:hover .doctor-card-link i {
+  transform: translateX(4px);
+}
+
+@media (max-width: 575px) {
+  .doctors-page-grid .doctor-card {
+    padding: 22px 16px 18px 16px;
+  }
+  .doctor-avatar-circle {
+    width: 165px;
+    height: 165px;
+    margin-bottom: 14px;
+  }
+  .doctor-card-name {
+    font-size: 17px;
+  }
+  .doctor-card-dept {
+    font-size: 14px;
+    margin-bottom: 16px;
+  }
 }
 
 /* Empty State */
@@ -942,12 +1226,34 @@ a.doctor-page-link:hover {
   padding: 0;
 }
 
-@media (max-width: 640px) {
-  .doctor-search-bar {
+@media (max-width: 768px) {
+  .doctor-filter-panel {
+    padding: 18px 16px;
+  }
+  .doctor-filter-top {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  .doctor-filter-form {
     flex-direction: column;
     align-items: stretch;
+    gap: 12px;
   }
-  .doctor-btn-primary, .doctor-btn-reset {
+  .doctor-filter-search,
+  .doctor-filter-dept {
+    flex: 1 1 100%;
+    width: 100%;
+  }
+  .doctor-filter-actions {
+    flex-direction: row;
+    width: 100%;
+  }
+  .doctor-btn-search {
+    flex: 1;
+    justify-content: center;
+  }
+  .doctor-btn-clear {
     justify-content: center;
   }
   .doctors-page-grid {
@@ -1000,11 +1306,9 @@ function openDoctorModal(cardEl) {
     document.getElementById('modalDoctorPosition').textContent = data.position || '';
     document.getElementById('modalDoctorDept').textContent = data.department || '-';
     document.getElementById('modalDoctorWorkplace').textContent = data.workplace || '-';
-    document.getElementById('modalDoctorDob').textContent = data.dob || '-';
+    document.getElementById('modalDoctorDob').textContent = data.dob ? String(data.dob).trim().slice(-4) : '-';
     document.getElementById('modalDoctorHometown').textContent = data.hometown || '-';
-    document.getElementById('modalDoctorJobCode').textContent = data.job_title_code || '-';
     document.getElementById('modalDoctorCode').textContent = data.code || '-';
-    document.getElementById('modalDoctorCccd').textContent = data.cccd || '-';
     
     var modal = document.getElementById('doctorDetailModal');
     if (modal) {

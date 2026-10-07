@@ -195,6 +195,26 @@ Class apiController extends baseController
 		}
 		return true;
 	}
+	private function adminApiHasPermission($permission_key)
+	{
+		$keys = $this->adminApiAllowedMenuKeys();
+		return in_array('*', $keys, true) || in_array($permission_key, $keys, true);
+	}
+	private function ensureEventWorkflowSchema()
+	{
+		global $db;
+		$columns = array(
+			'event_rejection_reason' => 'TEXT NULL', 'event_attachment' => 'VARCHAR(255) NULL',
+			'event_attachment_name' => 'VARCHAR(255) NULL', 'event_submitted_by' => 'INT(11) NULL',
+			'event_submitted_at' => 'DATETIME NULL', 'event_reviewed_by' => 'INT(11) NULL',
+			'event_reviewed_at' => 'DATETIME NULL', 'event_published_by' => 'INT(11) NULL',
+			'event_published_at' => 'DATETIME NULL'
+		);
+		foreach($columns as $name => $definition){
+			$db->query("SHOW COLUMNS FROM hicrm_events LIKE '".$name."'");
+			if(!$db->num_row()){ $db->query("ALTER TABLE hicrm_events ADD COLUMN `".$name."` ".$definition); }
+		}
+	}
 	private function adminAccountHasAccess($group_id)
 	{
 		global $db;
@@ -1797,18 +1817,19 @@ Class apiController extends baseController
 	{
 		if(!$this->requireAdminApiPermission('events', false)){ return; }
 		global $db;
+		$this->ensureEventWorkflowSchema();
 		$event_name = isset($_POST['event_name']) ? $db->escapestring($_POST['event_name']) : '';
 		$event_description = isset($_POST['event_description']) ? $db->escapestring($_POST['event_description']) : '';
 		$event_content = isset($_POST['event_content']) ? $db->escapestring($_POST['event_content']) : '';
-		$user_id = isset($_POST['user_id']) ? intval($_POST['user_id']) : 0;
+		$user_id = isset($_SESSION['user']['id']) ? intval($_SESSION['user']['id']) : 0;
 		$event_type = isset($_POST['event_type']) ? intval($_POST['event_type']) : 0;
 		$event_hot = isset($_POST['event_hot']) ? intval($_POST['event_hot']) : 0;
-		$event_user_created = isset($_POST['event_user_created']) ? intval($_POST['event_user_created']) : 0;
-		$event_status = isset($_POST['event_status']) ? intval($_POST['event_status']) : 0;
+		$event_user_created = $user_id;
+		$event_status = 1;
 		$event_created_date = date('Y-m-d H:i:s');
 		$FinalFilenameFront = "";
 		$FinalFilenameFront2 = "";
-		$expensions = array("jpeg","jpg","png");
+		$expensions = array("jpeg","jpg","png","webp","gif");
 		$method = isset($_POST['method']) ? $_POST['method'] : '';
 		$result = array();
 		$id = isset($_POST['eid']) ? intval($_POST['eid']) : 0;
@@ -1818,6 +1839,10 @@ Class apiController extends baseController
 			$result["message"] = "Vui lòng nhập tiêu đề và nội dung.";
 			echo json_encode($result);
 			return;
+		}
+		$db->query("SELECT id FROM hicrm_event_type WHERE id = '".$event_type."' AND event_type_status NOT IN (99) LIMIT 1");
+		if($event_type <= 0 || !$db->num_row()){
+			echo json_encode(array('status'=>422, 'message'=>'Vui lòng chọn loại tin hợp lệ.')); return;
 		}
 
 		$upload_event_image = function() use (&$result, $expensions) {
@@ -1865,6 +1890,21 @@ Class apiController extends baseController
 
 			return $final_filename;
 		};
+		$upload_attachment = function() use (&$result, $user_id) {
+			if(!isset($_FILES['event_attachment']) || (int)$_FILES['event_attachment']['error'] === 4){ return array('', ''); }
+			if((int)$_FILES['event_attachment']['error'] !== 0){ $result = array('status'=>500,'message'=>'Tải tệp đính kèm không thành công.'); return false; }
+			$name = trim((string)$_FILES['event_attachment']['name']);
+			$size = (int)$_FILES['event_attachment']['size'];
+			$ext = strtolower(pathinfo($name, PATHINFO_EXTENSION));
+			$allowed = array('pdf','doc','docx','xls','xlsx','ppt','pptx','zip','rar','txt');
+			if(!in_array($ext, $allowed, true)){ $result = array('status'=>422,'message'=>'Tệp đính kèm không đúng định dạng cho phép.'); return false; }
+			if($size > 20971520){ $result = array('status'=>422,'message'=>'Tệp đính kèm phải nhỏ hơn 20MB.'); return false; }
+			$dir = './uploads/events/attachments'; if(!is_dir($dir)){ mkdir($dir, 0775, true); }
+			$safe = preg_replace('/[^a-zA-Z0-9._-]/', '-', basename($name));
+			$file = md5(uniqid((string)$user_id, true)).'-'.$safe;
+			if(!move_uploaded_file($_FILES['event_attachment']['tmp_name'], $dir.'/'.$file)){ $result = array('status'=>500,'message'=>'Không thể lưu tệp đính kèm.'); return false; }
+			return array('attachments/'.$file, $name);
+		};
 		
 		if(isset($method) && $method == "add")
 		{
@@ -1873,8 +1913,9 @@ Class apiController extends baseController
 				echo json_encode($result);
 				return;
 			}
-			$db->query("INSERT INTO hicrm_events(user_id,event_name,event_description,event_content,event_image,event_type,event_hot,event_user_created,event_status,event_created_date)
-			VALUES('".$user_id."','".$event_name."','".$event_description."','".$event_content."','".$FinalFilenameFront."','".$event_type."','".$event_hot."','".$event_user_created."','".$event_status."','".$event_created_date."')");
+			$attachment = $upload_attachment(); if($attachment === false){ echo json_encode($result); return; }
+			$db->query("INSERT INTO hicrm_events(user_id,event_name,event_description,event_content,event_image,event_type,event_hot,event_user_created,event_status,event_created_date,event_attachment,event_attachment_name)
+			VALUES('".$user_id."','".$event_name."','".$event_description."','".$event_content."','".$FinalFilenameFront."','".$event_type."','".$event_hot."','".$event_user_created."','1','".$event_created_date."','".$db->escapestring($attachment[0])."','".$db->escapestring($attachment[1])."')");
 			$result["status"] = 200;
 			$result["url"] = XC_URL."/uploads/events/".$FinalFilenameFront;
 			$result["id"] = $FinalFilenameFront;
@@ -1885,17 +1926,22 @@ Class apiController extends baseController
 		{
 			// echo "ssss";
 			// echo $id .'id';
-			$db->query("SELECT * FROM hicrm_events WHERE id = '".$id."'");
-			$db->fetch_object(true);
-			if($db->num_row())
+			$db->query("SELECT * FROM hicrm_events WHERE id = '".$id."' LIMIT 1");
+			$existing_event = $db->fetch_object(true);
+			if($existing_event)
 			{
+				if((int)$existing_event->event_status !== 1 || (!$this->currentAdminIsSuperAdmin() && (int)$existing_event->event_user_created !== $user_id)){
+					echo json_encode(array('status'=>403,'message'=>'Chỉ tác giả được chỉnh sửa tin ở trạng thái Bản nháp.')); return;
+				}
 				$FinalFilenameFront = $upload_event_image();
 				if($FinalFilenameFront === false){
 					echo json_encode($result);
 					return;
 				}
 				$updateimage = ($FinalFilenameFront != "")? ", event_image = '".$FinalFilenameFront."'" : "";
-				$db->query("UPDATE hicrm_events SET user_id = '".$user_id."', event_name = '".$event_name."', event_description = '".$event_description."', event_content = '".$event_content."', event_type = '".$event_type."', event_hot = '".$event_hot."', event_user_created = '".$event_user_created."', event_status = '".$event_status."', event_created_date = '".$event_created_date."'".$updateimage." WHERE id = '".$id."'");
+				$attachment = $upload_attachment(); if($attachment === false){ echo json_encode($result); return; }
+				$update_attachment = $attachment[0] !== '' ? ", event_attachment='".$db->escapestring($attachment[0])."', event_attachment_name='".$db->escapestring($attachment[1])."'" : '';
+				$db->query("UPDATE hicrm_events SET event_name = '".$event_name."', event_description = '".$event_description."', event_content = '".$event_content."', event_type = '".$event_type."', event_hot = '".$event_hot."'".$updateimage.$update_attachment." WHERE id = '".$id."'");
 				$result["status"] = 200;
 				$result['message'] = 'Sửa thành công';
 				$result['returnUrl'] = XC_URL."/admin/events";
@@ -1907,6 +1953,228 @@ Class apiController extends baseController
 			}
 		}
 		echo json_encode($result);
+	}
+	public function eventWorkflow()
+	{
+		header('Content-Type: application/json; charset=utf-8');
+		if(!$this->requireAdminApiPermission('events', false)){ return; }
+		global $db;
+		$this->ensureEventWorkflowSchema();
+		$id = isset($_POST['id']) ? intval($_POST['id']) : 0;
+		$action = isset($_POST['action']) ? trim((string)$_POST['action']) : '';
+		$reason = isset($_POST['reason']) ? trim((string)$_POST['reason']) : '';
+		$user_id = isset($_SESSION['user']['id']) ? intval($_SESSION['user']['id']) : 0;
+		$db->query("SELECT * FROM hicrm_events WHERE id='".$id."' AND event_status <> 99 LIMIT 1");
+		$event = $db->fetch_object(true);
+		if(!$event){ echo json_encode(array('status'=>404,'message'=>'Không tìm thấy tin tức.')); return; }
+		$status = (int)$event->event_status;
+		$is_owner = (int)$event->event_user_created === $user_id || $this->currentAdminIsSuperAdmin();
+		$updates = array(); $message = '';
+		if($action === 'submit' && $status === 1 && $is_owner){
+			$updates = array("event_status=2", "event_submitted_by=".$user_id, "event_submitted_at=NOW()", "event_rejection_reason=NULL"); $message='Đã gửi phê duyệt.';
+		}elseif($action === 'cancel_submit' && $status === 2 && $is_owner){
+			$updates = array("event_status=1", "event_submitted_by=NULL", "event_submitted_at=NULL"); $message='Đã hủy gửi phê duyệt.';
+		}elseif($action === 'approve' && $status === 2 && $this->adminApiHasPermission('events_approve')){
+			$updates = array("event_status=3", "event_reviewed_by=".$user_id, "event_reviewed_at=NOW()", "event_rejection_reason=NULL"); $message='Đã phê duyệt tin.';
+		}elseif($action === 'return' && in_array($status, array(2,3), true) && $this->adminApiHasPermission('events_approve')){
+			if($reason === ''){ echo json_encode(array('status'=>422,'message'=>'Vui lòng nhập lý do trả về.')); return; }
+			$updates = array("event_status=1", "event_rejection_reason='".$db->escapestring($reason)."'", "event_reviewed_by=".$user_id, "event_reviewed_at=NOW()"); $message='Đã trả tin về cho tác giả.';
+		}elseif($action === 'publish' && $status === 3 && $this->adminApiHasPermission('events_publish')){
+			$updates = array("event_status=4", "event_published_by=".$user_id, "event_published_at=NOW()", "event_created_date=NOW()"); $message='Đã công khai tin.';
+		}elseif($action === 'unpublish' && $status === 4 && $this->adminApiHasPermission('events_publish')){
+			$updates = array("event_status=3", "event_published_by=NULL", "event_published_at=NULL"); $message='Đã hủy công khai tin.';
+		}else{
+			echo json_encode(array('status'=>403,'message'=>'Bạn không có quyền hoặc trạng thái tin không phù hợp.')); return;
+		}
+		$db->query("UPDATE hicrm_events SET ".implode(',', $updates)." WHERE id='".$id."'");
+		echo json_encode(array('status'=>200,'message'=>$message));
+	}
+
+	private function activityLog($activityId, $action, $fromStatus, $toStatus, $note, $userId)
+	{
+		global $db;
+		$ip = isset($_SERVER['REMOTE_ADDR']) ? trim((string)$_SERVER['REMOTE_ADDR']) : '';
+		$db->query("INSERT INTO hicrm_activity_workflow_logs(activity_id,action,from_status,to_status,note,acted_by,acted_at,ip_address) VALUES('".intval($activityId)."','".$db->escapestring($action)."',".($fromStatus===null?'NULL':intval($fromStatus)).",".($toStatus===null?'NULL':intval($toStatus)).",'".$db->escapestring((string)$note)."','".intval($userId)."',NOW(),'".$db->escapestring($ip)."')");
+	}
+
+	private function activitySlug($value)
+	{
+		$value = trim((string)$value);
+		if(function_exists('iconv')){ $converted=@iconv('UTF-8','ASCII//TRANSLIT//IGNORE',$value); if($converted!==false){$value=$converted;} }
+		$value = strtolower(preg_replace('/[^a-zA-Z0-9]+/', '-', $value));
+		return trim($value, '-') ?: 'hoat-dong';
+	}
+
+	public function activitySave()
+	{
+		header('Content-Type: application/json; charset=utf-8');
+		if(!$this->requireAdminApiPermission('activities')){ return; }
+		global $db;
+		$id=isset($_POST['id'])?intval($_POST['id']):0; $userId=intval($_SESSION['user']['id']);
+		$type=isset($_POST['activity_type'])?trim((string)$_POST['activity_type']):'';
+		$title=isset($_POST['title'])?trim((string)$_POST['title']):'';
+		if(!in_array($type,array('work_schedule','training_plan','medical_campaign'),true) || $title===''){
+			echo json_encode(array('status'=>422,'message'=>'Vui lòng nhập tiêu đề và chọn đúng loại hoạt động.')); return;
+		}
+		if($type==='work_schedule'){
+			$workWeek=trim((string)($_POST['work_week']??''));
+			$organizationBlock=trim((string)($_POST['organization_block']??''));
+			if($workWeek==='' || !in_array($organizationBlock,array('leadership','departments'),true)){
+				echo json_encode(array('status'=>422,'message'=>'Vui lòng nhập tuần làm việc và chọn khối.')); return;
+			}
+		}
+		$existing=null;
+		if($id>0){ $db->query("SELECT * FROM hicrm_activities WHERE id='".$id."' AND status<>99 LIMIT 1"); $existing=$db->fetch_object(true); }
+		if($id>0 && (!$existing || intval($existing->status)!==1 || (!$this->currentAdminIsSuperAdmin() && intval($existing->created_by)!==$userId))){
+			echo json_encode(array('status'=>403,'message'=>'Chỉ tác giả được sửa hoạt động ở trạng thái Bản nháp.')); return;
+		}
+		$slug=isset($_POST['slug'])?$this->activitySlug($_POST['slug']):$this->activitySlug($title);
+		$baseSlug=$slug; $suffix=1;
+		do{ $db->query("SELECT id FROM hicrm_activities WHERE slug='".$db->escapestring($slug)."' AND id<>".$id." LIMIT 1"); if(!$db->num_row()){break;} $slug=$baseSlug.'-'.(++$suffix); }while($suffix<1000);
+		$fields=array(
+			"activity_type='".$db->escapestring($type)."'", "title='".$db->escapestring($title)."'", "slug='".$db->escapestring($slug)."'",
+			"work_week='".$db->escapestring(trim((string)($_POST['work_week']??'')))."'", "organization_block='".$db->escapestring(trim((string)($_POST['organization_block']??'')))."'",
+			"summary='".$db->escapestring(trim((string)($_POST['summary']??'')))."'", "content='".$db->escapestring((string)($_POST['content']??''))."'",
+			"department_name='".$db->escapestring(trim((string)($_POST['department_name']??'')))."'", "location='".$db->escapestring(trim((string)($_POST['location']??'')))."'",
+			"start_at=".(!empty($_POST['start_at'])?"'".$db->escapestring(str_replace('T',' ',$_POST['start_at']))."'":'NULL'),
+			"end_at=".(!empty($_POST['end_at'])?"'".$db->escapestring(str_replace('T',' ',$_POST['end_at']))."'":'NULL'),
+			"contact_info='".$db->escapestring(trim((string)($_POST['contact_info']??'')))."'", "is_featured=".(isset($_POST['is_featured'])?1:0)
+		);
+		$uploadRoot=dirname(__DIR__).DIRECTORY_SEPARATOR.'uploads'.DIRECTORY_SEPARATOR.'activities';
+		if(!is_dir($uploadRoot)){ @mkdir($uploadRoot,0775,true); }
+		if(isset($_FILES['thumbnail']) && intval($_FILES['thumbnail']['error'])===UPLOAD_ERR_OK){
+			$ext=strtolower(pathinfo($_FILES['thumbnail']['name'],PATHINFO_EXTENSION));
+			if(!in_array($ext,array('jpg','jpeg','png','webp'),true) || intval($_FILES['thumbnail']['size'])>5*1024*1024){ echo json_encode(array('status'=>422,'message'=>'Ảnh phải là JPG, PNG hoặc WEBP và không quá 5MB.')); return; }
+			$file=bin2hex(random_bytes(12)).'.'.$ext;
+			if(!move_uploaded_file($_FILES['thumbnail']['tmp_name'],$uploadRoot.DIRECTORY_SEPARATOR.$file)){ echo json_encode(array('status'=>500,'message'=>'Không thể lưu ảnh đại diện.')); return; }
+			$fields[]="thumbnail='".$db->escapestring($file)."'";
+		}
+		$db->query('START TRANSACTION');
+		if($existing){ $fields[]='updated_by='.$userId; $fields[]='updated_at=NOW()'; $db->query("UPDATE hicrm_activities SET ".implode(',',$fields)." WHERE id='".$id."'"); $this->activityLog($id,'update',1,1,'Cập nhật nội dung',$userId); }
+		else{ $db->query("INSERT INTO hicrm_activities(activity_type,title,slug,work_week,organization_block,summary,content,department_name,location,start_at,end_at,contact_info,is_featured,status,created_by,created_at) VALUES('".$db->escapestring($type)."','".$db->escapestring($title)."','".$db->escapestring($slug)."','".$db->escapestring(trim((string)($_POST['work_week']??'')))."','".$db->escapestring(trim((string)($_POST['organization_block']??'')))."','".$db->escapestring(trim((string)($_POST['summary']??'')))."','".$db->escapestring((string)($_POST['content']??''))."','".$db->escapestring(trim((string)($_POST['department_name']??'')))."','".$db->escapestring(trim((string)($_POST['location']??'')))."',".(!empty($_POST['start_at'])?"'".$db->escapestring(str_replace('T',' ',$_POST['start_at']))."'":'NULL').",".(!empty($_POST['end_at'])?"'".$db->escapestring(str_replace('T',' ',$_POST['end_at']))."'":'NULL').",'".$db->escapestring(trim((string)($_POST['contact_info']??'')))."','".(isset($_POST['is_featured'])?1:0)."',1,'".$userId."',NOW())"); $id=$db->insert_id(); if(isset($file)){$db->query("UPDATE hicrm_activities SET thumbnail='".$db->escapestring($file)."' WHERE id='".$id."'");} $this->activityLog($id,'create',null,1,'Khởi tạo hoạt động',$userId); }
+		$db->query("DELETE FROM hicrm_activity_schedule_items WHERE activity_id='".$id."'");
+		$dates=isset($_POST['schedule_date'])&&is_array($_POST['schedule_date'])?$_POST['schedule_date']:array();
+		foreach($dates as $k=>$date){
+			$content=trim((string)($_POST['schedule_content'][$k]??'')); if(trim((string)$date)===''||$content===''){continue;}
+			$val=function($name)use($k){return trim((string)($_POST[$name][$k]??''));};
+			$db->query("INSERT INTO hicrm_activity_schedule_items(activity_id,work_date,start_time,end_time,work_content,location,chairperson,participants,preparation_unit,note,target_group,sort_order) VALUES('".$id."','".$db->escapestring($date)."',".($val('schedule_start')!==''?"'".$db->escapestring($val('schedule_start'))."'":'NULL').",".($val('schedule_end')!==''?"'".$db->escapestring($val('schedule_end'))."'":'NULL').",'".$db->escapestring($content)."','".$db->escapestring($val('schedule_location'))."','".$db->escapestring($val('schedule_chairperson'))."','".$db->escapestring($val('schedule_participants'))."','".$db->escapestring($val('schedule_unit'))."','".$db->escapestring($val('schedule_note'))."','".$db->escapestring($val('schedule_target'))."','".intval($k)."')");
+		}
+		$deleteAttachments=isset($_POST['delete_attachment'])&&is_array($_POST['delete_attachment'])?array_map('intval',$_POST['delete_attachment']):array();
+		if($deleteAttachments){
+			$deleteIds=implode(',',array_filter($deleteAttachments));
+			if($deleteIds!==''){
+				$db->query("SELECT file_path FROM hicrm_activity_attachments WHERE activity_id='".$id."' AND id IN (".$deleteIds.")");
+				$deleteFiles=$db->fetch_object();
+				foreach((array)$deleteFiles as $deleteFile){$deletePath=$uploadRoot.DIRECTORY_SEPARATOR.basename($deleteFile->file_path);if(is_file($deletePath)){@unlink($deletePath);}}
+				$db->query("DELETE FROM hicrm_activity_attachments WHERE activity_id='".$id."' AND id IN (".$deleteIds.")");
+			}
+		}
+		if(isset($_FILES['attachments']['name']) && is_array($_FILES['attachments']['name'])){
+			$allowedExt=array('pdf','doc','docx','xls','xlsx','ppt','pptx');
+			foreach($_FILES['attachments']['name'] as $k=>$original){
+				if(intval($_FILES['attachments']['error'][$k])!==UPLOAD_ERR_OK){continue;} $ext=strtolower(pathinfo($original,PATHINFO_EXTENSION)); $size=intval($_FILES['attachments']['size'][$k]);
+				if(!in_array($ext,$allowedExt,true)||$size>20*1024*1024){continue;} $saved=bin2hex(random_bytes(12)).'.'.$ext;
+				if(move_uploaded_file($_FILES['attachments']['tmp_name'][$k],$uploadRoot.DIRECTORY_SEPARATOR.$saved)){
+					$mime=function_exists('mime_content_type')?mime_content_type($uploadRoot.DIRECTORY_SEPARATOR.$saved):'';
+					$db->query("INSERT INTO hicrm_activity_attachments(activity_id,file_name,file_path,file_type,file_size,uploaded_by,created_at,sort_order) VALUES('".$id."','".$db->escapestring(basename($original))."','".$db->escapestring($saved)."','".$db->escapestring((string)$mime)."','".$size."','".$userId."',NOW(),'".intval($k)."')");
+				}
+			}
+		}
+		$db->query('COMMIT');
+		$returnRoutes=array('work_schedule'=>'/admin/activities/schedules','training_plan'=>'/admin/activities/plans','medical_campaign'=>'/admin/activities/campaigns');
+		echo json_encode(array('status'=>200,'message'=>'Đã lưu hoạt động.','returnUrl'=>XC_URL.($returnRoutes[$type]??'/admin/activities/schedules')));
+	}
+
+	public function activityWorkflow()
+	{
+		header('Content-Type: application/json; charset=utf-8'); if(!$this->requireAdminApiPermission('activities')){return;} global $db;
+		$id=intval($_POST['id']??0); $action=trim((string)($_POST['action']??'')); $reason=trim((string)($_POST['reason']??'')); $uid=intval($_SESSION['user']['id']);
+		$db->query("SELECT * FROM hicrm_activities WHERE id='".$id."' AND status<>99 LIMIT 1"); $row=$db->fetch_object(true); if(!$row){echo json_encode(array('status'=>404,'message'=>'Không tìm thấy hoạt động.'));return;}
+		$from=intval($row->status); $owner=intval($row->created_by)===$uid||$this->currentAdminIsSuperAdmin(); $to=0; $set=array(); $message='';
+		if($action==='submit'&&$from===1&&$owner){$to=2;$set=array('submitted_by='.$uid,'submitted_at=NOW()','rejection_reason=NULL');$message='Đã gửi phê duyệt.';}
+		elseif($action==='cancel_submit'&&$from===2&&$owner){$to=1;$set=array('submitted_by=NULL','submitted_at=NULL');$message='Đã hủy gửi phê duyệt.';}
+		elseif($action==='approve'&&$from===2&&$this->adminApiHasPermission('activities_approve')){$to=3;$set=array('approved_by='.$uid,'approved_at=NOW()','rejection_reason=NULL');$message='Đã phê duyệt hoạt động.';}
+		elseif($action==='return'&&in_array($from,array(2,3),true)&&$this->adminApiHasPermission('activities_approve')){if($reason===''){echo json_encode(array('status'=>422,'message'=>'Vui lòng nhập lý do trả lại.'));return;}$to=1;$set=array("rejection_reason='".$db->escapestring($reason)."'");$message='Đã trả hoạt động về bản nháp.';}
+		elseif($action==='publish'&&$from===3&&$this->adminApiHasPermission('activities_publish')){$to=4;$set=array('published_by='.$uid,'published_at=NOW()');$message='Đã công khai hoạt động.';}
+		elseif($action==='unpublish'&&$from===4&&$this->adminApiHasPermission('activities_publish')){$to=3;$set=array('published_by=NULL','published_at=NULL');$message='Đã hủy công khai hoạt động.';}
+		else{echo json_encode(array('status'=>403,'message'=>'Bạn không có quyền hoặc trạng thái không phù hợp.'));return;}
+		$db->query('START TRANSACTION'); $set[]='status='.$to; $set[]='updated_by='.$uid; $set[]='updated_at=NOW()'; $db->query("UPDATE hicrm_activities SET ".implode(',',$set)." WHERE id='".$id."'"); $this->activityLog($id,$action,$from,$to,$reason,$uid); $db->query('COMMIT'); echo json_encode(array('status'=>200,'message'=>$message));
+	}
+
+	public function activityDelete()
+	{
+		header('Content-Type: application/json; charset=utf-8'); if(!$this->requireAdminApiPermission('activities')){return;} global $db;
+		$id=intval($_POST['id']??0);$uid=intval($_SESSION['user']['id']);$db->query("SELECT * FROM hicrm_activities WHERE id='".$id."' LIMIT 1");$row=$db->fetch_object(true);
+		if(!$row||intval($row->status)!==1||(!$this->currentAdminIsSuperAdmin()&&intval($row->created_by)!==$uid)){echo json_encode(array('status'=>403,'message'=>'Chỉ tác giả được xóa hoạt động ở trạng thái Bản nháp.'));return;}
+		$db->query("UPDATE hicrm_activities SET status=99,updated_by='".$uid."',updated_at=NOW() WHERE id='".$id."'");$this->activityLog($id,'delete',1,99,'Xóa hoạt động',$uid);echo json_encode(array('status'=>200,'message'=>'Đã xóa hoạt động.'));
+	}
+
+	public function trainingPlanSave()
+	{
+		header('Content-Type: application/json; charset=utf-8');
+		if(!$this->requireAdminApiPermission('activities')){return;} global $db;
+		$id=intval($_POST['id']??0);$uid=intval($_SESSION['user']['id']);
+		$code=trim((string)($_POST['plan_code']??''));$title=trim((string)($_POST['title']??''));$start=trim((string)($_POST['start_date']??''));$end=trim((string)($_POST['end_date']??''));$organizer=trim((string)($_POST['organizer']??''));
+		if($code===''||$title===''||$start===''||$end===''||$organizer===''){echo json_encode(array('status'=>422,'message'=>'Vui lòng nhập đầy đủ mã, tên, thời gian và đơn vị tổ chức.'));return;}
+		if(!preg_match('/^\d{4}-\d{2}-\d{2}$/',$start)||!preg_match('/^\d{4}-\d{2}-\d{2}$/',$end)||strtotime($end)<strtotime($start)){echo json_encode(array('status'=>422,'message'=>'Khoảng thời gian không hợp lệ.'));return;}
+		$priority=trim((string)($_POST['priority_level']??'normal'));if(!in_array($priority,array('normal','focus','urgent'),true)){$priority='normal';}
+		$form=trim((string)($_POST['training_form']??'tap-trung'));if(!in_array($form,array('tap-trung','truc-tuyen','ket-hop'),true)){$form='tap-trung';}
+		$certificate=trim((string)($_POST['certificate_type']??'noi-bo'));if(!in_array($certificate,array('cme','noi-bo'),true)){$certificate='noi-bo';}
+		$existing=null;if($id>0){$db->query("SELECT * FROM hicrm_training_plans WHERE id='".$id."' AND status<>99 LIMIT 1");$existing=$db->fetch_object(true);}
+		if($id>0&&(!$existing||intval($existing->status)!==1||(!$this->currentAdminIsSuperAdmin()&&intval($existing->created_by)!==$uid))){echo json_encode(array('status'=>403,'message'=>'Chỉ tác giả được sửa kế hoạch ở trạng thái Bản nháp.'));return;}
+		$db->query("SELECT id FROM hicrm_training_plans WHERE plan_code='".$db->escapestring($code)."' AND id<>".$id." AND status<>99 LIMIT 1");if($db->num_row()>0){echo json_encode(array('status'=>422,'message'=>'Mã kế hoạch đã tồn tại.'));return;}
+		$fields=array("plan_code='".$db->escapestring($code)."'","title='".$db->escapestring($title)."'","summary='".$db->escapestring(trim((string)($_POST['summary']??'')))."'","priority_level='".$db->escapestring($priority)."'","start_date='".$db->escapestring($start)."'","end_date='".$db->escapestring($end)."'","organizer='".$db->escapestring($organizer)."'","target_staff='".$db->escapestring(trim((string)($_POST['target_staff']??'')))."'","training_form='".$db->escapestring($form)."'","certificate_type='".$db->escapestring($certificate)."'","department_name='".$db->escapestring(trim((string)($_POST['department_name']??'')))."'","attachment_sender='".$db->escapestring(trim((string)($_POST['attachment_sender']??'')))."'","sort_order=".intval($_POST['sort_order']??0));
+		$uploadRoot=dirname(__DIR__).DIRECTORY_SEPARATOR.'uploads'.DIRECTORY_SEPARATOR.'training-plans';if(!is_dir($uploadRoot)){@mkdir($uploadRoot,0775,true);}
+		$newFile='';$oldFile='';
+		if(isset($_FILES['attachment'])&&intval($_FILES['attachment']['error'])===UPLOAD_ERR_OK){$ext=strtolower(pathinfo($_FILES['attachment']['name'],PATHINFO_EXTENSION));$size=intval($_FILES['attachment']['size']);if($ext!=='pdf'||$size>20*1024*1024){echo json_encode(array('status'=>422,'message'=>'Tệp đính kèm phải là PDF và không quá 20MB.'));return;}$newFile=bin2hex(random_bytes(16)).'.pdf';if(!move_uploaded_file($_FILES['attachment']['tmp_name'],$uploadRoot.DIRECTORY_SEPARATOR.$newFile)){echo json_encode(array('status'=>500,'message'=>'Không thể lưu tệp PDF.'));return;}$mime=function_exists('mime_content_type')?mime_content_type($uploadRoot.DIRECTORY_SEPARATOR.$newFile):'application/pdf';$fields[]="attachment_name='".$db->escapestring(basename($_FILES['attachment']['name']))."'";$fields[]="attachment_path='".$db->escapestring($newFile)."'";$fields[]="attachment_type='".$db->escapestring((string)$mime)."'";$fields[]='attachment_size='.$size;$oldFile=$existing->attachment_path??'';}
+		if(!$existing&&$newFile===''){echo json_encode(array('status'=>422,'message'=>'Vui lòng tải tệp kế hoạch PDF.'));return;}
+		$db->query('START TRANSACTION');
+		if($existing){$fields[]='updated_by='.$uid;$fields[]='updated_at=NOW()';$db->query("UPDATE hicrm_training_plans SET ".implode(',',$fields)." WHERE id='".$id."'");}
+		else{$db->query("INSERT INTO hicrm_training_plans(plan_code,title,summary,priority_level,start_date,end_date,organizer,target_staff,training_form,certificate_type,department_name,attachment_name,attachment_path,attachment_type,attachment_size,attachment_sender,status,sort_order,created_by,created_at) VALUES('".$db->escapestring($code)."','".$db->escapestring($title)."','".$db->escapestring(trim((string)($_POST['summary']??'')))."','".$db->escapestring($priority)."','".$db->escapestring($start)."','".$db->escapestring($end)."','".$db->escapestring($organizer)."','".$db->escapestring(trim((string)($_POST['target_staff']??'')))."','".$db->escapestring($form)."','".$db->escapestring($certificate)."','".$db->escapestring(trim((string)($_POST['department_name']??'')))."','".$db->escapestring(basename($_FILES['attachment']['name']))."','".$db->escapestring($newFile)."','application/pdf','".intval($_FILES['attachment']['size'])."','".$db->escapestring(trim((string)($_POST['attachment_sender']??'')))."',1,'".intval($_POST['sort_order']??0)."','".$uid."',NOW())");}
+		$db->query('COMMIT');if($oldFile!==''&&$oldFile!==$newFile&&is_file($uploadRoot.DIRECTORY_SEPARATOR.basename($oldFile))){@unlink($uploadRoot.DIRECTORY_SEPARATOR.basename($oldFile));}
+		echo json_encode(array('status'=>200,'message'=>'Đã lưu kế hoạch đào tạo.','returnUrl'=>XC_URL.'/admin/trainings'));
+	}
+
+	public function trainingPlanWorkflow()
+	{
+		header('Content-Type: application/json; charset=utf-8');if(!$this->requireAdminApiPermission('activities')){return;}global $db;$id=intval($_POST['id']??0);$uid=intval($_SESSION['user']['id']);$action=trim((string)($_POST['action']??''));$reason=trim((string)($_POST['reason']??''));
+		$db->query("SELECT * FROM hicrm_training_plans WHERE id='".$id."' AND status<>99 LIMIT 1");$row=$db->fetch_object(true);if(!$row){echo json_encode(array('status'=>404,'message'=>'Không tìm thấy kế hoạch.'));return;}$from=intval($row->status);$owner=intval($row->created_by)===$uid||$this->currentAdminIsSuperAdmin();$set=array();$message='';
+		if($action==='submit'&&$from===1&&$owner){$set=array('status=2','submitted_by='.$uid,'submitted_at=NOW()','rejection_reason=NULL');$message='Đã gửi duyệt.';}elseif($action==='cancel_submit'&&$from===2&&$owner){$set=array('status=1','submitted_by=NULL','submitted_at=NULL');$message='Đã hủy gửi.';}elseif($action==='approve'&&$from===2&&$this->adminApiHasPermission('activities_approve')){$set=array('status=3','approved_by='.$uid,'approved_at=NOW()','rejection_reason=NULL');$message='Đã phê duyệt.';}elseif($action==='return'&&in_array($from,array(2,3),true)&&$this->adminApiHasPermission('activities_approve')&&$reason!==''){$set=array('status=1',"rejection_reason='".$db->escapestring($reason)."'");$message='Đã trả lại bản nháp.';}elseif($action==='publish'&&$from===3&&$this->adminApiHasPermission('activities_publish')){$set=array('status=4','published_by='.$uid,'published_at=NOW()');$message='Đã công khai.';}elseif($action==='unpublish'&&$from===4&&$this->adminApiHasPermission('activities_publish')){$set=array('status=3','published_by=NULL','published_at=NULL');$message='Đã hủy công khai.';}else{echo json_encode(array('status'=>403,'message'=>'Bạn không có quyền hoặc trạng thái không phù hợp.'));return;}$set[]='updated_by='.$uid;$set[]='updated_at=NOW()';$db->query("UPDATE hicrm_training_plans SET ".implode(',',$set)." WHERE id='".$id."'");echo json_encode(array('status'=>200,'message'=>$message));
+	}
+
+	public function trainingPlanDelete()
+	{
+		header('Content-Type: application/json; charset=utf-8');if(!$this->requireAdminApiPermission('activities')){return;}global $db;$id=intval($_POST['id']??0);$uid=intval($_SESSION['user']['id']);$db->query("SELECT * FROM hicrm_training_plans WHERE id='".$id."' LIMIT 1");$row=$db->fetch_object(true);if(!$row||intval($row->status)!==1||(!$this->currentAdminIsSuperAdmin()&&intval($row->created_by)!==$uid)){echo json_encode(array('status'=>403,'message'=>'Chỉ tác giả được xóa kế hoạch ở trạng thái Bản nháp.'));return;}$db->query("UPDATE hicrm_training_plans SET status=99,updated_by='".$uid."',updated_at=NOW() WHERE id='".$id."'");echo json_encode(array('status'=>200,'message'=>'Đã xóa kế hoạch.'));
+	}
+
+	public function medicalCampaignSave()
+	{
+		header('Content-Type: application/json; charset=utf-8');if(!$this->requireAdminApiPermission('activities')){return;}global $db;
+		$id=intval($_POST['id']??0);$uid=intval($_SESSION['user']['id']);$code=trim((string)($_POST['campaign_code']??''));$type=trim((string)($_POST['campaign_type']??''));$title=trim((string)($_POST['title']??''));$start=trim((string)($_POST['start_date']??''));$end=trim((string)($_POST['end_date']??''));$location=trim((string)($_POST['location']??''));
+		if($code===''||$title===''||$start===''||$end===''||$location===''||!in_array($type,array('truyenthong','nhandao'),true)){echo json_encode(array('status'=>422,'message'=>'Vui lòng nhập đầy đủ mã, loại, tên, thời gian và địa điểm.'));return;}
+		if(!preg_match('/^\d{4}-\d{2}-\d{2}$/',$start)||!preg_match('/^\d{4}-\d{2}-\d{2}$/',$end)||strtotime($end)<strtotime($start)){echo json_encode(array('status'=>422,'message'=>'Khoảng thời gian không hợp lệ.'));return;}
+		$existing=null;if($id>0){$db->query("SELECT * FROM hicrm_medical_campaigns WHERE id='".$id."' AND status<>99 LIMIT 1");$existing=$db->fetch_object(true);}if($id>0&&(!$existing||intval($existing->status)!==1||(!$this->currentAdminIsSuperAdmin()&&intval($existing->created_by)!==$uid))){echo json_encode(array('status'=>403,'message'=>'Chỉ tác giả được sửa chiến dịch ở trạng thái Bản nháp.'));return;}
+		$db->query("SELECT id FROM hicrm_medical_campaigns WHERE campaign_code='".$db->escapestring($code)."' AND id<>".$id." AND status<>99 LIMIT 1");if($db->num_row()>0){echo json_encode(array('status'=>422,'message'=>'Mã chiến dịch đã tồn tại.'));return;}
+		$uploadRoot=dirname(__DIR__).DIRECTORY_SEPARATOR.'uploads'.DIRECTORY_SEPARATOR.'medical-campaigns';if(!is_dir($uploadRoot)){@mkdir($uploadRoot,0775,true);}
+		$fields=array("campaign_code='".$db->escapestring($code)."'","campaign_type='".$db->escapestring($type)."'","title='".$db->escapestring($title)."'","summary='".$db->escapestring(trim((string)($_POST['summary']??'')))."'","content='".$db->escapestring((string)($_POST['content']??''))."'","start_date='".$db->escapestring($start)."'","end_date='".$db->escapestring($end)."'","location='".$db->escapestring($location)."'","organizer='".$db->escapestring(trim((string)($_POST['organizer']??'')))."'","target_audience='".$db->escapestring(trim((string)($_POST['target_audience']??'')))."'","sort_order=".intval($_POST['sort_order']??0));
+		$newImage='';$newPdf='';$oldImage='';$oldPdf='';
+		if(isset($_FILES['image'])&&intval($_FILES['image']['error'])===UPLOAD_ERR_OK){$ext=strtolower(pathinfo($_FILES['image']['name'],PATHINFO_EXTENSION));$size=intval($_FILES['image']['size']);if(!in_array($ext,array('jpg','jpeg','png','webp'),true)||$size>5*1024*1024){echo json_encode(array('status'=>422,'message'=>'Ảnh phải là JPG, PNG hoặc WEBP và không quá 5MB.'));return;}$newImage=bin2hex(random_bytes(16)).'.'.$ext;if(!move_uploaded_file($_FILES['image']['tmp_name'],$uploadRoot.DIRECTORY_SEPARATOR.$newImage)){echo json_encode(array('status'=>500,'message'=>'Không thể lưu ảnh đại diện.'));return;}$fields[]="image_name='".$db->escapestring(basename($_FILES['image']['name']))."'";$fields[]="image_path='".$db->escapestring($newImage)."'";$oldImage=$existing->image_path??'';}
+		if(isset($_FILES['attachment'])&&intval($_FILES['attachment']['error'])===UPLOAD_ERR_OK){$ext=strtolower(pathinfo($_FILES['attachment']['name'],PATHINFO_EXTENSION));$size=intval($_FILES['attachment']['size']);if($ext!=='pdf'||$size>20*1024*1024){if($newImage&&is_file($uploadRoot.DIRECTORY_SEPARATOR.$newImage)){@unlink($uploadRoot.DIRECTORY_SEPARATOR.$newImage);}echo json_encode(array('status'=>422,'message'=>'Tệp kế hoạch phải là PDF và không quá 20MB.'));return;}$newPdf=bin2hex(random_bytes(16)).'.pdf';if(!move_uploaded_file($_FILES['attachment']['tmp_name'],$uploadRoot.DIRECTORY_SEPARATOR.$newPdf)){if($newImage&&is_file($uploadRoot.DIRECTORY_SEPARATOR.$newImage)){@unlink($uploadRoot.DIRECTORY_SEPARATOR.$newImage);}echo json_encode(array('status'=>500,'message'=>'Không thể lưu tệp PDF.'));return;}$mime=function_exists('mime_content_type')?mime_content_type($uploadRoot.DIRECTORY_SEPARATOR.$newPdf):'application/pdf';$fields[]="attachment_name='".$db->escapestring(basename($_FILES['attachment']['name']))."'";$fields[]="attachment_path='".$db->escapestring($newPdf)."'";$fields[]="attachment_type='".$db->escapestring((string)$mime)."'";$fields[]='attachment_size='.$size;$oldPdf=$existing->attachment_path??'';}
+		if(!$existing&&($newImage===''||$newPdf==='')){foreach(array($newImage,$newPdf) as $temp){if($temp&&is_file($uploadRoot.DIRECTORY_SEPARATOR.$temp)){@unlink($uploadRoot.DIRECTORY_SEPARATOR.$temp);}}echo json_encode(array('status'=>422,'message'=>'Vui lòng tải ảnh đại diện và tệp kế hoạch PDF.'));return;}
+		$db->query('START TRANSACTION');if($existing){$fields[]='updated_by='.$uid;$fields[]='updated_at=NOW()';$db->query("UPDATE hicrm_medical_campaigns SET ".implode(',',$fields)." WHERE id='".$id."'");}else{$db->query("INSERT INTO hicrm_medical_campaigns(campaign_code,campaign_type,title,summary,content,start_date,end_date,location,organizer,target_audience,image_name,image_path,attachment_name,attachment_path,attachment_type,attachment_size,status,sort_order,created_by,created_at) VALUES('".$db->escapestring($code)."','".$db->escapestring($type)."','".$db->escapestring($title)."','".$db->escapestring(trim((string)($_POST['summary']??'')))."','".$db->escapestring((string)($_POST['content']??''))."','".$db->escapestring($start)."','".$db->escapestring($end)."','".$db->escapestring($location)."','".$db->escapestring(trim((string)($_POST['organizer']??'')))."','".$db->escapestring(trim((string)($_POST['target_audience']??'')))."','".$db->escapestring(basename($_FILES['image']['name']))."','".$db->escapestring($newImage)."','".$db->escapestring(basename($_FILES['attachment']['name']))."','".$db->escapestring($newPdf)."','application/pdf','".intval($_FILES['attachment']['size'])."',1,'".intval($_POST['sort_order']??0)."','".$uid."',NOW())");}$db->query('COMMIT');
+		foreach(array(array($oldImage,$newImage),array($oldPdf,$newPdf)) as $filePair){$old=$filePair[0];$new=$filePair[1];if($old!==''&&$old!==$new&&is_file($uploadRoot.DIRECTORY_SEPARATOR.basename($old))){@unlink($uploadRoot.DIRECTORY_SEPARATOR.basename($old));}}
+		echo json_encode(array('status'=>200,'message'=>'Đã lưu chiến dịch y tế.','returnUrl'=>XC_URL.'/admin/campaigns'));
+	}
+
+	public function medicalCampaignWorkflow()
+	{
+		header('Content-Type: application/json; charset=utf-8');if(!$this->requireAdminApiPermission('activities')){return;}global $db;$id=intval($_POST['id']??0);$uid=intval($_SESSION['user']['id']);$action=trim((string)($_POST['action']??''));$reason=trim((string)($_POST['reason']??''));$db->query("SELECT * FROM hicrm_medical_campaigns WHERE id='".$id."' AND status<>99 LIMIT 1");$row=$db->fetch_object(true);if(!$row){echo json_encode(array('status'=>404,'message'=>'Không tìm thấy chiến dịch.'));return;}$from=intval($row->status);$owner=intval($row->created_by)===$uid||$this->currentAdminIsSuperAdmin();$set=array();$message='';
+		if($action==='submit'&&$from===1&&$owner){$set=array('status=2','submitted_by='.$uid,'submitted_at=NOW()','rejection_reason=NULL');$message='Đã gửi duyệt.';}elseif($action==='cancel_submit'&&$from===2&&$owner){$set=array('status=1','submitted_by=NULL','submitted_at=NULL');$message='Đã hủy gửi.';}elseif($action==='approve'&&$from===2&&$this->adminApiHasPermission('activities_approve')){$set=array('status=3','approved_by='.$uid,'approved_at=NOW()','rejection_reason=NULL');$message='Đã phê duyệt.';}elseif($action==='return'&&in_array($from,array(2,3),true)&&$this->adminApiHasPermission('activities_approve')&&$reason!==''){$set=array('status=1',"rejection_reason='".$db->escapestring($reason)."'");$message='Đã trả lại bản nháp.';}elseif($action==='publish'&&$from===3&&$this->adminApiHasPermission('activities_publish')){$set=array('status=4','published_by='.$uid,'published_at=NOW()');$message='Đã công khai.';}elseif($action==='unpublish'&&$from===4&&$this->adminApiHasPermission('activities_publish')){$set=array('status=3','published_by=NULL','published_at=NULL');$message='Đã hủy công khai.';}else{echo json_encode(array('status'=>403,'message'=>'Bạn không có quyền hoặc trạng thái không phù hợp.'));return;}$set[]='updated_by='.$uid;$set[]='updated_at=NOW()';$db->query("UPDATE hicrm_medical_campaigns SET ".implode(',',$set)." WHERE id='".$id."'");echo json_encode(array('status'=>200,'message'=>$message));
+	}
+
+	public function medicalCampaignDelete()
+	{
+		header('Content-Type: application/json; charset=utf-8');if(!$this->requireAdminApiPermission('activities')){return;}global $db;$id=intval($_POST['id']??0);$uid=intval($_SESSION['user']['id']);$db->query("SELECT * FROM hicrm_medical_campaigns WHERE id='".$id."' LIMIT 1");$row=$db->fetch_object(true);if(!$row||intval($row->status)!==1||(!$this->currentAdminIsSuperAdmin()&&intval($row->created_by)!==$uid)){echo json_encode(array('status'=>403,'message'=>'Chỉ tác giả được xóa chiến dịch ở trạng thái Bản nháp.'));return;}$db->query("UPDATE hicrm_medical_campaigns SET status=99,updated_by='".$uid."',updated_at=NOW() WHERE id='".$id."'");echo json_encode(array('status'=>200,'message'=>'Đã xóa chiến dịch.'));
 	}
 	//====END====/
 
@@ -2778,12 +3046,16 @@ Class apiController extends baseController
 	
 	public function deleteEvent(){
 		if(!$this->requireAdminApiPermission('events', false)){ return; }
-		$id = $_POST['id'];
-		$table = 'hicrm_events';
-		$row = 'event_status';
-		$this->model->action($id, $row, $table);
-		$result['status'] = 200;
-		echo json_encode($result);
+		global $db;
+		$id = isset($_POST['id']) ? intval($_POST['id']) : 0;
+		$user_id = isset($_SESSION['user']['id']) ? intval($_SESSION['user']['id']) : 0;
+		$db->query("SELECT event_status,event_user_created FROM hicrm_events WHERE id='".$id."' LIMIT 1");
+		$event = $db->fetch_object(true);
+		if(!$event || (int)$event->event_status !== 1 || (!$this->currentAdminIsSuperAdmin() && (int)$event->event_user_created !== $user_id)){
+			echo json_encode(array('status'=>403,'message'=>'Chỉ tác giả được xóa tin ở trạng thái Bản nháp.')); return;
+		}
+		$db->query("UPDATE hicrm_events SET event_status=99 WHERE id='".$id."'");
+		echo json_encode(array('status'=>200));
 
 	}
 	public function orderGetBranch(){

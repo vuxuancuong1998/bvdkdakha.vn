@@ -34,7 +34,12 @@ Class adminController extends baseController
 			array('key' => 'candidates', 'name' => 'Quản lý ứng viên', 'parent' => '', 'sort' => 30),
 			array('key' => 'students', 'name' => 'Quản lý sinh viên', 'parent' => '', 'sort' => 40),
 			array('key' => 'events', 'name' => 'Quản lý tin tức & sự kiện', 'parent' => 'news_section', 'sort' => 50),
+			array('key' => 'events_approve', 'name' => 'Phê duyệt tin tức', 'parent' => 'news_section', 'sort' => 50),
+			array('key' => 'events_publish', 'name' => 'Công khai tin tức', 'parent' => 'news_section', 'sort' => 50),
 			array('key' => 'news_comments', 'name' => 'Quản lý bình luận tin tức', 'parent' => 'news_section', 'sort' => 51),
+			array('key' => 'activities', 'name' => 'Quản lý hoạt động', 'parent' => '', 'sort' => 52),
+			array('key' => 'activities_approve', 'name' => 'Phê duyệt hoạt động', 'parent' => 'activities', 'sort' => 53),
+			array('key' => 'activities_publish', 'name' => 'Công khai hoạt động', 'parent' => 'activities', 'sort' => 54),
 			array('key' => 'customer_feedbacks', 'name' => 'Quản lý phản hồi khách hàng', 'parent' => '', 'sort' => 54),
 			array('key' => 'tt25_documents', 'name' => 'Quản lý giấy tờ TT25', 'parent' => '', 'sort' => 55),
 			array('key' => 'job_support_customers', 'name' => 'Quản lý khách hàng hỗ trợ tìm việc', 'parent' => '', 'sort' => 55),
@@ -159,7 +164,7 @@ Class adminController extends baseController
 			$this->view->admintmp('index');
 			return;
 		}
-		$routes = array('employers'=>'/admin/employers','employer_posts'=>'/admin/employers/posts','candidates'=>'/admin/candidates','students'=>'/admin/students','events'=>'/admin/events','news_comments'=>'/admin/newscomments','staticpages'=>'/admin/staticpages','staticpage_categories'=>'/admin/staticpagecategories','customer_feedbacks'=>'/admin/customerfeedbacks','tt25_documents'=>'/admin/tt25documents','job_support_customers'=>'/admin/jobsupportcustomers','market_results'=>'/admin/marketresults','google_meet'=>'/admin/googlemeet','users'=>'/admin/users','groups'=>'/admin/groups','images'=>'/admin/images','videos'=>'/admin/videos','config'=>'/admin/config','settings'=>'/admin/settings');
+		$routes = array('employers'=>'/admin/employers','employer_posts'=>'/admin/employers/posts','candidates'=>'/admin/candidates','students'=>'/admin/students','events'=>'/admin/events','activities'=>'/admin/activities','news_comments'=>'/admin/newscomments','staticpages'=>'/admin/staticpages','staticpage_categories'=>'/admin/staticpagecategories','customer_feedbacks'=>'/admin/customerfeedbacks','tt25_documents'=>'/admin/tt25documents','job_support_customers'=>'/admin/jobsupportcustomers','market_results'=>'/admin/marketresults','google_meet'=>'/admin/googlemeet','users'=>'/admin/users','groups'=>'/admin/groups','images'=>'/admin/images','videos'=>'/admin/videos','config'=>'/admin/config','settings'=>'/admin/settings');
 		foreach($routes as $key => $route){
 			if($this->adminHasMenuPermission($allowed, $key)){ header('Location: '.XC_URL.$route); return; }
 		}
@@ -2001,18 +2006,41 @@ Class adminController extends baseController
 		$this->view->data['categories'] = $categories;
 		$this->view->show("backend/news-categories");
 	}
-	public function events($para){
+	private function ensureEventWorkflowSchema()
+	{
+		global $db;
+		$columns = array(
+			'event_rejection_reason' => "TEXT NULL",
+			'event_attachment' => "VARCHAR(255) NULL",
+			'event_attachment_name' => "VARCHAR(255) NULL",
+			'event_submitted_by' => "INT(11) NULL",
+			'event_submitted_at' => "DATETIME NULL",
+			'event_reviewed_by' => "INT(11) NULL",
+			'event_reviewed_at' => "DATETIME NULL",
+			'event_published_by' => "INT(11) NULL",
+			'event_published_at' => "DATETIME NULL"
+		);
+		foreach($columns as $name => $definition){
+			$db->query("SHOW COLUMNS FROM hicrm_events LIKE '".$name."'");
+			if(!$db->num_row()){
+				$db->query("ALTER TABLE hicrm_events ADD COLUMN `".$name."` ".$definition);
+			}
+		}
+	}
+
+	public function events($para = array()){
 		if(!$this->prepareAdminAccess('events')){ return; }
 		global $db;
-		$method = $para[1];
-		$id = $para[2];
+		$this->ensureEventWorkflowSchema();
+		$method = isset($para[1]) ? trim($para[1]) : '';
+		$id = isset($para[2]) ? intval($para[2]) : 0;
 		$page = (isset($_GET['page']) && (int)$_GET['page'] > 0) ? (int)$_GET['page'] : 1;
 		$per_page = 20;
 		// echo $id;
 		if(!(isset($_SESSION['user']['id']) && $_SESSION['user']['id'] != "")){ header("Location: ".XC_URL."/admin/login"); }
 		$base_sql = "FROM hicrm_events as e
 					LEFT JOIN hicrm_users as u ON e.event_user_created = u.id
-					LEFT JOIN hicrm_categories as c ON e.event_type = c.id
+					LEFT JOIN hicrm_event_type as c ON e.event_type = c.id
 					WHERE e.event_status NOT IN (99)";
 		$db->query("SELECT COUNT(e.id) AS total ".$base_sql);
 		$total_events = (int)$db->fetch_object(true)->total;
@@ -2021,13 +2049,16 @@ Class adminController extends baseController
 			$page = $total_pages;
 		}
 		$offset = ($page - 1) * $per_page;
-		$db->query("SELECT e.*, e.id as eid, u.full_name AS author_name, c.category_name ".$base_sql." ORDER BY e.event_created_date DESC LIMIT ".$offset.",".$per_page);
+		$db->query("SELECT e.*, e.id as eid, u.full_name AS author_name, c.event_type_name AS category_name ".$base_sql." ORDER BY e.event_created_date DESC, e.id DESC LIMIT ".$offset.",".$per_page);
 		$events = $db->fetch_object();
-		$db->query("SELECT * FROM hicrm_categories WHERE category_status NOT IN (99) ORDER BY category_orderby ASC, id DESC");
+		$db->query("SELECT * FROM hicrm_event_type WHERE event_type_status NOT IN (99) ORDER BY event_stt ASC, id ASC");
 		$event_categories = $db->fetch_object();
 		// $db->query("SELECT * FROM hicrm_dmtype");
 		$this->view->data['active_menu'] = "events";
 		$this->view->data['event_categories'] = is_array($event_categories) ? $event_categories : array();
+		$allowed = isset($this->view->data['allowed_admin_menu']) ? $this->view->data['allowed_admin_menu'] : array();
+		$this->view->data['can_event_approve'] = $this->adminHasMenuPermission($allowed, 'events_approve');
+		$this->view->data['can_event_publish'] = $this->adminHasMenuPermission($allowed, 'events_publish');
 		if(isset($method) && $method == 'add'){
 			$this->view->data['method'] = 'add';
 			$this->view->admintmp("event-form");
@@ -2036,6 +2067,11 @@ Class adminController extends baseController
 		}elseif(isset($method) && $method == 'edit'){
 			$db->query("SELECT * FROM hicrm_events WHERE id = '".$id."'");		
 			$event_detai = $db->fetch_object(true);
+			$current_user_id = isset($_SESSION['user']['id']) ? intval($_SESSION['user']['id']) : 0;
+			$is_super_admin = isset($this->view->data['current_admin_user']->user_group) && intval($this->view->data['current_admin_user']->user_group) === 1;
+			if(!$event_detai || intval($event_detai->event_status) !== 1 || (!$is_super_admin && intval($event_detai->event_user_created) !== $current_user_id)){
+				header('Location: '.XC_URL.'/admin/events'); return;
+			}
 			// echo $event_detai->event_name;
 			$this->view->data['event_detail'] = $event_detai;
 			$this->view->data['method'] = 'edit';
@@ -2058,6 +2094,153 @@ Class adminController extends baseController
 		// $this->view->data["dmtype"] = $dmtype;
 		$this->view->admintmp("events");
 		}
+	}
+
+	public function activities($para = array())
+	{
+		if(!$this->prepareAdminAccess('activities')){ return; }
+		global $db;
+		$method = isset($para[1]) ? trim((string)$para[1]) : '';
+		$id = isset($para[2]) ? intval($para[2]) : 0;
+		$scopeMap = array(
+			'schedules' => array('type'=>'work_schedule','title'=>'Lịch công tác','description'=>'Lịch công tác tuần của Ban Giám đốc và các khoa/phòng.'),
+			'plans' => array('type'=>'training_plan','title'=>'Kế hoạch đào tạo, tập huấn','description'=>'Kế hoạch tập huấn và đào tạo chuyên môn định kỳ.'),
+			'campaigns' => array('type'=>'medical_campaign','title'=>'Các chiến dịch','description'=>'Chiến dịch truyền thông y tế và khám chữa bệnh nhân đạo.')
+		);
+		$typeScopeMap = array('work_schedule'=>'schedules','training_plan'=>'plans','medical_campaign'=>'campaigns');
+		if($method === ''){ header('Location: '.XC_URL.'/admin/activities/schedules'); return; }
+		if($method === 'plans'){ header('Location: '.XC_URL.'/admin/trainings'); return; }
+		if($method === 'campaigns'){ header('Location: '.XC_URL.'/admin/campaigns'); return; }
+		$scope = isset($scopeMap[$method]) ? $method : '';
+		$currentUserId = isset($_SESSION['user']['id']) ? intval($_SESSION['user']['id']) : 0;
+		$allowed = isset($this->view->data['allowed_admin_menu']) ? $this->view->data['allowed_admin_menu'] : array();
+		$this->view->data['active_menu'] = 'activities';
+		$this->view->data['can_activity_approve'] = $this->adminHasMenuPermission($allowed, 'activities_approve');
+		$this->view->data['can_activity_publish'] = $this->adminHasMenuPermission($allowed, 'activities_publish');
+		$this->view->data['activity_scope'] = $scope;
+		$this->view->data['activity_scope_type'] = $scope !== '' ? $scopeMap[$scope]['type'] : '';
+		$this->view->data['activity_scope_title'] = $scope !== '' ? $scopeMap[$scope]['title'] : 'Quản lý hoạt động';
+		$this->view->data['activity_scope_description'] = $scope !== '' ? $scopeMap[$scope]['description'] : '';
+
+		if($method === 'add'){
+			$requestedType = isset($_GET['type']) ? trim((string)$_GET['type']) : 'work_schedule';
+			if($requestedType === 'training_plan'){ header('Location: '.XC_URL.'/admin/trainings/add'); return; }
+			if($requestedType === 'medical_campaign'){ header('Location: '.XC_URL.'/admin/campaigns/add'); return; }
+			if(!in_array($requestedType, array('work_schedule','training_plan','medical_campaign'), true)){ $requestedType='work_schedule'; }
+			$this->view->data['activity_scope_type'] = $requestedType;
+			$this->view->data['activity_scope'] = $typeScopeMap[$requestedType];
+			$this->view->data['activity_scope_title'] = $scopeMap[$typeScopeMap[$requestedType]]['title'];
+			$this->view->data['method'] = 'add';
+			$this->view->data['activity'] = null;
+			$this->view->data['schedule_items'] = array();
+			$this->view->data['attachments'] = array();
+			$this->view->admintmp('activity-form');
+			return;
+		}
+
+		if(in_array($method, array('edit', 'detail'), true) && $id > 0){
+			$db->query("SELECT a.*, u.full_name AS author_name FROM hicrm_activities a LEFT JOIN hicrm_users u ON u.id=a.created_by WHERE a.id='".$id."' AND a.status<>99 LIMIT 1");
+			$activity = $db->fetch_object(true);
+			if(!$activity){ header('Location: '.XC_URL.'/admin/activities'); return; }
+			$isSuper = isset($this->view->data['current_admin_user']->user_group) && intval($this->view->data['current_admin_user']->user_group) === 1;
+			if($method === 'edit' && (intval($activity->status) !== 1 || (!$isSuper && intval($activity->created_by) !== $currentUserId))){
+				header('Location: '.XC_URL.'/admin/activities/detail/'.$id); return;
+			}
+			$db->query("SELECT * FROM hicrm_activity_schedule_items WHERE activity_id='".$id."' ORDER BY work_date,start_time,sort_order,id");
+			$scheduleItems = $db->fetch_object();
+			$db->query("SELECT * FROM hicrm_activity_attachments WHERE activity_id='".$id."' ORDER BY sort_order,id");
+			$attachments = $db->fetch_object();
+			$this->view->data['activity'] = $activity;
+			$this->view->data['activity_scope_type'] = $activity->activity_type;
+			$this->view->data['activity_scope'] = $typeScopeMap[$activity->activity_type] ?? 'schedules';
+			$this->view->data['activity_scope_title'] = $scopeMap[$this->view->data['activity_scope']]['title'];
+			$this->view->data['schedule_items'] = is_array($scheduleItems) ? $scheduleItems : array();
+			$this->view->data['attachments'] = is_array($attachments) ? $attachments : array();
+			$this->view->data['method'] = $method;
+			if($method === 'detail'){
+				$db->query("SELECT l.*,u.full_name AS actor_name FROM hicrm_activity_workflow_logs l LEFT JOIN hicrm_users u ON u.id=l.acted_by WHERE l.activity_id='".$id."' ORDER BY l.acted_at DESC,l.id DESC");
+				$logs = $db->fetch_object();
+				$this->view->data['workflow_logs'] = is_array($logs) ? $logs : array();
+				$this->view->admintmp('activity-detail');
+			}else{
+				$this->view->admintmp('activity-form');
+			}
+			return;
+		}
+
+		$where = array('a.status<>99');
+		$type = $scope !== '' ? $scopeMap[$scope]['type'] : (isset($_GET['type']) ? trim((string)$_GET['type']) : '');
+		$status = isset($_GET['status']) ? intval($_GET['status']) : 0;
+		$keyword = isset($_GET['keyword']) ? trim((string)$_GET['keyword']) : '';
+		if(in_array($type, array('work_schedule','training_plan','medical_campaign'), true)){ $where[] = "a.activity_type='".$db->escapestring($type)."'"; }
+		if(in_array($status, array(1,2,3,4), true)){ $where[] = 'a.status='.$status; }
+		if($keyword !== ''){ $kw=$db->escapestring($keyword); $where[]="(a.title LIKE '%".$kw."%' OR a.summary LIKE '%".$kw."%' OR a.department_name LIKE '%".$kw."%')"; }
+		$whereSql = implode(' AND ', $where);
+		$page = isset($_GET['page']) ? max(1,intval($_GET['page'])) : 1;
+		$perPage = 20;
+		$db->query("SELECT COUNT(*) AS total FROM hicrm_activities a WHERE ".$whereSql);
+		$total = intval($db->fetch_object(true)->total);
+		$totalPages = max(1,(int)ceil($total/$perPage));
+		$page = min($page,$totalPages); $offset=($page-1)*$perPage;
+		$db->query("SELECT a.*,u.full_name AS author_name,(SELECT COUNT(*) FROM hicrm_activity_attachments x WHERE x.activity_id=a.id) AS attachment_count FROM hicrm_activities a LEFT JOIN hicrm_users u ON u.id=a.created_by WHERE ".$whereSql." ORDER BY a.created_at DESC,a.id DESC LIMIT ".$offset.",".$perPage);
+		$rows=$db->fetch_object();
+		$this->view->data['activities'] = is_array($rows) ? $rows : array();
+		$this->view->data['filter_type']=$type; $this->view->data['filter_status']=$status; $this->view->data['filter_keyword']=$keyword;
+		$this->view->data['page']=$page; $this->view->data['total_pages']=$totalPages; $this->view->data['total_activities']=$total;
+		$this->view->admintmp('activities');
+	}
+
+	public function trainings($para = array())
+	{
+		if(!$this->prepareAdminAccess('activities')){ return; }
+		global $db;
+		$method=isset($para[1])?trim((string)$para[1]):'';
+		$id=isset($para[2])?intval($para[2]):0;
+		$this->view->data['active_menu']='activities';
+		$this->view->data['activity_scope']='plans';
+		$this->view->data['can_activity_approve']=$this->adminHasMenuPermission($this->view->data['allowed_admin_menu']??array(),'activities_approve');
+		$this->view->data['can_activity_publish']=$this->adminHasMenuPermission($this->view->data['allowed_admin_menu']??array(),'activities_publish');
+		if(in_array($method,array('add','edit'),true)){
+			$plan=null;
+			if($method==='edit'&&$id>0){
+				$db->query("SELECT * FROM hicrm_training_plans WHERE id='".$id."' AND status<>99 LIMIT 1");
+				$plan=$db->fetch_object(true);
+				$isSuper=intval($this->view->data['current_admin_user']->user_group??0)===1;
+				if(!$plan||intval($plan->status)!==1||(!$isSuper&&intval($plan->created_by)!==intval($_SESSION['user']['id']??0))){header('Location: '.XC_URL.'/admin/trainings');return;}
+			}
+			$this->view->data['training_plan']=$plan;
+			$this->view->data['method']=$method;
+			$this->view->admintmp('training-plan-form'); return;
+		}
+		$where=array('p.status<>99');
+		$status=isset($_GET['status'])?intval($_GET['status']):0;
+		$keyword=isset($_GET['keyword'])?trim((string)$_GET['keyword']):'';
+		if(in_array($status,array(1,2,3,4),true)){$where[]='p.status='.$status;}
+		if($keyword!==''){$kw=$db->escapestring($keyword);$where[]="(p.plan_code LIKE '%".$kw."%' OR p.title LIKE '%".$kw."%' OR p.organizer LIKE '%".$kw."%')";}
+		$whereSql=implode(' AND ',$where);$page=max(1,intval($_GET['page']??1));$perPage=20;
+		$db->query("SELECT COUNT(*) total FROM hicrm_training_plans p WHERE ".$whereSql);$total=intval($db->fetch_object(true)->total);$totalPages=max(1,(int)ceil($total/$perPage));$page=min($page,$totalPages);$offset=($page-1)*$perPage;
+		$db->query("SELECT p.*,u.full_name author_name FROM hicrm_training_plans p LEFT JOIN hicrm_users u ON u.id=p.created_by WHERE ".$whereSql." ORDER BY p.created_at DESC,p.id DESC LIMIT ".$offset.",".$perPage);
+		$rows=$db->fetch_object();$this->view->data['training_plans']=is_array($rows)?$rows:array();
+		$this->view->data['filter_status']=$status;$this->view->data['filter_keyword']=$keyword;$this->view->data['page']=$page;$this->view->data['total_pages']=$totalPages;
+		$this->view->admintmp('training-plans');
+	}
+
+	public function campaigns($para = array())
+	{
+		if(!$this->prepareAdminAccess('activities')){return;}global $db;
+		$method=isset($para[1])?trim((string)$para[1]):'';$id=isset($para[2])?intval($para[2]):0;
+		$this->view->data['active_menu']='activities';$this->view->data['activity_scope']='campaigns';$allowed=$this->view->data['allowed_admin_menu']??array();
+		$this->view->data['can_activity_approve']=$this->adminHasMenuPermission($allowed,'activities_approve');$this->view->data['can_activity_publish']=$this->adminHasMenuPermission($allowed,'activities_publish');
+		if(in_array($method,array('add','edit'),true)){
+			$campaign=null;
+			if($method==='edit'&&$id>0){$db->query("SELECT * FROM hicrm_medical_campaigns WHERE id='".$id."' AND status<>99 LIMIT 1");$campaign=$db->fetch_object(true);$super=intval($this->view->data['current_admin_user']->user_group??0)===1;if(!$campaign||intval($campaign->status)!==1||(!$super&&intval($campaign->created_by)!==intval($_SESSION['user']['id']??0))){header('Location: '.XC_URL.'/admin/campaigns');return;}}
+			$this->view->data['medical_campaign']=$campaign;$this->view->data['method']=$method;$this->view->admintmp('campaign-form');return;
+		}
+		$where=array('c.status<>99');$status=intval($_GET['status']??0);$type=trim((string)($_GET['type']??''));$keyword=trim((string)($_GET['keyword']??''));
+		if(in_array($status,array(1,2,3,4),true)){$where[]='c.status='.$status;}if(in_array($type,array('truyenthong','nhandao'),true)){$where[]="c.campaign_type='".$db->escapestring($type)."'";}if($keyword!==''){$kw=$db->escapestring($keyword);$where[]="(c.campaign_code LIKE '%".$kw."%' OR c.title LIKE '%".$kw."%' OR c.location LIKE '%".$kw."%')";}
+		$whereSql=implode(' AND ',$where);$page=max(1,intval($_GET['page']??1));$perPage=20;$db->query("SELECT COUNT(*) total FROM hicrm_medical_campaigns c WHERE ".$whereSql);$total=intval($db->fetch_object(true)->total);$pages=max(1,(int)ceil($total/$perPage));$page=min($page,$pages);$offset=($page-1)*$perPage;
+		$db->query("SELECT c.*,u.full_name author_name FROM hicrm_medical_campaigns c LEFT JOIN hicrm_users u ON u.id=c.created_by WHERE ".$whereSql." ORDER BY c.created_at DESC,c.id DESC LIMIT ".$offset.",".$perPage);$rows=$db->fetch_object();
+		$this->view->data['medical_campaigns']=is_array($rows)?$rows:array();$this->view->data['filter_status']=$status;$this->view->data['filter_type']=$type;$this->view->data['filter_keyword']=$keyword;$this->view->data['page']=$page;$this->view->data['total_pages']=$pages;$this->view->admintmp('campaigns');
 	}
 
 	public function newscomments($para = array())

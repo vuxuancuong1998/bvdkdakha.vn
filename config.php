@@ -22,7 +22,7 @@ if (!defined('XVN_CONFIG_LOADED')) {
 	define('DB_NAME', 'bvdkdakha.vn'); //database name
 	define('DB_USER', 'root'); //database user
 	define('DB_PASSWORD', ''); //database password
-	define('DB_HOST', '127.0.0.1:3307'); //sql server
+	define('DB_HOST', 'localhost'); //sql server
 define('DB_PORT', '3307');
 	// $mail_acc = $this->helper->get_config('smtp_protocol');
 	// $mail_pass = $this->helper->get_config('smtp_password');
@@ -45,6 +45,7 @@ define('DB_PORT', '3307');
 
 	/*** define site path ***/
 	define('XC_URL','http://localhost/bvdkdakha.vn'); //Replace by your site url
+
 }
 
 $siteurl = XC_URL;

@@ -14,6 +14,7 @@ foreach((isset($permissions) && is_array($permissions)) ? $permissions : array()
 $parentLabels = array(
     'employer_section' => 'Nhà tuyển dụng',
     'news_section' => 'Tin tức và sự kiện',
+    'activities' => 'Quản lý hoạt động',
     'account_section' => 'Tài khoản và phân quyền',
     'system_section' => 'Cấu hình hệ thống',
     'other_section' => 'Chức năng quản trị'

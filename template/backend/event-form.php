@@ -5,6 +5,7 @@ $event = isset($event_detail) ? $event_detail : (object)array();
 $event_categories = is_array($event_categories) ? $event_categories : array();
 $is_edit = isset($method) && $method === 'edit';
 $current_user_id = isset($_SESSION['user']['id']) ? (int) $_SESSION['user']['id'] : 0;
+$current_status = (int)($event->event_status ?? 1);
 function adminEventFormH($value){ return htmlspecialchars((string)$value, ENT_QUOTES, 'UTF-8'); }
 function adminEventFormImage($image){ $image = trim((string)$image); return $image === '' ? '' : (strpos($image, 'http') === 0 ? $image : XC_URL.'/uploads/events/'.ltrim($image, '/')); }
 $image_src = adminEventFormImage($event->event_image ?? '');
@@ -47,15 +48,12 @@ $image_src = adminEventFormImage($event->event_image ?? '');
                <label class="form-label">Loại</label>
                <select class="form-select" name="event_type">
                   <option value="0">Chưa phân loại</option>
-                  <?php foreach($event_categories as $category): ?><option value="<?php echo (int)$category->id; ?>" <?php echo (int)($event->event_type ?? 0) === (int)$category->id ? 'selected' : ''; ?>><?php echo adminEventFormH($category->category_name); ?></option><?php endforeach; ?>
+                  <?php foreach($event_categories as $category): ?><option value="<?php echo (int)$category->id; ?>" <?php echo (int)($event->event_type ?? 0) === (int)$category->id ? 'selected' : ''; ?>><?php echo adminEventFormH($category->event_type_name); ?></option><?php endforeach; ?>
                </select>
             </div>
             <div class="col-md-4">
                <label class="form-label">Trạng thái</label>
-               <select class="form-select" name="event_status">
-                  <option value="1" <?php echo (int)($event->event_status ?? 1) === 1 ? 'selected' : ''; ?>>Hiển thị</option>
-                  <option value="0" <?php echo (int)($event->event_status ?? 1) === 0 ? 'selected' : ''; ?>>Ẩn</option>
-               </select>
+               <input class="form-control" value="<?php echo array(1=>'Bản nháp',2=>'Chờ phê duyệt',3=>'Đã phê duyệt',4=>'Đã công khai')[$current_status] ?? 'Bản nháp'; ?>" readonly>
             </div>
             <div class="col-md-4 d-flex align-items-end">
                <div class="form-check form-switch mb-2">
@@ -71,6 +69,13 @@ $image_src = adminEventFormImage($event->event_image ?? '');
             <div class="col-md-4">
                <?php if($image_src !== ''): ?><div class="event-current-image"><img src="<?php echo adminEventFormH($image_src); ?>" alt="<?php echo adminEventFormH($event->event_name ?? ''); ?>"></div><?php endif; ?>
             </div>
+            <div class="col-md-8">
+               <label class="form-label">Tệp đính kèm</label>
+               <input class="form-control" type="file" name="event_attachment" accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.zip,.rar,.txt">
+               <small class="text-muted">PDF, Office, ZIP/RAR hoặc TXT; tối đa 20MB.</small>
+               <?php if(!empty($event->event_attachment)): ?><div class="mt-2"><a href="<?php echo XC_URL.'/uploads/events/'.adminEventFormH($event->event_attachment); ?>" target="_blank"><i class="fa-solid fa-paperclip me-1"></i><?php echo adminEventFormH($event->event_attachment_name ?: 'Tệp đính kèm'); ?></a></div><?php endif; ?>
+            </div>
+            <?php if(!empty($event->event_rejection_reason)): ?><div class="col-md-12"><div class="alert alert-warning mb-0"><strong>Lý do trả về:</strong> <?php echo adminEventFormH($event->event_rejection_reason); ?></div></div><?php endif; ?>
             <div class="col-md-12">
                <label class="form-label">Mô tả ngắn</label>
                <textarea class="form-control" name="event_description" rows="3"><?php echo adminEventFormH($event->event_description ?? ''); ?></textarea>

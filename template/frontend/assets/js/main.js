@@ -398,15 +398,28 @@
 
 
   /* ============================================================
-     11. ANNOUNCEMENT MARQUEE (duplicate for seamless loop)
+     11. ANNOUNCEMENT MARQUEE (seamless loop with 1 announcement)
      ============================================================ */
   (() => {
+    const track = document.querySelector('.marquee-track');
     const content = document.querySelector('.marquee-content');
-    if (!content) return;
+    if (!track || !content) return;
 
-    // Clone for seamless loop
-    const clone = content.cloneNode(true);
-    content.parentElement.appendChild(clone);
+    // Clean up any extra sibling containers from older implementations
+    const siblingContents = track.querySelectorAll('.marquee-content');
+    for (let i = 1; i < siblingContents.length; i++) {
+      siblingContents[i].remove();
+    }
+
+    const items = content.querySelectorAll('.marquee-item');
+    if (items.length === 1) {
+      // Clone 3 more items inside content for mathematically seamless 50% loop
+      for (let i = 0; i < 3; i++) {
+        const clone = items[0].cloneNode(true);
+        clone.setAttribute('aria-hidden', 'true');
+        content.appendChild(clone);
+      }
+    }
   })();
 
 

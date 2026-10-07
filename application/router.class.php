@@ -240,7 +240,7 @@ private function getController() {
 		elseif($segment0 == "hoat-dong" || $segment0 == "hoat-dong.html")
 		{
 			$this->controller = "home";
-			$this->action = "events";
+			$this->action = "activities";
 			if(isset($parts[1])) {
 				$this->args = $packArgs($parts, 1);
 			}

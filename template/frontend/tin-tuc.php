@@ -79,15 +79,15 @@ $badge_classes = [
               $feat_url = $this->helper->permalink($featured_event->id,'event_detail');
               $feat_img = get_event_img_url($featured_event, '/template/frontend/assets/images/banner-03.jpg');
               $type_id = intval($featured_event->event_type ?? 1);
-              $cat_name = $badge_names[$type_id] ?? 'Y táº¿ cá»™ng Ä‘á»“ng';
+              $cat_name = $badge_names[$type_id] ?? 'Y tế cộng đồng';
               $badge_cls = $badge_classes[$type_id] ?? 'badge-green';
               $date_str = !empty($featured_event->event_created_date) ? date('d/m/Y', strtotime($featured_event->event_created_date)) : date('d/m/Y');
               $datetime_str = !empty($featured_event->event_created_date) ? date('Y-m-d', strtotime($featured_event->event_created_date)) : date('Y-m-d');
             ?>
-            <article class="post-featured" aria-label="Bài viết ná»•i báº­t" itemscope itemtype="https://schema.org/NewsArticle">
+            <article class="post-featured" aria-label="Bài viết nổi bật" itemscope itemtype="https://schema.org/NewsArticle">
               <div class="post-featured-inner">
                 <div class="post-featured-img-wrap">
-                  <a href="<?php echo $feat_url; ?>" aria-label="Xem Bài viết ná»•i báº­t">
+                  <a href="<?php echo $feat_url; ?>" aria-label="Xem bài viết nổi bật">
                     <img src="<?php echo $feat_img; ?>"
                          alt="<?php echo htmlspecialchars($featured_event->event_name, ENT_QUOTES, 'UTF-8'); ?>"
                          class="post-featured-img"
@@ -138,13 +138,17 @@ $badge_classes = [
                  ==================================================== -->
             <div class="posts-grid" role="list">
               <?php 
-              if (!empty($events_list)):
+              // The first item is already rendered as the featured article above.
+              // Render the remaining records so every page contains up to 10
+              // unique articles (1 featured + 9 cards).
+              $grid_events = $featured_event ? array_slice($events_list, 1) : $events_list;
+              if (!empty($grid_events)):
                 $card_index = 1;
-                foreach ($events_list as $ev):
+                foreach ($grid_events as $ev):
                   $item_url = $this->helper->permalink($ev->id,'event_detail');
                   $item_img = get_event_img_url($ev);
                   $type_id = intval($ev->event_type ?? 1);
-                  $cat_name = $badge_names[$type_id] ?? 'Hoáº¡t Ä‘á»™ng';
+                  $cat_name = $badge_names[$type_id] ?? 'Hoạt động';
                   $badge_cls = $badge_classes[$type_id] ?? '';
                   $date_str = !empty($ev->event_created_date) ? date('d/m/Y', strtotime($ev->event_created_date)) : date('d/m/Y');
                   $datetime_str = !empty($ev->event_created_date) ? date('Y-m-d', strtotime($ev->event_created_date)) : date('Y-m-d');
@@ -187,7 +191,7 @@ $badge_classes = [
               else:
               ?>
               <div class="no-posts" style="grid-column: 1 / -1; padding: 40px 0; text-align: center; color: #64748b;">
-                <p>KhÃ´ng tÃ¬m tháº¥y Bài viết nÃ o phÃ¹ há»£p.</p>
+                <?php if (!$featured_event): ?><p>Không tìm thấy bài viết nào phù hợp.</p><?php endif; ?>
               </div>
               <?php endif; ?>
             </div><!-- /posts-grid -->
@@ -211,10 +215,10 @@ $badge_classes = [
                   }
               }
             ?>
-            <nav class="pagination-nav" aria-label="PhÃ¢n trang Bài viết">
+            <nav class="pagination-nav" aria-label="Phân trang bài viết">
               <div class="pagination-links">
                 <?php if ($page > 1): ?>
-                <a class="page-btn page-prev" href="<?php echo build_page_link($page - 1, $query_params, $current_type_slug); ?>" aria-label="Trang trÆ°á»›c" style="margin-right:4px;">
+                <a class="page-btn page-prev" href="<?php echo build_page_link($page - 1, $query_params, $current_type_slug); ?>" aria-label="Trang trước" style="margin-right:4px;">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true" style="transform:rotate(180deg);"><polyline points="9 18 15 12 9 6"/></svg>
                 </a>
                 <?php endif; ?>
@@ -238,7 +242,7 @@ $badge_classes = [
                 ?>
 
                 <?php if ($page < $total_pages): ?>
-                <a class="page-btn page-next" href="<?php echo build_page_link($page + 1, $query_params, $current_type_slug); ?>" aria-label="Trang tiáº¿p theo">
+                <a class="page-btn page-next" href="<?php echo build_page_link($page + 1, $query_params, $current_type_slug); ?>" aria-label="Trang tiếp theo">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
                 </a>
                 <?php endif; ?>
@@ -251,7 +255,7 @@ $badge_classes = [
           <!-- ==================================================
                RIGHT COLUMN: SIDEBAR
                ================================================== -->
-          <aside class="news-sidebar" aria-label="Thanh bÃªn tin tá»©c">
+          <aside class="news-sidebar" aria-label="Thanh bên tin tức">
 
             <!-- Widget: Tìm kiếm -->
             <div class="widget widget-search">
@@ -330,7 +334,7 @@ $badge_classes = [
                     </a>
                   </li>
                   <li class="cat-menu-item <?php echo $event_type === 4 ? 'active' : ''; ?>">
-                    <a href="<?php echo XC_URL; ?>/tin-tuc/2-y-te-cong-dong.html">
+                    <a href="<?php echo XC_URL; ?>/tin-tuc/4-y-te-cong-dong.html">
                       <span class="cat-menu-icon" aria-hidden="true">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
                       </span>
@@ -346,7 +350,7 @@ $badge_classes = [
                     </a>
                   </li>
                   <li class="cat-menu-item <?php echo $event_type === 2 ? 'active' : ''; ?>">
-                    <a href="<?php echo XC_URL; ?>/tin-tuc/4-su-kien-hoi-thao.html">
+                    <a href="<?php echo XC_URL; ?>/tin-tuc/2-su-kien-hoi-thao.html">
                       <span class="cat-menu-icon" aria-hidden="true">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
                       </span>
@@ -378,7 +382,7 @@ $badge_classes = [
                     <a href="<?php echo $pop_url; ?>" class="popular-post-link" id="popular-<?php echo $pop_rank; ?>">
                       <div class="popular-post-img-wrap">
                         <img src="<?php echo $pop_img; ?>" alt="<?php echo htmlspecialchars($pop->event_name, ENT_QUOTES, 'UTF-8'); ?>" loading="lazy" width="70" height="52" class="popular-post-img" />
-                        <span class="popular-rank" aria-label="Vá»‹ trÃ­ <?php echo $pop_rank; ?>"><?php echo $pop_rank; ?></span>
+                        <span class="popular-rank" aria-label="Vị trí <?php echo $pop_rank; ?>"><?php echo $pop_rank; ?></span>
                       </div>
                       <div class="popular-post-text">
                         <span><?php echo htmlspecialchars($pop->event_name, ENT_QUOTES, 'UTF-8'); ?></span>
@@ -420,7 +424,7 @@ $badge_classes = [
                   </span>
                   <span>
                     <strong>(0260) 386 2xxx</strong>
-                    <small>Cáº¥p cá»©u 24/7</small>
+                    <small>Cấp cứu 24/7</small>
                   </span>
                 </a>
               </div>

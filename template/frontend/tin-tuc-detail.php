@@ -72,6 +72,14 @@ $created_date = $news_detail->event_created_date ?? $news_detail->published_at ?
           <div class="news-detail-body post-content text-dark mb-5" style="font-size:16px; line-height:1.8;" itemprop="articleBody">
             <?php echo $content; ?>
           </div>
+          <?php if (!empty($news_detail->event_attachment)): ?>
+          <div class="news-attachment mb-4 p-3 border rounded bg-light">
+            <strong><i class="fa-solid fa-paperclip me-2"></i>Tệp đính kèm:</strong>
+            <a href="<?php echo XC_URL.'/uploads/events/'.htmlspecialchars($news_detail->event_attachment, ENT_QUOTES, 'UTF-8'); ?>" target="_blank" rel="noopener">
+              <?php echo htmlspecialchars($news_detail->event_attachment_name ?: 'Tải tệp', ENT_QUOTES, 'UTF-8'); ?>
+            </a>
+          </div>
+          <?php endif; ?>
 
           <!-- Social Share widget -->
           <div class="news-detail-share d-flex align-items-center gap-2 pb-3 mb-5 border-bottom border-top pt-3">

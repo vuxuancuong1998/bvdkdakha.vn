@@ -6,6 +6,10 @@ $per_page = isset($per_page) ? (int) $per_page : 20;
 $total_events = isset($total_events) ? (int) $total_events : count($events);
 $total_pages = isset($total_pages) ? (int) $total_pages : 1;
 $row_offset = max(0, ($page - 1) * $per_page);
+$can_event_approve = !empty($can_event_approve);
+$can_event_publish = !empty($can_event_publish);
+$current_user_id = isset($_SESSION['user']['id']) ? (int)$_SESSION['user']['id'] : 0;
+$event_status_labels = array(1=>'Bản nháp', 2=>'Chờ phê duyệt', 3=>'Đã phê duyệt', 4=>'Đã công khai');
 
 if (!function_exists('backendEventTitleExcerpt')) {
 	function backendEventTitleExcerpt($value, $limit = 60) {
@@ -45,7 +49,19 @@ if (!function_exists('backendEventPaginationItems')) {
 ?>
 <script src="https://ajax.aspnetcdn.com/ajax/jquery.validate/1.9/jquery.validate.min.js" type="text/javascript"></script>
 <script>
-	$(document).ready(function(){
+		$(document).ready(function(){
+		$('#table-events').on('click', '.btn-event-workflow', function(e){
+			e.preventDefault();
+			var button = $(this), action = button.data('action'), reason = '';
+			if(action === 'return'){
+				reason = window.prompt('Nhập lý do trả về:') || '';
+				if(!$.trim(reason)){ return; }
+			}
+			$.post('<?php echo XC_URL; ?>/api/eventWorkflow', {id:button.data('id'), action:action, reason:reason}, function(resp){
+				if(resp.status == 200){ Swal.fire({icon:'success',title:resp.message,timer:1300,showConfirmButton:false}); setTimeout(function(){location.reload();},1400); }
+				else { Swal.fire({icon:'error',title:'Không thể thực hiện',text:resp.message || 'Có lỗi xảy ra'}); }
+			}, 'json');
+		});
 		 $.validator.addMethod("alpha", function(value, element){
 
         return this.optional(element) || value == value.match(/^[0-9, '']+$/);
@@ -254,28 +270,48 @@ label.error{
 	color:red;
 }
 .event-title-cell{
-	max-width: 320px;
+	width: 30%;
 }
 .event-title-text{
-	display: inline-block;
+	display: -webkit-box;
 	max-width: 100%;
 	font-weight: 600;
 	color: #213547;
-	white-space: nowrap;
+	white-space: normal;
 	overflow: hidden;
-	text-overflow: ellipsis;
+	-webkit-line-clamp: 2;
+	-webkit-box-orient: vertical;
+	line-height: 1.35;
 	vertical-align: middle;
 }
+.events-card .table-responsive{overflow-x:visible}
+.events-card{font-size:12px}
+.events-card .card-body{padding:0}
+.page-header{margin-bottom:14px}
+.page-header .page-title{font-size:20px;line-height:1.25;margin-bottom:3px}
+.page-header .breadcrumb{font-size:11px;margin-bottom:0}
+.page-header .btn{font-size:12px;padding:7px 12px}
+#table-events{width:100%;table-layout:fixed;margin:0;font-size:12px}
+#table-events th{padding:9px 7px;font-size:11px;line-height:1.2;white-space:normal;text-transform:uppercase;letter-spacing:.02em;color:#52657a}
+#table-events td{padding:7px;line-height:1.35;vertical-align:middle;overflow-wrap:anywhere}
+#table-events tbody tr{height:62px}
+.event-thumb{display:block;width:58px;height:44px;object-fit:cover;border-radius:7px;border:1px solid #e2e8f0;background:#f8fafc}
+.event-date-cell{white-space:nowrap;font-size:11px;color:#64748b}
+.event-type-cell{font-size:11px;line-height:1.3}
+.event-status-badge{display:inline-flex;align-items:center;justify-content:center;max-width:100%;padding:5px 7px;font-size:10px;line-height:1.2;white-space:normal;text-align:center;border-radius:999px}
 .event-action-group{
 	display: flex;
 	align-items: center;
-	gap: 8px;
+	justify-content:flex-start;
+	gap: 4px;
 	flex-wrap: wrap;
 }
 .event-icon-btn{
-	width: 36px;
-	height: 36px;
-	border-radius: 12px;
+	order:30;
+	width: 29px;
+	height: 29px;
+	padding:0;
+	border-radius: 8px;
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
@@ -284,6 +320,16 @@ label.error{
 	color: #314866;
 	transition: all .2s ease;
 }
+.event-icon-btn i{font-size:12px}
+.event-icon-btn.is-view{order:10;color:#2563eb;background:#eff6ff}
+.event-icon-btn.is-edit{order:20;background:#ecfdf5}
+.event-icon-btn.is-delete{order:90;background:#fff1f2}
+.event-icon-btn[data-action="submit"]{color:#7c3aed;background:#f5f3ff}
+.event-icon-btn[data-action="cancel_submit"]{color:#b45309;background:#fffbeb}
+.event-icon-btn[data-action="approve"]{color:#15803d;background:#f0fdf4}
+.event-icon-btn[data-action="return"]{color:#c2410c;background:#fff7ed}
+.event-icon-btn[data-action="publish"]{color:#0369a1;background:#f0f9ff}
+.event-icon-btn[data-action="unpublish"]{color:#475569;background:#f1f5f9}
 .event-icon-btn:hover{
 	transform: translateY(-1px);
 	color: #079aa2;
@@ -298,6 +344,12 @@ label.error{
 .event-icon-btn.is-delete:hover{
 	color: #b42318;
 	border-color: rgba(220, 53, 69, 0.35);
+}
+@media (max-width:1199px){
+	#table-events{font-size:11px}
+	#table-events th,#table-events td{padding-left:5px;padding-right:5px}
+	.event-icon-btn{width:27px;height:27px}
+	.event-thumb{width:52px;height:40px}
 }
 </style>
 <div class="content container-fluid">
@@ -325,10 +377,14 @@ label.error{
    </div>
    <div class="row">
       <div class="col-sm-12">
-         <div class="card card-table">
+         <div class="card card-table events-card">
             <div class="card-body">
                <div class="table-responsive">
                   <table id="table-events" class="table table-center table-hover">
+                     <colgroup>
+                        <col style="width:4%"><col style="width:29%"><col style="width:8%"><col style="width:11%">
+                        <col style="width:11%"><col style="width:12%"><col style="width:11%"><col style="width:14%">
+                     </colgroup>
                      <thead class="thead-light">
                         <tr>
                            <th>STT</th>
@@ -336,6 +392,8 @@ label.error{
 						   <th>Ảnh đại diện</th>
 						   <th>Ngày đăng</th>
 						   <th>Tác giả</th>
+						   <th>Loại tin</th>
+                           <th>Trạng thái</th>
                            <th>Thao tác</th>
                         </tr>
                      </thead>
@@ -357,23 +415,32 @@ label.error{
                            </td>
 						    <td id='image'>
 							<?php if($event->event_image != null){?>
-							<img src="<?php echo XC_URL . '/uploads/events/' . $event->event_image; ?>" width="100" height="100"/></td>
+							<img class="event-thumb" src="<?php echo XC_URL . '/uploads/events/' . $event->event_image; ?>" alt=""/></td>
 							<?php }else{?>
-							<img src="<?php echo XC_URL . '/uploads/events/event_default.png'; ?>" width="100" height="100"/></td>
+							<img class="event-thumb" src="<?php echo XC_URL . '/uploads/events/event_default.png'; ?>" alt=""/></td>
 							<?php }?>
-                           <td><?php echo $event->event_created_date;?></td>	
+                           <td class="event-date-cell"><?php echo date('d/m/Y', strtotime($event->event_created_date)); ?><br><small><?php echo date('H:i', strtotime($event->event_created_date)); ?></small></td>
                            <td><?php echo htmlspecialchars((string)($event->author_name ?? ''), ENT_QUOTES, 'UTF-8'); ?></td>
+                           <td class="event-type-cell"><?php echo htmlspecialchars((string)($event->category_name ?? 'Chưa phân loại'), ENT_QUOTES, 'UTF-8'); ?></td>
+                           <td><span class="badge event-status-badge bg-<?php echo (int)$event->event_status === 4 ? 'success' : ((int)$event->event_status === 2 ? 'warning' : ((int)$event->event_status === 3 ? 'info' : 'secondary')); ?>"><?php echo $event_status_labels[(int)$event->event_status] ?? 'Không xác định'; ?></span></td>
                            <td>
                               <div class="event-action-group">
-								    <a href="<?php echo XC_URL; ?>/admin/events/detail/<?php echo $event->eid;?>" class="event-icon-btn" title="Xem chi tiết" aria-label="Xem chi tiết">
+								    <a href="<?php echo XC_URL; ?>/admin/events/detail/<?php echo $event->eid;?>" class="event-icon-btn is-view" title="Xem chi tiết" aria-label="Xem chi tiết">
 									   <i class="fa-regular fa-eye"></i>
 									</a>
-								    <a href="<?php echo XC_URL; ?>/admin/events/edit/<?php echo $event->eid;?>" data-id = '<?php echo $event->eventid;?>' data-method='update' class="event-icon-btn is-edit btn-edit" title="Sửa" aria-label="Sửa">
+								    <?php $is_owner = (int)$event->event_user_created === $current_user_id || (isset($_SESSION['user']['group']) && (int)$_SESSION['user']['group'] === 1); if((int)$event->event_status === 1 && $is_owner): ?>
+								    <a href="<?php echo XC_URL; ?>/admin/events/edit/<?php echo $event->eid;?>" data-method='update' class="event-icon-btn is-edit btn-edit" title="Sửa" aria-label="Sửa">
 									   <i class="fa-regular fa-pen-to-square"></i>
 									</a>
 									  <a class="event-icon-btn is-delete btn-delete-event" data-id="<?php echo $event->eid;?>" href="#" data-status="<?php echo $event->event_status;?>" title="Xóa" aria-label="Xóa">
 									     <i class="fa-regular fa-trash-can"></i>
 									  </a>
+									  <button class="event-icon-btn btn-event-workflow" data-id="<?php echo $event->eid;?>" data-action="submit" title="Gửi phê duyệt"><i class="fa-solid fa-paper-plane"></i></button>
+									  <?php elseif((int)$event->event_status === 2 && $is_owner): ?><button class="event-icon-btn btn-event-workflow" data-id="<?php echo $event->eid;?>" data-action="cancel_submit" title="Hủy gửi phê duyệt"><i class="fa-solid fa-rotate-left"></i></button><?php endif; ?>
+									  <?php if((int)$event->event_status === 2 && $can_event_approve): ?><button class="event-icon-btn btn-event-workflow" data-id="<?php echo $event->eid;?>" data-action="approve" title="Phê duyệt"><i class="fa-solid fa-check"></i></button><button class="event-icon-btn btn-event-workflow" data-id="<?php echo $event->eid;?>" data-action="return" title="Trả về"><i class="fa-solid fa-reply"></i></button><?php endif; ?>
+									  <?php if((int)$event->event_status === 3 && $can_event_approve): ?><button class="event-icon-btn btn-event-workflow" data-id="<?php echo $event->eid;?>" data-action="return" title="Trả về"><i class="fa-solid fa-reply"></i></button><?php endif; ?>
+									  <?php if((int)$event->event_status === 3 && $can_event_publish): ?><button class="event-icon-btn btn-event-workflow" data-id="<?php echo $event->eid;?>" data-action="publish" title="Công khai"><i class="fa-solid fa-globe"></i></button><?php endif; ?>
+									  <?php if((int)$event->event_status === 4 && $can_event_publish): ?><button class="event-icon-btn btn-event-workflow" data-id="<?php echo $event->eid;?>" data-action="unpublish" title="Hủy công khai"><i class="fa-solid fa-eye-slash"></i></button><?php endif; ?>
 								</div>
                            </td>
                         </tr>

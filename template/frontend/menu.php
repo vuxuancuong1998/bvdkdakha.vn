@@ -9,29 +9,23 @@
         <div class="topbar-hotline">
           <span class="hotline-badge">Cấp cứu</span>
           <span>Đường dây nóng:</span>
-          <a href="tel:1900xxxx" aria-label="Gọi hotline cấp cứu 1900 xxxx">1900 xxxx</a>
+          <a href="tel:<?php echo $this->helper->get_config('site_phone'); ?>" aria-label="Gọi hotline cấp cứu <?php echo $this->helper->get_config('site_phone'); ?>"><?php echo $this->helper->get_config('site_hotline'); ?></a>
         </div>
         <div class="topbar-right">
           <nav class="topbar-socials" aria-label="Mạng xã hội">
-            <a href="https://www.facebook.com/ttytdakha" target="_blank" rel="noopener noreferrer"
+            <a href="<?php echo $this->helper->get_config('site_facebook'); ?>" target="_blank" rel="noopener noreferrer"
                aria-label="Trang Facebook Bệnh viện đa khoa Đăk Hà">
               <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                 <path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/>
               </svg>
             </a>
-            <a href="https://zalo.me/ttytdakha" target="_blank" rel="noopener noreferrer"
+            <a href="https://zalo.me/<?php echo $this->helper->get_config('site_zalo'); ?>" target="_blank" rel="noopener noreferrer"
                aria-label="Trang Zalo Bệnh viện đa khoa Đăk Hà">
               <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                 <path d="M12 2C6.477 2 2 6.477 2 12c0 1.89.525 3.66 1.438 5.168L2 22l4.832-1.438A9.955 9.955 0 0012 22c5.523 0 10-4.477 10-10S17.523 2 12 2zm-1 13H9V9h2v6zm3.5 0h-2V9h2v6z"/>
               </svg>
             </a>
-            <a href="https://youtube.com" target="_blank" rel="noopener noreferrer"
-               aria-label="Kênh YouTube Bệnh viện đa khoa Đăk Hà">
-              <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                <path d="M22.54 6.42a2.78 2.78 0 00-1.94-1.96C18.88 4 12 4 12 4s-6.88 0-8.6.46A2.78 2.78 0 001.46 6.42 29 29 0 001 12a29 29 0 00.46 5.58 2.78 2.78 0 001.94 1.96C5.12 20 12 20 12 20s6.88 0 8.6-.46a2.78 2.78 0 001.94-1.96A29 29 0 0023 12a29 29 0 00-.46-5.58z"/>
-                <polygon points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02" fill="white"/>
-              </svg>
-            </a>
+            
           </nav>
           <!-- <div class="topbar-lang" role="button" tabindex="0" aria-label="Chuyển đổi ngôn ngữ">
             <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
@@ -154,7 +148,23 @@
             </li>
 
             <li class="nav-item">
-              <a href="<?php echo XC_URL; ?>/hoat-dong.html" class="nav-link">Hoạt động</a>
+              <a href="<?php echo XC_URL; ?>/hoat-dong/lich-cong-tac.html" class="nav-link" aria-haspopup="true" aria-expanded="false">
+                Hoạt động
+                <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+                  <polyline points="6 9 12 15 18 9"/>
+                </svg>
+              </a>
+              <div class="dropdown" role="menu" aria-label="Menu hoạt động">
+                <a href="<?php echo XC_URL; ?>/hoat-dong/lich-cong-tac.html" role="menuitem">
+                  <i class="fa-regular fa-calendar-days"></i> Lịch công tác
+                </a>
+                <a href="<?php echo XC_URL; ?>/hoat-dong/dao-tao-tap-huan.html" role="menuitem">
+                  <i class="fa-solid fa-list-check"></i> Kế hoạch
+                </a>
+                <a href="<?php echo XC_URL; ?>/hoat-dong/chien-dich-y-te.html" role="menuitem">
+                  <i class="fa-solid fa-hand-holding-medical"></i> Chiến dịch
+                </a>
+              </div>
             </li>
 
             <!-- <li class="nav-item">
@@ -346,7 +356,17 @@
       </div>
 
       <a href="<?php echo XC_URL; ?>/lay-giay-tt25" class="mobile-nav-link fw-bold text-primary">Chế độ BHXH</a>
-      <a href="<?php echo XC_URL; ?>/hoat-dong.html" class="mobile-nav-link">Hoạt động</a>
+      <button class="mobile-nav-link" data-submenu="sub-hoatdong" aria-expanded="false">
+        Hoạt động
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+          <polyline points="9 18 15 12 9 6"/>
+        </svg>
+      </button>
+      <div class="mobile-submenu" id="sub-hoatdong" role="menu">
+        <a href="<?php echo XC_URL; ?>/hoat-dong/lich-cong-tac.html">Lịch công tác</a>
+        <a href="<?php echo XC_URL; ?>/hoat-dong/dao-tao-tap-huan.html">Kế hoạch</a>
+        <a href="<?php echo XC_URL; ?>/hoat-dong/chien-dich-y-te.html">Chiến dịch</a>
+      </div>
       <a href="<?php echo XC_URL; ?>/trang/van-ban" class="mobile-nav-link">Văn bản</a>
       <a href="<?php echo XC_URL; ?>/lien-he.html" class="mobile-nav-link">Liên hệ</a>
     </div>

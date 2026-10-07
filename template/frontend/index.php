@@ -17,7 +17,7 @@
             </div>
             <div class="quick-info-text">
               <strong>Hotline cấp cứu 24/7</strong>
-              <span><a href="tel:1900xxxx" style="color:var(--color-danger);font-weight:700;">1900 xxxx</a></span>
+              <span><a href="tel:<?php echo $this->helper->get_config('site_phone'); ?>" style="color:var(--color-danger);font-weight:700;"><?php echo $this->helper->get_config('site_phone'); ?></a></span>
             </div>
           </article>
 
@@ -30,7 +30,7 @@
             </div>
             <div class="quick-info-text">
               <strong>Giờ làm việc</strong>
-              <span>T2–T6: 7:00–17:00 | T7: 7:00–11:30</span>
+              <span>Theo giờ hành chính</span>
             </div>
           </article>
 
@@ -43,11 +43,11 @@
             </div>
             <div class="quick-info-text">
               <strong>Địa chỉ</strong>
-              <span>Đường Trần Phú, TT. Đắk Hà, Kon Tum</span>
+              <span><?php echo $this->helper->get_config('site_address'); ?></span>
             </div>
           </article>
 
-          <article class="quick-info-item">
+          <!-- <article class="quick-info-item">
             <div class="quick-info-icon" aria-hidden="true">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
@@ -60,7 +60,7 @@
               <strong>Đăng nhập</strong>
               <span><a href="pages/dat-lich.html" style="color:var(--color-accent);font-weight:600;">Đăng nhập →</a></span>
             </div>
-          </article>
+          </article> -->
 
         </div>
       </div>
@@ -95,7 +95,7 @@
               </svg>
             </div>
             <div class="stat-number">
-              <span data-count="120" data-suffix="+">0</span>
+              <span data-count="100" data-suffix="+">0</span>
             </div>
             <p class="stat-label">Y bác sĩ & nhân viên</p>
           </article>
@@ -108,7 +108,7 @@
               </svg>
             </div>
             <div class="stat-number">
-              <span data-count="15" data-suffix="+">0</span>
+              <span data-count="10" data-suffix="+">0</span>
             </div>
             <p class="stat-label">Khoa/Phòng chuyên môn</p>
           </article>
@@ -140,7 +140,7 @@
           <figure class="about-img-wrap" data-animate>
             <img
               src="<?php echo XC_URL; ?>/template/frontend/assets/images/banner-02.jpg"
-              alt="Cơ sở vật chất và trang thiết bị y tế hiện đại của Bệnh viện đa khoa khu vực Đắk Hà"
+              alt="Cơ sở vật chất và trang thiết bị y tế hiện đại của Bệnh viện đa khoa khu vực Đăk Hà"
               class="about-img"
               loading="lazy"
               width="700"
@@ -155,12 +155,12 @@
             <div class="section-header">
               <p class="section-label">Về chúng tôi</p>
               <h2 class="section-title" id="about-heading">
-                Bệnh viện đa khoa khu vực Đắk Hà — Tận tâm vì sức khỏe cộng đồng
+                Bệnh viện đa khoa khu vực Đăk Hà — Tận tâm vì sức khỏe cộng đồng
               </h2>
               <p class="section-desc">
-                Bệnh viện đa khoa khu vực Đắk Hà là đơn vị sự nghiệp y tế công lập thuộc
+                Bệnh viện đa khoa khu vực Đăk Hà là đơn vị sự nghiệp y tế công lập thuộc
                 Sở Y tế tỉnh Quảng Ngãi, đảm nhận chức năng khám chữa bệnh, chăm sóc sức
-                khỏe toàn diện cho nhân dân huyện Đắk Hà và các vùng lân cận.
+                khỏe toàn diện cho nhân dân huyện Đăk Hà và các vùng lân cận.
               </p>
             </div>
 
@@ -173,7 +173,7 @@
                 </div>
                 <div class="about-feature-text">
                   <h3>Đội ngũ chuyên gia tận tâm</h3>
-                  <p>Hơn 120 y bác sĩ, điều dưỡng có trình độ chuyên môn cao, giàu kinh nghiệm, luôn đặt bệnh nhân lên hàng đầu.</p>
+                  <p>Đội ngũ bác sĩ, điều dưỡng có trình độ chuyên môn cao, giàu kinh nghiệm, luôn đặt bệnh nhân lên hàng đầu.</p>
                 </div>
               </div>
 
@@ -222,10 +222,10 @@
     <section aria-labelledby="services-heading">
       <div class="container">
         <header class="section-header centered" data-animate>
-          <p class="section-label">Dịch vụ y tế</p>
+          <!-- <p class="section-label">Dịch vụ y tế</p> -->
           <h2 class="section-title" id="services-heading">Các dịch vụ khám chữa bệnh</h2>
           <p class="section-desc">
-            Trung tâm cung cấp đầy đủ các chuyên khoa và dịch vụ y tế, đáp ứng nhu cầu chăm sóc sức khỏe của toàn thể cộng đồng.
+           Bệnh viện cung cấp đầy đủ các chuyên khoa và dịch vụ y tế, đáp ứng nhu cầu chăm sóc sức khỏe của toàn thể cộng đồng.
           </p>
         </header>
 
@@ -241,12 +241,6 @@
             <p class="service-desc">
               Chẩn đoán và điều trị các bệnh lý nội khoa phổ biến như tim mạch, hô hấp, tiêu hóa, nội tiết và thần kinh. Đội ngũ bác sĩ chuyên khoa dày dạn kinh nghiệm.
             </p>
-            <a href="pages/dich-vu-y-te.html#noi-khoa" class="service-link" id="link-noi-khoa">
-              Xem chi tiết
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
-                <polyline points="9 18 15 12 9 6"/>
-              </svg>
-            </a>
           </article>
 
           <article class="service-card" data-animate data-animate-delay="100">
@@ -255,16 +249,11 @@
                 <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
               </svg>
             </div>
-            <h3 class="service-title">Ngoại khoa & Phẫu thuật</h3>
+            <h3 class="service-title">Ngoại khoa </h3>
             <p class="service-desc">
-              Thực hiện các ca phẫu thuật ngoại khoa với trang thiết bị phòng mổ hiện đại, đội ngũ phẫu thuật viên có kinh nghiệm và hệ thống theo dõi hậu phẫu 24/7.
+            Cung cấp dịch vụ thăm khám, đánh giá tổn thương và xử trí các thủ thuật. Đội ngũ bác sĩ đồng thời tư vấn, định hướng phác đồ điều trị phù hợp và hỗ trợ chuyển tuyến kịp thời cho các ca cần can thiệp phẫu thuật chuyên sâu.
             </p>
-            <a href="pages/dich-vu-y-te.html#ngoai-khoa" class="service-link" id="link-ngoai-khoa">
-              Xem chi tiết
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
-                <polyline points="9 18 15 12 9 6"/>
-              </svg>
-            </a>
+           
           </article>
 
           <article class="service-card" data-animate data-animate-delay="200">
@@ -277,12 +266,7 @@
             <p class="service-desc">
               Chăm sóc thai sản, theo dõi thai kỳ, đỡ đẻ và các dịch vụ phụ khoa. Khu vực sinh đẻ được trang bị đầy đủ đảm bảo an toàn cho mẹ và bé.
             </p>
-            <a href="pages/dich-vu-y-te.html#san-phu-khoa" class="service-link" id="link-san-khoa">
-              Xem chi tiết
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
-                <polyline points="9 18 15 12 9 6"/>
-              </svg>
-            </a>
+            
           </article>
 
           <article class="service-card" data-animate data-animate-delay="100">
@@ -296,12 +280,7 @@
             <p class="service-desc">
               Khám và điều trị bệnh cho trẻ em từ sơ sinh đến 15 tuổi. Bác sĩ nhi khoa chuyên nghiệp, cơ sở thân thiện và an toàn cho trẻ.
             </p>
-            <a href="pages/dich-vu-y-te.html#nhi-khoa" class="service-link" id="link-nhi-khoa">
-              Xem chi tiết
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
-                <polyline points="9 18 15 12 9 6"/>
-              </svg>
-            </a>
+           
           </article>
 
           <article class="service-card" data-animate data-animate-delay="200">
@@ -314,12 +293,7 @@
             <p class="service-desc">
               Đội ngũ cấp cứu trực 24/7 với xe cứu thương, máy thở và thiết bị hồi sức hiện đại. Tiếp nhận và xử lý mọi trường hợp khẩn cấp nhanh nhất có thể.
             </p>
-            <a href="pages/dich-vu-y-te.html#cap-cuu" class="service-link" id="link-cap-cuu">
-              Xem chi tiết
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
-                <polyline points="9 18 15 12 9 6"/>
-              </svg>
-            </a>
+            
           </article>
 
           <article class="service-card" data-animate data-animate-delay="300">
@@ -328,27 +302,13 @@
                 <path d="M9 3H5a2 2 0 00-2 2v4m6-6h10a2 2 0 012 2v4M9 3v18m0 0h10a2 2 0 002-2V9M9 21H5a2 2 0 01-2-2V9m0 0h18"/>
               </svg>
             </div>
-            <h3 class="service-title">Xét nghiệm & Chẩn đoán</h3>
+            <h3 class="service-title">Xét nghiệm & Chẩn đoán hình ảnh</h3>
             <p class="service-desc">
               Hệ thống xét nghiệm máu, nước tiểu, vi sinh, siêu âm, X-quang hiện đại. Kết quả nhanh, chính xác, hỗ trợ chẩn đoán bệnh kịp thời.
             </p>
-            <a href="pages/dich-vu-y-te.html#xet-nghiem" class="service-link" id="link-xet-nghiem">
-              Xem chi tiết
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
-                <polyline points="9 18 15 12 9 6"/>
-              </svg>
-            </a>
+           
           </article>
 
-        </div>
-
-        <div style="text-align:center; margin-top:var(--space-10);">
-          <a href="pages/dich-vu-y-te.html" class="btn btn-primary btn-lg" id="btn-xem-het-dv">
-            Xem tất cả dịch vụ
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-              <polyline points="9 18 15 12 9 6"/>
-            </svg>
-          </a>
         </div>
 
       </div>
@@ -361,116 +321,131 @@
       <div class="container">
         <header class="section-header centered" data-animate>
           <p class="section-label">Đội ngũ y bác sĩ</p>
-          <h2 class="section-title" id="doctors-heading">Bác sĩ tiêu biểu</h2>
           <p class="section-desc">
             Đội ngũ y bác sĩ của chúng tôi là những chuyên gia tận tâm với nhiều năm kinh nghiệm, luôn đặt sức khỏe bệnh nhân lên hàng đầu.
           </p>
         </header>
 
-        <div class="doctors-track">
-        <?php if (!empty($featured_doctors) && is_array($featured_doctors)): ?>
-          <?php foreach($featured_doctors as $idx => $doc): 
-            $delay = ($idx % 4) * 100;
-            $docName = !empty($doc->doctor_name) ? $doc->doctor_name : (!empty($doc->fullname) ? $doc->fullname : '');
-            $docPosition = !empty($doc->doctor_position) ? $doc->doctor_position : (!empty($doc->position) ? $doc->position : 'Cán bộ y tế');
-            $docWorkplace = !empty($doc->doctor_workplace) ? $doc->doctor_workplace : (!empty($doc->workplace) ? $doc->workplace : 'Bệnh viện Đa khoa khu vực Đắk Hà');
-            $docAvatar = !empty($doc->doctor_avatar) ? $doc->doctor_avatar : (!empty($doc->avatar) ? $doc->avatar : '');
-            $docDob = !empty($doc->doctor_dob) ? $doc->doctor_dob : (!empty($doc->dob) ? $doc->dob : '');
-            $docHometown = !empty($doc->doctor_hometown) ? $doc->doctor_hometown : (!empty($doc->hometown) ? $doc->hometown : '');
-            $docCccd = !empty($doc->doctor_cccd) ? $doc->doctor_cccd : (!empty($doc->cccd) ? $doc->cccd : '');
-            $docJobCode = !empty($doc->doctor_job_title_code) ? $doc->doctor_job_title_code : (!empty($doc->job_title_code) ? $doc->job_title_code : (!empty($doc->doctor_cchn) ? $doc->doctor_cchn : ''));
-            $docCode = !empty($doc->doctor_code) ? $doc->doctor_code : (!empty($doc->code) ? $doc->code : '');
+        <?php 
+          $all_doctors = (!empty($featured_doctors) && is_array($featured_doctors)) ? $featured_doctors : array();
+          $doctor_pages = !empty($all_doctors) ? array_chunk($all_doctors, 8) : array();
+          $total_doctor_slides = count($doctor_pages);
+        ?>
 
-            $hasAvatar = !empty($docAvatar) && file_exists(__SITE_PATH . '/uploads/doctors/' . $docAvatar);
-            $avatarUrl = $hasAvatar 
-              ? XC_URL . '/uploads/doctors/' . htmlspecialchars($docAvatar, ENT_QUOTES, 'UTF-8')
-              : XC_URL . '/template/frontend/assets/images/doctor-0' . (($idx % 3) + 1) . '.jpg';
-            
-            $docData = array(
-              'fullname' => (string)$docName,
-              'dob' => (!empty($docDob) && $docDob !== '0000-00-00') ? date('d/m/Y', strtotime($docDob)) : 'Chưa cập nhật',
-              'hometown' => !empty($docHometown) ? (string)$docHometown : 'Chưa cập nhật',
-              'cccd' => !empty($docCccd) ? (string)$docCccd : 'Chưa cập nhật',
-              'position' => (string)$docPosition,
-              'job_title_code' => !empty($docJobCode) ? (string)$docJobCode : 'Chưa cập nhật',
-              'department' => !empty($doc->depart_name) ? (string)$doc->depart_name : 'Bệnh viện Đa khoa khu vực Đắk Hà',
-              'workplace' => (string)$docWorkplace,
-              'code' => !empty($docCode) ? (string)$docCode : 'Chưa cập nhật',
-              'avatar' => $avatarUrl
-            );
-          ?>
-          <article class="doctor-card doctor-card-clickable" 
-                   data-doctor='<?php echo htmlspecialchars(json_encode($docData, JSON_UNESCAPED_UNICODE), ENT_QUOTES, 'UTF-8'); ?>'
-                   onclick="openDoctorModal(this)"
-                   data-animate <?php echo $delay > 0 ? 'data-animate-delay="'.$delay.'"' : ''; ?> 
-                   itemscope itemtype="https://schema.org/Physician">
-            <div class="doctor-img-wrap">
-              <img
-                src="<?php echo $avatarUrl; ?>"
-                alt="<?php echo htmlspecialchars($docPosition . ' ' . $docName, ENT_QUOTES, 'UTF-8'); ?>"
-                class="doctor-img"
-                loading="lazy"
-                width="280"
-                height="373"
-                itemprop="image" />
-              <div class="doctor-overlay" aria-hidden="true">
-                <span class="doctor-overlay-btn"><i class="fa-solid fa-circle-info"></i> Xem chi tiết</span>
-              </div>
-            </div>
-            <div class="doctor-info">
-              <span class="doctor-badge"><?php echo htmlspecialchars($docPosition, ENT_QUOTES, 'UTF-8'); ?></span>
-              <h3 class="doctor-name" itemprop="name"><?php echo htmlspecialchars($docName, ENT_QUOTES, 'UTF-8'); ?></h3>
-              
-              <div class="doctor-workplace-box">
-                <div class="doctor-dept-line">
-                  <i class="fa-solid fa-hospital-user"></i>
-                  <span><?php echo htmlspecialchars($doc->depart_name ?: 'Bệnh viện Đắk Hà', ENT_QUOTES, 'UTF-8'); ?></span>
-                </div>
-                <div class="doctor-workplace-line">
-                  <i class="fa-solid fa-hospital"></i>
-                  <span><?php echo htmlspecialchars($docWorkplace, ENT_QUOTES, 'UTF-8'); ?></span>
-                </div>
-              </div>
+        <div class="doctor-slider-container" id="doctorHomeSlider">
+          <div class="doctor-slider-viewport">
+            <div class="doctor-slider-track" id="doctorSliderTrack">
+            <?php if (!empty($doctor_pages)): ?>
+              <?php foreach($doctor_pages as $pageIdx => $pageDocs): ?>
+                <div class="doctor-slide" data-slide-index="<?php echo $pageIdx; ?>">
+                  <div class="doctor-slide-grid">
+                    <?php foreach($pageDocs as $idx => $doc): 
+                      $docName = !empty($doc->doctor_name) ? $doc->doctor_name : (!empty($doc->fullname) ? $doc->fullname : '');
+                      $docPosition = !empty($doc->doctor_position) ? $doc->doctor_position : (!empty($doc->position) ? $doc->position : 'Cán bộ y tế');
+                      $docWorkplace = !empty($doc->doctor_workplace) ? $doc->doctor_workplace : (!empty($doc->workplace) ? $doc->workplace : 'Bệnh viện Đa khoa khu vực Đăk Hà');
+                      $docAvatar = !empty($doc->doctor_avatar) ? $doc->doctor_avatar : (!empty($doc->avatar) ? $doc->avatar : '');
+                      $docDob = !empty($doc->doctor_dob) ? $doc->doctor_dob : (!empty($doc->dob) ? $doc->dob : '');
+                      $docHometown = !empty($doc->doctor_hometown) ? $doc->doctor_hometown : (!empty($doc->hometown) ? $doc->hometown : '');
+                      $docCccd = !empty($doc->doctor_cccd) ? $doc->doctor_cccd : (!empty($doc->cccd) ? $doc->cccd : '');
+                      $docCode = !empty($doc->doctor_code) ? $doc->doctor_code : (!empty($doc->code) ? $doc->code : '');
 
-              <div class="doctor-card-footer">
-                <span class="doctor-view-detail-btn">
-                  <i class="fa-solid fa-id-card"></i> Xem chi tiết hồ sơ
-                </span>
-              </div>
-            </div>
-          </article>
-          <?php endforeach; ?>
-        <?php else: ?>
-          <article class="doctor-card" data-animate itemscope itemtype="https://schema.org/Physician">
-            <div class="doctor-img-wrap">
-              <img
-                src="<?php echo XC_URL; ?>/template/frontend/assets/images/doctor-01.jpg"
-                alt="Bác sĩ CKI Nguyễn Văn An — Chuyên khoa Nội tổng quát"
-                class="doctor-img"
-                loading="lazy"
-                width="280"
-                height="373"
-                itemprop="image" />
-              <div class="doctor-overlay" aria-hidden="true">
-                <span class="doctor-overlay-btn"><i class="fa-solid fa-circle-info"></i> Xem chi tiết</span>
-              </div>
-            </div>
-            <div class="doctor-info">
-              <span class="doctor-badge">Bác sĩ CKI</span>
-              <h3 class="doctor-name" itemprop="name">Nguyễn Văn An</h3>
-              <div class="doctor-workplace-box">
-                <div class="doctor-dept-line">
-                  <i class="fa-solid fa-hospital-user"></i>
-                  <span>Nội khoa tổng quát</span>
+                      $hasAvatar = !empty($docAvatar) && file_exists(__SITE_PATH . '/uploads/doctors/' . $docAvatar);
+                      $avatarUrl = $hasAvatar 
+                        ? XC_URL . '/uploads/doctors/' . htmlspecialchars($docAvatar, ENT_QUOTES, 'UTF-8')
+                        : XC_URL . '/template/frontend/assets/images/doctor-0' . (($idx % 3) + 1) . '.jpg';
+                      
+                      $docData = array(
+                        'fullname' => (string)$docName,
+                        'dob' => (!empty($docDob) && $docDob !== '0000-00-00') ? date('d/m/Y', strtotime($docDob)) : 'Chưa cập nhật',
+                        'hometown' => !empty($docHometown) ? (string)$docHometown : 'Chưa cập nhật',
+                        'cccd' => !empty($docCccd) ? (string)$docCccd : 'Chưa cập nhật',
+                        'position' => (string)$docPosition,
+                        'department' => !empty($doc->depart_name) ? (string)$doc->depart_name : 'Bệnh viện Đa khoa khu vực Đăk Hà',
+                        'workplace' => (string)$docWorkplace,
+                        'code' => !empty($docCode) ? (string)$docCode : 'Chưa cập nhật',
+                        'avatar' => $avatarUrl
+                      );
+                    ?>
+                    <article class="doctor-card doctor-card-clickable" 
+                             data-doctor='<?php echo htmlspecialchars(json_encode($docData, JSON_UNESCAPED_UNICODE), ENT_QUOTES, 'UTF-8'); ?>'
+                             onclick="openDoctorModal(this)"
+                             role="button"
+                             tabindex="0"
+                             onkeydown="if(event.key==='Enter') openDoctorModal(this)"
+                             itemscope itemtype="https://schema.org/Physician">
+                      <div class="doctor-avatar-circle">
+                        <img
+                          src="<?php echo $avatarUrl; ?>"
+                          alt="<?php echo htmlspecialchars($docName, ENT_QUOTES, 'UTF-8'); ?>"
+                          class="doctor-avatar-img"
+                          loading="lazy"
+                          itemprop="image" />
+                      </div>
+                      <div class="doctor-card-content">
+                        <h3 class="doctor-card-name" itemprop="name"><?php echo htmlspecialchars($docName, ENT_QUOTES, 'UTF-8'); ?></h3>
+                        
+                        <div class="doctor-card-dept">
+                          <span> <b><?php echo htmlspecialchars($doc->depart_name ?: 'Đa khoa', ENT_QUOTES, 'UTF-8'); ?></b></span>
+                        </div>
+
+                        <div class="doctor-card-action">
+                          <span class="doctor-card-link">Xem thêm bác sĩ <i class="fa-solid fa-angles-right"></i></span>
+                        </div>
+                      </div>
+                    </article>
+                    <?php endforeach; ?>
+                  </div>
                 </div>
-                <div class="doctor-workplace-line">
-                  <i class="fa-solid fa-hospital"></i>
-                  <span>Bệnh viện Đa khoa Khu vực Đắk Hà</span>
+              <?php endforeach; ?>
+            <?php else: ?>
+              <div class="doctor-slide" data-slide-index="0">
+                <div class="doctor-slide-grid">
+                  <article class="doctor-card" itemscope itemtype="https://schema.org/Physician">
+                    <div class="doctor-avatar-circle">
+                      <img
+                        src="<?php echo XC_URL; ?>/template/frontend/assets/images/doctor-01.jpg"
+                        alt="Nguyễn Văn An"
+                        class="doctor-avatar-img"
+                        loading="lazy"
+                        itemprop="image" />
+                    </div>
+                    <div class="doctor-card-content">
+                      <h3 class="doctor-card-name" itemprop="name">Nguyễn Văn An</h3>
+                      <div class="doctor-card-dept">
+                        <span>Chuyên khoa: <b>Nội khoa</b></span>
+                      </div>
+                      <div class="doctor-card-action">
+                        <span class="doctor-card-link">Xem thêm bác sĩ <i class="fa-solid fa-angles-right"></i></span>
+                      </div>
+                    </div>
+                  </article>
                 </div>
               </div>
+            <?php endif; ?>
             </div>
-          </article>
-        <?php endif; ?>
+          </div>
+
+          <?php if ($total_doctor_slides > 1): ?>
+            <!-- Prev & Next Arrows -->
+            <button type="button" class="doctor-slider-nav prev" id="doctorSliderPrev" aria-label="Xem trang trước">
+              <i class="fa-solid fa-chevron-left"></i>
+            </button>
+            <button type="button" class="doctor-slider-nav next" id="doctorSliderNext" aria-label="Xem trang tiếp">
+              <i class="fa-solid fa-chevron-right"></i>
+            </button>
+
+            <!-- Dots Pagination -->
+            <div class="doctor-slider-dots" id="doctorSliderDots">
+              <?php for($s = 0; $s < $total_doctor_slides; $s++): ?>
+                <button type="button" 
+                        class="doctor-slider-dot <?php echo $s === 0 ? 'active' : ''; ?>" 
+                        data-slide-to="<?php echo $s; ?>" 
+                        aria-label="Trang <?php echo $s + 1; ?>"
+                        aria-current="<?php echo $s === 0 ? 'true' : 'false'; ?>">
+                </button>
+              <?php endfor; ?>
+            </div>
+          <?php endif; ?>
         </div>
 
         <div style="text-align:center; margin-top:var(--space-10);">
@@ -519,18 +494,18 @@
                         <th scope="row"><i class="fa-solid fa-map-location-dot"></i> Quê quán</th>
                         <td id="modalDoctorHometown"></td>
                       </tr>
-                      <tr>
-                        <th scope="row"><i class="fa-solid fa-id-badge"></i> Mã ngạch / CDNN</th>
+                      <!-- <tr>
+                        <th scope="row"><i class="fa-solid fa-id-badge"></i> CCHN:</th>
                         <td id="modalDoctorJobCode"></td>
-                      </tr>
+                      </tr> -->
                       <tr>
                         <th scope="row"><i class="fa-solid fa-barcode"></i> Mã số</th>
                         <td id="modalDoctorCode"></td>
                       </tr>
-                      <tr>
+                      <!-- <tr>
                         <th scope="row"><i class="fa-solid fa-id-card"></i> Số CCCD</th>
                         <td id="modalDoctorCccd"></td>
-                      </tr>
+                      </tr> -->
                     </tbody>
                   </table>
                 </div>
@@ -559,11 +534,11 @@
         document.getElementById('modalDoctorPosition').textContent = data.position || '';
         document.getElementById('modalDoctorDept').textContent = data.department || '-';
         document.getElementById('modalDoctorWorkplace').textContent = data.workplace || '-';
-        document.getElementById('modalDoctorDob').textContent = data.dob || '-';
+document.getElementById('modalDoctorDob').textContent =    data.dob ? String(data.dob).trim().slice(-4) : '-';      //    document.getElementById('modalDoctorDob').textContent = data.dob ? data.dob.split('-')[0] : '-';
         document.getElementById('modalDoctorHometown').textContent = data.hometown || '-';
-        document.getElementById('modalDoctorJobCode').textContent = data.job_title_code || '-';
+        // document.getElementById('modalDoctorJobCode').textContent = data.job_title_code || '-';
         document.getElementById('modalDoctorCode').textContent = data.code || '-';
-        document.getElementById('modalDoctorCccd').textContent = data.cccd || '-';
+       // document.getElementById('modalDoctorCccd').textContent = data.cccd || '-';
         
         var modal = document.getElementById('doctorDetailModal');
         if (modal) {
@@ -587,6 +562,152 @@
       if (e.key === 'Escape') {
         closeDoctorModal();
       }
+    });
+
+    // ============================================================
+    // DOCTOR HOMEPAGE SLIDER (5s auto-transition, 8 items/page)
+    // ============================================================
+    document.addEventListener('DOMContentLoaded', function() {
+      var container = document.getElementById('doctorHomeSlider');
+      if (!container) return;
+
+      var track = document.getElementById('doctorSliderTrack');
+      var slides = container.querySelectorAll('.doctor-slide');
+      var prevBtn = document.getElementById('doctorSliderPrev');
+      var nextBtn = document.getElementById('doctorSliderNext');
+      var dots = container.querySelectorAll('.doctor-slider-dot');
+      
+      var totalSlides = slides.length;
+      if (totalSlides <= 1) return;
+
+      var currentIndex = 0;
+      var slideInterval = 5000; // 5s transition
+      var autoTimer = null;
+      var isPaused = false;
+
+      function goToSlide(index) {
+        if (index < 0) {
+          currentIndex = totalSlides - 1;
+        } else if (index >= totalSlides) {
+          currentIndex = 0;
+        } else {
+          currentIndex = index;
+        }
+
+        // Smooth transition track
+        if (track) {
+          track.style.transform = 'translateX(-' + (currentIndex * 100) + '%)';
+        }
+
+        // Update dots state
+        dots.forEach(function(dot, idx) {
+          if (idx === currentIndex) {
+            dot.classList.add('active');
+            dot.setAttribute('aria-current', 'true');
+          } else {
+            dot.classList.remove('active');
+            dot.setAttribute('aria-current', 'false');
+          }
+        });
+      }
+
+      function nextSlide() {
+        goToSlide(currentIndex + 1);
+      }
+
+      function prevSlide() {
+        goToSlide(currentIndex - 1);
+      }
+
+      function startAutoPlay() {
+        stopAutoPlay();
+        autoTimer = setInterval(function() {
+          if (!isPaused) {
+            nextSlide();
+          }
+        }, slideInterval);
+      }
+
+      function stopAutoPlay() {
+        if (autoTimer) {
+          clearInterval(autoTimer);
+          autoTimer = null;
+        }
+      }
+
+      function restartAutoPlay() {
+        stopAutoPlay();
+        startAutoPlay();
+      }
+
+      // Arrow navigation
+      if (prevBtn) {
+        prevBtn.addEventListener('click', function(e) {
+          e.preventDefault();
+          prevSlide();
+          restartAutoPlay();
+        });
+      }
+
+      if (nextBtn) {
+        nextBtn.addEventListener('click', function(e) {
+          e.preventDefault();
+          nextSlide();
+          restartAutoPlay();
+        });
+      }
+
+      // Dots navigation
+      dots.forEach(function(dot) {
+        dot.addEventListener('click', function(e) {
+          e.preventDefault();
+          var targetIndex = parseInt(this.getAttribute('data-slide-to'), 10);
+          if (!isNaN(targetIndex)) {
+            goToSlide(targetIndex);
+            restartAutoPlay();
+          }
+        });
+      });
+
+      // Pause when hovered
+      container.addEventListener('mouseenter', function() {
+        isPaused = true;
+      });
+
+      container.addEventListener('mouseleave', function() {
+        isPaused = false;
+      });
+
+      // Mobile touch swipe support
+      var touchStartX = 0;
+      var touchEndX = 0;
+
+      container.addEventListener('touchstart', function(e) {
+        if (e.changedTouches && e.changedTouches.length > 0) {
+          touchStartX = e.changedTouches[0].screenX;
+        }
+      }, { passive: true });
+
+      container.addEventListener('touchend', function(e) {
+        if (e.changedTouches && e.changedTouches.length > 0) {
+          touchEndX = e.changedTouches[0].screenX;
+          handleSwipe();
+        }
+      }, { passive: true });
+
+      function handleSwipe() {
+        var swipeThreshold = 45;
+        if (touchEndX < touchStartX - swipeThreshold) {
+          nextSlide();
+          restartAutoPlay();
+        } else if (touchEndX > touchStartX + swipeThreshold) {
+          prevSlide();
+          restartAutoPlay();
+        }
+      }
+
+      // Start 5-second automatic sliding
+      startAutoPlay();
     });
     </script>
 
@@ -728,7 +849,7 @@
 
             <article class="faq-item" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
               <button class="faq-question" aria-expanded="false" id="faq-q1" itemprop="name">
-                Bệnh viện đa khoa khu vực Đắk Hà làm việc mấy giờ?
+                Bệnh viện đa khoa khu vực Đăk Hà làm việc mấy giờ?
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
                   <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
                 </svg>
@@ -777,7 +898,7 @@
               </button>
               <div class="faq-answer" aria-labelledby="faq-q4" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
                 <div class="faq-answer-inner" itemprop="text">
-                  Có, Bệnh viện đa khoa khu vực Đắk Hà là cơ sở khám chữa bệnh BHYT tuyến huyện. Bệnh nhân có thẻ BHYT đúng tuyến được hưởng 80–100% chi phí khám chữa bệnh theo quy định của Luật BHYT hiện hành.
+                  Có, Bệnh viện đa khoa khu vực Đăk Hà là cơ sở khám chữa bệnh BHYT tuyến huyện. Bệnh nhân có thẻ BHYT đúng tuyến được hưởng 80–100% chi phí khám chữa bệnh theo quy định của Luật BHYT hiện hành.
                 </div>
               </div>
             </article>

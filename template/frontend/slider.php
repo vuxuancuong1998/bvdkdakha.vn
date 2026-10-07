@@ -9,17 +9,11 @@
     <section class="announcements-bar" aria-label="Thông báo mới">
       <div class="container">
         <div class="announcements-inner">
-          <span class="announcements-label" aria-hidden="true">Thông báo</span>
+          <span class="announcements-label" aria-hidden="true"><i class="fa-solid fa-bullhorn"></i> Thông báo</span>
           <div class="marquee-track" role="marquee" aria-live="polite" aria-label="Thông báo cuộn">
             <div class="marquee-content">
-              <span class="marquee-item">Lịch khám chuyên khoa Mắt: Thứ 3, Thứ 5 hàng tuần — Đăng ký trước qua hotline</span>
-              <!-- <span class="marquee-item">Triển khai tiêm vắc-xin phòng dại miễn phí cho trẻ em dưới 5 tuổi từ ngày 10/08/2026</span> -->
-              <!-- <span class="marquee-item">Thông báo tuyển dụng viên chức y tế năm 2026 — Hạn nộp hồ sơ: 30/09/2026</span>
-              <span class="marquee-item">Khai mạc Tuần lễ sức khỏe tâm thần cộng đồng huyện Đắk Hà — 15/08/2026</span>
-              <span class="marquee-item">Lịch khám chuyên khoa Mắt: Thứ 3, Thứ 5 hàng tuần — Đăng ký trước qua hotline</span>
-              <span class="marquee-item">Triển khai tiêm vắc-xin phòng dại miễn phí cho trẻ em dưới 5 tuổi từ ngày 10/08/2026</span>
-              <span class="marquee-item">Thông báo tuyển dụng viên chức y tế năm 2026 — Hạn nộp hồ sơ: 30/09/2026</span>
-              <span class="marquee-item">Khai mạc Tuần lễ sức khỏe tâm thần cộng đồng huyện Đắk Hà — 15/08/2026</span> -->
+              <?php $thong_bao_text = $this->helper->get_config('thong_bao'); ?>
+              <span class="marquee-item"><?php echo $thong_bao_text; ?></span>
             </div>
           </div>
         </div>
@@ -34,9 +28,9 @@
 
         <!-- Slide 1 -->
         <article class="slide active" role="group" aria-roledescription="slide" aria-label="Slide 1 / 3">
-          <div class="slide-bg" style="background-image: url('<?php echo XC_URL;?>/template/frontend/assets/images/banner-01.jpg');" role="img" aria-label="Bệnh viện đa khoa khu vực Đắk Hà — Cơ sở vật chất hiện đại"></div>
+          <div class="slide-bg" style="background-image: url('<?php echo XC_URL;?>/uploads/slider/banner_01.png');" role="img" aria-label="Bệnh viện đa khoa khu vực Đắk Hà — Cơ sở vật chất hiện đại"></div>
           <div class="slide-overlay" aria-hidden="true"></div>
-          <div class="container">
+          <!-- <div class="container">
             <div class="slide-content">
               <div class="slide-tag">Chào mừng đến với Bệnh viện đa khoa khu vực Đắk Hà</div>
               <h1 class="slide-title">
@@ -65,7 +59,7 @@
                 </a>
               </div>
             </div>
-          </div>
+          </div> -->
         </article>
 
         <!-- Slide 2 -->

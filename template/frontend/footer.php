@@ -2,7 +2,66 @@
   <!-- ============================================================
        FOOTER
        ============================================================ -->
-  <footer class="site-footer" role="contentinfo" itemscope itemtype="https://schema.org/MedicalOrganization">
+  <?php
+global $db;
+
+$visit_stats = array(
+  'online' => 0,
+  'today' => 0,
+  'month' => 0,
+  'total' => 0
+);
+
+$visitor_session_id = session_id();
+if($visitor_session_id !== ''){
+  $visitor_now_timestamp = time();
+  $visitor_current_time = date('Y-m-d H:i:s', $visitor_now_timestamp);
+  $visitor_current_date = date('Y-m-d', $visitor_now_timestamp);
+  $visitor_month_start = date('Y-m-01', $visitor_now_timestamp);
+  $visitor_next_month_start = date('Y-m-01', strtotime('+1 month', $visitor_now_timestamp));
+  $visitor_session_id_escaped = $db->escapestring($visitor_session_id);
+  $visitor_is_new = empty($_SESSION['website_visit_recorded']);
+
+  // Một phiên trình duyệt chỉ được tính một lượt truy cập.
+  if($visitor_is_new){
+    $db->query("INSERT INTO hicrm_website_visit_daily (visit_date, visit_count)
+                VALUES ('".$visitor_current_date."', 1)
+                ON DUPLICATE KEY UPDATE visit_count = visit_count + 1");
+    $db->query("INSERT INTO hicrm_website_visit_stats (stat_key, stat_value)
+                VALUES ('total_visits', 1)
+                ON DUPLICATE KEY UPDATE stat_value = stat_value + 1");
+    $_SESSION['website_visit_recorded'] = 1;
+  }
+
+  // Một phiên được xem là đang truy cập nếu có hoạt động trong 5 phút gần nhất.
+  if(empty($_SESSION['website_online_refreshed_at']) || $visitor_now_timestamp - intval($_SESSION['website_online_refreshed_at']) >= 60){
+    $visitor_expires_at = date('Y-m-d H:i:s', $visitor_now_timestamp + 300);
+    $db->query("INSERT INTO hicrm_website_active_sessions (session_id, expires_at)
+                VALUES ('".$visitor_session_id_escaped."', '".$visitor_expires_at."')
+                ON DUPLICATE KEY UPDATE expires_at = '".$visitor_expires_at."'");
+    $_SESSION['website_online_refreshed_at'] = $visitor_now_timestamp;
+
+    if($visitor_is_new){
+      $db->query("DELETE FROM hicrm_website_active_sessions
+                  WHERE expires_at < '".$visitor_current_time."' LIMIT 1000");
+    }
+  }
+
+  $db->query("SELECT
+                (SELECT COUNT(*) FROM hicrm_website_active_sessions WHERE expires_at >= '".$visitor_current_time."') AS online,
+                (SELECT COALESCE(visit_count, 0) FROM hicrm_website_visit_daily WHERE visit_date = '".$visitor_current_date."') AS today,
+                (SELECT COALESCE(SUM(visit_count), 0) FROM hicrm_website_visit_daily WHERE visit_date >= '".$visitor_month_start."' AND visit_date < '".$visitor_next_month_start."') AS month,
+                (SELECT COALESCE(stat_value, 0) FROM hicrm_website_visit_stats WHERE stat_key = 'total_visits') AS total");
+  $visitor_stats_row = $db->fetch_object(true);
+  if($visitor_stats_row){
+    $visit_stats['online'] = intval($visitor_stats_row->online);
+    $visit_stats['today'] = intval($visitor_stats_row->today);
+    $visit_stats['month'] = intval($visitor_stats_row->month);
+    $visit_stats['total'] = intval($visitor_stats_row->total);
+  }
+}
+?>
+       <footer class="site-footer" role="contentinfo" itemscope itemtype="https://schema.org/MedicalOrganization">
     <div class="footer-main">
       <div class="container">
         <div class="footer-grid">
@@ -25,7 +84,7 @@
             </a>
             <p class="footer-desc">
               Bệnh viện đa khoa khu vực Đăk Hà là đơn vị sự nghiệp y tế công lập, chịu trách nhiệm
-              chăm sóc sức khỏe toàn diện cho nhân dân huyện Đăk Hà, tỉnh Kon Tum.
+              chăm sóc sức khỏe toàn diện cho nhân dân.
             </p>
             <nav class="footer-socials" aria-label="Mạng xã hội">
               <a href="https://www.facebook.com/ttytdakha" target="_blank" rel="noopener noreferrer"
@@ -83,24 +142,22 @@
                   <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 10.8 19.79 19.79 0 01.01 2.18 2 2 0 012 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/>
                 </svg>
                 <span>
-                  Cấp cứu 24/7: <a href="tel:1900xxxx" style="color:var(--color-danger);font-weight:700;">1900 xxxx</a><br>
-                  Hành chính: <a href="tel:02603862xxx">(0260) 386 2xxx</a>
-                </span>
+                  Cấp cứu 24/7: <a href="tel:<?php echo $this->helper->get_config('site_phone'); ?>" style="color:var(--color-danger);font-weight:700;"><?php echo $this->helper->get_config('site_phone'); ?></a><br>
+                 </span>
               </div>
               <div class="footer-contact-item">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
                   <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
                   <polyline points="22,6 12,13 2,6"/>
                 </svg>
-                <span><a href="mailto:ttytdakha@kontum.gov.vn">ttytdakha@kontum.gov.vn</a></span>
+                <span><a href="mailto:<?php echo $this->helper->get_config('site_email'); ?>"><?php echo $this->helper->get_config('site_email'); ?></a></span>
               </div>
             </address>
 
             <div class="footer-hours">
               <p>
-                <strong>Giờ làm việc:</strong><br>
-                Thứ Hai – Thứ Sáu: 7:00 – 17:00<br>
-                Thứ Bảy: 7:00 – 11:30<br>
+                <strong>Giờ làm việc: Theo giờ hành chính</strong><br>
+                
                 Cấp cứu: 24/7 kể cả ngày lễ
               </p>
             </div>
@@ -127,6 +184,36 @@
               </svg>
               Xem trên Google Maps
             </a>
+            <div class="footer-visit-stats" aria-label="Thống kê lượt truy cập website">
+              <div class="footer-visit-stat">
+                <span class="footer-visit-label">
+                  <span class="footer-online-dot" aria-hidden="true"></span>
+                  Đang truy cập
+                </span>
+                <strong><?php echo number_format($visit_stats['online'], 0, ',', '.'); ?></strong>
+              </div>
+              <div class="footer-visit-stat">
+                <span class="footer-visit-label">
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/></svg>
+                  Tổng hôm nay
+                </span>
+                <strong><?php echo number_format($visit_stats['today'], 0, ',', '.'); ?></strong>
+              </div>
+              <div class="footer-visit-stat">
+                <span class="footer-visit-label">
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3v18h18"/><path d="m7 15 4-4 3 3 5-6"/></svg>
+                  Tổng tháng này
+                </span>
+                <strong><?php echo number_format($visit_stats['month'], 0, ',', '.'); ?></strong>
+              </div>
+              <div class="footer-visit-stat">
+                <span class="footer-visit-label">
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19V9M10 19V5M16 19v-7M22 19H2"/></svg>
+                  Tổng cộng
+                </span>
+                <strong><?php echo number_format($visit_stats['total'], 0, ',', '.'); ?></strong>
+              </div>
+            </div>
           </div>
 
         </div>
@@ -140,8 +227,7 @@
           <p>
             © <time datetime="2026">2026</time> Bệnh viện đa khoa khu vực Đăk Hà — Thuộc
             <a href="https://soytekontum.gov.vn" target="_blank" rel="noopener noreferrer">Sở Y tế tỉnh Quảng Ngãi</a>.
-            Thiết kế & Phát triển bởi <abbr title="Bộ phận Công nghệ thông tin">CNTT TTYT Đăk Hà</abbr>.
-          </p>
+           </p>
           <nav aria-label="Liên kết pháp lý">
             <a href="<?php echo XC_URL; ?>/trang/chinh-sach-bao-mat">Chính sách bảo mật</a>
             &nbsp;·&nbsp;
@@ -158,8 +244,8 @@
        STICKY EMERGENCY BUTTON (mobile)
        ============================================================ -->
   <div class="sticky-emergency" aria-label="Gọi cấp cứu khẩn cấp">
-    <a href="tel:1900xxxx" class="emergency-fab" id="emergency-fab-btn"
-       aria-label="Gọi hotline cấp cứu 1900 xxxx">
+    <a href="tel:<?php echo $this->helper->get_config('site_phone'); ?>" class="emergency-fab" id="emergency-fab-btn"
+       aria-label="Gọi hotline cấp cứu <?php echo $this->helper->get_config('site_phone'); ?>">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
         <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 10.8 19.79 19.79 0 01.01 2.18 2 2 0 012 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/>
       </svg>

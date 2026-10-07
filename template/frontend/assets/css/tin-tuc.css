@@ -3,6 +3,19 @@
    Inherits: assets/css/style.css (base tokens & components)
    ============================================================ */
 
+/* Keep Vietnamese text consistent even when article HTML pasted from Word
+   contains its own font declarations. */
+.news-main-wrapper,
+.news-main-wrapper button,
+.news-main-wrapper input,
+.news-main-wrapper select,
+.news-main-wrapper textarea,
+.news-detail-page,
+.news-detail-page .post-content,
+.news-detail-page .post-content * {
+  font-family: "Be Vietnam Pro", Arial, sans-serif !important;
+}
+
 /* ============================================================
    1. NEWS HERO BANNER
    ============================================================ */

@@ -122,7 +122,7 @@ $adminCanAny = function($keys) use ($adminCan){
                     <?php endif; ?>
                     
                     
-                    <?php if($adminCanAny(array('doctors','employers','employer_posts','candidates','students','tt25_documents','events','news_comments','google_meet','market_results','customer_feedbacks','job_support_customers','users','groups'))): ?>
+                    <?php if($adminCanAny(array('doctors','employers','employer_posts','candidates','students','tt25_documents','events','activities','news_comments','google_meet','market_results','customer_feedbacks','job_support_customers','users','groups'))): ?>
                     <li><hr class="hr-horizontal"></li>
                     <li class="nav-item static-item">
                         <a class="nav-link static-item disabled" href="#" tabindex="-1">
@@ -147,6 +147,21 @@ $adminCanAny = function($keys) use ($adminCan){
                             <i class="fa-solid fa-file-medical"></i>
                             <span class="item-name">Quản lý giấy tờ TT25</span>
                         </a>
+                    </li>
+                    <?php endif; ?>
+
+                    <?php if($adminCan('activities')): ?>
+                    <li class="nav-item">
+                        <a class="nav-link" data-bs-toggle="collapse" href="#sidebar-activities" role="button" aria-expanded="<?php echo (isset($active_menu) && $active_menu == 'activities') ? 'true' : 'false'; ?>" aria-controls="sidebar-activities">
+                            <i class="fa-solid fa-calendar-check"></i>
+                            <span class="item-name">Quản lý hoạt động</span>
+                            <i class="right-icon"><svg class="icon-18" xmlns="http://www.w3.org/2000/svg" width="18" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg></i>
+                        </a>
+                        <ul class="sub-nav collapse <?php echo (isset($active_menu) && $active_menu == 'activities') ? 'show' : ''; ?>" id="sidebar-activities" data-bs-parent="#sidebar-menu">
+                            <li class="nav-item"><a class="nav-link <?php echo (($activity_scope ?? '') === 'schedules') ? 'active' : ''; ?>" href="<?php echo XC_URL;?>/admin/activities/schedules"><i class="fa-regular fa-calendar-days"></i><span class="item-name">Lịch công tác</span></a></li>
+                            <li class="nav-item"><a class="nav-link <?php echo (($activity_scope ?? '') === 'plans') ? 'active' : ''; ?>" href="<?php echo XC_URL;?>/admin/trainings"><i class="fa-solid fa-graduation-cap"></i><span class="item-name">Kế hoạch</span></a></li>
+                            <li class="nav-item"><a class="nav-link <?php echo (($activity_scope ?? '') === 'campaigns') ? 'active' : ''; ?>" href="<?php echo XC_URL;?>/admin/campaigns"><i class="fa-solid fa-hand-holding-medical"></i><span class="item-name">Các chiến dịch</span></a></li>
+                        </ul>
                     </li>
                     <?php endif; ?>
                      <?php if($adminCan('events') || $adminCan('news_comments')): ?>

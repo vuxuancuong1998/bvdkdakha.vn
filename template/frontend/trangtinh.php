@@ -29,13 +29,12 @@
 
           <!-- 2. File đính kèm (Có mới hiển thị, bổ sung nút Xem & Tải về) -->
           <?php if(!empty($attachments) && is_array($attachments) && count($attachments) > 0): ?>
-            <div class="attachments-box my-4 p-3 rounded-3" style="background: #f8fafc; border: 1px solid #e2e8f0;">
-              <h5 class="fw-bold mb-3 text-primary d-flex align-items-center gap-2" style="font-size: 16px;">
-                <i class="fa-solid fa-paperclip"></i>
-                <span>Tài liệu &amp; File đính kèm</span>
-                <span class="badge bg-primary rounded-pill small" style="font-size: 12px;"><?php echo count($attachments); ?></span>
-              </h5>
-              <div class="d-flex flex-column gap-2">
+            <section class="attachments-box" aria-labelledby="attachmentHeading">
+              <div class="attachments-heading">
+                <h2 id="attachmentHeading">Tài liệu đính kèm</h2>
+                <span>Thao tác</span>
+              </div>
+              <div class="attachment-list">
                 <?php foreach($attachments as $att): 
                   $ext = strtolower(pathinfo($att->file_name ?? $att->file_path, PATHINFO_EXTENSION));
                   $icon = 'fa-file text-secondary';
@@ -55,33 +54,40 @@
                   }
                   $file_url = XC_URL . '/' . ltrim($att->file_path, '/');
                 ?>
-                  <div class="attachment-item p-2 px-3 bg-white rounded border d-flex align-items-center justify-content-between flex-wrap gap-2">
-                    <div class="d-flex align-items-center gap-3" style="min-width: 220px; max-width: 70%;">
-                      <i class="fa-solid <?php echo $icon; ?> fa-2x"></i>
-                      <div class="text-truncate">
-                        <div class="fw-bold text-dark text-truncate" style="font-size: 14px;"><?php echo htmlspecialchars($att->file_name); ?></div>
-                        <?php if(!empty($size_str)): ?>
-                          <div class="text-muted small"><?php echo $size_str; ?></div>
-                        <?php endif; ?>
+                  <div class="attachment-item">
+                    <div class="attachment-info">
+                      <span class="attachment-file-icon"><i class="fa-solid <?php echo $icon; ?>"></i></span>
+                      <div class="attachment-name-wrap">
+                        <strong title="<?php echo htmlspecialchars($att->file_name, ENT_QUOTES, 'UTF-8'); ?>"><?php echo htmlspecialchars($att->file_name); ?></strong>
+                        <?php if(!empty($size_str)): ?><span class="attachment-size"><?php echo $size_str; ?></span><?php endif; ?>
                       </div>
                     </div>
-                    <div class="d-flex gap-2 align-items-center">
-                      <!-- Nút Xem (View trực tiếp trên trang - eOffice style) -->
-                      <button type="button" 
-                              onclick="openInPageViewer('<?php echo $file_url; ?>', '<?php echo addslashes(htmlspecialchars($att->file_name)); ?>', '<?php echo $ext; ?>')" 
-                              class="btn btn-sm btn-outline-primary rounded-pill px-3" 
-                              style="font-size: 13px;">
-                        <i class="fa-solid fa-eye me-1"></i> Xem
+                    <div class="attachment-actions">
+                      <button type="button" class="attachment-view-btn"
+                              data-url="<?php echo htmlspecialchars($file_url, ENT_QUOTES, 'UTF-8'); ?>"
+                              data-name="<?php echo htmlspecialchars($att->file_name, ENT_QUOTES, 'UTF-8'); ?>"
+                              data-ext="<?php echo htmlspecialchars($ext, ENT_QUOTES, 'UTF-8'); ?>"
+                              onclick="showInlineAttachment(this)">
+                        <i class="fa-regular fa-eye"></i><span>Xem</span>
                       </button>
-                      <!-- Nút Tải về (Download) -->
-                      <a href="<?php echo $file_url; ?>" download="<?php echo htmlspecialchars($att->file_name); ?>" class="btn btn-sm btn-primary rounded-pill px-3" style="font-size: 13px;">
-                        <i class="fa-solid fa-download me-1"></i> Tải về
+                      <a href="<?php echo htmlspecialchars($file_url, ENT_QUOTES, 'UTF-8'); ?>" download="<?php echo htmlspecialchars($att->file_name, ENT_QUOTES, 'UTF-8'); ?>" class="attachment-download-btn">
+                        <i class="fa-solid fa-download"></i><span>Tải về</span>
                       </a>
                     </div>
                   </div>
                 <?php endforeach; ?>
               </div>
-            </div>
+              <div id="inlineDocumentViewer" class="inline-document-viewer" hidden>
+                <div class="inline-viewer-toolbar">
+                  <div><i class="fa-solid fa-file-lines"></i><strong id="inlineViewerTitle">Tài liệu</strong></div>
+                  <div class="inline-viewer-controls">
+                    <a id="inlineViewerNewTab" href="#" target="_blank" rel="noopener" title="Mở trong tab mới"><i class="fa-solid fa-up-right-from-square"></i><span>Tab mới</span></a>
+                    <button type="button" onclick="closeInlineAttachment()" title="Đóng trình xem"><i class="fa-solid fa-xmark"></i><span>Đóng</span></button>
+                  </div>
+                </div>
+                <div id="inlineViewerBody" class="inline-viewer-body"></div>
+              </div>
+            </section>
           <?php endif; ?>
 
           <!-- Bottom Tags / Social share -->
@@ -104,60 +110,11 @@
       </div>
 
       <!-- Right Sidebar -->
-      <div class="col-lg-4" style="width: 320px; flex-shrink: 0;">
-        
-        <!-- Emergency & Booking Callout -->
-        <div class="sidebar-widget" style="background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-teal) 100%); border-radius: var(--radius-xl); padding: var(--space-6); color: #fff; box-shadow: var(--shadow-md);">
-          <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
-            <div style="width: 44px; height: 44px; border-radius: 50%; background: rgba(255,255,255,.2); display: flex; align-items: center; justify-content: center; font-size: 20px;">
-              <i class="fa-solid fa-phone-volume"></i>
-            </div>
-            <div>
-              <div style="font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em; opacity: .9;">Cấp cứu 24/7</div>
-              <a href="tel:1900xxxx" style="font-size: 20px; font-weight: 800; color: #fff; text-decoration: none;">1900 xxxx</a>
-            </div>
-          </div>
-          <p style="font-size: 13px; opacity: .9; margin-bottom: 16px; line-height: 1.5;">
-            Bệnh viện đa khoa khu vực Đăk Hà phục vụ khám chữa bệnh và cấp cứu 24/7 cho toàn thể nhân dân.
-          </p>
-          <a href="<?php echo XC_URL; ?>/pages/dat-lich.html" class="btn btn-accent btn-sm w-100" style="display: block; text-align: center; text-decoration: none; border-radius: 20px; font-weight: 700;">
-            <i class="fa-solid fa-calendar-check me-1"></i> Liên hệ
-          </a>
-        </div>
-
-      </div>
+      <!--  -->
 
     </div>
   </div>
 </main>
-
-<!-- =====================================================
-     Document Viewer Modal (eOffice Style Direct In-Page Viewer)
-     ===================================================== -->
-<div id="docViewerModal" class="doc-viewer-overlay">
-  <div class="doc-viewer-container">
-    <div class="doc-viewer-header">
-      <div class="d-flex align-items-center gap-2 text-truncate" style="max-width: 65%;">
-        <i class="fa-solid fa-file-contract text-primary" style="font-size: 20px;"></i>
-        <span id="docViewerTitle" class="fw-bold text-dark text-truncate" style="font-size: 16px;">Tên tài liệu</span>
-      </div>
-      <div class="d-flex align-items-center gap-2">
-        <a id="docViewerDownload" href="#" download="" class="btn btn-sm btn-primary rounded-pill px-3" style="font-size: 13px;">
-          <i class="fa-solid fa-download me-1"></i> Tải về
-        </a>
-        <a id="docViewerExternal" href="#" target="_blank" class="btn btn-sm btn-outline-secondary rounded-pill px-3" style="font-size: 13px;" title="Mở trong tab mới">
-          <i class="fa-solid fa-arrow-up-right-from-square me-1"></i> Tab mới
-        </a>
-        <button type="button" onclick="closeDocViewer()" class="btn-close-viewer" title="Đóng cửa sổ">
-          <i class="fa-solid fa-xmark"></i>
-        </button>
-      </div>
-    </div>
-    <div id="docViewerBody" class="doc-viewer-body">
-      <!-- Dynamic viewer content (iframe / img) loaded here -->
-    </div>
-  </div>
-</div>
 
 <style>
 /* Styling for CKEditor HTML content on Frontend */
@@ -209,147 +166,90 @@
   margin: 1rem 0;
 }
 
-/* Document Viewer Modal Overlay Style (eOffice) */
-.doc-viewer-overlay {
-  position: fixed;
-  top: 0; left: 0; width: 100%; height: 100%;
-  background: rgba(15, 23, 42, 0.75);
-  backdrop-filter: blur(4px);
-  z-index: 99999;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-  opacity: 0;
-  visibility: hidden;
-  transition: all 0.25s ease-in-out;
-}
-.doc-viewer-overlay.active {
-  opacity: 1;
-  visibility: visible;
-}
-.doc-viewer-container {
-  width: 95%;
-  max-width: 1200px;
-  height: 88vh;
-  background: #ffffff;
-  border-radius: 16px;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.35);
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  transform: scale(0.96);
-  transition: transform 0.25s ease-in-out;
-}
-.doc-viewer-overlay.active .doc-viewer-container {
-  transform: scale(1);
-}
-.doc-viewer-header {
-  height: 60px;
-  padding: 12px 20px;
-  background: #ffffff;
-  border-bottom: 1px solid #e2e8f0;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-shrink: 0;
-}
-.btn-close-viewer {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  border: none;
-  background: #f1f5f9;
-  color: #64748b;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  font-size: 18px;
-  transition: all 0.2s;
-}
-.btn-close-viewer:hover {
-  background: #fee2e2;
-  color: #ef4444;
-}
-.doc-viewer-body {
-  flex: 1;
-  background: #f8fafc;
-  position: relative;
-  overflow: hidden;
-}
-.doc-viewer-loading {
-  position: absolute;
-  top: 50%; left: 50%;
-  transform: translate(-50%, -50%);
-  text-align: center;
-  color: #64748b;
-  font-weight: 500;
-}
+/* Attachment list and inline eOffice-style document viewer */
+.attachments-box{margin:28px 0;border:1px solid #d9e1ec;border-radius:14px;background:#fff;overflow:hidden}
+.attachments-heading{min-height:50px;padding:0 14px;display:flex;align-items:center;justify-content:space-between;background:#f8fafc;border-bottom:1px solid #d9e1ec;color:#60708a;text-transform:uppercase;letter-spacing:.02em}
+.attachments-heading h2,.attachments-heading span{margin:0;font-size:14px;font-weight:600}
+.attachment-list{display:flex;flex-direction:column}
+.attachment-item{min-height:84px;padding:14px;display:flex;align-items:center;justify-content:space-between;gap:18px;border-bottom:1px solid #edf1f6}
+.attachment-item:last-child{border-bottom:0}
+.attachment-info{display:flex;align-items:center;gap:14px;min-width:0;flex:1}
+.attachment-file-icon{width:45px;height:45px;border-radius:7px;background:#fff0f0;display:inline-flex;align-items:center;justify-content:center;font-size:20px;flex:0 0 auto}
+.attachment-name-wrap{display:flex;align-items:center;gap:10px;min-width:0}
+.attachment-name-wrap strong{font-size:16px;font-weight:500;color:#0f172a;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.attachment-size{padding:4px 9px;border-radius:999px;background:#f4f7fb;color:#8b9ab0;font-size:12px;white-space:nowrap}
+.attachment-actions{display:flex;align-items:center;gap:10px;flex:0 0 auto}
+.attachment-view-btn,.attachment-download-btn{height:38px;padding:0 16px;border-radius:8px;display:inline-flex;align-items:center;justify-content:center;gap:8px;font-size:14px;font-weight:500;text-decoration:none;cursor:pointer;transition:.2s}
+.attachment-view-btn{border:1px solid #8db9ff;background:#fff;color:#0757b7}
+.attachment-view-btn:hover,.attachment-view-btn.active{background:#eff6ff;border-color:#3b82f6;color:#0757b7}
+.attachment-download-btn{border:1px solid #f15b25;background:#f15b25;color:#fff}
+.attachment-download-btn:hover{background:#d94715;color:#fff}
+.inline-document-viewer{border-top:1px solid #d9e1ec;background:#eef2f7}
+.inline-viewer-toolbar{min-height:52px;padding:8px 14px;display:flex;align-items:center;justify-content:space-between;gap:14px;background:#fff;border-bottom:1px solid #d9e1ec}
+.inline-viewer-toolbar>div{display:flex;align-items:center;gap:9px;min-width:0}
+.inline-viewer-toolbar strong{font-size:14px;color:#24344d;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.inline-viewer-controls a,.inline-viewer-controls button{border:1px solid #d5deea;background:#fff;color:#52657a;border-radius:7px;padding:7px 11px;display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-size:12px;cursor:pointer}
+.inline-viewer-body{height:min(76vh,820px);min-height:520px;background:#525659;position:relative;overflow:auto}
+.inline-viewer-body iframe,.inline-viewer-body object{display:block;width:100%;height:100%;border:0;background:#fff}
+.inline-viewer-loading,.inline-viewer-message{height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;text-align:center;padding:30px;background:#fff;color:#64748b}
+.inline-viewer-image{min-height:100%;display:flex;align-items:flex-start;justify-content:center;padding:22px;background:#27303c}
+.inline-viewer-image img{max-width:100%;height:auto;box-shadow:0 8px 30px rgba(0,0,0,.35)}
+@media(max-width:640px){.attachments-heading>span{display:none}.attachment-item{align-items:flex-start;flex-direction:column}.attachment-actions{width:100%}.attachment-view-btn,.attachment-download-btn{flex:1}.attachment-name-wrap{align-items:flex-start;flex-direction:column;gap:5px;width:100%}.attachment-name-wrap strong{max-width:100%}.inline-viewer-controls span{display:none}.inline-viewer-body{height:68vh;min-height:420px}}
 </style>
 
 <script>
-function openInPageViewer(url, name, ext) {
-  ext = (ext || '').toLowerCase();
-  const modal = document.getElementById('docViewerModal');
-  const body = document.getElementById('docViewerBody');
-  const title = document.getElementById('docViewerTitle');
-  const downloadBtn = document.getElementById('docViewerDownload');
-  const externalBtn = document.getElementById('docViewerExternal');
+function viewerEscape(value) {
+  return String(value || '').replace(/[&<>'"]/g, function(char) {
+    return {'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[char];
+  });
+}
 
+function showInlineAttachment(button) {
+  const url = button.dataset.url || '';
+  const name = button.dataset.name || 'Tài liệu';
+  const ext = (button.dataset.ext || '').toLowerCase();
+  const viewer = document.getElementById('inlineDocumentViewer');
+  const body = document.getElementById('inlineViewerBody');
+  const title = document.getElementById('inlineViewerTitle');
+  const newTab = document.getElementById('inlineViewerNewTab');
+
+  document.querySelectorAll('.attachment-view-btn').forEach(function(item){ item.classList.remove('active'); });
+  button.classList.add('active');
   title.textContent = name;
-  downloadBtn.setAttribute('href', url);
-  downloadBtn.setAttribute('download', name);
-  externalBtn.setAttribute('href', url);
+  newTab.href = url;
+  body.innerHTML = '<div class="inline-viewer-loading"><i class="fa-solid fa-circle-notch fa-spin fa-2x text-primary"></i><span>Đang nạp tài liệu...</span></div>';
+  viewer.hidden = false;
 
-  body.innerHTML = '<div class="doc-viewer-loading"><i class="fa-solid fa-circle-notch fa-spin fa-2x text-primary mb-2"></i><div>Đang nạp tài liệu...</div></div>';
-
-  let viewerHtml = '';
+  const safeUrl = viewerEscape(url);
+  const safeName = viewerEscape(name);
+  let content = '';
   if (ext === 'pdf') {
-    viewerHtml = `<iframe src="${url}#toolbar=1&navpanes=1" width="100%" height="100%" style="border:none;"></iframe>`;
-  } else if (['doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx'].includes(ext)) {
-    const absUrl = url.startsWith('http') ? url : (window.location.origin + url);
-    const googleViewer = `https://docs.google.com/gview?url=${encodeURIComponent(absUrl)}&embedded=true`;
-    viewerHtml = `<iframe src="${googleViewer}" width="100%" height="100%" style="border:none;"></iframe>`;
-  } else if (['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(ext)) {
-    viewerHtml = `<div style="display:flex; align-items:center; justify-content:center; height:100%; padding:20px; background:#0f172a;"><img src="${url}" alt="${name}" style="max-width:100%; max-height:100%; object-fit:contain; border-radius:8px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);"></div>`;
-  } else if (['txt', 'csv'].includes(ext)) {
-    viewerHtml = `<iframe src="${url}" width="100%" height="100%" style="border:none; background:#fff; padding:15px;"></iframe>`;
+    const pdfJsViewer = '<?php echo XC_URL; ?>/template/frontend_old/assets/pdfjs/web/viewer.html?file=' + encodeURIComponent(url);
+    content = '<iframe src="' + viewerEscape(pdfJsViewer) + '" title="' + safeName + ' - PDF.js"></iframe>';
+  } else if (['jpg','jpeg','png','gif','webp','svg'].includes(ext)) {
+    content = '<div class="inline-viewer-image"><img src="' + safeUrl + '" alt="' + safeName + '"></div>';
+  } else if (['txt','csv','xml','json'].includes(ext)) {
+    content = '<iframe src="' + safeUrl + '" title="' + safeName + '"></iframe>';
+  } else if (['doc','docx','xls','xlsx','ppt','pptx'].includes(ext) && !['localhost','127.0.0.1'].includes(window.location.hostname)) {
+    const absoluteUrl = new URL(url, window.location.href).href;
+    const officeViewer = 'https://view.officeapps.live.com/op/embed.aspx?src=' + encodeURIComponent(absoluteUrl);
+    content = '<iframe src="' + viewerEscape(officeViewer) + '" title="' + safeName + ' - Microsoft Office Viewer"></iframe>';
   } else {
-    viewerHtml = `<div class="p-5 text-center bg-white h-100 d-flex flex-column align-items-center justify-content-center">
-      <i class="fa-solid fa-file-arrow-down fa-3x text-primary mb-3"></i>
-      <h5>Tập tin định dạng .${ext.toUpperCase()}</h5>
-      <p class="text-muted small mb-3">Định dạng tập tin này chưa hỗ trợ xem trực tiếp. Bạn có thể tải file về máy để xem.</p>
-      <a href="${url}" download="${name}" class="btn btn-primary rounded-pill px-4"><i class="fa-solid fa-download me-1"></i> Tải về ngay</a>
-    </div>`;
+    const message = ['doc','docx','xls','xlsx','ppt','pptx'].includes(ext)
+      ? 'Trình xem Microsoft Office chỉ truy cập được khi website sử dụng tên miền công khai. Trên máy nội bộ, vui lòng tải tệp để mở bằng ứng dụng Office.'
+      : 'Định dạng .' + viewerEscape(ext.toUpperCase()) + ' chưa hỗ trợ xem trực tiếp trên trình duyệt.';
+    content = '<div class="inline-viewer-message"><i class="fa-solid fa-file-arrow-down fa-3x text-primary"></i><strong>Không thể xem trực tiếp</strong><p>' + message + '</p><a href="' + safeUrl + '" download="' + safeName + '" class="attachment-download-btn"><i class="fa-solid fa-download"></i>Tải tệp về</a></div>';
   }
-
-  setTimeout(() => {
-    body.innerHTML = viewerHtml;
-  }, 250);
-
-  modal.classList.add('active');
-  document.body.style.overflow = 'hidden';
+  body.innerHTML = content;
+  viewer.scrollIntoView({behavior:'smooth', block:'start'});
 }
 
-function closeDocViewer() {
-  const modal = document.getElementById('docViewerModal');
-  modal.classList.remove('active');
-  document.getElementById('docViewerBody').innerHTML = '';
-  document.body.style.overflow = '';
+function closeInlineAttachment() {
+  const viewer = document.getElementById('inlineDocumentViewer');
+  viewer.hidden = true;
+  document.getElementById('inlineViewerBody').innerHTML = '';
+  document.querySelectorAll('.attachment-view-btn').forEach(function(item){ item.classList.remove('active'); });
 }
-
-// Đóng modal khi nhấn phím ESC hoặc click bên ngoài container
-document.addEventListener('keydown', function(e) {
-  if (e.key === 'Escape') {
-    closeDocViewer();
-  }
-});
-document.getElementById('docViewerModal').addEventListener('click', function(e) {
-  if (e.target === this) {
-    closeDocViewer();
-  }
-});
 </script>
 
 <?php require_once 'footer.php'; ?>

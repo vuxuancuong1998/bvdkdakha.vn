@@ -318,6 +318,94 @@ Class homeController Extends baseController
     public function contact(){
         $this->view->show("lien-he");
     }
+    public function activities($para = array())
+    {
+        $slug = isset($para[1]) ? strtolower(trim((string)$para[1])) : 'lich-cong-tac';
+        $slug = preg_replace('/\.html$/i', '', $slug);
+
+        // Các phân hệ Hoạt động dùng giao diện riêng. Giữ /hoat-dong.html
+        // tương thích ngược và trỏ về Lịch công tác.
+        if(in_array($slug, array('dao-tao-tap-huan', 'ke-hoach'), true)){
+            global $db;
+            $trainingPlans = array();
+            $db->query("SHOW TABLES LIKE 'hicrm_training_plans'");
+            if($db->num_row() > 0){
+                $db->query("SELECT p.*,u.full_name AS creator_name FROM hicrm_training_plans p LEFT JOIN hicrm_users u ON u.id=p.created_by WHERE p.status=4 AND (p.published_at IS NULL OR p.published_at<=NOW()) ORDER BY p.sort_order ASC,p.start_date DESC,p.id DESC");
+                $rows = $db->fetch_object();
+                foreach(is_array($rows) ? $rows : array() as $row){
+                    $trainingPlans[] = array(
+                        'id'=>intval($row->id), 'code'=>(string)$row->plan_code, 'name'=>(string)$row->title,
+                        'summary'=>(string)$row->summary, 'level'=>(string)$row->priority_level,
+                        'startDate'=>(string)$row->start_date, 'endDate'=>(string)$row->end_date,
+                        'status'=>($row->end_date >= date('Y-m-d')) ? 'active' : 'expired',
+                        'organizer'=>(string)$row->organizer, 'targetStaff'=>(string)$row->target_staff,
+                        'trainingForm'=>(string)$row->training_form, 'certificateType'=>(string)$row->certificate_type,
+                        'department'=>(string)$row->department_name, 'fileName'=>(string)$row->attachment_name,
+                        'fileSender'=>!empty($row->attachment_sender) ? (string)$row->attachment_sender : trim((string)$row->creator_name.' - '.date('d/m/Y H:i:s',strtotime($row->created_at))),
+                        'fileSize'=>$this->formatTrainingFileSize(intval($row->attachment_size)),
+                        'fileUrl'=>!empty($row->attachment_path) ? XC_URL.'/uploads/training-plans/'.rawurlencode($row->attachment_path) : ''
+                    );
+                }
+            }
+            $this->view->data['training_plans'] = $trainingPlans;
+            $this->view->show('dao-tao-tap-huan');
+            return;
+        }
+        if(in_array($slug, array('chien-dich-y-te', 'chien-dich'), true)){
+            global $db;
+            $detailParam=isset($para[2])?trim((string)$para[2]):'';
+            if($detailParam!==''&&preg_match('/^(\d+)/',$detailParam,$detailMatch)){
+                $campaignId=intval($detailMatch[1]);
+                $db->query("SELECT * FROM hicrm_medical_campaigns WHERE id='".$campaignId."' AND status=4 AND (published_at IS NULL OR published_at<=NOW()) LIMIT 1");
+                $campaign=$db->fetch_object(true);
+                if(!$campaign){header('Location: '.XC_URL.'/hoat-dong/chien-dich-y-te.html');return;}
+                $db->query("SELECT id,campaign_type,title,summary,start_date,end_date,location,image_path FROM hicrm_medical_campaigns WHERE status=4 AND id<>'".$campaignId."' AND (published_at IS NULL OR published_at<=NOW()) ORDER BY (campaign_type='".$db->escapestring($campaign->campaign_type)."') DESC,sort_order ASC,start_date DESC,id DESC LIMIT 5");
+                $related=$db->fetch_object();
+                $this->view->data['medical_campaign']=$campaign;
+                $this->view->data['related_campaigns']=is_array($related)?$related:array();
+                $this->view->show('chien-dich-y-te-detail');return;
+            }
+            $campaigns = array();
+            $db->query("SHOW TABLES LIKE 'hicrm_medical_campaigns'");
+            if($db->num_row() > 0){
+                $db->query("SELECT * FROM hicrm_medical_campaigns WHERE status=4 AND (published_at IS NULL OR published_at<=NOW()) ORDER BY sort_order ASC,start_date DESC,id DESC");
+                $rows=$db->fetch_object();
+                $campaigns=is_array($rows)?$rows:array();
+            }
+            $this->view->data['medical_campaigns']=$campaigns;
+            $this->view->show('chien-dich-y-te');
+            return;
+        }
+
+        global $db;
+        $db->query("SHOW TABLES LIKE 'hicrm_activities'");
+        $rows = array(); $scheduleItems = array(); $attachments = array();
+        if($db->num_row() > 0){
+            $db->query("SELECT a.*,u.full_name AS author_name FROM hicrm_activities a LEFT JOIN hicrm_users u ON u.id=a.created_by WHERE a.status=4 AND (a.published_at IS NULL OR a.published_at<=NOW()) ORDER BY a.is_featured DESC,COALESCE(a.start_at,a.published_at,a.created_at) DESC,a.id DESC LIMIT 100");
+            $rows=$db->fetch_object(); $rows=is_array($rows)?$rows:array();
+            $ids=array(); foreach($rows as $row){$ids[]=intval($row->id);}
+            if($ids){
+                $idSql=implode(',',$ids);
+                $db->query("SELECT * FROM hicrm_activity_schedule_items WHERE activity_id IN (".$idSql.") ORDER BY work_date,start_time,sort_order,id");
+                foreach((array)$db->fetch_object() as $item){$scheduleItems[intval($item->activity_id)][]=$item;}
+                $db->query("SELECT * FROM hicrm_activity_attachments WHERE activity_id IN (".$idSql.") ORDER BY sort_order,id");
+                foreach((array)$db->fetch_object() as $file){$attachments[intval($file->activity_id)][]=$file;}
+            }
+        }
+        $grouped=array('work_schedule'=>array(),'training_plan'=>array(),'medical_campaign'=>array());
+        foreach($rows as $row){if(isset($grouped[$row->activity_type])){$grouped[$row->activity_type][]=$row;}}
+        $this->view->data['activity_groups']=$grouped;
+        $this->view->data['activity_schedule_items']=$scheduleItems;
+        $this->view->data['activity_attachments']=$attachments;
+        $this->view->show('hoat-dong');
+    }
+
+    private function formatTrainingFileSize($bytes)
+    {
+        if($bytes <= 0){ return '0 KB'; }
+        if($bytes >= 1048576){ return number_format($bytes / 1048576,1).' MB'; }
+        return number_format($bytes / 1024,0).' KB';
+    }
     public function events($para = array()){
         global $db;
         
@@ -328,15 +416,16 @@ Class homeController Extends baseController
         //     return $this->news_detail($para);
         // }
         
-        $type = explode("-",$para[1]);
-		$event_type = $type[0];
+        $type_param = is_array($para) && isset($para[1]) ? trim($para[1]) : '';
+        $type = explode("-", $type_param);
+		$event_type = isset($type[0]) ? max(0, intval($type[0])) : 0;
         // 2. Retrieve search query, sort, and type filters from menu or GET parameters
         $q = isset($_GET['q']) ? trim($_GET['q']) : '';
         $sort = isset($_GET['sort']) ? trim($_GET['sort']) : 'newest';
         
 
         // $event_type = 0;
-        $current_type_slug = '';
+        $current_type_slug = $event_type > 0 ? $type_param : '';
 
         // 3. Build query clauses for hicrm_events with event_status = 4 ONLY
         $where = array("event_status = 4");
@@ -352,7 +441,7 @@ Class homeController Extends baseController
 
         // 4. Pagination math
         $page = isset($_GET['page']) ? max(1, intval($_GET['page'])) : 1;
-        $per_page = 9;
+        $per_page = 10;
 
         $db->query("SELECT COUNT(*) AS total FROM hicrm_events WHERE ".$whereSql);
         $total = intval($db->fetch_object(true)->total);
@@ -364,13 +453,10 @@ Class homeController Extends baseController
         $start_record = $total > 0 ? $offset + 1 : 0;
         $end_record = min($offset + $per_page, $total);
 
-        // 5. Order By sorting options
-        $orderBy = "event_hot DESC, event_created_date DESC, id DESC";
-        if ($sort === 'oldest') {
-            $orderBy = "event_created_date ASC, id ASC";
-        } elseif ($sort === 'popular') {
-            $orderBy = "event_hot DESC, event_created_date DESC, id DESC";
-        }
+        // Public news must always be shown newest first. The id makes the order
+        // deterministic when several articles share the same publication date.
+        $sort = 'newest';
+        $orderBy = "event_created_date DESC, id DESC";
 
         // 6. Query events list
         $db->query("SELECT * FROM hicrm_events WHERE ".$whereSql." ORDER BY ".$orderBy." LIMIT ".$offset.",".$per_page);
@@ -382,12 +468,17 @@ Class homeController Extends baseController
         if (!empty($events_list)) {
             $featured_event = $events_list[0];
         } else {
-            $db->query("SELECT * FROM hicrm_events WHERE ".$whereSql." ORDER BY event_hot DESC, event_created_date DESC, id DESC LIMIT 1");
+            $db->query("SELECT * FROM hicrm_events WHERE ".$whereSql." ORDER BY event_created_date DESC, id DESC LIMIT 1");
             $featured_event = $db->fetch_object(true);
         }
 
         // 8. Query popular events sidebar (event_status = 4 ONLY)
-        $db->query("SELECT * FROM hicrm_events WHERE event_status = 4 ORDER BY event_hot DESC, event_created_date DESC, id DESC LIMIT 5");
+        $page_ids = array();
+        foreach ($events_list as $event_item) {
+            $page_ids[] = intval($event_item->id);
+        }
+        $popular_exclusion = !empty($page_ids) ? " AND id NOT IN (".implode(',', $page_ids).")" : "";
+        $db->query("SELECT * FROM hicrm_events WHERE event_status = 4".$popular_exclusion." ORDER BY event_hot DESC, event_created_date DESC, id DESC LIMIT 5");
         $popular_raw = $db->fetch_object();
         $popular_events = is_array($popular_raw) ? $popular_raw : array();
 
@@ -418,7 +509,7 @@ Class homeController Extends baseController
 		$newsId = $newsId[0];
         if($newsId <= 0){ header("Location: ".XC_URL); exit(); }
         // 1. Fetch details from hicrm_events with event_status = 4 ONLY
-        $db->query("SELECT * FROM hicrm_events WHERE id = '".$newsId."' LIMIT 1");
+        $db->query("SELECT * FROM hicrm_events WHERE id = '".$newsId."' AND event_status = 4 LIMIT 1");
         if($db->num_row() <= 0){ header("Location: ".XC_URL); exit(); }
         $news = $db->fetch_object(true);
 
@@ -459,7 +550,11 @@ Class homeController Extends baseController
         }
 
         // 4. Popular events sidebar with event_status = 4
-        $db->query("SELECT * FROM hicrm_events WHERE event_status = 4 AND id <> '".$newsId."' ORDER BY event_hot DESC, event_created_date DESC LIMIT 5");
+        $excluded_ids = array(intval($newsId));
+        foreach ($related_news_list as $related_item) {
+            $excluded_ids[] = intval($related_item->id);
+        }
+        $db->query("SELECT * FROM hicrm_events WHERE event_status = 4 AND id NOT IN (".implode(',', array_unique($excluded_ids)).") ORDER BY event_hot DESC, event_created_date DESC, id DESC LIMIT 5");
         $pop_raw = $db->fetch_object();
         $popular_news = array();
         if (is_array($pop_raw)) {
@@ -1324,6 +1419,23 @@ Class homeController Extends baseController
 
                 $db->query("INSERT INTO hicrm_tt25_requests (fullname, cccd, dob, phone, bhyt_code, email, category_id, category_name, status, created_at) 
                     VALUES ('$fn', '$cd', '$db_dob', '$ph', '$bh', '$em', '$category_id', '$cn', 0, NOW())");
+
+                $requestId = intval($db->insert_id());
+                $zaloMessage = "[YÊU CẦU GIẤY TT25 MỚI]\n"
+                    ."Mã yêu cầu: #".$requestId."\n"
+                    ."Họ và tên: ".$fullname."\n"
+                    ."CCCD: ".$cccd."\n"
+                    ."Ngày sinh: ".date('d/m/Y', strtotime($dob))."\n"
+                    ."Số điện thoại: ".$phone."\n"
+                    ."Mã thẻ BHYT: ".($bhyt_code !== '' ? $bhyt_code : 'Không có')."\n"
+                    ."Email: ".$email."\n"
+                    ."Loại giấy: ".$category_name."\n"
+                    ."Thời gian: ".date('H:i d/m/Y');
+
+                $zaloResult = zalo_oa_send_group_message($zaloMessage);
+                if(empty($zaloResult['success'])){
+                    error_log('[Zalo OA][TT25 #'.$requestId.'] '.(isset($zaloResult['message']) ? $zaloResult['message'] : 'Khong gui duoc thong bao'));
+                }
 
                 $successMsg = "Hệ thống đã tiếp nhận yêu cầu; Vui lòng kiểm tra thư mục email trong 24h.";
 

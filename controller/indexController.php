@@ -181,7 +181,7 @@ Class indexController Extends baseController
 				END ASC,
 				d.doctor_department_id ASC,
 				d.id ASC
-			LIMIT 8");
+			LIMIT 32");
 		$this->view->data['featured_doctors'] = $db->fetch_object();
 
 		$this->view->show("index");

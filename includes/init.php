@@ -25,6 +25,7 @@
  include __SITE_PATH . '/application/' . 'shop.class.php';
  include __SITE_PATH . '/application/' . 'erp.class.php';
  include __SITE_PATH . '/application/' . 'pdf.class.php';
+ include __SITE_PATH . '/application/' . 'zalo_oa.class.php';
 
  /*** include the router class ***/
  include __SITE_PATH . '/application/' . 'router.class.php';

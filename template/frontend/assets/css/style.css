@@ -3074,6 +3074,12 @@ textarea.form-control {
   border-bottom: 1px solid #dce9f5;
 }
 
+.breadcrumb--training {
+  width: 100%;
+  max-width: var(--container-max);
+  margin-inline: auto;
+}
+
 .breadcrumb-list {
   display: flex;
   align-items: center;

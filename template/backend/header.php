@@ -17,8 +17,8 @@ $adminCanAny = function($keys) use ($adminCan){
       <title>Bệnh viện đa khoa Khu vực Đăk Hà</title>
       
       <!-- Favicon -->
-      <link rel="shortcut icon" href="<?php echo $admintemplate_path; ?>/assets/images/favicon.ico">
-      
+      <link rel="shortcut icon" href="<?php echo XC_URL; ?>/template/frontend/assets/images/logo.png">
+                  
       <!-- Library / Plugin Css Build -->
       <link rel="stylesheet" href="<?php echo $admintemplate_path; ?>/assets/css/core/libs.min.css?v=<?php echo time(); ?>">
       

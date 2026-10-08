@@ -237,8 +237,7 @@ $contactEscape = function ($value) { return htmlspecialchars($value, ENT_QUOTES,
                 <caption class="sr-only">Giờ làm việc của Trung tâm Y tế khu vực Đắk Hà</caption>
                 <tbody>
                   <tr><td>Thứ Hai – Thứ Sáu</td><td>07:00 – 17:00</td></tr>
-                  <tr><td>Thứ Bảy</td><td>07:00 – 11:30</td></tr>
-                  <tr><td>Chủ Nhật</td><td>Nghỉ (trừ cấp cứu)</td></tr>
+                  <tr><td>Thứ Bảy & Chủ Nhật</td><td>Trực cấp cứu</td></tr>
                   <tr><td>Cấp cứu</td><td><span class="badge-247">24/7</span> Kể cả lễ, Tết</td></tr>
                 </tbody>
               </table>

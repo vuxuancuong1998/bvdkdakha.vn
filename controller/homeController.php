@@ -566,6 +566,14 @@ Class homeController Extends baseController
             }
         }
 
+        // Mười tin mới nhất từ tất cả loại tin, bỏ bài đang xem.
+        $db->query("SELECT id, event_name, event_image, event_type, event_created_date
+            FROM hicrm_events
+            WHERE event_status = 4 AND id <> '".intval($newsId)."'
+            ORDER BY event_created_date DESC, id DESC
+            LIMIT 10");
+        $latest_news = $db->fetch_object();
+        $this->view->data['latest_news'] = is_array($latest_news) ? $latest_news : array();
         $this->view->data['news_detail'] = $news;
         $this->view->data['related_news'] = $related_news_list;
         $this->view->data['popular_news'] = $popular_news;

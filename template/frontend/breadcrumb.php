@@ -30,7 +30,7 @@
   }
   if ($crumbPath !== '' && $crumbPath !== 'index.html' && strpos($crumbPath, 'lay-giay-tt25') !== 0):
   ?>
-  <nav class="breadcrumb" aria-label="breadcrumb">
+  <nav class="breadcrumb<?php echo $crumbPath === 'hoat-dong/dao-tao-tap-huan.html' ? ' breadcrumb--training' : ''; ?>" aria-label="breadcrumb">
     <div class="container"><ol class="breadcrumb-list" itemscope itemtype="https://schema.org/BreadcrumbList">
       <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"><?php if ($crumbPath !== '' && $crumbPath !== 'index.html'): ?><a href="<?php echo XC_URL; ?>/" itemprop="item"><span itemprop="name">Trang chủ</span></a><?php else: ?><span itemprop="name">Trang chủ</span><?php endif; ?><meta itemprop="position" content="1" /></li>
       <?php if ($crumbParent): ?><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"><a href="<?php echo htmlspecialchars($crumbParent[1], ENT_QUOTES, 'UTF-8'); ?>" itemprop="item"><span itemprop="name"><?php echo htmlspecialchars($crumbParent[0], ENT_QUOTES, 'UTF-8'); ?></span></a><meta itemprop="position" content="2" /></li><?php endif; ?>

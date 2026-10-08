@@ -27,9 +27,18 @@ Class pageController extends baseController
 				WHERE (p.page_slug = '".$s_esc."' OR p.id = '".$s_esc."') AND p.page_status = 1 
 				LIMIT 1");
 			$page_data = $db->fetch_object(true);
+			if(!$page_data){
+				$legacy_url = $db->escapestring('/trang/'.$slug);
+				$db->query("SELECT p.*, c.category_name
+					FROM hicrm_static_pages p
+					LEFT JOIN hicrm_static_page_categories c ON p.category_id = c.id
+					WHERE (p.link_url = '".$legacy_url."' OR p.link_url = '".$legacy_url."/') AND p.page_status = 1
+					LIMIT 1");
+				$page_data = $db->fetch_object(true);
+			}
 		}
 
-		if(!$page_data){
+		if(!$page_data && $slug === ''){
 			$db->query("SELECT p.*, c.category_name 
 				FROM hicrm_static_pages p 
 				LEFT JOIN hicrm_static_page_categories c ON p.category_id = c.id 
@@ -37,6 +46,12 @@ Class pageController extends baseController
 				ORDER BY p.sort_order ASC, p.id ASC 
 				LIMIT 1");
 			$page_data = $db->fetch_object(true);
+		}
+
+		if(!$page_data){
+			http_response_code(404);
+			$this->view->show("404");
+			return;
 		}
 
 		$db->query("SELECT id, page_title, page_slug, hashtag, link_url 

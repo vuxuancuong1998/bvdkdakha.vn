@@ -2266,10 +2266,21 @@ Class apiController extends baseController
 			return;
 		}
 
+		if(preg_match('~^/trang/([^/?#]+)/?$~i', $link_url, $url_match)){
+			$page_slug = $url_match[1];
+		}
 		if(empty($page_slug)){
 			$page_slug = preg_replace('/[^a-z0-9\-]/', '', strtolower(str_replace(' ', '-', $page_title)));
 		}
 		$page_slug = preg_replace('/[^a-z0-9\-]/', '', strtolower(str_replace(' ', '-', $page_slug)));
+		if($page_slug === ''){
+			$result['message'] = 'URL trang không hợp lệ. Vui lòng nhập dạng /trang/ten-trang.';
+			echo json_encode($result);
+			return;
+		}
+		if(preg_match('~^/trang/~i', $link_url)){
+			$link_url = '/trang/'.$page_slug;
+		}
 
 		$banner_image = '';
 		if(isset($_FILES['banner_image']) && $_FILES['banner_image']['name'] != ''){
@@ -2372,11 +2383,13 @@ Class apiController extends baseController
 
 		$e_static_files = $db->escapestring(json_encode($existing_files, JSON_UNESCAPED_UNICODE));
 
+		$db->query("SELECT id FROM hicrm_static_pages WHERE page_slug = '".$e_slug."' AND id <> '".$id."' AND page_status <> 99 LIMIT 1");
+		if($db->fetch_object(true)){
+			$result['message'] = 'URL trang đã tồn tại. Vui lòng chọn URL khác.';
+			echo json_encode($result);
+			return;
+		}
 		if($id == 0){
-			$db->query("SELECT id FROM hicrm_static_pages WHERE page_slug = '".$e_slug."' LIMIT 1");
-			if($db->fetch_object(true)){
-				$e_slug .= '-'.time();
-			}
 			
 			$db->query("INSERT INTO hicrm_static_pages (category_id, page_title, page_slug, hashtag, link_url, page_summary, page_content, static_files, banner_image, meta_title, meta_keywords, meta_description, sort_order, page_status, created_at)
 			VALUES ('".$category_id."', '".$e_title."', '".$e_slug."', '".$e_hashtag."', '".$e_link."', '".$e_summary."', '".$e_content."', '".$e_static_files."', '".$banner_image."', '".$e_mtitle."', '".$e_mkey."', '".$e_mdesc."', '".$sort_order."', '".$page_status."', NOW())");

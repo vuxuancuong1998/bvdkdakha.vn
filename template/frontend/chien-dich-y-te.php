@@ -355,12 +355,7 @@
           <div class="cp-meta-item"><svg class="cp-meta-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg><span><strong>Thời gian:</strong> <?php echo campaignFrontH($dateLabel);?></span></div>
           <div class="cp-meta-item"><svg class="cp-meta-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg><span><strong>Địa điểm:</strong> <?php echo campaignFrontH($campaign->location);?></span></div>
         </div>
-        <p class="cp-desc"><?php echo nl2br(campaignFrontH($campaign->summary));?></p>
-        <div class="cp-file-row">
-          <div class="cp-file-info" title="<?php echo campaignFrontH($campaign->attachment_name);?>"><svg class="cp-pdf-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-9.5 8.5h-2v3h-1.5v-6h3.5c1.1 0 2 .9 2 2s-.9 1-2 1zm7.5 0h-2v3H13.5v-6h3.5c1.1 0 2 .9 2 2s-.9 1-2 1z"/></svg><span><?php echo campaignFrontH($campaign->attachment_name);?></span></div>
-          <div class="cp-file-actions"><button class="btn-cp btn-cp-view" onclick="toggleViewer('campaign-pdf-<?php echo $campaignId;?>', this)"><svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5s-9.27 3.11-11 7.5z"/><path d="M12 9a3 3 0 100 6 3 3 0 000-6z"/></svg> Xem</button><a href="<?php echo campaignFrontH($fileUrl);?>" class="btn-cp btn-cp-download" download><svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM17 13l-5 5-5-5h3V9h4v4h3z"/></svg> Tải về</a></div>
-          <div id="campaign-pdf-<?php echo $campaignId;?>" class="cp-viewer-container"><div class="cp-viewer-header"><span>Bản xem trực tuyến</span><span style="cursor:pointer;" onclick="toggleViewer('campaign-pdf-<?php echo $campaignId;?>')">✕ Đóng</span></div><iframe class="cp-viewer-frame" src="about:blank" data-src="<?php echo campaignFrontH($fileUrl);?>"></iframe></div>
-        </div>
+        
       </div>
     </div>
     <?php endforeach;?>

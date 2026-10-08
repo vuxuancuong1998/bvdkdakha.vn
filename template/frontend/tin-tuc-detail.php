@@ -19,135 +19,77 @@ $created_date = $news_detail->event_created_date ?? $news_detail->published_at ?
 ?>
 
 <main id="main-content" role="main" class="news-page news-detail-page">
-
-  
-  <!-- ============================================================
-       MAIN CONTENT: Article body & Sidebar
-       ============================================================ -->
-  <div class="news-main-wrapper py-5">
+  <div class="news-main-wrapper">
     <div class="container">
-      <div class="news-layout row">
+      <div class="news-layout news-detail-layout">
+        <article class="news-posts-col news-article" itemscope itemtype="https://schema.org/NewsArticle">
+          <header class="news-article-header">
+            <span class="news-article-kicker"><i class="fa-regular fa-newspaper" aria-hidden="true"></i> Tin tức &amp; sự kiện</span>
+            <h1 class="news-detail-title" itemprop="headline"><?php echo htmlspecialchars($title, ENT_QUOTES, 'UTF-8'); ?></h1>
+            <div class="news-detail-meta">
+              <span><i class="fa-regular fa-calendar-days" aria-hidden="true"></i> <time datetime="<?php echo !empty($created_date) ? date('Y-m-d', strtotime($created_date)) : ''; ?>" itemprop="datePublished"><?php echo !empty($created_date) ? date('d/m/Y H:i', strtotime($created_date)) : 'Chưa cập nhật'; ?></time></span>
+              <span><i class="fa-regular fa-user" aria-hidden="true"></i> <?php echo htmlspecialchars($news_detail->author_name ?? 'Ban biên tập', ENT_QUOTES, 'UTF-8'); ?></span>
+            </div>
+            <?php if (!empty($description)): ?>
+              <p class="news-detail-summary" itemprop="description"><?php echo htmlspecialchars($description, ENT_QUOTES, 'UTF-8'); ?></p>
+            <?php endif; ?>
+          </header>
 
-        <!-- ==================================================
-             LEFT COLUMN: ARTICLE DETAILS (thứ tự: event_name, event_description, event_created_date, event_image, event_content)
-             ================================================== -->
-        <article class="news-posts-col col-lg-8 bg-white p-4 border rounded shadow-sm" itemscope itemtype="https://schema.org/NewsArticle">
-          
-          <!-- 1. event_name (Tiêu đề bài viết) -->
-          <h1 class="news-detail-title h2 font-weight-extrabold text-dark mt-2 mb-3" style="line-height:1.3; font-weight:800;" itemprop="headline">
-            <?php echo htmlspecialchars($title, ENT_QUOTES, 'UTF-8'); ?>
-          </h1>
-
-          <!-- 2. event_description (Mô tả / Tóm tắt) -->
-          <?php if (!empty($description)): ?>
-          <div class="news-detail-summary p-3 mb-3 rounded bg-light text-dark font-italic" style="font-size:15px; border-left: 4px solid #075985; line-height:1.6;" itemprop="description">
-            <strong>Tóm tắt:</strong> <?php echo htmlspecialchars($description, ENT_QUOTES, 'UTF-8'); ?>
-          </div>
-          <?php endif; ?>
-
-          <!-- 3. Ngày xuất bản: event_created_date -->
-          <div class="news-detail-meta text-muted d-flex align-items-center flex-wrap gap-3 pb-3 mb-4 border-bottom" style="font-size:13px;">
-            <span class="d-flex align-items-center gap-1">
-              <i class="fa-regular fa-calendar-days text-primary"></i> 
-              Ngày xuất bản: <?php echo !empty($created_date) ? date('d/m/Y H:i', strtotime($created_date)) : date('d/m/Y'); ?>
-            </span>
-            <span class="d-flex align-items-center gap-1">
-              <i class="fa-regular fa-user text-primary"></i> 
-              Tác giả: <?php echo htmlspecialchars($news_detail->author_name ?? 'Ban biên tập', ENT_QUOTES, 'UTF-8'); ?>
-            </span>
-          </div>
-
-          <!-- 4. event_image (Hình ảnh bài viết) -->
           <?php if (!empty($img_src)): ?>
-          <div class="news-detail-thumbnail mb-4 text-center">
-            <img src="<?php echo htmlspecialchars($img_src, ENT_QUOTES, 'UTF-8'); ?>" 
-                 alt="<?php echo htmlspecialchars($title, ENT_QUOTES, 'UTF-8'); ?>"
-                 class="img-fluid rounded shadow-sm" 
-                 style="max-height: 480px; width: 100%; object-fit: cover;"
-                 itemprop="image" />
-          </div>
+            <figure class="news-detail-thumbnail">
+              <img src="<?php echo htmlspecialchars($img_src, ENT_QUOTES, 'UTF-8'); ?>" alt="<?php echo htmlspecialchars($title, ENT_QUOTES, 'UTF-8'); ?>" itemprop="image" fetchpriority="high">
+            </figure>
           <?php endif; ?>
-          <p></p>
-          <!-- 5. event_content (Nội dung chi tiết bài viết) -->
-          <div class="news-detail-body post-content text-dark mb-5" style="font-size:16px; line-height:1.8;" itemprop="articleBody">
-            <?php echo $content; ?>
-          </div>
+
+          <div class="news-detail-body post-content" itemprop="articleBody"><?php echo $content; ?></div>
+
           <?php if (!empty($news_detail->event_attachment)): ?>
-          <div class="news-attachment mb-4 p-3 border rounded bg-light">
-            <strong><i class="fa-solid fa-paperclip me-2"></i>Tệp đính kèm:</strong>
-            <a href="<?php echo XC_URL.'/uploads/events/'.htmlspecialchars($news_detail->event_attachment, ENT_QUOTES, 'UTF-8'); ?>" target="_blank" rel="noopener">
-              <?php echo htmlspecialchars($news_detail->event_attachment_name ?: 'Tải tệp', ENT_QUOTES, 'UTF-8'); ?>
-            </a>
-          </div>
+            <div class="news-attachment">
+              <span class="news-attachment-icon"><i class="fa-solid fa-paperclip" aria-hidden="true"></i></span>
+              <div><strong>Tệp đính kèm</strong><a href="<?php echo XC_URL.'/uploads/events/'.htmlspecialchars($news_detail->event_attachment, ENT_QUOTES, 'UTF-8'); ?>" target="_blank" rel="noopener"><?php echo htmlspecialchars($news_detail->event_attachment_name ?: 'Xem tệp đính kèm', ENT_QUOTES, 'UTF-8'); ?></a></div>
+            </div>
           <?php endif; ?>
 
-          <!-- Social Share widget -->
-          <div class="news-detail-share d-flex align-items-center gap-2 pb-3 mb-5 border-bottom border-top pt-3">
-            <span class="text-muted fw-bold me-2" style="font-size:13px;"><i class="fa-solid fa-share-nodes"></i> Chia sẻ bài viết:</span>
-            
-            <a href="https://www.facebook.com/sharer/sharer.php?u=<?php echo urlencode($current_url); ?>" 
-               target="_blank" rel="noopener noreferrer" 
-               class="btn btn-sm text-white d-flex align-items-center gap-1 px-3" 
-               style="background:#1877f2; font-size:12px; border-radius:4px;color: #fff;">
-              <i class="fa-brands fa-facebook-f"></i> Facebook
-            </a>
-            
-            <button onclick="copyArticleLink()" 
-                    class="btn btn-sm btn-outline-secondary d-flex align-items-center gap-1 px-3" 
-                    style="font-size:12px; border-radius:4px;">
-              <i class="fa-regular fa-copy"></i> Sao chép link
-            </button>
-          </div> 
-          
-
-        </article><!-- /news-posts-col -->
-    
-        <!-- ==================================================
-             RIGHT COLUMN: SIDEBAR (Hiển thị các tin tức nổi bật khác)
-             ================================================== -->
-        <aside class="news-sidebar col-lg-4 mt-4 mt-lg-0">
-          
-          <!-- Widget: Tin nổi bật khác -->
-          <?php if (!empty($popular_news) && is_array($popular_news)): ?>
-          <div class="widget widget-featured mb-4 p-3 border rounded bg-white shadow-sm">
-            <h2 class="widget-title h6 pb-2 border-bottom d-flex align-items-center gap-2 mb-3" style="font-weight:700;">
-              <i class="fa-solid fa-star text-primary"></i> Tin tức nổi bật khác
-            </h2>
-            <div class="widget-body">
-              <ol class="popular-posts list-unstyled mb-0 d-flex flex-column gap-3" aria-label="Danh sách tin nổi bật khác">
-                <?php 
-                $rank = 1;
-                foreach ($popular_news as $pop_item): 
-                  $pop_slug = isset($pop_item->event_name) ? general::getInstance()->bodau($pop_item->event_name) : (isset($pop_item->title) ? general::getInstance()->bodau($pop_item->title) : 'bai-viet');
-                  $pop_url = XC_URL . '/tin-tuc/' . $pop_item->id . '-' . $pop_slug . '.html';
-                  $pop_title = $pop_item->event_name ?? $pop_item->title;
-                  $pop_date = !empty($pop_item->event_created_date) ? date('d/m/Y', strtotime($pop_item->event_created_date)) : (!empty($pop_item->published_at) ? date('d/m/Y', strtotime($pop_item->published_at)) : '');
-                  $pop_img = !empty($pop_item->event_image) ? (strpos($pop_item->event_image, 'http') === 0 ? $pop_item->event_image : XC_URL . '/uploads/events/' . $pop_item->event_image) : (!empty($pop_item->thumbnail_url) ? XC_URL . $pop_item->thumbnail_url : XC_URL . '/template/frontend/assets/images/banner-01.jpg');
-                ?>
-                <li class="popular-post-item">
-                  <a href="<?php echo $pop_url; ?>" class="popular-post-link d-flex text-decoration-none text-dark gap-2">
-                    <div class="popular-post-img-wrap position-relative" style="width: 70px; height: 52px; flex-shrink:0; border-radius:4px; overflow:hidden;">
-                      <img src="<?php echo $pop_img; ?>" alt="<?php echo htmlspecialchars($pop_title, ENT_QUOTES, 'UTF-8'); ?>" style="width:100%; height:100%; object-fit:cover;" />
-                      <span class="popular-rank bg-primary text-white position-absolute top-0 start-0 px-1" style="font-size:10px; font-weight:800; border-bottom-right-radius:4px; min-width:18px; text-align:center;"><?php echo $rank++; ?></span>
-                    </div>
-                    <div class="popular-post-text d-flex flex-column" style="font-size:12px;">
-                      <span class="fw-medium" style="display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; line-height:1.3; font-weight:600;"><?php echo htmlspecialchars($pop_title, ENT_QUOTES, 'UTF-8'); ?></span>
-                      <time datetime="<?php echo date('Y-m-d', strtotime($pop_item->event_created_date ?? $pop_item->published_at ?? 'now')); ?>" class="text-muted" style="font-size:10px; margin-top:3px;"><?php echo $pop_date; ?></time>
-                    </div>
-                  </a>
-                </li>
-                <?php endforeach; ?>
-              </ol>
+          <div class="news-detail-share">
+            <span>Chia sẻ bài viết</span>
+            <div class="news-share-actions">
+              <a href="https://www.facebook.com/sharer/sharer.php?u=<?php echo urlencode($current_url); ?>" target="_blank" rel="noopener noreferrer" class="news-share-button news-share-facebook"><i class="fa-brands fa-facebook-f" aria-hidden="true"></i> Facebook</a>
+              <button type="button" class="news-share-button news-share-copy" onclick="copyArticleLink(this)"><i class="fa-regular fa-copy" aria-hidden="true"></i> Sao chép liên kết</button>
             </div>
           </div>
-          <?php endif; ?>
+        </article>
+        <aside class="news-sidebar news-detail-sidebar" aria-label="Tin tức mới">
+          <div class="news-popular-panel">
+            <div class="news-popular-heading"><span class="news-popular-icon"><i class="fa-regular fa-clock" aria-hidden="true"></i></span><div><span>Cập nhật gần đây</span><h2>Tin tức mới</h2></div></div>
+            <?php
+              $type_labels = array(1 => 'Hoạt động nội bộ', 2 => 'Sự kiện - Hội thảo', 3 => 'Thông báo - Hướng dẫn', 4 => 'Y tế cộng đồng');
+              $latest_items = isset($latest_news) && is_array($latest_news) ? $latest_news : array();
+            ?>
+            <?php if ($latest_items): ?>
+              <ol class="news-popular-list">
+                <?php foreach ($latest_items as $item):
+                  $item_url = $this->helper->permalink($item->id, 'event_detail');
+                  $item_title = $item->event_name ?? '';
+                  $item_type = $type_labels[(int)($item->event_type ?? 0)] ?? 'Tin tức';
+                  $item_img = !empty($item->event_image) ? (strpos($item->event_image, 'http') === 0 ? $item->event_image : XC_URL . '/uploads/events/' . $item->event_image) : XC_URL . '/template/frontend/assets/images/banner-01.jpg';
+                ?>
+                  <li><a class="news-popular-link" href="<?php echo htmlspecialchars($item_url, ENT_QUOTES, 'UTF-8'); ?>">
+                    <span class="news-popular-image"><img src="<?php echo htmlspecialchars($item_img, ENT_QUOTES, 'UTF-8'); ?>" alt="" loading="lazy"><span class="news-popular-category"><?php echo htmlspecialchars($item_type, ENT_QUOTES, 'UTF-8'); ?></span></span>
+                    <span class="news-popular-copy"><strong><?php echo htmlspecialchars($item_title, ENT_QUOTES, 'UTF-8'); ?></strong><?php if (!empty($item->event_created_date)): ?><time datetime="<?php echo date('Y-m-d', strtotime($item->event_created_date)); ?>"><?php echo date('d/m/Y', strtotime($item->event_created_date)); ?></time><?php endif; ?></span>
+                  </a></li>
+                <?php endforeach; ?>
+              </ol>
+            <?php else: ?>
+              <p class="news-popular-empty">Chưa có tin mới.</p>
+            <?php endif; ?>
+            <a class="news-popular-more" href="<?php echo XC_URL; ?>/tin-tuc.html">Xem tất cả tin tức <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a>
+          </div>
+        </aside>
 
-        </aside><!-- /news-sidebar -->
 
       </div>
     </div>
   </div>
-
 <?php
 // ============================================================
 // TIN LIÊN QUAN — Slider (15 tin mới nhất cùng event_type)
@@ -289,16 +231,12 @@ if (!empty($related_news_list)):
 </main>
 
 <script>
-function copyArticleLink() {
-    var dummy = document.createElement('input'),
-    text = window.location.href;
-    document.body.appendChild(dummy);
-    dummy.value = text;
-    dummy.select();
-    document.execCommand('copy');
-    document.body.removeChild(dummy);
-    alert('\u0110\u00e3 sao ch\u00e9p li\u00ean k\u1ebft th\u00e0nh c\u00f4ng!');
-}
-</script>
+function copyArticleLink(button) {
+  navigator.clipboard.writeText(window.location.href).then(function () {
+    var label = button.innerHTML;
+    button.innerHTML = '<i class="fa-solid fa-check" aria-hidden="true"></i> Đã sao chép';
+    setTimeout(function () { button.innerHTML = label; }, 2500);
+  });
+}</script>
 
 <?php require_once 'footer.php'; ?>

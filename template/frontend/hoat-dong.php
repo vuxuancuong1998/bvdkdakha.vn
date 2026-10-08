@@ -7,7 +7,6 @@
         --act-muted: #64748b;
         background: #f8fafc;
         color: var(--act-text);
-        padding: 28px 0 46px;
         font-family: var(--font-primary)
     }
     
@@ -32,7 +31,7 @@
     
     #activity-page .act-hero {
         padding: 25px;
-        margin-bottom: 20px;
+        /* margin-bottom: 20px; */
         display: flex;
         justify-content: space-between;
         align-items: center;
@@ -50,7 +49,7 @@
         background: #eff6ff;
         border: 1px solid #bfdbfe;
         border-radius: 99px;
-        padding: 6px 11px
+        /* padding: 6px 11px */
     }
     
     #activity-page .act-kicker:before {
@@ -626,7 +625,7 @@
             <button class="act-tab" data-tab="training">2. Đào tạo & tập huấn</button>
             <button class="act-tab" data-tab="campaign">3. Khám nhân đạo & truyền thông</button>
         </nav> -->
-        <section class="act-module active" id="act-module-schedule">
+        <section class="act-module active" id="act-module-schedule" style='padding:19px 0px'>
             <div class="electronic-schedule" id="lich-cong-tac">
                 <div class="electronic-schedule-title"><span class="electronic-schedule-icon"><i class="fa-solid fa-calendar-check"></i></span><span>Lịch công tác điện tử</span>
                 </div>

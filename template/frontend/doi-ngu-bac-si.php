@@ -53,20 +53,13 @@ if (!function_exists('frontendDoctorPaginationItems')) {
     <!-- ============================================================
          HERO & BREADCRUMBS
          ============================================================ -->
-    <section class="doctor-hero-banner">
-      <div class="doctor-hero-content">
-        <h1 class="doctor-hero-title">Đội Ngũ Y Bác Sĩ</h1>
-        <p class="doctor-hero-desc">
-          Đội ngũ thầy thuốc tận tâm, giàu y đức và chuyên môn cao tại Bệnh viện Đa khoa Khu vực Đắk Hà, luôn sẵn sàng đồng hành cùng sức khỏe nhân dân.
-        </p>
-      </div>
-    </section>
+    
 
     <!-- ============================================================
          PROFESSIONAL FILTER & SEARCH PANEL
          ============================================================ -->
     <section class="doctor-filter-panel" aria-label="Bộ lọc và tìm kiếm bác sĩ">
-      <div class="doctor-filter-top">
+      <!-- <div class="doctor-filter-top">
         <div class="doctor-filter-title">
           <i class="fa-solid fa-sliders"></i>
           <span>Bộ lọc & Tìm kiếm bác sĩ</span>
@@ -75,7 +68,7 @@ if (!function_exists('frontendDoctorPaginationItems')) {
           <i class="fa-solid fa-user-doctor"></i>
           <span>Tìm thấy <strong><?php echo $total_doctors; ?></strong> nhân sự</span>
         </div>
-      </div>
+      </div> -->
 
       <form method="get" action="<?php echo XC_URL; ?>/bac-si" class="doctor-filter-form">
         <!-- Search Input Box -->
@@ -105,7 +98,7 @@ if (!function_exists('frontendDoctorPaginationItems')) {
           <div class="doctor-select-container">
             <i class="fa-solid fa-hospital-user doctor-field-icon"></i>
             <select name="khoa" id="doctor-dept-select" class="doctor-dept-select" onchange="this.form.submit()">
-              <option value="0">Tất cả chuyên khoa & phòng ban (<?php echo count($departments); ?> khoa/phòng)</option>
+              <option value="0">Tất cả </option>
               <?php foreach($departments as $dept): ?>
                 <option value="<?php echo (int)$dept->id; ?>" <?php echo $selected_dept === (int)$dept->id ? 'selected' : ''; ?>>
                   <?php echo htmlspecialchars($dept->depart_name, ENT_QUOTES, 'UTF-8'); ?>
@@ -1386,19 +1379,42 @@ a.doctor-page-link:hover {
   outline: 3px solid #0284c7;
   outline-offset: 3px;
 }
+.doctors-page-grid .doctor-card {
+  position: relative;
+}
+.doctors-page-grid .doctor-card::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: 118px;
+  background: linear-gradient(145deg, #eef8fd 0%, #f6fbff 58%, #ffffff 100%);
+  pointer-events: none;
+}
 .doctor-avatar-circle {
-  width: 100%;
+  position: relative;
+  z-index: 1;
+  width: clamp(148px, 14vw, 176px);
+  height: clamp(148px, 14vw, 176px);
   max-width: none;
-  height: 228px;
-  margin: 0;
-  border: 0;
-  border-radius: 0;
-  box-shadow: none;
-  background: #eaf2f7;
+  margin: 28px auto 16px;
+  padding: 6px;
+  border: 5px solid #ffffff;
+  border-radius: 50%;
+  overflow: hidden;
+  background: radial-gradient(circle at 50% 30%, #ffffff 0%, #dcecf6 100%);
+  box-shadow: 0 0 0 1px #c7e1f0, 0 0 0 8px rgba(22, 128, 185, .08), 0 12px 24px rgba(18, 78, 117, .13);
 }
 .doctor-avatar-img {
-  border-radius: 0;
-  object-position: center 18%;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: contain;
+  object-position: center center;
+  transform: scale(.92);
+  transition: transform .3s ease;
+}
+.doctor-card:hover .doctor-avatar-img {
+  transform: scale(.96);
 }
 .doctor-card-content {
   align-items: stretch;
@@ -1450,7 +1466,8 @@ a.doctor-page-link:hover {
   .doctor-filter-panel { padding: 18px; }
   .doctor-filter-stat { padding: 0; background: transparent; }
   .doctors-page-grid { grid-template-columns: 1fr; gap: 16px; }
-  .doctor-avatar-circle { height: 240px; }
+  .doctors-page-grid .doctor-card { width: 100%; max-width: 440px; margin-inline: auto; }
+  .doctor-avatar-circle { width: 160px; height: 160px; margin-top: 24px; }
 }
 </style>
 

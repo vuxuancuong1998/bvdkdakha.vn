@@ -1,4 +1,17 @@
-<?php require_once 'header.php'; ?>
+<?php
+require_once 'header.php';
+if (empty($_SESSION['contact_csrf_token'])) {
+  $_SESSION['contact_csrf_token'] = bin2hex(random_bytes(32));
+}
+$contactPhone = trim((string)$this->helper->get_config('site_phone'));
+$contactHotline = trim((string)$this->helper->get_config('site_hotline'));
+$contactEmail = trim((string)$this->helper->get_config('site_email'));
+$contactAddress = trim((string)$this->helper->get_config('site_address'));
+$contactFacebook = trim((string)$this->helper->get_config('site_facebook'));
+$contactZalo = trim((string)$this->helper->get_config('site_phonezalo'));
+$contactZaloUrl = preg_match('~^https?://~i', $contactZalo) ? $contactZalo : 'https://zalo.me/'.rawurlencode($contactZalo);
+$contactEscape = function ($value) { return htmlspecialchars($value, ENT_QUOTES, 'UTF-8'); };
+?>
   <style>
     /* Page-specific styles */
     .page-hero {
@@ -104,21 +117,6 @@
       border: 1px solid var(--color-border-light);
     }
 
-    .form-success-msg {
-      display: none;
-      background: #e6f9ee;
-      border: 1.5px solid var(--color-accent);
-      border-radius: var(--radius-md);
-      padding: var(--space-4) var(--space-5);
-      color: var(--color-accent-dark);
-      font-weight: 600;
-      margin-bottom: var(--space-5);
-      align-items: center;
-      gap: var(--space-3);
-    }
-    .form-success-msg.show { display: flex; }
-    .form-success-msg svg { width: 22px; height: 22px; flex-shrink:0; }
-
     .contact-layout {
       display: grid;
       grid-template-columns: 1fr 1.2fr;
@@ -153,43 +151,16 @@
     }
   </style>
   <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "MedicalOrganization",
-    "name": "Trung tâm Y tế khu vực Đắk Hà",
-    "url": "https://ttytdakha.gov.vn",
-    "telephone": "+84-260-3862xxx",
-    "email": "ttytdakha@kontum.gov.vn",
-    "address": {
-      "@type": "PostalAddress",
-      "streetAddress": "Đường Trần Phú, Thị trấn Đắk Hà",
-      "addressLocality": "Đắk Hà",
-      "addressRegion": "Kon Tum",
-      "postalCode": "58000",
-      "addressCountry": "VN"
-    },
-    "openingHoursSpecification": [
-      {"@type": "OpeningHoursSpecification","dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday","Friday"],"opens": "07:00","closes": "17:00"},
-      {"@type": "OpeningHoursSpecification","dayOfWeek": "Saturday","opens": "07:00","closes": "11:30"}
-    ]
-  }
+  <?php echo json_encode(array(
+    '@context' => 'https://schema.org',
+    '@type' => 'MedicalOrganization',
+    'name' => 'Bệnh viện đa khoa khu vực Đắk Hà',
+    'url' => XC_URL,
+    'telephone' => $contactPhone,
+    'email' => $contactEmail,
+    'address' => array('@type' => 'PostalAddress', 'streetAddress' => $contactAddress, 'addressCountry' => 'VN')
+  ), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT); ?>
   </script>
-
-  <!-- BREADCRUMB -->
-  <nav class="breadcrumb" aria-label="breadcrumb">
-    <div class="container">
-      <ol class="breadcrumb-list" itemscope itemtype="https://schema.org/BreadcrumbList">
-        <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
-          <a href="../index.html" itemprop="item"><span itemprop="name">Trang chủ</span></a>
-          <meta itemprop="position" content="1" />
-        </li>
-        <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
-          <span itemprop="name">Liên hệ</span>
-          <meta itemprop="position" content="2" />
-        </li>
-      </ol>
-    </div>
-  </nav>
 
   <!-- MAIN CONTENT -->
   <main id="main-content" role="main">
@@ -215,7 +186,7 @@
             </svg>
           </div>
           <h2>🚨 Đường dây cấp cứu khẩn cấp 24/7</h2>
-          <a href="tel:1900xxxx" class="emg-number">1900 xxxx</a>
+          <a href="tel:<?php echo $contactEscape(preg_replace('/[^+0-9]/', '', $contactHotline)); ?>" class="emg-number"><?php echo $contactEscape($contactHotline); ?></a>
           <p>Hoạt động 24 giờ / 7 ngày, kể cả ngày lễ và Tết Nguyên Đán</p>
         </div>
 
@@ -228,7 +199,7 @@
               </svg>
             </div>
             <h3>Địa chỉ</h3>
-            <p>Đường Trần Phú, Thị trấn Đắk Hà<br>Huyện Đắk Hà, tỉnh Kon Tum</p>
+            <p><?php echo nl2br($contactEscape($contactAddress)); ?></p>
           </article>
 
           <article class="contact-info-card">
@@ -238,8 +209,8 @@
               </svg>
             </div>
             <h3>Điện thoại</h3>
-            <a href="tel:02603862xxx">Hành chính: (0260) 386 2xxx</a><br>
-            <a href="tel:1900xxxx" style="color:var(--color-danger);">Cấp cứu: 1900 xxxx</a>
+            <a href="tel:<?php echo $contactEscape(preg_replace('/[^+0-9]/', '', $contactPhone)); ?>">Hành chính: <?php echo $contactEscape($contactPhone); ?></a><br>
+            <a href="tel:<?php echo $contactEscape(preg_replace('/[^+0-9]/', '', $contactHotline)); ?>" style="color:var(--color-danger);">Cấp cứu: <?php echo $contactEscape($contactHotline); ?></a>
           </article>
 
           <article class="contact-info-card">
@@ -249,7 +220,7 @@
               </svg>
             </div>
             <h3>Email</h3>
-            <a href="mailto:ttytdakha@kontum.gov.vn">ttytdakha@kontum.gov.vn</a>
+            <a href="mailto:<?php echo $contactEscape($contactEmail); ?>"><?php echo $contactEscape($contactEmail); ?></a>
           </article>
         </div>
 
@@ -275,11 +246,11 @@
               <div style="margin-top:var(--space-6);padding-top:var(--space-5);border-top:1px solid var(--color-border-light);">
                 <h3 style="font-size:var(--font-size-base);font-weight:700;margin-bottom:var(--space-3);">Mạng xã hội</h3>
                 <div style="display:flex;gap:var(--space-3);">
-                  <a href="https://www.facebook.com/ttytdakha" target="_blank" rel="noopener noreferrer"
+                  <a href="<?php echo $contactEscape($contactFacebook); ?>" target="_blank" rel="noopener noreferrer"
                      class="btn btn-primary btn-sm" id="social-facebook">
                     Facebook
                   </a>
-                  <a href="https://zalo.me/ttytdakha" target="_blank" rel="noopener noreferrer"
+                  <a href="<?php echo $contactEscape($contactZaloUrl); ?>" target="_blank" rel="noopener noreferrer"
                      class="btn btn-outline btn-sm" id="social-zalo">
                     Zalo OA
                   </a>
@@ -291,14 +262,14 @@
             <div style="border-radius:var(--radius-xl);overflow:hidden;box-shadow:var(--shadow-md);height:300px;" data-animate data-animate-delay="200">
               <div class="map-lazy-wrap"
                    style="width:100%;height:100%;background:var(--color-bg-alt);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:var(--space-3);"
-                   data-src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3867!2d107.9!3d14.7!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMTTCsDQyJzAwLjAiTiAxMDfCsDU0JzAwLjAiRQ!5e0!3m2!1svi!2svn!4v1"
+                   data-src="<?php echo $contactEscape('https://maps.google.com/maps?q='.rawurlencode($contactAddress).'&output=embed'); ?>"
                    aria-label="Bản đồ vị trí Trung tâm Y tế khu vực Đắk Hà">
                 <svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="var(--color-primary)" stroke-width="1.5" aria-hidden="true">
                   <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/>
                 </svg>
                 <p style="color:var(--color-text-muted);font-size:var(--font-size-sm);text-align:center;">
-                  Đường Trần Phú, TT. Đắk Hà<br>
-                  <a href="https://goo.gl/maps/example" target="_blank" rel="noopener noreferrer" style="color:var(--color-primary);">Xem trên Google Maps →</a>
+                  <?php echo $contactEscape($contactAddress); ?><br>
+                  <a href="<?php echo $contactEscape('https://www.google.com/maps/search/?api=1&query='.rawurlencode($contactAddress)); ?>" target="_blank" rel="noopener noreferrer" style="color:var(--color-primary);">Xem trên Google Maps →</a>
                 </p>
               </div>
             </div>
@@ -313,16 +284,12 @@
               Ý kiến của bạn giúp chúng tôi cải thiện dịch vụ. Mọi phản ánh sẽ được tiếp nhận và xử lý trong vòng 3 ngày làm việc.
             </p>
 
-            <!-- Success message -->
-            <div class="form-success-msg" id="form-success" role="alert">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
-                <path d="M22 11.08V12a10 10 0 11-5.93-9.14"/>
-                <polyline points="22 4 12 14.01 9 11.01"/>
-              </svg>
-              Cảm ơn bạn! Phản ánh của bạn đã được gửi thành công. Chúng tôi sẽ liên hệ lại trong 3 ngày làm việc.
-            </div>
-
-            <form id="contact-form" novalidate aria-label="Form góp ý phản ánh">
+            <form id="contact-form" method="post" action="<?php echo XC_URL; ?>/api/submitContactFeedback" novalidate aria-label="Form góp ý phản ánh">
+              <input type="hidden" name="csrf_token" value="<?php echo $contactEscape($_SESSION['contact_csrf_token']); ?>">
+              <div class="contact-honeypot" aria-hidden="true" style="position:absolute;left:-10000px;">
+                <label>Website <input type="text" name="contact_trap_field" tabindex="-1" autocomplete="off"></label>
+              </div>
+              <div class="form-error" id="contact-form-error" role="alert" aria-live="polite" style="display:none;margin-bottom:var(--space-4);"></div>
               <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--space-4);">
                 <div class="form-group">
                   <label class="form-label" for="contact-name">
@@ -330,7 +297,7 @@
                   </label>
                   <input type="text" id="contact-name" name="name" class="form-control"
                          placeholder="Nguyễn Văn A"
-                         autocomplete="name" aria-required="true" />
+                         autocomplete="name" aria-required="true" required />
                   <span class="form-error" aria-live="polite"></span>
                 </div>
                 <div class="form-group">
@@ -339,7 +306,7 @@
                   </label>
                   <input type="tel" id="contact-phone" name="phone" class="form-control"
                          placeholder="0912 345 678"
-                         autocomplete="tel" aria-required="true" />
+                         autocomplete="tel" aria-required="true" required />
                   <span class="form-error" aria-live="polite"></span>
                 </div>
               </div>
@@ -358,7 +325,7 @@
                 </label>
                 <input type="text" id="contact-subject" name="subject" class="form-control"
                        placeholder="Nội dung góp ý của bạn về..."
-                       aria-required="true" />
+                       aria-required="true" required />
                 <span class="form-error" aria-live="polite"></span>
               </div>
 
@@ -380,18 +347,13 @@
                 </label>
                 <textarea id="contact-message" name="message" class="form-control"
                           placeholder="Vui lòng mô tả chi tiết ý kiến, góp ý hoặc phản ánh của bạn..."
-                          rows="5" aria-required="true"></textarea>
+                          rows="5" aria-required="true" required></textarea>
                 <span class="form-error" aria-live="polite"></span>
               </div>
 
-              <div style="margin-bottom:var(--space-5);">
-                <label style="display:flex;align-items:flex-start;gap:var(--space-3);font-size:var(--font-size-sm);color:var(--color-text-muted);cursor:pointer;">
-                  <input type="checkbox" id="agree-privacy" required
-                         style="margin-top:3px;accent-color:var(--color-primary);" />
-                  Tôi đồng ý với <a href="/chinh-sach-bao-mat" style="color:var(--color-primary);">Chính sách bảo mật</a> và cho phép Trung tâm sử dụng thông tin để xử lý yêu cầu.
-                </label>
-              </div>
-
+              <p style="margin-bottom:var(--space-5);font-size:var(--font-size-sm);color:var(--color-text-muted);">
+                Thông tin của bạn chỉ được dùng để xử lý góp ý. Xem <a href="<?php echo XC_URL; ?>/chinh-sach-bao-mat.html" style="color:var(--color-primary);">Chính sách bảo mật</a>.
+              </p>
               <button type="submit" class="btn btn-primary btn-lg" id="submit-contact" style="width:100%;justify-content:center;">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
                   <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
@@ -405,4 +367,5 @@
     </section>
 
   </main>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <?php require_once 'footer.php'; ?>

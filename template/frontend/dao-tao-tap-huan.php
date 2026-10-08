@@ -1,24 +1,25 @@
 <?php require_once 'header.php';?>
-<div id="eoffice-training-root" class="w-full bg-[#f4f6f9] text-[#212529] font-sans text-[13px] leading-normal p-3 sm:p-5 select-text">
+<div id="eoffice-training-root" class="bg-[#f4f6f9] text-[#212529] leading-normal select-text">
 
   <!-- Thư viện Font chữ & Tailwind CSS để hỗ trợ hiển thị độc lập -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Segoe+UI:wght@400;600;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <script>window.tailwind = window.tailwind || {}; window.tailwind.config = { corePlugins: { preflight: false } };</script>
   <script src="https://cdn.tailwindcss.com"></script>
 
   <style>
     #eoffice-training-root {
-      font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-      width: min(1280px, calc(100% - 30px));
-      max-width: 1280px;
-      margin: 24px auto 40px;
+      font-family: var(--font-primary);
+      font-size: var(--font-size-base);
+      width: 100%;
+      max-width: var(--container-max);
+      padding: 24px var(--space-6);
+      margin: 0 auto 40px;
       box-sizing: border-box;
     }
     @media (max-width: 767px) {
       #eoffice-training-root {
-        width: calc(100% - 20px);
-        margin-top: 16px;
+        padding: 16px var(--space-4);
         margin-bottom: 28px;
       }
     }

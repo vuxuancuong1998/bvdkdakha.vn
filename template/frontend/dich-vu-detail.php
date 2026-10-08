@@ -110,13 +110,6 @@ $service = $all_services[$current_slug];
        ============================================================ -->
   <section class="service-hero py-4 mb-4" style="background: linear-gradient(135deg, #075985 0%, #0369a1 100%); color: #fff; border-radius: 12px;">
     <div class="container">
-      <nav class="service-breadcrumbs mb-2" aria-label="Điều hướng trang">
-        <ol class="breadcrumb bg-transparent p-0 m-0" style="font-size: 14px;">
-          <li class="breadcrumb-item"><a href="<?php echo XC_URL; ?>" class="text-white-50 text-decoration-none"><i class="fa-solid fa-house me-1"></i> Trang chủ</a></li>
-          <li class="breadcrumb-item"><a href="<?php echo XC_URL; ?>/dich-vu-y-te.html" class="text-white-50 text-decoration-none">Dịch vụ Y tế</a></li>
-          <li class="breadcrumb-item active text-white" aria-current="page"><?php echo htmlspecialchars($service['title'], ENT_QUOTES, 'UTF-8'); ?></li>
-        </ol>
-      </nav>
       <div class="d-flex align-items-center gap-3">
         <div class="service-detail-icon-wrap rounded-3 d-flex align-items-center justify-content-center flex-shrink-0" style="width: 58px; height: 58px; background: rgba(255, 255, 255, 0.15); color: #fff;">
           <?php echo $service['icon']; ?>

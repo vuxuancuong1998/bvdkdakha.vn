@@ -7,12 +7,6 @@
        ============================================================ -->
   <section class="services-hero py-4 mb-4" style="background: linear-gradient(135deg, #075985 0%, #0369a1 100%); color: #fff; border-radius: 12px;">
     <div class="container">
-      <nav class="services-breadcrumbs mb-2" aria-label="Điều hướng trang">
-        <ol class="breadcrumb bg-transparent p-0 m-0" style="font-size: 14px;">
-          <li class="breadcrumb-item"><a href="<?php echo XC_URL; ?>" class="text-white-50 text-decoration-none"><i class="fa-solid fa-house me-1"></i> Trang chủ</a></li>
-          <li class="breadcrumb-item active text-white" aria-current="page">Dịch vụ Y tế</li>
-        </ol>
-      </nav>
       <div class="row align-items-center">
         <div class="col-lg-8">
           <h1 class="h2 font-weight-extrabold mb-2" style="font-weight: 800;">Dịch Vụ Y Tế Chuyên Khoa</h1>

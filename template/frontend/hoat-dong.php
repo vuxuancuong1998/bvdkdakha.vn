@@ -8,7 +8,7 @@
         background: #f8fafc;
         color: var(--act-text);
         padding: 28px 0 46px;
-        font-family: Arial, "Helvetica Neue", sans-serif
+        font-family: var(--font-primary)
     }
     
     #activity-page * {
@@ -447,48 +447,48 @@
 </style>
 <style>
     #activity-page .electronic-schedule {
-        border: 1px solid #cbd5e1;
+        border: 1px solid #e2e8f0;
         background: #fff;
-        border-radius: 2px;
+        border-radius: 12px;
         overflow: hidden;
-        box-shadow: 0 3px 12px rgba(15, 23, 42, .06)
+        box-shadow: 0 4px 18px rgba(15, 23, 42, .05)
     }
     
     #activity-page .electronic-schedule-title {
         display: flex;
         align-items: center;
-        gap: 14px;
-        background: #1760a5;
-        color: #fff;
-        padding: 5px 34px;
+        gap: 12px;
+        background: #fff;
+        color: #163b60;
+        padding: 20px 24px 12px;
         font-size: 20px;
-        text-transform: uppercase
+        font-weight: 700
     }
     
     #activity-page .electronic-schedule-icon {
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        width: 54px;
-        height: 46px;
-        background: linear-gradient(135deg, #ef351c, #b51208);
-        font-size: 25px;
-        transform: skew(-8deg);
-        box-shadow: 0 3px 5px rgba(0, 0, 0, .25)
+        width: 38px;
+        height: 38px;
+        background: #eaf3fb;
+        color: #1760a5;
+        border-radius: 9px;
+        font-size: 17px
     }
     
     #activity-page .electronic-schedule-icon i {
-        transform: skew(8deg)
+        transform: none
     }
     
     #activity-page .electronic-schedule-picker {
         display: grid;
-        grid-template-columns: 90px minmax(0, 1fr) 118px;
+        grid-template-columns: 78px minmax(0, 1fr) 105px;
         gap: 12px;
         align-items: center;
-        padding: 18px 20px;
-        background: #f8fafc;
-        border-bottom: 1px solid #d7dee8
+        padding: 12px 24px 20px;
+        background: #fff;
+        border-bottom: 1px solid #e2e8f0
     }
     
     #activity-page .electronic-schedule-picker label {
@@ -501,8 +501,8 @@
     #activity-page .electronic-schedule-picker select {
         width: 100%;
         height: 46px;
-        border: 1px solid #1760a5;
-        border-radius: 5px;
+        border: 1px solid #cbd5e1;
+        border-radius: 8px;
         background: #fff;
         padding: 0 12px;
         color: #263648
@@ -511,8 +511,8 @@
     #activity-page .electronic-schedule-picker button {
         height: 47px;
         border: 0;
-        border-radius: 4px;
-        background: #e86627;
+        border-radius: 8px;
+        background: #1760a5;
         color: #fff;
         font-size: 13px;
         font-weight: 800;
@@ -525,11 +525,11 @@
         align-items: center;
         justify-content: space-between;
         gap: 15px;
-        padding: 13px 20px;
-        color: #075aa5;
+        padding: 13px 24px;
+        color: #475569;
         font-size: 14px;
         font-weight: 800;
-        text-transform: uppercase;
+        text-transform: none;
         border-bottom: 1px solid #d7dee8
     }
     
@@ -539,7 +539,7 @@
         color: #fff!important;
         text-decoration: none;
         padding: 9px 14px;
-        border-radius: 4px;
+        border-radius: 8px;
         font-size: 12px;
         white-space: nowrap
     }

@@ -14,7 +14,7 @@ $adminCanAny = function($keys) use ($adminCan){
   <head>
     <meta charset="utf-8">
       <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-      <title>Cổng thông tin việc làm trường cao đẳng Kon Tum</title>
+      <title>Bệnh viện đa khoa Khu vực Đăk Hà</title>
       
       <!-- Favicon -->
       <link rel="shortcut icon" href="<?php echo $admintemplate_path; ?>/assets/images/favicon.ico">
@@ -64,29 +64,14 @@ $adminCanAny = function($keys) use ($adminCan){
                 
                 <!--Logo start-->
                 <div class="logo-main">
-                    <div class="logo-normal">
-                        <svg class=" icon-30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <rect x="-0.757324" y="19.2427" width="28" height="4" rx="2" transform="rotate(-45 -0.757324 19.2427)" fill="currentColor"/>
-                            <rect x="7.72803" y="27.728" width="28" height="4" rx="2" transform="rotate(-45 7.72803 27.728)" fill="currentColor"/>
-                            <rect x="10.5366" y="16.3945" width="16" height="4" rx="2" transform="rotate(45 10.5366 16.3945)" fill="currentColor"/>
-                            <rect x="10.5562" y="-0.556152" width="28" height="4" rx="2" transform="rotate(45 10.5562 -0.556152)" fill="currentColor"/>
-                        </svg>
-                    </div>
-                    <div class="logo-mini">
-                        <svg class=" icon-30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <rect x="-0.757324" y="19.2427" width="28" height="4" rx="2" transform="rotate(-45 -0.757324 19.2427)" fill="currentColor"/>
-                            <rect x="7.72803" y="27.728" width="28" height="4" rx="2" transform="rotate(-45 7.72803 27.728)" fill="currentColor"/>
-                            <rect x="10.5366" y="16.3945" width="16" height="4" rx="2" transform="rotate(45 10.5366 16.3945)" fill="currentColor"/>
-                            <rect x="10.5562" y="-0.556152" width="28" height="4" rx="2" transform="rotate(45 10.5562 -0.556152)" fill="currentColor"/>
-                        </svg>
-                    </div>
+                    <img src="<?php echo XC_URL; ?>/template/frontend/assets/images/logo.png" class="logo-normal" alt="logo" width="30px" height="30px">
                 </div>
                 <!--logo End-->
                 
                 
                 
                 
-                <h4 class="logo-title">Bệnh viện ĐKKV Đăk Hà</h4>
+                <h4 class="logo-title">Dak Ha Hospital</h4>
             </a>
             <div class="sidebar-toggle" data-toggle="sidebar" data-active="true">
                 <i class="icon">
@@ -196,66 +181,15 @@ $adminCanAny = function($keys) use ($adminCan){
                         </ul>
                     </li>
                     <?php endif; ?>
-
-                    <?php if($adminCan('staticpages') || $adminCan('staticpage_categories')): ?>
+                    <?php if($adminCan('staticpages')): ?>
                     <li class="nav-item">
-                        <a class="nav-link <?php echo (isset($active_menu) && in_array($active_menu, ['staticpages','staticpage_categories','staticpage_form'])) ? '' : ''; ?>"
-                           data-bs-toggle="collapse" href="#sidebar-staticpages" role="button"
-                           aria-expanded="<?php echo (isset($active_menu) && in_array($active_menu, ['staticpages','staticpage_categories','staticpage_form'])) ? 'true' : 'false'; ?>"
-                           aria-controls="sidebar-staticpages">
-                            <i class="fa-solid fa-file-lines"></i>
+                        <a class="nav-link <?php echo (isset($active_menu) && $active_menu == 'staticpages') ? 'active' : ''; ?>" href="<?php echo XC_URL;?>/admin/staticpages">
+                            <i class="fa-solid fa-file-medical"></i>
                             <span class="item-name">Trang tĩnh (CMS)</span>
-                            <i class="right-icon">
-                                <svg class="icon-18" xmlns="http://www.w3.org/2000/svg" width="18" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                                </svg>
-                            </i>
                         </a>
-                        <ul class="sub-nav collapse <?php echo (isset($active_menu) && in_array($active_menu, ['staticpages','staticpage_categories','staticpage_form'])) ? 'show' : ''; ?>"
-                            id="sidebar-staticpages" data-bs-parent="#sidebar-menu">
-                            <?php if($adminCan('staticpages')): ?>
-                            <li class="nav-item">
-                                <a class="nav-link <?php echo (isset($active_menu) && in_array($active_menu, ['staticpages','staticpage_form'])) ? 'active' : ''; ?>"
-                                   href="<?php echo XC_URL;?>/admin/staticpages">
-                                    <i class="icon">
-                                        <svg class="icon-10" xmlns="http://www.w3.org/2000/svg" width="10" viewBox="0 0 24 24" fill="currentColor">
-                                            <g><circle cx="12" cy="12" r="8" fill="currentColor"></circle></g>
-                                        </svg>
-                                    </i>
-                                    <i class="sidenav-mini-icon"> P </i>
-                                    <span class="item-name">Danh sách trang tĩnh</span>
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link <?php echo (isset($active_menu) && $active_menu == 'staticpages') ? '' : ''; ?>"
-                                   href="<?php echo XC_URL;?>/admin/staticpages/add">
-                                    <i class="icon">
-                                        <svg class="icon-10" xmlns="http://www.w3.org/2000/svg" width="10" viewBox="0 0 24 24" fill="currentColor">
-                                            <g><circle cx="12" cy="12" r="8" fill="currentColor"></circle></g>
-                                        </svg>
-                                    </i>
-                                    <i class="sidenav-mini-icon"> + </i>
-                                    <span class="item-name">Thêm trang tĩnh mới</span>
-                                </a>
-                            </li>
-                            <?php endif; ?>
-                            <?php if($adminCan('staticpage_categories')): ?>
-                            <li class="nav-item">
-                                <a class="nav-link <?php echo (isset($active_menu) && $active_menu == 'staticpage_categories') ? 'active' : ''; ?>"
-                                   href="<?php echo XC_URL;?>/admin/staticpagecategories">
-                                    <i class="icon">
-                                        <svg class="icon-10" xmlns="http://www.w3.org/2000/svg" width="10" viewBox="0 0 24 24" fill="currentColor">
-                                            <g><circle cx="12" cy="12" r="8" fill="currentColor"></circle></g>
-                                        </svg>
-                                    </i>
-                                    <i class="sidenav-mini-icon"> C </i>
-                                    <span class="item-name">Danh mục trang tĩnh</span>
-                                </a>
-                            </li>
-                            <?php endif; ?>
-                        </ul>
                     </li>
-                    <?php endif; ?>
+                    <?php endif; ?>                  
+                    
 
                     <!-- <li class="nav-item">
                         <a class="nav-link <?php echo (isset($active_menu) && $active_menu == 'newscomments') ? 'active' : ''; ?>"  href="<?php echo XC_URL;?>/admin/newscomments">
@@ -347,7 +281,7 @@ $adminCanAny = function($keys) use ($adminCan){
                         </ul>
                     </li>
                     <?php endif; ?>
-                    <?php if($adminCan('images') || $adminCan('videos')): ?>
+                    <?php if($adminCan('images') || $adminCan('sliders') || $adminCan('videos')): ?>
                     <li><hr class="hr-horizontal"></li>
                     <li class="nav-item static-item">
                         <a class="nav-link static-item disabled" href="#" tabindex="-1">
@@ -364,6 +298,9 @@ $adminCanAny = function($keys) use ($adminCan){
                             <span class="item-name">Thư viện hình ảnh</span>
                         </a>
                     </li>
+                    <?php endif; ?>
+                    <?php if($adminCan('sliders')): ?>
+                    <li class="nav-item"><a class="nav-link <?php echo (($active_menu ?? '') === 'sliders') ? 'active' : ''; ?>" href="<?php echo XC_URL; ?>/admin/sliders"><i class="fa-solid fa-images"></i><span class="item-name">Quản lý Slider</span></a></li>
                     <?php endif; ?>
                     
                     <?php endif; ?>
@@ -405,22 +342,8 @@ $adminCanAny = function($keys) use ($adminCan){
                 
                 <!--Logo start-->
                 <div class="logo-main">
-                    <div class="logo-normal">
-                        <svg class="text-primary icon-30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <rect x="-0.757324" y="19.2427" width="28" height="4" rx="2" transform="rotate(-45 -0.757324 19.2427)" fill="currentColor"/>
-                            <rect x="7.72803" y="27.728" width="28" height="4" rx="2" transform="rotate(-45 7.72803 27.728)" fill="currentColor"/>
-                            <rect x="10.5366" y="16.3945" width="16" height="4" rx="2" transform="rotate(45 10.5366 16.3945)" fill="currentColor"/>
-                            <rect x="10.5562" y="-0.556152" width="28" height="4" rx="2" transform="rotate(45 10.5562 -0.556152)" fill="currentColor"/>
-                        </svg>
-                    </div>
-                    <div class="logo-mini">
-                        <svg class="text-primary icon-30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <rect x="-0.757324" y="19.2427" width="28" height="4" rx="2" transform="rotate(-45 -0.757324 19.2427)" fill="currentColor"/>
-                            <rect x="7.72803" y="27.728" width="28" height="4" rx="2" transform="rotate(-45 7.72803 27.728)" fill="currentColor"/>
-                            <rect x="10.5366" y="16.3945" width="16" height="4" rx="2" transform="rotate(45 10.5366 16.3945)" fill="currentColor"/>
-                            <rect x="10.5562" y="-0.556152" width="28" height="4" rx="2" transform="rotate(45 10.5562 -0.556152)" fill="currentColor"/>
-                        </svg>
-                    </div>
+                        <img src="<?php echo XC_URL; ?>/template/frontend/assets/images/logo.png" class="logo-normal" alt="logo" width="30px" height="30px">
+
                 </div>
                 <!--logo End-->
                 

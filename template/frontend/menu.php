@@ -43,7 +43,7 @@
   <!-- ============================================================
        HEADER
        ============================================================ -->
-  <header class="site-header" id="site-header" role="banner">
+  <header class="site-header<?php echo !empty($_SESSION['user']['id']) ? ' is-authenticated' : ''; ?>" id="site-header" role="banner">
     <div class="container">
       <div class="header-inner">
 
@@ -119,22 +119,22 @@
             </li>
 
             <li class="nav-item">
-              <a href="<?php echo XC_URL; ?>/" class="nav-link" aria-haspopup="true" aria-expanded="false">
+              <a href="#" class="nav-link" aria-haspopup="true" aria-expanded="false">
                 Dịch vụ Y tế
                 <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
                   <polyline points="6 9 12 15 18 9"/>
                 </svg>
               </a>
               <div class="dropdown" role="menu" aria-label="Menu dịch vụ">
-                <a href="<?php echo XC_URL; ?>/" role="menuitem">
+                <a href="<?php echo XC_URL; ?>/trang/kham-bhyt.html" role="menuitem">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
                   Khám BHYT
                 </a>
-                <a href="<?php echo XC_URL; ?>" role="menuitem">
+                <a href="<?php echo XC_URL; ?>/trang/vien-phi-goi-dich-vu.html" role="menuitem">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 100 7h5a3.5 3.5 0 110 7H6"/></svg>
                   Viện phí và dịch vụ
                 </a>
-                <a href="<?php echo XC_URL; ?>" role="menuitem">
+                <a href="<?php echo XC_URL; ?>/trang/goi-kham-suc-khoe.html" role="menuitem">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
                   Gói khám sức khỏe
                 </a>
@@ -203,7 +203,7 @@
               $u_initials = getUserInitials($u_name);
             ?>
             <div class="header-user-dropdown">
-              <button class="user-avatar-btn" type="button" onclick="toggleUserMenu(event)">
+              <button class="user-avatar-btn" type="button" onclick="toggleUserMenu(event)" aria-label="Tài khoản <?php echo htmlspecialchars($u_name, ENT_QUOTES, 'UTF-8'); ?>" aria-haspopup="true" aria-controls="userMenuDropdown">
                 <?php if(!empty($u_avatar)): ?>
                   <img src="<?php echo XC_URL . '/' . $u_avatar; ?>" alt="<?php echo htmlspecialchars($u_name); ?>" class="user-avatar-img">
                 <?php else: ?>

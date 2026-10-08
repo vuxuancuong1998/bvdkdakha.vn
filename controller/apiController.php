@@ -1328,7 +1328,67 @@ Class apiController extends baseController
 		$result['message'] = "Bộ phận tiếp nhận sẽ sớm liên hệ để xác nhận lịch hẹn.";
 		echo json_encode($result);
 	}
-	public function addFeedback(){
+	public function submitContactFeedback(){
+        global $db;
+        header('Content-Type: application/json; charset=utf-8');
+        $result = array('status' => 400, 'message' => 'Không thể gửi góp ý. Vui lòng kiểm tra lại thông tin.');
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            http_response_code(405);
+            echo json_encode($result, JSON_UNESCAPED_UNICODE);
+            return;
+        }
+        $token = isset($_POST['csrf_token']) ? (string)$_POST['csrf_token'] : '';
+        if (empty($_SESSION['contact_csrf_token']) || !hash_equals($_SESSION['contact_csrf_token'], $token)) {
+            http_response_code(403);
+            $result['message'] = 'Phiên gửi đã hết hạn. Vui lòng tải lại trang và thử lại.';
+            echo json_encode($result, JSON_UNESCAPED_UNICODE);
+            return;
+        }
+        if (!empty($_POST['contact_trap_field'])) {
+            http_response_code(400);
+            $result['message'] = 'Không thể gửi biểu mẫu. Vui lòng tải lại trang và thử lại.';
+            echo json_encode($result, JSON_UNESCAPED_UNICODE);
+            return;
+        }
+        $name = trim((string)(isset($_POST['name']) ? $_POST['name'] : ''));
+        $phone = trim((string)(isset($_POST['phone']) ? $_POST['phone'] : ''));
+        $email = trim((string)(isset($_POST['email']) ? $_POST['email'] : ''));
+        $subject = trim((string)(isset($_POST['subject']) ? $_POST['subject'] : ''));
+        $category = trim((string)(isset($_POST['category']) ? $_POST['category'] : ''));
+        $message = trim((string)(isset($_POST['message']) ? $_POST['message'] : ''));
+        $categories = array(
+            'chat-luong' => 'Chất lượng dịch vụ',
+            'thai-do' => 'Thái độ nhân viên',
+            'co-so-vat-chat' => 'Cơ sở vật chất',
+            'tu-van' => 'Tư vấn y tế',
+            'khac' => 'Ý kiến khác'
+        );
+        $phoneDigits = preg_replace('/\D/', '', $phone);
+        if (preg_match('/^84[0-9]{9}$/', $phoneDigits)) { $phoneDigits = '0'.substr($phoneDigits, 2); }
+        if ($name === '' || strlen($name) > 255 || !preg_match('/^0[0-9]{9}$/', $phoneDigits)
+            || ($email !== '' && (!filter_var($email, FILTER_VALIDATE_EMAIL) || strlen($email) > 255))
+            || $subject === '' || strlen($subject) > 255
+            || $message === '' || strlen($message) > 10000
+            || ($category !== '' && !isset($categories[$category]))) {
+            echo json_encode($result, JSON_UNESCAPED_UNICODE);
+            return;
+        }
+        if (isset($_SESSION['contact_last_sent']) && time() - $_SESSION['contact_last_sent'] < 30) {
+            http_response_code(429);
+            $result['message'] = 'Vui lòng đợi 30 giây trước khi gửi thêm góp ý.';
+            echo json_encode($result, JSON_UNESCAPED_UNICODE);
+            return;
+        }
+        $content = "Tiêu đề: ".$subject."\n";
+        if ($category !== '') {
+            $content .= "Phân loại: ".$categories[$category]."\n";
+        }
+        $content .= "\n".$message;
+        $db->query("INSERT INTO hicrm_customer_feedback(customer_name, customer_phone, customer_email, customer_address, content, status, rating, create_date) VALUES ('".$db->escapestring($name)."','".$db->escapestring($phoneDigits)."','".$db->escapestring($email)."','','".$db->escapestring($content)."',0,0,NOW())");
+        $_SESSION['contact_last_sent'] = time();
+        echo json_encode(array('status' => 200, 'message' => 'Góp ý của bạn đã được tiếp nhận.'), JSON_UNESCAPED_UNICODE);
+    }
+    public function addFeedback(){
 	    global $db;
 		$result = array(
 			'status' => 400,

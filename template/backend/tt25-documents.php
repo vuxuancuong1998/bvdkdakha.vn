@@ -1,6 +1,33 @@
 <?php require "header.php"; ?>
+<style>
+.tt25-status-filters { display:flex; flex-wrap:wrap; gap:.35rem; }
+.tt25-status-filters .btn { flex:1 1 auto; white-space:normal; }
+.tt25-list { border-top:1px solid #edf0f2; }
+.tt25-row { display:grid; grid-template-columns:minmax(0,1.25fr) minmax(0,1fr) minmax(0,1.25fr) 112px 152px; align-items:center; gap:.75rem; padding:.55rem .85rem; border-bottom:1px solid #edf0f2; }
+.tt25-row:last-child { border-bottom:0; }
+.tt25-row:hover { background:#f8fafc; }
+.tt25-cell { min-width:0; }
+.tt25-ellipsis { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.tt25-muted { color:#64748b; font-size:.78rem; }
+.tt25-actions { display:flex; justify-content:flex-end; gap:.3rem; white-space:nowrap; }
+.tt25-actions .btn { width:32px; height:32px; padding:0; display:inline-flex; align-items:center; justify-content:center; flex:none; }
+@media (max-width:1200px) {
+  .tt25-row { grid-template-columns:minmax(0,1.2fr) minmax(0,1.2fr) 112px 152px; }
+  .tt25-contact { display:none; }
+}
+@media (max-width:850px) {
+  .tt25-row { grid-template-columns:minmax(0,1fr) 112px 152px; }
+  .tt25-category { display:none; }
+}
+@media (max-width:560px) {
+  .tt25-row { grid-template-columns:minmax(0,1fr) auto; gap:.4rem; }
+  .tt25-row > .tt25-cell:nth-child(4) { display:none; }
+  .tt25-actions { flex-wrap:wrap; max-width:72px; }
+  .tt25-actions .btn { width:30px; height:30px; }
+}
+</style>
 
-<div class="container-fluid content-inner py-4">
+<div class="container-fluid content-inner py-2">
   <div class="row">
     <div class="col-sm-12">
       
@@ -15,7 +42,7 @@
 
       <div class="card border-0 shadow-sm" style="border-radius: 16px;">
         <!-- Card Header -->
-        <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-3 bg-white py-3 border-bottom" style="border-radius: 16px 16px 0 0;">
+        <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2 bg-white py-2 border-bottom" style="border-radius: 16px 16px 0 0;">
           <div>
             <h4 class="card-title fw-bold mb-1 text-primary" style="font-size: 1.25rem;">
               <i class="fa-solid fa-file-medical me-2"></i> Quản Lý Giấy Tờ TT25
@@ -41,19 +68,19 @@
         </div>
 
         <!-- Filter & Search Bar -->
-        <div class="card-body bg-light-subtle py-3 border-bottom">
+        <div class="card-body bg-light-subtle py-2 border-bottom">
           <form method="GET" action="<?php echo XC_URL; ?>/admin/tt25documents" class="row g-2 align-items-center">
             
             <!-- Status Filter Tabs / Buttons -->
             <div class="col-lg-6 col-md-12">
-              <div class="btn-group w-100 shadow-sm" role="group" style="border-radius: 10px; overflow: hidden;">
+              <div class="tt25-status-filters" role="group" aria-label="Lọc theo trạng thái">
                 <a href="<?php echo XC_URL; ?>/admin/tt25documents?status=all<?php echo !empty($tt25_keyword) ? '&keyword='.urlencode($tt25_keyword) : ''; ?>" 
                    class="btn btn-sm <?php echo ($tt25_status_filter === 'all' || $tt25_status_filter === '') ? 'btn-primary fw-bold' : 'btn-outline-secondary bg-white'; ?>">
                    Tất cả
                 </a>
                 <a href="<?php echo XC_URL; ?>/admin/tt25documents?status=0<?php echo !empty($tt25_keyword) ? '&keyword='.urlencode($tt25_keyword) : ''; ?>" 
                    class="btn btn-sm <?php echo ($tt25_status_filter === '0') ? 'btn-warning text-dark fw-bold' : 'btn-outline-secondary bg-white'; ?>">
-                   Mới tiếp nhận (<?php echo isset($tt25_status_counts['0']) ? $tt25_status_counts['0'] : 0; ?>)
+                   Mới (<?php echo isset($tt25_status_counts['0']) ? $tt25_status_counts['0'] : 0; ?>)
                 </a>
                 <a href="<?php echo XC_URL; ?>/admin/tt25documents?status=1<?php echo !empty($tt25_keyword) ? '&keyword='.urlencode($tt25_keyword) : ''; ?>" 
                    class="btn btn-sm <?php echo ($tt25_status_filter === '1') ? 'btn-success fw-bold' : 'btn-outline-secondary bg-white'; ?>">
@@ -82,168 +109,83 @@
           </form>
         </div>
 
-        <!-- Table Body -->
+        <!-- Compact request list -->
         <div class="card-body p-0">
-          <div class="table-responsive">
-            <table class="table table-hover table-striped align-middle mb-0" style="min-width: 1000px;">
-              <thead class="table-light text-uppercase text-secondary" style="font-size: 12px; letter-spacing: 0.5px;">
-                <tr>
-                  <th style="width: 50px;" class="text-center">STT</th>
-                  <th style="min-width: 180px;">Họ và tên bệnh nhân</th>
-                  <th style="min-width: 130px;">Số CCCD</th>
-                  <th style="min-width: 110px;">Ngày sinh</th>
-                  <th style="min-width: 190px;">Liên hệ (SĐT / Email)</th>
-                  <th style="min-width: 220px;">Loại giấy TT25/BYT</th>
-                  <th style="min-width: 140px;">Thời gian tạo</th>
-                  <th style="min-width: 130px;" class="text-center">Trạng thái</th>
-                  <th style="min-width: 160px;" class="text-center">Thao tác</th>
-                </tr>
-              </thead>
-              <tbody>
-                <?php if(!empty($tt25_requests) && is_array($tt25_requests)): ?>
-                  <?php 
-                    $stt = ($tt25_page - 1) * $tt25_per_page + 1;
-                    foreach($tt25_requests as $item): 
-                      $status = intval($item->status);
-                  ?>
-                    <tr id="row-tt25-<?php echo $item->id; ?>">
-                      <td class="text-center fw-bold text-muted"><?php echo $stt++; ?></td>
-                      
-                      <!-- Họ tên -->
-                      <td>
-                        <div class="fw-bold text-dark" style="font-size: 14px;"><?php echo htmlspecialchars($item->fullname); ?></div>
-                        <small class="text-muted">ID: #<?php echo $item->id; ?></small>
-                      </td>
-
-                      <!-- CCCD -->
-                      <td>
-                        <span class="badge bg-light text-dark border px-2 py-1" style="font-size: 13px; font-family: monospace;">
-                          <i class="fa-solid fa-id-card me-1 text-primary"></i><?php echo htmlspecialchars($item->cccd); ?>
-                        </span>
-                      </td>
-
-                      <!-- Ngày sinh -->
-                      <td>
-                        <span class="text-secondary" style="font-size: 13.5px;">
-                          <?php echo !empty($item->dob) ? date('d/m/Y', strtotime($item->dob)) : '---'; ?>
-                        </span>
-                      </td>
-
-                      <!-- SĐT & Email -->
-                      <td>
-                        <div class="fw-semibold text-dark" style="font-size: 13.5px;">
-                          <i class="fa-solid fa-phone me-1 text-success small"></i><?php echo htmlspecialchars($item->phone); ?>
-                        </div>
-                        <div class="small text-muted text-truncate" style="max-width: 180px;" title="<?php echo htmlspecialchars($item->email); ?>">
-                          <i class="fa-solid fa-envelope me-1 text-info small"></i><?php echo htmlspecialchars($item->email); ?>
-                        </div>
-                      </td>
-
-                      <!-- Loại giấy -->
-                      <td>
-                        <span class="fw-semibold text-primary" style="font-size: 13.5px; display: inline-block; max-width: 230px; line-height: 1.3;">
-                          <i class="fa-solid fa-file-lines me-1 text-primary"></i><?php echo htmlspecialchars($item->category_name); ?>
-                        </span>
-                      </td>
-
-                      <!-- Ngày tạo -->
-                      <td>
-                        <span class="small text-muted" title="<?php echo $item->created_at; ?>">
-                          <i class="fa-regular fa-clock me-1"></i><?php echo !empty($item->created_at) ? date('d/m/Y H:i', strtotime($item->created_at)) : '---'; ?>
-                        </span>
-                      </td>
-
-                      <!-- Trạng thái -->
-                      <td class="text-center" id="status-cell-<?php echo $item->id; ?>">
-                        <?php if($status === 1): ?>
-                          <span class="badge bg-soft-success text-success px-3 py-2 fw-bold" style="font-size: 12px; border-radius: 12px;">
-                            <i class="fa-solid fa-circle-check me-1"></i> Hoàn thành
-                          </span>
-                        <?php elseif($status === 2): ?>
-                          <span class="badge bg-soft-danger text-danger px-3 py-2 fw-bold" style="font-size: 12px; border-radius: 12px;" title="<?php echo htmlspecialchars($item->note); ?>">
-                            <i class="fa-solid fa-circle-xmark me-1"></i> Từ chối
-                          </span>
-                        <?php else: ?>
-                          <span class="badge bg-soft-warning text-warning px-3 py-2 fw-bold" style="font-size: 12px; border-radius: 12px;">
-                            <i class="fa-solid fa-clock me-1"></i> Mới tiếp nhận
-                          </span>
-                        <?php endif; ?>
-                      </td>
-
-                      <!-- Thao tác -->
-                      <td class="text-center">
-                        <div class="d-flex align-items-center justify-content-center gap-1">
-                          
-                          <!-- NÚT TÍCH HOÀN THÀNH QUICK CHECK -->
-                          <button type="button" 
-                                  class="btn btn-sm btn-outline-success btn-complete-tt25 shadow-sm" 
-                                  data-id="<?php echo $item->id; ?>" 
-                                  data-name="<?php echo htmlspecialchars($item->fullname); ?>"
-                                  title="Tích chuyển sang trạng thái Hoàn thành" 
-                                  style="width: 34px; height: 34px; border-radius: 50%; padding: 0; display: inline-flex; align-items: center; justify-content: center; <?php echo ($status === 1) ? 'background: #10b981; color: #fff; border-color: #10b981;' : ''; ?>">
-                            <i class="fa-solid fa-check fs-6"></i>
-                          </button>
-
-                          <!-- Nút Chi tiết / Modal -->
-                          <button type="button" 
-                                  class="btn btn-sm btn-outline-info shadow-sm btn-detail-tt25" 
-                                  data-id="<?php echo $item->id; ?>"
-                                  data-fullname="<?php echo htmlspecialchars($item->fullname); ?>"
-                                  data-cccd="<?php echo htmlspecialchars($item->cccd); ?>"
-                                  data-dob="<?php echo !empty($item->dob) ? date('d/m/Y', strtotime($item->dob)) : ''; ?>"
-                                  data-phone="<?php echo htmlspecialchars($item->phone); ?>"
-                                  data-bhyt="<?php echo htmlspecialchars(isset($item->bhyt_code) ? $item->bhyt_code : ''); ?>"
-                                  data-email="<?php echo htmlspecialchars($item->email); ?>"
-                                  data-category="<?php echo htmlspecialchars($item->category_name); ?>"
-                                  data-created="<?php echo !empty($item->created_at) ? date('d/m/Y H:i:s', strtotime($item->created_at)) : ''; ?>"
-                                  data-status="<?php echo $status; ?>"
-                                  data-note="<?php echo htmlspecialchars($item->note); ?>"
-                                  title="Xem chi tiết bệnh nhân"
-                                  style="width: 34px; height: 34px; border-radius: 50%; padding: 0; display: inline-flex; align-items: center; justify-content: center;">
-                            <i class="fa-solid fa-eye fs-6"></i>
-                          </button>
-
-                          <!-- Nút Từ chối -->
-                          <button type="button" 
-                                  class="btn btn-sm btn-outline-warning shadow-sm btn-reject-tt25" 
-                                  data-id="<?php echo $item->id; ?>" 
-                                  data-name="<?php echo htmlspecialchars($item->fullname); ?>"
-                                  title="Từ chối yêu cầu"
-                                  style="width: 34px; height: 34px; border-radius: 50%; padding: 0; display: inline-flex; align-items: center; justify-content: center;">
-                            <i class="fa-solid fa-ban fs-6"></i>
-                          </button>
-
-                          <!-- Nút Xóa -->
-                          <button type="button" 
-                                  class="btn btn-sm btn-outline-danger shadow-sm btn-delete-tt25" 
-                                  data-id="<?php echo $item->id; ?>" 
-                                  data-name="<?php echo htmlspecialchars($item->fullname); ?>"
-                                  title="Xóa yêu cầu"
-                                  style="width: 34px; height: 34px; border-radius: 50%; padding: 0; display: inline-flex; align-items: center; justify-content: center;">
-                            <i class="fa-solid fa-trash fs-6"></i>
-                          </button>
-
-                        </div>
-                      </td>
-
-                    </tr>
-                  <?php endforeach; ?>
-                <?php else: ?>
-                  <tr>
-                    <td colspan="9" class="text-center py-5">
-                      <div class="py-4">
-                        <i class="fa-solid fa-folder-open text-muted opacity-50 display-4 mb-3 d-block"></i>
-                        <h6 class="text-muted fw-bold mb-1">Chưa có yêu cầu giấy TT25 nào</h6>
-                        <p class="text-muted small">Dữ liệu bệnh nhân gửi yêu cầu sẽ xuất hiện ở đây.</p>
-                      </div>
-                    </td>
-                  </tr>
-                <?php endif; ?>
-              </tbody>
-            </table>
+          <div class="tt25-list">
+            <?php if(!empty($tt25_requests) && is_array($tt25_requests)): ?>
+              <?php
+                $stt = ($tt25_page - 1) * $tt25_per_page + 1;
+                foreach($tt25_requests as $item):
+                  $status = intval($item->status);
+                  $created = !empty($item->created_at) ? date('d/m/Y H:i', strtotime($item->created_at)) : '---';
+              ?>
+                <div class="tt25-row" id="row-tt25-<?php echo (int)$item->id; ?>">
+                  <div class="tt25-cell">
+                    <div class="fw-bold text-dark tt25-ellipsis"><?php echo htmlspecialchars($item->fullname, ENT_QUOTES, 'UTF-8'); ?></div>
+                    <div class="tt25-muted tt25-ellipsis">#<?php echo (int)$item->id; ?> · <?php echo htmlspecialchars($created, ENT_QUOTES, 'UTF-8'); ?></div>
+                    <div class="tt25-muted tt25-ellipsis">CCCD: <?php echo htmlspecialchars($item->cccd, ENT_QUOTES, 'UTF-8'); ?></div>
+                  </div>
+                  <div class="tt25-cell tt25-contact">
+                    <div class="tt25-ellipsis"><?php echo htmlspecialchars($item->phone, ENT_QUOTES, 'UTF-8'); ?></div>
+                    <div class="tt25-muted tt25-ellipsis"><?php echo htmlspecialchars($item->email, ENT_QUOTES, 'UTF-8'); ?></div>
+                  </div>
+                  <div class="tt25-cell tt25-category tt25-ellipsis" title="<?php echo htmlspecialchars($item->category_name, ENT_QUOTES, 'UTF-8'); ?>">
+                    <?php echo htmlspecialchars($item->category_name, ENT_QUOTES, 'UTF-8'); ?>
+                  </div>
+                  <div class="tt25-cell" id="status-cell-<?php echo (int)$item->id; ?>">
+                    <?php if($status === 1): ?>
+                      <span class="badge bg-soft-success text-success">Hoàn thành</span>
+                    <?php elseif($status === 2): ?>
+                      <span class="badge bg-soft-danger text-danger">Từ chối</span>
+                    <?php else: ?>
+                      <span class="badge bg-soft-warning text-warning">Mới tiếp nhận</span>
+                    <?php endif; ?>
+                  </div>
+                  <div class="tt25-actions">
+                    <button type="button" class="btn btn-sm btn-outline-success btn-complete-tt25"
+                            data-id="<?php echo (int)$item->id; ?>"
+                            data-name="<?php echo htmlspecialchars($item->fullname, ENT_QUOTES, 'UTF-8'); ?>"
+                            title="Hoàn thành" aria-label="Hoàn thành yêu cầu của <?php echo htmlspecialchars($item->fullname, ENT_QUOTES, 'UTF-8'); ?>">
+                      <i class="fa-solid fa-check"></i>
+                    </button>
+                    <button type="button" class="btn btn-sm btn-outline-info btn-detail-tt25"
+                            data-id="<?php echo (int)$item->id; ?>"
+                            data-fullname="<?php echo htmlspecialchars($item->fullname, ENT_QUOTES, 'UTF-8'); ?>"
+                            data-cccd="<?php echo htmlspecialchars($item->cccd, ENT_QUOTES, 'UTF-8'); ?>"
+                            data-dob="<?php echo !empty($item->dob) ? date('d/m/Y', strtotime($item->dob)) : ''; ?>"
+                            data-phone="<?php echo htmlspecialchars($item->phone, ENT_QUOTES, 'UTF-8'); ?>"
+                            data-bhyt="<?php echo htmlspecialchars(isset($item->bhyt_code) ? $item->bhyt_code : '', ENT_QUOTES, 'UTF-8'); ?>"
+                            data-email="<?php echo htmlspecialchars($item->email, ENT_QUOTES, 'UTF-8'); ?>"
+                            data-category="<?php echo htmlspecialchars($item->category_name, ENT_QUOTES, 'UTF-8'); ?>"
+                            data-created="<?php echo !empty($item->created_at) ? date('d/m/Y H:i:s', strtotime($item->created_at)) : ''; ?>"
+                            data-status="<?php echo $status; ?>"
+                            data-note="<?php echo htmlspecialchars($item->note, ENT_QUOTES, 'UTF-8'); ?>"
+                            title="Xem chi tiết" aria-label="Xem chi tiết yêu cầu của <?php echo htmlspecialchars($item->fullname, ENT_QUOTES, 'UTF-8'); ?>">
+                      <i class="fa-solid fa-eye"></i>
+                    </button>
+                    <button type="button" class="btn btn-sm btn-outline-warning btn-reject-tt25"
+                            data-id="<?php echo (int)$item->id; ?>"
+                            data-name="<?php echo htmlspecialchars($item->fullname, ENT_QUOTES, 'UTF-8'); ?>"
+                            title="Từ chối" aria-label="Từ chối yêu cầu của <?php echo htmlspecialchars($item->fullname, ENT_QUOTES, 'UTF-8'); ?>">
+                      <i class="fa-solid fa-ban"></i>
+                    </button>
+                    <button type="button" class="btn btn-sm btn-outline-danger btn-delete-tt25"
+                            data-id="<?php echo (int)$item->id; ?>"
+                            data-name="<?php echo htmlspecialchars($item->fullname, ENT_QUOTES, 'UTF-8'); ?>"
+                            title="Xóa" aria-label="Xóa yêu cầu của <?php echo htmlspecialchars($item->fullname, ENT_QUOTES, 'UTF-8'); ?>">
+                      <i class="fa-solid fa-trash"></i>
+                    </button>
+                  </div>
+                </div>
+              <?php endforeach; ?>
+            <?php else: ?>
+              <div class="text-center text-muted py-5">
+                <i class="fa-solid fa-folder-open fs-2 d-block mb-2"></i>
+                Chưa có yêu cầu giấy TT25 nào.
+              </div>
+            <?php endif; ?>
           </div>
         </div>
-
         <!-- Card Footer & Pagination -->
         <?php if($tt25_total_pages > 1): ?>
           <div class="card-footer bg-white border-top py-3 d-flex justify-content-between align-items-center flex-wrap gap-2" style="border-radius: 0 0 16px 16px;">
@@ -256,7 +198,7 @@
                 <li class="page-item <?php echo ($tt25_page <= 1) ? 'disabled' : ''; ?>">
                   <a class="page-link" href="<?php echo XC_URL; ?>/admin/tt25documents?page=<?php echo $tt25_page - 1; ?>&status=<?php echo htmlspecialchars($tt25_status_filter); ?>&keyword=<?php echo urlencode($tt25_keyword); ?>">Trước</a>
                 </li>
-                <?php for($i = 1; $i <= $tt25_total_pages; $i++): ?>
+                <?php for($i = max(1, $tt25_page - 2); $i <= min($tt25_total_pages, $tt25_page + 2); $i++): ?>
                   <li class="page-item <?php echo ($i == $tt25_page) ? 'active' : ''; ?>">
                     <a class="page-link" href="<?php echo XC_URL; ?>/admin/tt25documents?page=<?php echo $i; ?>&status=<?php echo htmlspecialchars($tt25_status_filter); ?>&keyword=<?php echo urlencode($tt25_keyword); ?>"><?php echo $i; ?></a>
                   </li>

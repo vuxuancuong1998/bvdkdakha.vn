@@ -48,6 +48,7 @@ Class adminController extends baseController
 			array('key' => 'users', 'name' => 'Quản lý tài khoản', 'parent' => 'account_section', 'sort' => 70),
 			array('key' => 'groups', 'name' => 'Quản lý nhóm quyền', 'parent' => 'account_section', 'sort' => 71),
 			array('key' => 'images', 'name' => 'Thư viện hình ảnh', 'parent' => '', 'sort' => 80),
+			array('key' => 'sliders', 'name' => 'Quản lý Slider', 'parent' => '', 'sort' => 81),
 			array('key' => 'videos', 'name' => 'Thư viện video', 'parent' => '', 'sort' => 90),
 			array('key' => 'staticpages', 'name' => 'Quản lý trang tĩnh CMS', 'parent' => 'staticpages_section', 'sort' => 53),
 			array('key' => 'doctors', 'name' => 'Quản lý đội ngũ bác sĩ', 'parent' => '', 'sort' => 52),
@@ -164,7 +165,7 @@ Class adminController extends baseController
 			$this->view->admintmp('index');
 			return;
 		}
-		$routes = array('employers'=>'/admin/employers','employer_posts'=>'/admin/employers/posts','candidates'=>'/admin/candidates','students'=>'/admin/students','events'=>'/admin/events','activities'=>'/admin/activities','news_comments'=>'/admin/newscomments','staticpages'=>'/admin/staticpages','staticpage_categories'=>'/admin/staticpagecategories','customer_feedbacks'=>'/admin/customerfeedbacks','tt25_documents'=>'/admin/tt25documents','job_support_customers'=>'/admin/jobsupportcustomers','market_results'=>'/admin/marketresults','google_meet'=>'/admin/googlemeet','users'=>'/admin/users','groups'=>'/admin/groups','images'=>'/admin/images','videos'=>'/admin/videos','config'=>'/admin/config','settings'=>'/admin/settings');
+		$routes = array('employers'=>'/admin/employers','employer_posts'=>'/admin/employers/posts','candidates'=>'/admin/candidates','students'=>'/admin/students','events'=>'/admin/events','activities'=>'/admin/activities','news_comments'=>'/admin/newscomments','staticpages'=>'/admin/staticpages','staticpage_categories'=>'/admin/staticpagecategories','customer_feedbacks'=>'/admin/customerfeedbacks','tt25_documents'=>'/admin/tt25documents','job_support_customers'=>'/admin/jobsupportcustomers','market_results'=>'/admin/marketresults','google_meet'=>'/admin/googlemeet','users'=>'/admin/users','groups'=>'/admin/groups','images'=>'/admin/images','sliders'=>'/admin/sliders','videos'=>'/admin/videos','config'=>'/admin/config','settings'=>'/admin/settings');
 		foreach($routes as $key => $route){
 			if($this->adminHasMenuPermission($allowed, $key)){ header('Location: '.XC_URL.$route); return; }
 		}
@@ -2305,70 +2306,64 @@ Class adminController extends baseController
 	{
 		if(!$this->prepareAdminAccess('customer_feedbacks')){ return; }
 		global $db;
-		if(!(isset($_SESSION['user']['id']) && $_SESSION['user']['id'] != "")){ $this->adminRedirect('/admin/login'); }
 		$this->ensureAdminFeatureTables();
 
-		$method = isset($para[1]) ? trim((string)$para[1]) : '';
-		$id = isset($para[2]) ? intval($para[2]) : 0;
-
-		if($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['customer_feedback_action'])){
-			$action = trim((string)$_POST['customer_feedback_action']);
-			$postId = isset($_POST['id']) ? intval($_POST['id']) : 0;
-
-			if($action === 'delete' && $postId > 0){
-				$db->query("DELETE FROM hicrm_customer_feedback WHERE id = '".$postId."' LIMIT 1");
-				$this->setAdminFlash('success', 'Đã xóa phản hồi khách hàng.');
-			}
-
+		if(isset($para[1]) && $para[1] === 'detail'){
 			$this->adminRedirect('/admin/customerfeedbacks');
 		}
-
+		$keyword = isset($_GET['keyword']) ? trim((string)$_GET['keyword']) : '';
 		$page = (isset($_GET['page']) && intval($_GET['page']) > 0) ? intval($_GET['page']) : 1;
-		$perPage = 10;
-		$keyword = isset($_GET['keyword']) ? trim($_GET['keyword']) : '';
-		$where = array("1=1");
+		$returnParams = array();
+		if($keyword !== ''){ $returnParams['keyword'] = $keyword; }
+		if($page > 1){ $returnParams['page'] = $page; }
+		$listRedirect = '/admin/customerfeedbacks'.($returnParams ? '?'.http_build_query($returnParams) : '');
 
+		if($_SERVER['REQUEST_METHOD'] === 'POST'){
+			$token = isset($_POST['csrf_token']) ? (string)$_POST['csrf_token'] : '';
+			if(!hash_equals((string)$_SESSION['admin_csrf_token'], $token)){
+				$this->setAdminFlash('info', 'Phiên thao tác đã hết hạn. Vui lòng thử lại.');
+				$this->adminRedirect($listRedirect);
+			}
+			$action = isset($_POST['customer_feedback_action']) ? (string)$_POST['customer_feedback_action'] : '';
+			$postId = isset($_POST['id']) ? intval($_POST['id']) : 0;
+			if($action !== 'delete' || $postId <= 0){
+				$this->setAdminFlash('info', 'Thao tác không hợp lệ.');
+				$this->adminRedirect($listRedirect);
+			}
+			$db->query("SELECT id FROM hicrm_customer_feedback WHERE id = '".$postId."' LIMIT 1");
+			if(!$db->fetch_object(true)){
+				$this->setAdminFlash('info', 'Không tìm thấy phản hồi.');
+				$this->adminRedirect($listRedirect);
+			}
+			$db->query("DELETE FROM hicrm_customer_feedback WHERE id = '".$postId."' LIMIT 1");
+			$this->setAdminFlash('success', 'Đã xóa phản hồi.');
+			$this->adminRedirect($listRedirect);
+		}
+
+		$perPage = 6;
+		$where = array('1=1');
 		if($keyword !== ''){
 			$kw = $db->escapestring($keyword);
 			$where[] = "(customer_name LIKE '%".$kw."%' OR customer_phone LIKE '%".$kw."%' OR customer_email LIKE '%".$kw."%' OR customer_address LIKE '%".$kw."%' OR content LIKE '%".$kw."%')";
 		}
-
 		$baseSql = "FROM hicrm_customer_feedback WHERE ".implode(' AND ', $where);
 		$db->query("SELECT COUNT(id) AS total ".$baseSql);
 		$totalFeedbacks = intval($db->fetch_object(true)->total);
 		$totalPages = max(1, ceil($totalFeedbacks / $perPage));
 		if($page > $totalPages){ $page = $totalPages; }
 		$offset = ($page - 1) * $perPage;
-
 		$db->query("SELECT * ".$baseSql." ORDER BY create_date DESC, id DESC LIMIT ".$offset.",".$perPage);
 		$items = $db->fetch_object();
 
-		$detailItem = null;
-		if($method === 'detail' && $id > 0){
-			$db->query("SELECT * FROM hicrm_customer_feedback WHERE id = '".$id."' LIMIT 1");
-			$detailItem = $db->fetch_object(true);
-			if(!$detailItem){
-				$this->setAdminFlash('info', 'Không tìm thấy phản hồi khách hàng.');
-				$this->adminRedirect('/admin/customerfeedbacks');
-			}
-		}
-
-		$this->view->data['active_menu'] = "customerfeedbacks";
+		$this->view->data['active_menu'] = 'customerfeedbacks';
 		$this->view->data['customer_feedbacks'] = is_array($items) ? $items : array();
 		$this->view->data['customer_feedback_page'] = $page;
 		$this->view->data['customer_feedback_per_page'] = $perPage;
 		$this->view->data['customer_feedback_total'] = $totalFeedbacks;
 		$this->view->data['customer_feedback_total_pages'] = $totalPages;
 		$this->view->data['customer_feedback_keyword'] = $keyword;
-		$this->view->data['customer_feedback_detail'] = $detailItem;
 		$this->view->data['customer_feedback_flash'] = $this->getAdminFlash();
-
-		if($method === 'detail' && $id > 0){
-			$this->view->admintmp("customer-feedback-detail");
-			return;
-		}
-
-		$this->view->admintmp("customer-feedbacks");
+		$this->view->admintmp('customer-feedbacks');
 	}
 
 	public function jobsupportcustomers($para = array())
@@ -2540,7 +2535,7 @@ Class adminController extends baseController
 		}
 
 		$page = (isset($_GET['page']) && intval($_GET['page']) > 0) ? intval($_GET['page']) : 1;
-		$perPage = 15;
+		$perPage = 6;
 		$keyword = isset($_GET['keyword']) ? trim($_GET['keyword']) : '';
 		$statusFilter = isset($_GET['status']) ? trim($_GET['status']) : 'all';
 
@@ -4329,5 +4324,98 @@ Class adminController extends baseController
 		if(!$db->fetch_object(true)){
 			$db->query("ALTER TABLE hicrm_static_pages ADD COLUMN static_files longtext DEFAULT NULL AFTER page_content");
 		}
+	}
+
+	public function sliders($para = array())
+	{
+		if(!$this->prepareAdminAccess('sliders')){ return; }
+		global $db;
+		if(!$this->adminTableExists('hicrm_sliders')){
+			$this->renderAdminNotice('Quản lý Slider', 'Chưa có bảng hicrm_sliders. Vui lòng chạy database/migrations/20261007_sliders.sql.', 'sliders');
+			return;
+		}
+		$action = isset($para[1]) ? (string)$para[1] : '';
+		$id = isset($para[2]) ? intval($para[2]) : 0;
+		$this->view->data['active_menu'] = 'sliders';
+		$slide = null;
+		if($id > 0){
+			$db->query('SELECT * FROM hicrm_sliders WHERE id='.$id.' LIMIT 1');
+			$slide = $db->fetch_object(true);
+		}
+		if($_SERVER['REQUEST_METHOD'] === 'POST'){
+			$token = isset($_POST['csrf_token']) ? (string)$_POST['csrf_token'] : '';
+			if(!hash_equals((string)$_SESSION['admin_csrf_token'], $token)){
+				http_response_code(403); exit('Phiên làm việc không hợp lệ.');
+			}
+			if($action === 'delete' && $slide){
+				$db->query('DELETE FROM hicrm_sliders WHERE id='.$id);
+				$this->setAdminFlash('success', 'Đã xóa banner.');
+				$this->adminRedirect('/admin/sliders');
+			}
+			if($action !== 'save'){
+				http_response_code(400); exit('Yêu cầu không hợp lệ.');
+			}
+			if($id > 0 && !$slide){ http_response_code(404); exit('Không tìm thấy banner.'); }
+			$title = trim((string)($_POST['title'] ?? ''));
+			$alt = trim((string)($_POST['alt_text'] ?? ''));
+			$eyebrow = trim((string)($_POST['eyebrow'] ?? ''));
+			$description = trim((string)($_POST['description'] ?? ''));
+			$buttonLabel = trim((string)($_POST['button_label'] ?? ''));
+			$buttonUrl = trim((string)($_POST['button_url'] ?? ''));
+			$order = max(0, min(99999, intval($_POST['sort_order'] ?? 0)));
+			$active = !empty($_POST['is_active']) ? 1 : 0;
+			$back = '/admin/sliders'.($id ? '/edit/'.$id : '/add');
+			if($alt === '' || mb_strlen($alt) > 255 || mb_strlen($title) > 255 || mb_strlen($eyebrow) > 120 || mb_strlen($buttonLabel) > 100){
+				$this->setAdminFlash('danger', 'Vui lòng nhập mô tả ảnh và kiểm tra độ dài các trường.'); $this->adminRedirect($back);
+			}
+			if(($buttonLabel === '') !== ($buttonUrl === '') || ($buttonUrl !== '' && !preg_match('~^(https?://[^\\s]+|/?[a-zA-Z0-9][a-zA-Z0-9/_?=&.%-]*)$~u', $buttonUrl))){
+				$this->setAdminFlash('danger', 'Liên kết nút không hợp lệ. Hãy nhập URL http(s) hoặc đường dẫn nội bộ.'); $this->adminRedirect($back);
+			}
+			$imagePath = $slide ? (string)$slide->image_path : '';
+			if(isset($_FILES['image']) && intval($_FILES['image']['error']) !== UPLOAD_ERR_NO_FILE){
+				$file = $_FILES['image'];
+				if(intval($file['error']) !== UPLOAD_ERR_OK || intval($file['size']) > 5242880 || !is_uploaded_file($file['tmp_name'])){
+					$this->setAdminFlash('danger', 'Không thể tải ảnh lên hoặc ảnh vượt quá 5 MB.'); $this->adminRedirect($back);
+				}
+				$mime = (new finfo(FILEINFO_MIME_TYPE))->file($file['tmp_name']);
+				$extensions = array('image/jpeg'=>'jpg','image/png'=>'png','image/webp'=>'webp');
+				if(!isset($extensions[$mime]) || !getimagesize($file['tmp_name'])){
+					$this->setAdminFlash('danger', 'Chỉ nhận ảnh JPG, PNG hoặc WebP.'); $this->adminRedirect($back);
+				}
+				$directory = dirname(__DIR__).'/uploads/slider';
+				if(!is_dir($directory) && !mkdir($directory, 0755, true)){
+					$this->setAdminFlash('danger', 'Không tạo được thư mục ảnh slider.'); $this->adminRedirect($back);
+				}
+				$name = 'slide_'.bin2hex(random_bytes(12)).'.'.$extensions[$mime];
+				if(!move_uploaded_file($file['tmp_name'], $directory.'/'.$name)){
+					$this->setAdminFlash('danger', 'Không lưu được ảnh slider.'); $this->adminRedirect($back);
+				}
+				$imagePath = 'uploads/slider/'.$name;
+			}
+			if($imagePath === ''){ $this->setAdminFlash('danger', 'Vui lòng chọn ảnh banner.'); $this->adminRedirect($back); }
+			$fields = array(
+				"image_path='".$db->escapestring($imagePath)."'",
+				"alt_text='".$db->escapestring($alt)."'",
+				"eyebrow='".$db->escapestring($eyebrow)."'",
+				"title='".$db->escapestring($title)."'",
+				"description='".$db->escapestring($description)."'",
+				"button_label='".$db->escapestring($buttonLabel)."'",
+				"button_url='".$db->escapestring($buttonUrl)."'",
+				'sort_order='.$order,
+				'is_active='.$active
+			);
+			if($slide){ $db->query('UPDATE hicrm_sliders SET '.implode(',', $fields).' WHERE id='.$id); }
+			else { $db->query('INSERT INTO hicrm_sliders SET '.implode(',', $fields)); }
+			$this->setAdminFlash('success', $slide ? 'Đã cập nhật banner.' : 'Đã thêm banner.');
+			$this->adminRedirect('/admin/sliders');
+		}
+		$this->view->data['slider_flash'] = $this->getAdminFlash();
+		if($action === 'add' || ($action === 'edit' && $slide)){
+			$this->view->data['slide'] = $action === 'edit' ? $slide : null;
+			$this->view->admintmp('slider-form'); return;
+		}
+		$db->query('SELECT * FROM hicrm_sliders ORDER BY sort_order ASC,id ASC');
+		$this->view->data['slides'] = $db->fetch_object();
+		$this->view->admintmp('sliders');
 	}
 }

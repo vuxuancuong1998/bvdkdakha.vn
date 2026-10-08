@@ -7,13 +7,13 @@
             <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-3 bg-white py-3">
                <div>
                   <h4 class="card-title text-primary font-weight-bold mb-1">
-                     <i class="fa-solid fa-file-lines me-2"></i>Quản lý Trang tĩnh (CMS Landing Pages)
+                     <i class="fa-solid fa-file-lines me-2"></i>Quản lý trang tĩnh
                   </h4>
-                  <p class="text-muted small mb-0">Tạo và quản lý các trang tĩnh như Giới thiệu, Cơ cấu tổ chức, Quy trình...</p>
+                  <p class="text-muted small mb-0">Quản lý nội dung và đường dẫn các trang tĩnh.</p>
                </div>
                <div>
                   <a href="<?php echo XC_URL; ?>/admin/staticpages/add" class="btn btn-primary btn-sm rounded-pill px-3 shadow-sm">
-                     <i class="fa-solid fa-plus me-1"></i> Thêm trang tĩnh mới
+                     <i class="fa-solid fa-plus me-1"></i> Thêm trang tĩnh
                   </a>
                </div>
             </div>
@@ -21,25 +21,15 @@
                
                <!-- Filter & Search Bar -->
                <form method="GET" action="<?php echo XC_URL; ?>/admin/staticpages" class="row g-3 mb-4 align-items-center">
-                  <div class="col-md-5">
+                  <div class="col-md-8">
                      <div class="input-group">
                         <span class="input-group-text bg-light border-end-0"><i class="fa-solid fa-magnifying-glass text-muted"></i></span>
-                        <input type="text" name="q" class="form-control border-start-0" placeholder="Tìm kiếm tên trang, hashtag hoặc slug..." value="<?php echo htmlspecialchars($search); ?>">
+                        <input type="text" name="q" class="form-control border-start-0" placeholder="Tìm theo tên trang hoặc đường dẫn..." value="<?php echo htmlspecialchars($search); ?>">
                      </div>
                   </div>
-                  <div class="col-md-4">
-                     <select name="cat" class="form-select">
-                        <option value="0">-- Tất cả danh mục trang --</option>
-                        <?php if(!empty($categories)): foreach($categories as $cat): ?>
-                           <option value="<?php echo $cat->id; ?>" <?php echo ($cat_filter == $cat->id) ? 'selected' : ''; ?>>
-                              <?php echo htmlspecialchars($cat->category_name); ?>
-                           </option>
-                        <?php endforeach; endif; ?>
-                     </select>
-                  </div>
-                  <div class="col-md-3 d-flex gap-2">
-                     <button type="submit" class="btn btn-primary btn-sm px-3"><i class="fa-solid fa-filter me-1"></i> Lọc</button>
-                     <?php if(!empty($search) || $cat_filter > 0): ?>
+                  <div class="col-md-4 d-flex gap-2">
+                     <button type="submit" class="btn btn-primary btn-sm px-3"><i class="fa-solid fa-filter me-1"></i> Tìm kiếm</button>
+                     <?php if(!empty($search)): ?>
                         <a href="<?php echo XC_URL; ?>/admin/staticpages" class="btn btn-outline-secondary btn-sm px-3"><i class="fa-solid fa-rotate-left me-1"></i> Xóa lọc</a>
                      <?php endif; ?>
                   </div>
@@ -52,8 +42,6 @@
                         <tr>
                            <th width="50" class="text-center">#</th>
                            <th>Tên trang tĩnh</th>
-                           <th>Hashtag / Slug</th>
-                           <th>Danh mục</th>
                            <th>Link URL</th>
                            <th class="text-center">Trạng thái</th>
                            <th class="text-center" width="160">Thao tác</th>
@@ -82,17 +70,6 @@
                                     </div>
                                  </td>
                                  <td>
-                                    <?php if(!empty($item->hashtag)): ?>
-                                       <span class="badge bg-soft-info text-info rounded-pill px-2 py-1"><?php echo htmlspecialchars($item->hashtag); ?></span>
-                                    <?php endif; ?>
-                                    <div class="small text-muted font-monospace"><?php echo htmlspecialchars($item->page_slug); ?></div>
-                                 </td>
-                                 <td>
-                                    <span class="badge bg-soft-primary text-primary px-2 py-1">
-                                       <?php echo !empty($item->category_name) ? htmlspecialchars($item->category_name) : 'Chưa phân loại'; ?>
-                                    </span>
-                                 </td>
-                                 <td>
                                     <?php if(!empty($item->link_url)): ?>
                                        <a href="<?php echo (strpos($item->link_url, 'http') === 0) ? $item->link_url : XC_URL . $item->link_url; ?>" target="_blank" class="small text-primary text-decoration-none">
                                           <i class="fa-solid fa-link me-1"></i><?php echo htmlspecialchars($item->link_url); ?>
@@ -112,9 +89,7 @@
                                  </td>
                                  <td class="text-center">
                                     <div class="d-flex align-items-center justify-content-center gap-1">
-                                       <a href="<?php echo XC_URL; ?>/trang/<?php echo $item->page_slug; ?>" target="_blank" class="btn btn-sm btn-icon btn-soft-info" title="Xem ngoài Frontend">
-                                          <i class="fa-solid fa-globe"></i>
-                                       </a>
+                                       
                                        <a href="<?php echo XC_URL; ?>/admin/staticpages/edit/<?php echo $item->id; ?>" class="btn btn-sm btn-icon btn-soft-warning" title="Chỉnh sửa nội dung">
                                           <i class="fa-solid fa-pen-to-square"></i>
                                        </a>
@@ -127,9 +102,9 @@
                            <?php endforeach; ?>
                         <?php else: ?>
                            <tr>
-                              <td colspan="7" class="text-center py-5 text-muted">
+                              <td colspan="5" class="text-center py-5 text-muted">
                                  <i class="fa-solid fa-folder-open fa-3x mb-3 text-secondary"></i>
-                                 <p class="mb-0">Chưa có trang tĩnh nào. Hãy nhấn <strong>"Thêm trang tĩnh mới"</strong> để bắt đầu!</p>
+                                 <p class="mb-0">Chưa có trang tĩnh nào. Hãy nhấn <strong>"Thêm trang tĩnh"</strong> để bắt đầu!</p>
                               </td>
                            </tr>
                         <?php endif; ?>
@@ -144,15 +119,15 @@
                      <nav>
                         <ul class="pagination pagination-sm mb-0">
                            <li class="page-item <?php echo ($page <= 1) ? 'disabled' : ''; ?>">
-                              <a class="page-link" href="<?php echo XC_URL; ?>/admin/staticpages?page=<?php echo ($page-1); ?>&q=<?php echo urlencode($search); ?>&cat=<?php echo $cat_filter; ?>">Trước</a>
+                              <a class="page-link" href="<?php echo XC_URL; ?>/admin/staticpages?page=<?php echo ($page-1); ?>&q=<?php echo urlencode($search); ?>">Trước</a>
                            </li>
                            <?php for($i = 1; $i <= $total_pages; $i++): ?>
                               <li class="page-item <?php echo ($page == $i) ? 'active' : ''; ?>">
-                                 <a class="page-link" href="<?php echo XC_URL; ?>/admin/staticpages?page=<?php echo $i; ?>&q=<?php echo urlencode($search); ?>&cat=<?php echo $cat_filter; ?>"><?php echo $i; ?></a>
+                                 <a class="page-link" href="<?php echo XC_URL; ?>/admin/staticpages?page=<?php echo $i; ?>&q=<?php echo urlencode($search); ?>"><?php echo $i; ?></a>
                               </li>
                            <?php endfor; ?>
                            <li class="page-item <?php echo ($page >= $total_pages) ? 'disabled' : ''; ?>">
-                              <a class="page-link" href="<?php echo XC_URL; ?>/admin/staticpages?page=<?php echo ($page+1); ?>&q=<?php echo urlencode($search); ?>&cat=<?php echo $cat_filter; ?>">Sau</a>
+                              <a class="page-link" href="<?php echo XC_URL; ?>/admin/staticpages?page=<?php echo ($page+1); ?>&q=<?php echo urlencode($search); ?>">Sau</a>
                            </li>
                         </ul>
                      </nav>

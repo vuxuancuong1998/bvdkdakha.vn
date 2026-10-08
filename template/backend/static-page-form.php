@@ -4,312 +4,88 @@
 <script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/super-build/ckeditor.js"></script>
 
 <style>
-/* ── CKEditor min-height ── */
-.ck-editor__editable_inline { min-height: 460px; font-size: 15px; line-height: 1.8; }
-
-/* ── Attachment drop-zone ── */
-#dropZone {
-   border: 2px dashed #a0aec0; border-radius: 12px;
-   background: #f8faff; transition: all .25s ease; cursor: pointer;
-}
-#dropZone.dragover, #dropZone:hover { border-color: #4e73df; background: #eef2ff; }
-
-/* ── Attach item ── */
-.attach-item {
-   display:flex; align-items:center; gap:10px;
-   padding:8px 12px; border-radius:8px;
-   background:#fff; border:1px solid #e2e8f0;
-   margin-bottom:8px; transition:box-shadow .2s;
-}
-.attach-item:hover { box-shadow:0 2px 8px rgba(78,115,223,.15); }
-.attach-item .a-icon  { font-size:20px; width:28px; text-align:center; flex-shrink:0; }
-.attach-item .a-name  { flex:1; font-size:13px; word-break:break-all; color:#2d3748; }
-.attach-item .a-size  { font-size:11px; color:#718096; white-space:nowrap; }
-.attach-item .btn-rm  {
-   border:none; background:none; color:#e53e3e;
-   padding:2px 6px; cursor:pointer; border-radius:6px; transition:background .2s;
-}
-.attach-item .btn-rm:hover { background:#fff5f5; }
-.saved-att { background:#f0fff4; border-color:#9ae6b4; }
-.saved-att .a-icon { color:#38a169; }
-
-/* ── Section label ── */
-.sec-label {
-   font-size:12px; font-weight:700; text-transform:uppercase;
-   letter-spacing:.06em; color:#4a5568;
-   display:flex; align-items:center; gap:8px; margin-bottom:12px;
-}
-.sec-label::after { content:''; flex:1; height:1px; background:#e2e8f0; }
-
-/* ── Char counter ── */
-.char-c { font-size:11px; color:#a0aec0; text-align:right; }
-
-/* ── Sticky sidebar ── */
-@media(min-width:992px){ .sticky-sb { position:sticky; top:76px; } }
+.static-page-form { max-width: 1080px; margin: 0 auto; }
+.static-page-form .ck-editor__editable_inline { min-height: 380px; }
+#dropZone { border: 2px dashed #cbd5e1; border-radius: 10px; background: #f8fafc; cursor: pointer; }
+#dropZone:hover, #dropZone.dragover { border-color: #4e73df; background: #eef2ff; }
+.attach-item { display: flex; align-items: center; gap: 10px; padding: 8px 12px; border: 1px solid #e2e8f0; border-radius: 8px; margin-bottom: 8px; }
+.attach-item .a-name { flex: 1; overflow-wrap: anywhere; }
+.attach-item .a-size { color: #667085; font-size: 12px; }
+.attach-item .btn-rm { border: 0; background: none; color: #dc3545; }
+#bannerPrev { max-width: 100%; max-height: 180px; object-fit: contain; }
 </style>
-
 <div class="conatiner-fluid content-inner mt-n5 py-0">
-   <div class="row">
-      <div class="col-sm-12">
-         <div class="card shadow-sm border-0">
-
-            <!-- Header -->
-            <div class="card-header d-flex justify-content-between align-items-center bg-white py-3 border-bottom">
-               <div>
-                  <h4 class="card-title text-primary font-weight-bold mb-1">
-                     <i class="fa-solid fa-file-pen me-2"></i>
-                     <?php echo ($method == 'edit') ? 'Chỉnh sửa Trang Tĩnh (CMS)' : 'Thêm mới Trang Tĩnh (CMS)'; ?>
-                  </h4>
-                  <p class="text-muted small mb-0">Soạn thảo nội dung landing page / trang tĩnh với đầy đủ định dạng như MS Word.</p>
-               </div>
-               <a href="<?php echo XC_URL; ?>/admin/staticpages" class="btn btn-outline-secondary btn-sm rounded-pill px-3">
-                  <i class="fa-solid fa-arrow-left me-1"></i> Quay lại
-               </a>
+  <div class="static-page-form card border-0 shadow-sm">
+    <div class="card-header bg-white border-bottom py-3 d-flex justify-content-between align-items-center">
+      <div><h4 class="card-title mb-1"><?php echo ($method == 'edit') ? 'Chỉnh sửa trang tĩnh' : 'Thêm trang tĩnh'; ?></h4><p class="text-muted small mb-0">Thông tin và nội dung hiển thị trên trang.</p></div>
+      <a href="<?php echo XC_URL; ?>/admin/staticpages" class="btn btn-outline-secondary btn-sm">Quay lại</a>
+    </div>
+    <div class="card-body p-3 p-md-4">
+      <form id="formStaticPage" enctype="multipart/form-data" novalidate>
+        <input type="hidden" name="id" value="<?php echo (int)($page_detail->id ?? 0); ?>">
+        <input type="hidden" name="method" value="<?php echo htmlspecialchars($method ?? 'add', ENT_QUOTES, 'UTF-8'); ?>">
+        <input type="hidden" name="category_id" value="<?php echo (int)($page_detail->category_id ?? 0); ?>">
+        <input type="hidden" name="page_slug" id="page_slug" value="<?php echo htmlspecialchars($page_detail->page_slug ?? '', ENT_QUOTES, 'UTF-8'); ?>">
+        <input type="hidden" name="page_status" value="<?php echo (int)($page_detail->page_status ?? 1); ?>">
+        <input type="hidden" name="sort_order" value="<?php echo (int)($page_detail->sort_order ?? 0); ?>">
+        <input type="hidden" name="hashtag" value="<?php echo htmlspecialchars($page_detail->hashtag ?? '', ENT_QUOTES, 'UTF-8'); ?>">
+        <input type="hidden" name="page_summary" value="<?php echo htmlspecialchars($page_detail->page_summary ?? '', ENT_QUOTES, 'UTF-8'); ?>">
+        <input type="hidden" name="meta_title" value="<?php echo htmlspecialchars($page_detail->meta_title ?? '', ENT_QUOTES, 'UTF-8'); ?>">
+        <input type="hidden" name="meta_keywords" value="<?php echo htmlspecialchars($page_detail->meta_keywords ?? '', ENT_QUOTES, 'UTF-8'); ?>">
+        <input type="hidden" name="meta_description" value="<?php echo htmlspecialchars($page_detail->meta_description ?? '', ENT_QUOTES, 'UTF-8'); ?>">
+        <div class="row g-4">
+          <div class="col-12">
+            <label for="page_title" class="form-label fw-bold">Tên trang tĩnh <span class="text-danger">*</span></label>
+            <input type="text" id="page_title" name="page_title" class="form-control" maxlength="255" required placeholder="Nhập tên trang tĩnh" value="<?php echo htmlspecialchars($page_detail->page_title ?? '', ENT_QUOTES, 'UTF-8'); ?>">
+          </div>
+          <div class="col-12">
+            <label for="link_url" class="form-label fw-bold">Link URL</label>
+            <input type="text" id="link_url" name="link_url" class="form-control" placeholder="/trang/gioi-thieu" value="<?php echo htmlspecialchars($page_detail->link_url ?? '', ENT_QUOTES, 'UTF-8'); ?>">
+            <div class="form-text">Để trống nếu dùng đường dẫn được tạo từ tên trang.</div>
+          </div>
+          <div class="col-12">
+            <label for="editor_content" class="form-label fw-bold">Mô tả chi tiết</label>
+            <textarea name="page_content" id="editor_content" class="form-control" rows="14" placeholder="Nhập nội dung chi tiết..."><?php echo htmlspecialchars($page_detail->page_content ?? '', ENT_QUOTES, 'UTF-8'); ?></textarea>
+          </div>
+          <div class="col-md-7">
+            <label class="form-label fw-bold">File đính kèm <span class="badge bg-light text-secondary" id="attachBadge">0 file</span></label>
+            <div id="dropZone" class="text-center p-4 mb-3" onclick="document.getElementById('attachInput').click()">
+              <i class="fa-solid fa-cloud-arrow-up text-primary d-block mb-2"></i><strong>Chọn hoặc kéo thả file vào đây</strong>
+              <div class="small text-muted mt-1">Tối đa 20 MB mỗi file</div>
             </div>
-
-            <div class="card-body py-4">
-               <form id="formStaticPage" enctype="multipart/form-data" novalidate>
-                  <input type="hidden" name="id"     value="<?php echo (!empty($page_detail)) ? $page_detail->id : 0; ?>">
-                  <input type="hidden" name="method" value="<?php echo $method ?? 'add'; ?>">
-
-                  <div class="row g-4">
-
-                     <!-- ════════════════════════════════════════
-                          LEFT – Title | Content | Attachments
-                          ════════════════════════════════════════ -->
-                     <div class="col-lg-8">
-
-                        <!-- ① Tiêu đề & thông tin cơ bản -->
-                        <div class="card border-0 bg-light p-3 mb-3 rounded-3">
-                           <div class="sec-label"><i class="fa-solid fa-heading text-primary"></i> Thông tin cơ bản</div>
-
-                           <div class="mb-3">
-                              <label class="form-label fw-bold text-dark" for="page_title">
-                                 Tiêu đề trang tĩnh <span class="text-danger">*</span>
-                              </label>
-                              <input type="text" id="page_title" name="page_title"
-                                     class="form-control form-control-lg"
-                                     placeholder="Ví dụ: Giới thiệu Bệnh viện, Cơ cấu tổ chức..."
-                                     value="<?php echo (!empty($page_detail)) ? htmlspecialchars($page_detail->page_title) : ''; ?>"
-                                     maxlength="255" required>
-                              <div class="d-flex justify-content-between mt-1">
-                                 <div class="form-text">Hiển thị ở đầu trang và thanh trình duyệt.</div>
-                                 <span class="char-c" id="cTitle">0 / 255</span>
-                              </div>
-                           </div>
-
-                           <div class="row g-3 mb-3">
-                              <div class="col-md-6">
-                                 <label class="form-label fw-bold text-dark">Hashtag trang</label>
-                                 <input type="text" name="hashtag" class="form-control"
-                                        placeholder="#gioi-thieu, #co-cau-to-chuc"
-                                        value="<?php echo (!empty($page_detail)) ? htmlspecialchars($page_detail->hashtag) : ''; ?>">
-                                 <div class="form-text">Từ khóa nhận diện / nổi bật.</div>
-                              </div>
-                              <div class="col-md-6">
-                                 <label class="form-label fw-bold text-dark">Link URL tùy chỉnh</label>
-                                 <input type="text" name="link_url" class="form-control"
-                                        placeholder="/trang/gioi-thieu"
-                                        value="<?php echo (!empty($page_detail)) ? htmlspecialchars($page_detail->link_url) : ''; ?>">
-                                 <div class="form-text">Đường dẫn frontend tùy chỉnh.</div>
-                              </div>
-                           </div>
-
-                           <div class="mb-0">
-                              <label class="form-label fw-bold text-dark">Mô tả ngắn (Summary)</label>
-                              <textarea name="page_summary" class="form-control" rows="3"
-                                        placeholder="Tóm tắt ngắn gọn nội dung trang tĩnh..."
-                                        maxlength="500"><?php echo (!empty($page_detail)) ? htmlspecialchars($page_detail->page_summary) : ''; ?></textarea>
-                              <span class="char-c" id="cSummary">0 / 500</span>
-                           </div>
-                        </div>
-
-                        <!-- ② CKEditor 5 – Nội dung chi tiết -->
-                        <div class="card border-0 bg-light p-3 mb-3 rounded-3">
-                           <div class="sec-label">
-                              <i class="fa-solid fa-pen-nib text-primary"></i> Nội dung chi tiết
-                              <span class="badge bg-primary bg-opacity-10 text-primary fw-normal ms-1">
-                                 <i class="fa-solid fa-wand-magic-sparkles me-1"></i>CKEditor 5 – Full Word
-                              </span>
-                           </div>
-                           <!-- Textarea luôn hiển thị sẵn, CKEditor sẽ tự động gắn lên nếu load thành công -->
-                           <textarea name="page_content" id="editor_content" class="form-control" rows="12" style="min-height:400px; font-size:15px; line-height:1.6;" placeholder="Nhập nội dung chi tiết trang tĩnh tại đây (bảng, hình ảnh, văn bản, mã nhúng)..."><?php echo (!empty($page_detail)) ? htmlspecialchars($page_detail->page_content) : ''; ?></textarea>
-                        </div>
-
-                        <!-- ③ File đính kèm -->
-                        <div class="card border-0 bg-light p-3 rounded-3">
-                           <div class="sec-label">
-                              <i class="fa-solid fa-paperclip text-primary"></i> File đính kèm
-                              <span class="badge bg-secondary fw-normal ms-1" id="attachBadge">0 file</span>
-                           </div>
-
-                           <!-- Drop zone -->
-                           <div id="dropZone" class="text-center py-4 px-3 mb-3"
-                                onclick="document.getElementById('attachInput').click()">
-                              <i class="fa-solid fa-cloud-arrow-up fa-2x text-primary mb-2 d-block"></i>
-                              <p class="mb-1 fw-bold text-primary">Kéo &amp; thả hoặc nhấn để chọn file</p>
-                              <p class="text-muted small mb-0">PDF, Word, Excel, PowerPoint, hình ảnh, ZIP... · Tối đa 20 MB/file</p>
-                           </div>
-                           <input type="file" id="attachInput" name="attachments[]" multiple style="display:none;"
-                                  accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.csv,.zip,.rar,.jpg,.jpeg,.png,.gif,.webp">
-
-                           <!-- New files list -->
-                           <div id="newFileList"></div>
-
-                           <!-- Saved attachments (edit mode) -->
-                           <?php if (!empty($page_attachments) && is_array($page_attachments)): ?>
-                           <div id="savedFileList" class="mt-2">
-                              <p class="sec-label"><i class="fa-solid fa-folder-open text-success"></i> File đã lưu</p>
-                              <?php foreach ($page_attachments as $att): ?>
-                              <div class="attach-item saved-att" id="satt_<?php echo $att->id; ?>">
-                                 <span class="a-icon">📎</span>
-                                 <span class="a-name">
-                                    <a href="<?php echo XC_URL . '/' . $att->file_path; ?>" target="_blank"
-                                       class="text-success text-decoration-none">
-                                       <?php echo htmlspecialchars($att->file_name); ?>
-                                    </a>
-                                 </span>
-                                 <span class="a-size"><?php echo number_format(($att->file_size ?? 0)/1024, 1); ?> KB</span>
-                                 <button type="button" class="btn-rm btn-rm-saved" data-aid="<?php echo $att->id; ?>" title="Xóa">
-                                    <i class="fa-solid fa-trash-can"></i>
-                                 </button>
-                              </div>
-                              <?php endforeach; ?>
-                           </div>
-                           <div id="deletedContainer"></div>
-                           <?php endif; ?>
-                        </div>
-
-                     </div><!-- /col-lg-8 -->
-
-                     <!-- ════════════════════════════════════════
-                          RIGHT – Settings | Banner | SEO
-                          ════════════════════════════════════════ -->
-                     <div class="col-lg-4">
-                        <div class="sticky-sb">
-
-                           <!-- Thiết lập -->
-                           <div class="card border p-3 mb-3 bg-white shadow-sm rounded-3">
-                              <div class="sec-label"><i class="fa-solid fa-sliders text-primary"></i> Thiết lập trang</div>
-
-                              <div class="mb-3">
-                                 <label class="form-label fw-bold text-dark">Danh mục trang tĩnh</label>
-                                 <select name="category_id" class="form-select">
-                                    <option value="0">-- Chưa chọn danh mục --</option>
-                                    <?php if(!empty($categories)): foreach($categories as $cat): ?>
-                                    <option value="<?php echo $cat->id; ?>"
-                                       <?php echo (!empty($page_detail) && $page_detail->category_id == $cat->id) ? 'selected' : ''; ?>>
-                                       <?php echo htmlspecialchars($cat->category_name); ?>
-                                    </option>
-                                    <?php endforeach; endif; ?>
-                                 </select>
-                              </div>
-
-                              <div class="mb-3">
-                                 <label class="form-label fw-bold text-dark">URL Slug</label>
-                                 <div class="input-group">
-                                    <span class="input-group-text text-muted small">/trang/</span>
-                                    <input type="text" name="page_slug" id="page_slug"
-                                           class="form-control font-monospace"
-                                           placeholder="tu-dong-tao-tu-tieu-de"
-                                           value="<?php echo (!empty($page_detail)) ? htmlspecialchars($page_detail->page_slug) : ''; ?>">
-                                 </div>
-                                 <div class="form-text">Tự động sinh từ tiêu đề nếu để trống.</div>
-                              </div>
-
-                              <div class="mb-3">
-                                 <label class="form-label fw-bold text-dark">Trạng thái</label>
-                                 <select name="page_status" class="form-select">
-                                    <option value="1" <?php echo (empty($page_detail) || $page_detail->page_status == 1) ? 'selected' : ''; ?>>✅ Hiển thị</option>
-                                    <option value="0" <?php echo (!empty($page_detail) && $page_detail->page_status == 0) ? 'selected' : ''; ?>>🔒 Ẩn</option>
-                                 </select>
-                              </div>
-
-                              <div class="mb-0">
-                                 <label class="form-label fw-bold text-dark">Thứ tự sắp xếp</label>
-                                 <input type="number" name="sort_order" class="form-control" min="0"
-                                        value="<?php echo (!empty($page_detail)) ? (int)$page_detail->sort_order : 0; ?>">
-                              </div>
-                           </div>
-
-                           <!-- Banner -->
-                           <div class="card border p-3 mb-3 bg-white shadow-sm rounded-3">
-                              <div class="sec-label"><i class="fa-solid fa-image text-primary"></i> Ảnh Banner</div>
-
-                              <div id="bannerWrap" class="mb-3 text-center border rounded-2 p-2 bg-light <?php echo empty($page_detail->banner_image) ? 'd-none' : ''; ?>">
-                                 <img id="bannerPrev"
-                                      src="<?php echo (!empty($page_detail->banner_image)) ? XC_URL.'/'.$page_detail->banner_image : ''; ?>"
-                                      class="img-fluid rounded-2" style="max-height:140px;object-fit:cover;" alt="Banner">
-                                 <div class="small text-muted mt-1">Ảnh hiện tại</div>
-                              </div>
-                              <?php if (empty($page_detail->banner_image)): ?>
-                              <div id="noBanner" class="mb-3 text-center text-muted border rounded-2 py-4 bg-light">
-                                 <i class="fa-regular fa-image fa-2x d-block mb-2"></i>
-                                 <span class="small">Chưa có ảnh banner</span>
-                              </div>
-                              <?php endif; ?>
-
-                              <div>
-                                 <label class="form-label fw-bold text-dark small">Tải ảnh mới (JPEG / PNG / WebP)</label>
-                                 <input type="file" name="banner_image" id="bannerInput"
-                                        class="form-control form-control-sm" accept="image/*">
-                              </div>
-                           </div>
-
-                           <!-- SEO -->
-                           <div class="card border p-3 bg-white shadow-sm rounded-3">
-                              <div class="sec-label"><i class="fa-solid fa-magnifying-glass-chart text-primary"></i> Tối ưu SEO</div>
-
-                              <div class="mb-3">
-                                 <label class="form-label fw-bold text-dark">Meta Title</label>
-                                 <input type="text" name="meta_title" class="form-control"
-                                        placeholder="Tiêu đề trên Google..."
-                                        value="<?php echo (!empty($page_detail)) ? htmlspecialchars($page_detail->meta_title) : ''; ?>">
-                              </div>
-                              <div class="mb-3">
-                                 <label class="form-label fw-bold text-dark">Meta Keywords</label>
-                                 <input type="text" name="meta_keywords" class="form-control"
-                                        placeholder="Từ khóa, phân cách bằng dấu phẩy..."
-                                        value="<?php echo (!empty($page_detail)) ? htmlspecialchars($page_detail->meta_keywords) : ''; ?>">
-                              </div>
-                              <div class="mb-0">
-                                 <label class="form-label fw-bold text-dark">Meta Description</label>
-                                 <textarea name="meta_description" class="form-control" rows="3"
-                                           placeholder="Mô tả SEO (tối đa 160 ký tự)..."
-                                           maxlength="160"><?php echo (!empty($page_detail)) ? htmlspecialchars($page_detail->meta_description) : ''; ?></textarea>
-                                 <span class="char-c" id="cMeta">0 / 160</span>
-                              </div>
-                           </div>
-
-                        </div><!-- /sticky-sb -->
-                     </div><!-- /col-lg-4 -->
-
-                  </div><!-- /row -->
-
-                  <!-- Action buttons -->
-                  <div class="border-top pt-3 mt-3 d-flex justify-content-between align-items-center">
-                     <div class="text-muted small">
-                        <i class="fa-solid fa-circle-info me-1 text-primary"></i>
-                        Trường có <span class="text-danger fw-bold">*</span> là bắt buộc.
-                     </div>
-                     <div class="d-flex gap-2">
-                        <a href="<?php echo XC_URL; ?>/admin/staticpages" class="btn btn-outline-secondary px-4 rounded-pill">
-                           <i class="fa-solid fa-xmark me-1"></i>Hủy bỏ
-                        </a>
-                        <button type="submit" id="btnSubmitPage" class="btn btn-primary px-5 shadow-sm rounded-pill">
-                           <i class="fa-solid fa-floppy-disk me-1"></i>
-                           <?php echo ($method == 'edit') ? 'Lưu cập nhật' : 'Đăng trang tĩnh'; ?>
-                        </button>
-                     </div>
-                  </div>
-
-               </form>
-            </div><!-- /card-body -->
-         </div>
-      </div>
-   </div>
+            <input type="file" id="attachInput" name="attachments[]" multiple class="d-none" accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.csv,.zip,.rar,.jpg,.jpeg,.png,.gif,.webp">
+            <div id="newFileList"></div>
+            <?php if (!empty($page_attachments) && is_array($page_attachments)): ?>
+            <div id="savedFileList">
+              <?php foreach ($page_attachments as $att): ?>
+              <div class="attach-item" id="satt_<?php echo (int)$att->id; ?>">
+                <span class="a-icon">📎</span>
+                <span class="a-name"><a href="<?php echo htmlspecialchars(XC_URL . '/' . $att->file_path, ENT_QUOTES, 'UTF-8'); ?>" target="_blank"><?php echo htmlspecialchars($att->file_name, ENT_QUOTES, 'UTF-8'); ?></a></span>
+                <span class="a-size"><?php echo number_format(($att->file_size ?? 0)/1024, 1); ?> KB</span>
+                <button type="button" class="btn-rm btn-rm-saved" data-aid="<?php echo (int)$att->id; ?>" title="Xóa file"><i class="fa-solid fa-trash-can"></i></button>
+              </div>
+              <?php endforeach; ?>
+            </div>
+            <?php endif; ?>
+            <div id="deletedContainer"></div>
+          </div>
+          <div class="col-md-5">
+            <label for="bannerInput" class="form-label fw-bold">Ảnh banner</label>
+            <div id="bannerWrap" class="border rounded p-2 mb-2 <?php echo empty($page_detail->banner_image) ? 'd-none' : ''; ?>">
+              <img id="bannerPrev" src="<?php echo !empty($page_detail->banner_image) ? htmlspecialchars(XC_URL . '/' . $page_detail->banner_image, ENT_QUOTES, 'UTF-8') : ''; ?>" alt="Ảnh banner">
+            </div>
+            <div id="noBanner" class="text-muted small mb-2 <?php echo !empty($page_detail->banner_image) ? 'd-none' : ''; ?>">Chưa có ảnh banner</div>
+            <input type="file" name="banner_image" id="bannerInput" class="form-control" accept="image/*">
+          </div>
+        </div>
+        <div class="border-top mt-4 pt-3 d-flex justify-content-end gap-2">
+          <a href="<?php echo XC_URL; ?>/admin/staticpages" class="btn btn-outline-secondary">Hủy</a>
+          <button type="submit" id="btnSubmitPage" class="btn btn-primary px-4"><i class="fa-solid fa-floppy-disk me-1"></i><?php echo ($method == 'edit') ? 'Lưu cập nhật' : 'Lưu trang tĩnh'; ?></button>
+        </div>
+      </form>
+    </div>
+  </div>
 </div>
-
 <!-- =====================================================
      JavaScript
      ===================================================== -->
@@ -429,14 +205,10 @@ $('#page_title').on('input', function () {
    }
 });
 $('#page_slug').on('input', function(){ slugLocked = this.value.trim() !== ''; });
-$('textarea[name="page_summary"]').on('input', function(){ $('#cSummary').text(this.value.length+' / 500'); });
-$('textarea[name="meta_description"]').on('input', function(){ $('#cMeta').text(this.value.length+' / 160'); });
 
 // Init counters
 (function(){
    $('#cTitle').text(<?php echo (!empty($page_detail)) ? mb_strlen($page_detail->page_title) : 0; ?>+' / 255');
-   $('#cSummary').text($('textarea[name="page_summary"]').val().length+' / 500');
-   $('#cMeta').text($('textarea[name="meta_description"]').val().length+' / 160');
 })();
 
 

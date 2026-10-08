@@ -265,7 +265,7 @@ if($visitor_session_id !== ''){
   <!-- Bootstrap 5 Bundle JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
   <!-- Main JS -->
-  <script src="<?php echo XC_URL;?>/template/frontend/assets/js/main.js" defer></script>
+  <script src="<?php echo XC_URL;?>/template/frontend/assets/js/main.js?v=<?php echo filemtime(__SITE_PATH.'/template/frontend/assets/js/main.js'); ?>" defer></script>
 
 </body>
 </html>

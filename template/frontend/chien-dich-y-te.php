@@ -2,7 +2,7 @@
 <style>
   /* Root reset & scope */
   #campaigns-component {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-family: var(--font-primary);
     color: #1e293b;
     background-color: #f8fafc;
     padding: 24px 16px;

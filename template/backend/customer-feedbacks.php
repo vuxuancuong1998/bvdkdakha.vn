@@ -1,126 +1,162 @@
-<?php include_once "header.php";
-$customer_feedbacks = is_array($customer_feedbacks) ? $customer_feedbacks : array();
-$page = isset($customer_feedback_page) ? (int)$customer_feedback_page : 1;
-$per_page = isset($customer_feedback_per_page) ? (int)$customer_feedback_per_page : 10;
-$total_feedback = isset($customer_feedback_total) ? (int)$customer_feedback_total : count($customer_feedbacks);
-$total_pages = isset($customer_feedback_total_pages) ? (int)$customer_feedback_total_pages : 1;
-$row_offset = max(0, ($page - 1) * $per_page);
-$keyword = isset($customer_feedback_keyword) ? trim((string)$customer_feedback_keyword) : '';
-
-if (!function_exists('backendCustomerFeedbackExcerpt')) {
-	function backendCustomerFeedbackExcerpt($value, $limit = 90) {
-		$value = trim((string)$value);
-		if ($value === '') { return ''; }
-		if (function_exists('mb_strlen') && function_exists('mb_substr')) {
-			return mb_strlen($value, 'UTF-8') > $limit ? mb_substr($value, 0, $limit, 'UTF-8').'...' : $value;
-		}
-		return strlen($value) > $limit ? substr($value, 0, $limit).'...' : $value;
-	}
-}
-
-if (!function_exists('backendCustomerFeedbackPageUrl')) {
-	function backendCustomerFeedbackPageUrl($targetPage, $keyword = '') {
-		$query = array('page' => (int)$targetPage);
-		if ($keyword !== '') {
-			$query['keyword'] = $keyword;
-		}
-		return XC_URL.'/admin/customerfeedbacks?'.http_build_query($query);
-	}
-}
+<?php include_once 'header.php';
+$items = isset($customer_feedbacks) && is_array($customer_feedbacks) ? $customer_feedbacks : array();
+$page = (int)$customer_feedback_page;
+$perPage = (int)$customer_feedback_per_page;
+$total = (int)$customer_feedback_total;
+$totalPages = (int)$customer_feedback_total_pages;
+$keyword = (string)$customer_feedback_keyword;
+$escape = function($value){ return htmlspecialchars((string)$value, ENT_QUOTES, 'UTF-8'); };
+$pageUrl = function($target) use ($keyword){
+   return XC_URL.'/admin/customerfeedbacks?'.http_build_query(array('page' => $target, 'keyword' => $keyword));
+};
+$excerpt = function($value){
+   $value = trim((string)$value);
+   return function_exists('mb_strimwidth') ? mb_strimwidth($value, 0, 90, '…', 'UTF-8') : (strlen($value) > 90 ? substr($value, 0, 90).'...' : $value);
+};
 ?>
-
-<div class="content container-fluid">
+<style>
+.feedback-page .page-header { margin-bottom: 1rem; }
+.feedback-page .feedback-toolbar { display:flex; align-items:center; gap:.75rem; flex-wrap:wrap; }
+.feedback-page .feedback-toolbar form { display:flex; gap:.5rem; flex:1; max-width:540px; }
+.feedback-page .feedback-toolbar input { min-width:0; }
+.feedback-page .feedback-list { border:1px solid #e6e9ed; border-radius:.75rem; overflow:hidden; }
+.feedback-page .feedback-row { display:grid; grid-template-columns:minmax(0,1.25fr) minmax(0,1fr) minmax(0,1.8fr) auto; align-items:center; gap:1rem; padding:.7rem 1rem; border-bottom:1px solid #edf0f2; }
+.feedback-page .feedback-row:last-child { border-bottom:0; }
+.feedback-page .feedback-row:hover { background:#f8fafc; }
+.feedback-page .feedback-cell { min-width:0; }
+.feedback-page .feedback-ellipsis { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.feedback-page .feedback-meta, #feedbackDetailModal .feedback-meta { color:#64748b; font-size:.82rem; }
+.feedback-page .feedback-actions { display:flex; align-items:center; gap:.4rem; white-space:nowrap; }
+#feedbackDetailModal .feedback-content { white-space:pre-wrap; overflow-wrap:anywhere; }
+@media (max-width: 1100px) {
+   .feedback-page .feedback-row { grid-template-columns:minmax(0,1.2fr) minmax(0,1fr) auto; }
+   .feedback-page .feedback-preview { display:none; }
+}
+@media (max-width: 700px) {
+   .feedback-page .feedback-row { grid-template-columns:minmax(0,1fr) auto; gap:.5rem; }
+   .feedback-page .feedback-contact { display:none; }
+   .feedback-page .feedback-actions { flex-wrap:wrap; justify-content:flex-end; }
+}
+</style>
+<div class="content container-fluid feedback-page">
    <div class="page-header">
       <div class="row align-items-center">
          <div class="col">
-            <h3 class="page-title">Phản hồi của khách hàng</h3>
-            <ul class="breadcrumb">
-               <li class="breadcrumb-item active">Danh sách phản hồi liên hệ</li>
-            </ul>
+            <h3 class="page-title">Góp ý / Phản ánh</h3>
+            <div class="text-muted small">Tổng cộng <?php echo number_format($total); ?> góp ý</div>
          </div>
       </div>
    </div>
 
    <?php if(!empty($customer_feedback_flash)): ?>
-      <div class="alert alert-<?php echo $customer_feedback_flash['type'] == 'success' ? 'success' : 'info'; ?>"><?php echo htmlspecialchars($customer_feedback_flash['message']); ?></div>
+      <div class="alert alert-<?php echo $customer_feedback_flash['type'] === 'success' ? 'success' : 'info'; ?> py-2"><?php echo $escape($customer_feedback_flash['message']); ?></div>
    <?php endif; ?>
 
-   <div class="card card-table">
-      <div class="card-body">
-         <form class="row g-3 mb-4" method="get">
-            <div class="col-md-5">
-               <input class="form-control" type="text" name="keyword" value="<?php echo htmlspecialchars($keyword, ENT_QUOTES, 'UTF-8'); ?>" placeholder="Tìm theo họ tên, SĐT, email, địa chỉ hoặc nội dung">
-            </div>
-            <div class="col-auto">
-               <button class="btn btn-primary" type="submit">Tìm kiếm</button>
-            </div>
-            <div class="col-auto">
-               <a class="btn btn-light border" href="<?php echo XC_URL; ?>/admin/customerfeedbacks">Làm mới</a>
-            </div>
+   <div class="card mb-0"><div class="card-body p-3">
+      <div class="feedback-toolbar mb-3">
+         <form method="get" action="<?php echo XC_URL; ?>/admin/customerfeedbacks">
+            <input class="form-control" type="search" name="keyword" value="<?php echo $escape($keyword); ?>" placeholder="Tìm tên, SĐT, email hoặc nội dung" aria-label="Tìm góp ý">
+            <button class="btn btn-primary" type="submit">Tìm</button>
          </form>
+         <?php if($keyword !== ''): ?><a class="btn btn-light border" href="<?php echo XC_URL; ?>/admin/customerfeedbacks">Xóa lọc</a><?php endif; ?>
+      </div>
 
-         <div class="table-responsive">
-            <table class="table table-hover table-center mb-0">
-               <thead>
-                  <tr>
-                     <th>STT</th>
-                     <th>Khách hàng</th>
-                     <th>Liên hệ</th>
-                     <th>Nội dung</th>
-                     <th>Ngày gửi</th>
-                     <th>Thao tác</th>
-                  </tr>
-               </thead>
-               <tbody>
-                  <?php if (!empty($customer_feedbacks)): ?>
-                     <?php $stt = $row_offset + 1; foreach($customer_feedbacks as $item): ?>
-                        <tr>
-                           <td><?php echo $stt++; ?></td>
-                           <td>
-                              <div class="fw-semibold"><?php echo htmlspecialchars($item->customer_name, ENT_QUOTES, 'UTF-8'); ?></div>
-                              <small class="text-muted"><?php echo htmlspecialchars($item->customer_address, ENT_QUOTES, 'UTF-8'); ?></small>
-                           </td>
-                           <td>
-                              <small class="d-block"><?php echo htmlspecialchars($item->customer_phone, ENT_QUOTES, 'UTF-8'); ?></small>
-                              <small class="d-block text-muted"><?php echo htmlspecialchars($item->customer_email, ENT_QUOTES, 'UTF-8'); ?></small>
-                           </td>
-                           <td><?php echo htmlspecialchars(backendCustomerFeedbackExcerpt($item->content), ENT_QUOTES, 'UTF-8'); ?></td>
-                           <td><?php echo !empty($item->create_date) ? htmlspecialchars(date('d/m/Y H:i', strtotime($item->create_date)), ENT_QUOTES, 'UTF-8') : ''; ?></td>
-                           <td>
-                              <div class="d-flex align-items-center gap-2 flex-wrap">
-                                 <a class="btn btn-sm btn-info text-white" href="<?php echo XC_URL; ?>/admin/customerfeedbacks/detail/<?php echo (int)$item->id; ?>">Xem chi tiết</a>
-                                 <form method="post" class="d-inline" onsubmit="return confirm('Xóa phản hồi này?');">
-                                    <input type="hidden" name="id" value="<?php echo (int)$item->id; ?>">
-                                    <button class="btn btn-sm btn-danger" name="customer_feedback_action" value="delete">Xóa</button>
-                                 </form>
-                              </div>
-                           </td>
-                        </tr>
-                     <?php endforeach; ?>
-                  <?php else: ?>
-                     <tr><td colspan="6" class="text-center text-muted py-4">Chưa có phản hồi khách hàng.</td></tr>
-                  <?php endif; ?>
-               </tbody>
-            </table>
-         </div>
-
-         <?php if ($total_pages > 1): ?>
-            <nav class="mt-4">
-               <ul class="pagination justify-content-center mb-0">
-                  <?php for ($i = 1; $i <= $total_pages; $i++): ?>
-                     <?php if ($i === $page): ?>
-                        <li class="page-item active"><span class="page-link"><?php echo $i; ?></span></li>
-                     <?php else: ?>
-                        <li class="page-item"><a class="page-link" href="<?php echo htmlspecialchars(backendCustomerFeedbackPageUrl($i, $keyword), ENT_QUOTES, 'UTF-8'); ?>"><?php echo $i; ?></a></li>
-                     <?php endif; ?>
-                  <?php endfor; ?>
-               </ul>
-            </nav>
+      <div class="feedback-list">
+         <?php if($items): ?>
+            <?php foreach($items as $index => $item):
+               $date = !empty($item->create_date) ? date('d/m/Y H:i', strtotime($item->create_date)) : '';
+               $payload = json_encode(array(
+                  'id' => (int)$item->id,
+                  'name' => (string)$item->customer_name,
+                  'phone' => (string)$item->customer_phone,
+                  'email' => (string)$item->customer_email,
+                  'address' => (string)$item->customer_address,
+                  'content' => (string)$item->content,
+                  'date' => $date
+               ), JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT);
+            ?>
+               <div class="feedback-row">
+                  <div class="feedback-cell">
+                     <div class="fw-semibold feedback-ellipsis"><?php echo $escape($item->customer_name); ?></div>
+                     <div class="feedback-meta">#<?php echo (int)$item->id; ?> · <?php echo $escape($date); ?></div>
+                  </div>
+                  <div class="feedback-cell feedback-contact">
+                     <div class="feedback-ellipsis"><?php echo $escape($item->customer_phone); ?></div>
+                     <div class="feedback-meta feedback-ellipsis"><?php echo $escape($item->customer_email); ?></div>
+                  </div>
+                  <div class="feedback-cell feedback-preview feedback-ellipsis"><?php echo $escape($excerpt($item->content)); ?></div>
+                  <div class="feedback-actions">
+                     <button class="btn btn-sm btn-outline-primary" type="button" data-bs-toggle="modal" data-bs-target="#feedbackDetailModal" data-feedback="<?php echo $escape($payload); ?>">Xem chi tiết</button>
+                     <form method="post" onsubmit="return confirm('Xóa vĩnh viễn góp ý này?');">
+                        <input type="hidden" name="csrf_token" value="<?php echo $escape($admin_csrf_token); ?>">
+                        <input type="hidden" name="id" value="<?php echo (int)$item->id; ?>">
+                        <button class="btn btn-sm btn-outline-danger" name="customer_feedback_action" value="delete" type="submit">Xóa</button>
+                     </form>
+                  </div>
+               </div>
+            <?php endforeach; ?>
+         <?php else: ?>
+            <div class="text-center text-muted py-5">Không có góp ý phù hợp.</div>
          <?php endif; ?>
+      </div>
 
-         <div class="mt-3 text-muted small">Tổng phản hồi: <?php echo number_format($total_feedback); ?></div>
+      <?php if($totalPages > 1): ?>
+         <nav class="mt-3" aria-label="Phân trang góp ý"><ul class="pagination pagination-sm justify-content-end mb-0">
+            <?php for($i = 1; $i <= $totalPages; $i++): ?>
+               <li class="page-item<?php echo $i === $page ? ' active' : ''; ?>"><a class="page-link" href="<?php echo $escape($pageUrl($i)); ?>"><?php echo $i; ?></a></li>
+            <?php endfor; ?>
+         </ul></nav>
+      <?php endif; ?>
+   </div></div>
+</div>
+
+<div class="modal fade" id="feedbackDetailModal" tabindex="-1" aria-labelledby="feedbackDetailTitle" aria-hidden="true">
+   <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+      <div class="modal-content">
+         <div class="modal-header">
+            <h5 class="modal-title" id="feedbackDetailTitle">Chi tiết góp ý</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+         </div>
+         <div class="modal-body">
+            <div class="row g-3">
+               <div class="col-sm-6"><div class="feedback-meta">Họ và tên</div><strong id="feedbackModalName"></strong></div>
+               <div class="col-sm-6"><div class="feedback-meta">Ngày gửi</div><div id="feedbackModalDate"></div></div>
+               <div class="col-sm-6"><div class="feedback-meta">Số điện thoại</div><div id="feedbackModalPhone"></div></div>
+               <div class="col-sm-6"><div class="feedback-meta">Email</div><div id="feedbackModalEmail"></div></div>
+               <div class="col-12" id="feedbackModalAddressWrap"><div class="feedback-meta">Địa chỉ</div><div id="feedbackModalAddress"></div></div>
+               <div class="col-12"><div class="feedback-meta mb-1">Nội dung góp ý</div><div class="border rounded p-3 feedback-content" id="feedbackModalContent"></div></div>
+            </div>
+         </div>
+         <div class="modal-footer">
+            <form method="post" class="me-auto" onsubmit="return confirm('Xóa vĩnh viễn góp ý này?');">
+               <input type="hidden" name="csrf_token" value="<?php echo $escape($admin_csrf_token); ?>">
+               <input type="hidden" name="id" id="feedbackModalDeleteId">
+               <button class="btn btn-outline-danger" name="customer_feedback_action" value="delete" type="submit">Xóa góp ý</button>
+            </form>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+         </div>
       </div>
    </div>
 </div>
 
-<?php include_once "footer.php"; ?>
+<script>
+(function() {
+   var modal = document.getElementById('feedbackDetailModal');
+   if (!modal) return;
+   modal.addEventListener('show.bs.modal', function(event) {
+      var button = event.relatedTarget;
+      if (!button) return;
+      var data = JSON.parse(button.getAttribute('data-feedback'));
+      document.getElementById('feedbackDetailTitle').textContent = 'Chi tiết góp ý #' + data.id;
+      document.getElementById('feedbackModalName').textContent = data.name;
+      document.getElementById('feedbackModalDate').textContent = data.date;
+      document.getElementById('feedbackModalPhone').textContent = data.phone;
+      document.getElementById('feedbackModalEmail').textContent = data.email || '—';
+      document.getElementById('feedbackModalAddress').textContent = data.address;
+      document.getElementById('feedbackModalAddressWrap').style.display = data.address ? '' : 'none';
+      document.getElementById('feedbackModalContent').textContent = data.content;
+      document.getElementById('feedbackModalDeleteId').value = data.id;
+   });
+})();
+</script>
+<?php include_once 'footer.php'; ?>

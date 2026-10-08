@@ -26,9 +26,11 @@
     function goTo(index) {
       slides[current].classList.remove('active');
       dots[current]?.classList.remove('active');
+      dots[current]?.setAttribute('aria-selected', 'false');
       current = (index + slides.length) % slides.length;
       slides[current].classList.add('active');
       dots[current]?.classList.add('active');
+      dots[current]?.setAttribute('aria-selected', 'true');
     }
 
     function startAuto() {
@@ -72,7 +74,7 @@
       if (e.key === 'ArrowLeft')  { goTo(current - 1); startAuto(); }
     });
 
-    startAuto();
+    if (slides.length > 1) startAuto();
   })();
 
 
@@ -260,39 +262,56 @@
     if (!form) return;
 
     const rules = {
-      'contact-name'    : { required: true, minLength: 2, label: 'Họ và tên' },
+      'contact-name'    : { required: true, label: 'Họ và tên' },
       'contact-phone'   : { required: true, pattern: /^(0[3-9])\d{8}$/, label: 'Số điện thoại' },
       'contact-email'   : { required: false, pattern: /^[^\s@]+@[^\s@]+\.[^\s@]+$/, label: 'Email' },
-      'contact-subject' : { required: true, minLength: 5, label: 'Tiêu đề' },
-      'contact-message' : { required: true, minLength: 20, label: 'Nội dung' },
+      'contact-subject' : { required: true, label: 'Tiêu đề' },
+      'contact-message' : { required: true, label: 'Nội dung góp ý' },
     };
 
-    function validateField(id) {
-      const input  = document.getElementById(id);
-      const rule   = rules[id];
-      const error  = input?.nextElementSibling;
-      if (!input || !rule) return true;
+    const errorBox = document.getElementById('contact-form-error');
+    const submitButton = document.getElementById('submit-contact');
 
-      let msg = '';
-      const val = input.value.trim();
-
-      if (rule.required && !val) {
-        msg = `${rule.label} không được để trống.`;
-      } else if (val && rule.minLength && val.length < rule.minLength) {
-        msg = `${rule.label} phải có ít nhất ${rule.minLength} ký tự.`;
-      } else if (val && rule.pattern && !rule.pattern.test(val)) {
-        msg = `${rule.label} không hợp lệ.`;
+    function showToast(icon, message) {
+      if (window.Swal && typeof window.Swal.fire === 'function') {
+        window.Swal.fire({
+          toast: true,
+          position: 'top-end',
+          icon,
+          title: message,
+          showConfirmButton: false,
+          timer: icon === 'success' ? 3500 : 5000,
+          timerProgressBar: true,
+          width: '22rem'
+        });
+      } else {
+        errorBox.textContent = message;
+        errorBox.style.display = 'block';
       }
-
-      input.classList.toggle('error', !!msg);
-      if (error?.classList.contains('form-error')) {
-        error.textContent = msg;
-        error.style.display = msg ? 'block' : 'none';
-      }
-      return !msg;
     }
 
-    // Real-time validate on blur
+    function validateField(id) {
+      const input = document.getElementById(id);
+      const rule = rules[id];
+      const error = input?.nextElementSibling;
+      if (!input || !rule) return true;
+
+      const val = input.value.trim();
+      const checkVal = id === 'contact-phone' ? val.replace(/\D/g, '').replace(/^84(?=\d{9}$)/, '0') : val;
+      let message = '';
+      if (rule.required && !val) {
+        message = rule.label + ' không được để trống.';
+      } else if (val && rule.pattern && !rule.pattern.test(checkVal)) {
+        message = rule.label + ' không hợp lệ.';
+      }
+      input.classList.toggle('error', !!message);
+      if (error?.classList.contains('form-error')) {
+        error.textContent = message;
+        error.style.display = message ? 'block' : 'none';
+      }
+      return !message;
+    }
+
     Object.keys(rules).forEach(id => {
       const input = document.getElementById(id);
       input?.addEventListener('blur', () => validateField(id));
@@ -301,22 +320,39 @@
       });
     });
 
-    form.addEventListener('submit', e => {
-      e.preventDefault();
+    form.addEventListener('submit', async event => {
+      event.preventDefault();
+      errorBox.style.display = 'none';
       let valid = true;
       Object.keys(rules).forEach(id => {
         if (!validateField(id)) valid = false;
       });
+      if (!valid) {
+        showToast('warning', 'Vui lòng kiểm tra các trường bắt buộc.');
+        return;
+      }
 
-      if (valid) {
-        const successMsg = document.getElementById('form-success');
-        successMsg?.classList.add('show');
+      submitButton.disabled = true;
+      try {
+        const response = await fetch(form.action, {
+          method: 'POST',
+          body: new FormData(form),
+          credentials: 'same-origin',
+          headers: { 'Accept': 'application/json' }
+        });
+        const result = await response.json();
+        if (!response.ok || result.status !== 200) {
+          throw new Error(result.message || 'Không thể gửi góp ý. Vui lòng thử lại.');
+        }
         form.reset();
-        setTimeout(() => successMsg?.classList.remove('show'), 6000);
+        showToast('success', 'Góp ý của bạn đã được gửi thành công.');
+      } catch (error) {
+        showToast('error', error.message || 'Không thể gửi góp ý. Vui lòng thử lại.');
+      } finally {
+        submitButton.disabled = false;
       }
     });
   })();
-
 
   /* ============================================================
      8. READING PROGRESS BAR (for news detail pages)

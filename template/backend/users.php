@@ -268,26 +268,22 @@ $(document).ready(function () {
                   </div>
                </div>
 
-               <div class="card-body px-0">
+               <div class="card-body p-0">
                   <div class="table-responsive">
-                     <table id="user-list-table" class="table table-bordered table-hover" role="grid">
+                     <table id="user-list-table" class="table table-hover mb-0 align-middle" role="grid">
                         <thead>
-                           <tr class="ligth">
-                              <th>STT</th>
-                              <th>Họ và tên</th>
-                              <th>Email</th>
+                           <tr>
+                              <th style="width: 45px;" class="text-center">#</th>
+                              <th>Tài khoản & Email</th>
                               <th>Khoa phòng</th>
                               <th>Nhóm quyền</th>
-                              <th>Trạng thái</th>
-                              <th style="min-width: 220px">Thao tác</th>
+                              <th style="width: 120px;" class="text-center">Trạng thái</th>
+                              <th style="width: 150px;" class="text-end">Thao tác</th>
                            </tr>
-                           <tr class="user-filter-row">
+                           <tr class="user-filter-row bg-light">
                               <th></th>
                               <th>
-                                 <input type="search" class="form-control form-control-sm user-column-search" data-column="1" placeholder="Lọc họ và tên">
-                              </th>
-                              <th>
-                                 <input type="search" class="form-control form-control-sm user-column-search" data-column="2" placeholder="Lọc email">
+                                 <input type="search" class="form-control form-control-sm user-column-search" data-column="1" placeholder="Tìm tài khoản, email...">
                               </th>
                               <th>
                                  <select class="form-select form-select-sm">
@@ -296,7 +292,7 @@ $(document).ready(function () {
                               </th>
                               <th>
                                  <select class="form-select form-select-sm">
-                                    <option value="">Tất cả đối tượng</option>
+                                    <option value="">Tất cả nhóm</option>
                                  </select>
                               </th>
                               <th>
@@ -311,54 +307,69 @@ $(document).ready(function () {
                            <?php $i = 1; ?>
                            <?php foreach($users as $user): ?>
                            <tr>
-                              <td><?php echo $i; ?></td>
-                              <td><?php echo htmlspecialchars($user->user_username, ENT_QUOTES, 'UTF-8'); ?></td>
-                              <td><?php echo htmlspecialchars($user->user_email, ENT_QUOTES, 'UTF-8'); ?></td>
-                              <td><?php echo htmlspecialchars($user->depart_name ?? 'Chưa cấu hình', ENT_QUOTES, 'UTF-8'); ?></td>
-                              <td><?php echo htmlspecialchars($user->group_name, ENT_QUOTES, 'UTF-8'); ?></td>
+                              <td class="text-center text-muted fw-bold"><?php echo $i; ?></td>
                               <td>
+                                 <div class="fw-bold text-dark" style="font-size: 13.5px;"><?php echo htmlspecialchars($user->user_username, ENT_QUOTES, 'UTF-8'); ?></div>
+                                 <div class="cell-meta"><i class="fa-regular fa-envelope text-muted me-1"></i><?php echo htmlspecialchars($user->user_email, ENT_QUOTES, 'UTF-8'); ?></div>
+                              </td>
+                              <td>
+                                 <span class="text-secondary small fw-semibold">
+                                    <i class="fa-solid fa-hospital-user text-muted me-1"></i><?php echo htmlspecialchars($user->depart_name ?? 'Chưa cấu hình', ENT_QUOTES, 'UTF-8'); ?>
+                                 </span>
+                              </td>
+                              <td>
+                                 <span class="badge bg-primary-subtle text-primary border border-primary-subtle">
+                                    <i class="fa-solid fa-shield-halved me-1"></i><?php echo htmlspecialchars($user->group_name, ENT_QUOTES, 'UTF-8'); ?>
+                                 </span>
+                              </td>
+                              <td class="text-center">
                                  <?php if((int)$user->user_status === 1){ ?>
-                                    <span class="badge bg-success">Hoạt động</span>
+                                    <span class="badge bg-success"><i class="fa-solid fa-circle-check me-1"></i>Hoạt động</span>
                                  <?php } elseif((int)$user->user_status === 2) { ?>
-                                    <span class="badge bg-warning text-dark">Tạm khóa</span>
+                                    <span class="badge bg-warning text-dark"><i class="fa-solid fa-lock me-1"></i>Tạm khóa</span>
                                  <?php } else { ?>
                                     <span class="badge bg-secondary"><?php echo htmlspecialchars($user->status_label ?? 'Không xác định', ENT_QUOTES, 'UTF-8'); ?></span>
                                  <?php } ?>
                               </td>
-                              <td>
-                                 <div class="d-flex align-items-center gap-2 flex-wrap">
+                              <td class="text-end">
+                                 <div class="btn-action-group">
+                                    <a class="btn-action is-edit" href="<?php echo XC_URL; ?>/admin/users/edit/<?php echo $user->uid; ?>" title="Chỉnh sửa tài khoản">
+                                       <i class="fa-solid fa-pen-to-square"></i>
+                                    </a>
+
+                                    <a class="btn-action btn-soft-info" href="<?php echo XC_URL; ?>/admin/users/role/<?php echo $user->uid; ?>" title="Phân quyền menu">
+                                       <i class="fa-solid fa-key"></i>
+                                    </a>
+
                                     <?php if((int)$user->uid !== (int)$_SESSION['user']['id']): ?>
-                                    <button type="button" class="btn btn-sm btn-primary btn-assign-admin-group" data-user-id="<?php echo (int)$user->uid; ?>" data-group-id="<?php echo (int)$user->user_group; ?>">Gán quyền</button>
+                                    <button type="button" class="btn-action btn-soft-primary btn-assign-admin-group" data-user-id="<?php echo (int)$user->uid; ?>" data-group-id="<?php echo (int)$user->user_group; ?>" title="Gán nhóm quyền">
+                                       <i class="fa-solid fa-user-shield"></i>
+                                    </button>
                                     <?php endif; ?>
-                                    
-                                    <a class="btn btn-sm btn-primary" href="<?php echo XC_URL; ?>/admin/users/role/<?php echo $user->uid; ?>">
-                                       Phân quyền
-                                    </a>
 
-                                    <a class="btn btn-sm btn-info text-white" href="<?php echo XC_URL; ?>/admin/users/edit/<?php echo $user->uid; ?>">
-                                       Sửa
-                                    </a>
-
-                                    <a class="btn btn-sm btn-warning text-white btn-toggle-lock"
+                                    <a class="btn-action btn-soft-warning btn-toggle-lock"
                                        href="#"
                                        data-id="<?php echo $user->uid; ?>"
-                                       data-status="<?php echo $user->user_status; ?>">
-                                       <?php echo ((int)$user->user_status === 2) ? 'Mở khóa' : 'Khóa'; ?>
+                                       data-status="<?php echo $user->user_status; ?>"
+                                       title="<?php echo ((int)$user->user_status === 2) ? 'Mở khóa tài khoản' : 'Khóa tài khoản'; ?>">
+                                       <i class="fa-solid <?php echo ((int)$user->user_status === 2) ? 'fa-lock-open' : 'fa-lock'; ?>"></i>
                                     </a>
 
-                                    <a class="btn btn-sm btn-secondary reset-password-btn"
+                                    <a class="btn-action btn-soft-secondary reset-password-btn"
                                        href="#"
-                                       data-id="<?php echo $user->uid; ?>">
-                                       Reset mật khẩu
+                                       data-id="<?php echo $user->uid; ?>"
+                                       title="Reset mật khẩu">
+                                       <i class="fa-solid fa-rotate-left"></i>
                                     </a>
 
-                                    <a class="btn btn-sm btn-danger btn-open-delete-user"
+                                    <a class="btn-action is-delete btn-open-delete-user"
                                        data-bs-toggle="modal"
                                        data-bs-target="#deleteUserModal"
                                        data-user-id="<?php echo $user->uid; ?>"
                                        data-user-status="<?php echo isset($user->user_status) ? $user->user_status : ''; ?>"
-                                       href="#">
-                                       Xóa
+                                       href="#"
+                                       title="Xóa tài khoản">
+                                       <i class="fa-solid fa-trash"></i>
                                     </a>
                                  </div>
                               </td>

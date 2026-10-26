@@ -87,13 +87,13 @@ if($visitor_session_id !== ''){
               chăm sóc sức khỏe toàn diện cho nhân dân.
             </p>
             <nav class="footer-socials" aria-label="Mạng xã hội">
-              <a href="https://www.facebook.com/ttytdakha" target="_blank" rel="noopener noreferrer"
+              <a href="<?php echo $siteEsc($siteContact['facebook_url']); ?>" target="_blank" rel="noopener noreferrer"
                  class="footer-social-btn" aria-label="Facebook">
                 <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                   <path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/>
                 </svg>
               </a>
-              <a href="https://zalo.me/ttytdakha" target="_blank" rel="noopener noreferrer"
+              <a href="<?php echo $siteEsc($siteContact['zalo_url']); ?>" target="_blank" rel="noopener noreferrer"
                  class="footer-social-btn" aria-label="Zalo">
                 <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                   <path d="M12 2C6.477 2 2 6.477 2 12c0 1.89.525 3.66 1.438 5.168L2 22l4.832-1.438A9.955 9.955 0 0012 22c5.523 0 10-4.477 10-10S17.523 2 12 2z"/>
@@ -114,14 +114,19 @@ if($visitor_session_id !== ''){
             <h3>Liên kết nhanh</h3>
             <nav class="footer-links" aria-label="Liên kết nhanh footer">
               <a href="<?php echo XC_URL; ?>/">Trang chủ</a>
-              <a href="<?php echo XC_URL; ?>/trang/gioi-thieu">Giới thiệu</a>
-              <a href="<?php echo XC_URL; ?>/trang/ban-lanh-dao">Ban lãnh đạo</a>
-              <a href="<?php echo XC_URL; ?>/trang/co-cau-to-chuc">Sơ đồ tổ chức</a>
-              <a href="<?php echo XC_URL; ?>/tin-tuc-su-kien.html">Tin tức - Sự kiện</a>
-              <a href="<?php echo XC_URL; ?>/dich-vu-y-te.html">Dịch vụ y tế</a>
-              <a href="<?php echo XC_URL; ?>/hoat-dong.html">Hoạt động</a>
-              <a href="<?php echo XC_URL; ?>/trang/van-ban">Văn bản pháp quy</a>
-              <a href="<?php echo XC_URL; ?>/login">Đăng nhập</a>
+              <a href="<?php echo XC_URL; ?>/trang/gioi-thieu.html">Giới thiệu</a>
+              <a href="<?php echo XC_URL; ?>/trang/co-cau-to-chuc.html">Cơ cấu tổ chức</a>
+              <a href="<?php echo XC_URL; ?>/trang/bac-si">Đội ngũ Y/bác sĩ</a>
+              <a href="<?php echo XC_URL; ?>/tin-tuc/1-tin-hoat-dong.html">Tin hoạt động</a>
+              <a href="<?php echo XC_URL; ?>/tin-tuc/2-tin-y-te-cong-dong.html">Tin y tế cộng đồng</a>
+              <a href="<?php echo XC_URL; ?>/tin-tuc/3-thong-bao.html">Thông báo</a>
+              <a href="<?php echo XC_URL; ?>/tin-tuc/4-su-kien-hoi-thao.html">Sự kiện - Hội thảo</a>
+              <a href="<?php echo XC_URL; ?>/trang/kham-bhyt.html">Khám BHYT</a>
+              <a href="<?php echo XC_URL; ?>/trang/vien-phi-goi-dich-vu.html">Viện phí & dịch vụ</a>
+              <a href="<?php echo XC_URL; ?>/trang/goi-kham-suc-khoe.html">Gói khám sức khỏe</a>
+              <a href="<?php echo XC_URL; ?>/hoat-dong/lich-cong-tac.html">Lịch công tác</a>
+              <a href="<?php echo XC_URL; ?>/hoat-dong/dao-tao-tap-huan.html">Kế hoạch</a>
+              <a href="<?php echo XC_URL; ?>/hoat-dong/chien-dich-y-te.html">Chiến dịch y tế</a>
               <a href="<?php echo XC_URL; ?>/lien-he.html">Liên hệ</a>
             </nav>
           </div>
@@ -135,14 +140,14 @@ if($visitor_session_id !== ''){
                   <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/>
                   <circle cx="12" cy="10" r="3"/>
                 </svg>
-                <span itemprop="streetAddress">Đường Trần Phú, Thị trấn Đăk Hà, Xã Đăk Hà, tỉnh Quảng Ngãi</span>
+                <span itemprop="streetAddress"><?php echo $siteEsc($siteContact['address']); ?></span>
               </div>
               <div class="footer-contact-item">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
                   <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 10.8 19.79 19.79 0 01.01 2.18 2 2 0 012 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/>
                 </svg>
                 <span>
-                  Cấp cứu 24/7: <a href="tel:<?php echo $this->helper->get_config('site_phone'); ?>" style="color:var(--color-danger);font-weight:700;"><?php echo $this->helper->get_config('site_phone'); ?></a><br>
+                  Cấp cứu 24/7: <a href="tel:<?php echo $siteEsc($siteContact['hotline_tel']); ?>" style="color:var(--color-danger);font-weight:700;"><?php echo $siteEsc($siteContact['hotline']); ?></a><br>
                  </span>
               </div>
               <div class="footer-contact-item">
@@ -150,7 +155,7 @@ if($visitor_session_id !== ''){
                   <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
                   <polyline points="22,6 12,13 2,6"/>
                 </svg>
-                <span><a href="mailto:<?php echo $this->helper->get_config('site_email'); ?>"><?php echo $this->helper->get_config('site_email'); ?></a></span>
+                <span><a href="mailto:<?php echo $siteEsc($siteContact['email']); ?>"><?php echo $siteEsc($siteContact['email']); ?></a></span>
               </div>
             </address>
 
@@ -166,7 +171,8 @@ if($visitor_session_id !== ''){
           <!-- Map placeholder -->
           <div class="footer-col">
             <h3>Bản đồ vị trí</h3>
-            <div class="map-lazy-wrap"
+            <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3590.843561782325!2d107.91580267476482!3d14.517947685958656!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x316be4cdefd7c827%3A0x1750c383c6017dcb!2zMDUgxJDDoG8gRHV5IFThu6ssIMSQxINrIEjDoCwgUXXhuqNuZyBOZ8OjaSA2MjAwNywgVmnhu4d0IE5hbQ!5e1!3m2!1svi!2s!4v1791512653512!5m2!1svi!2s" width="300" height="300" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe>
+            <!-- <div class="map-lazy-wrap"
                  style="height:180px;background:var(--color-primary);border-radius:var(--radius-md);overflow:hidden;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:8px;"
                  data-src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3867.1!2d107.9!3d14.7!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMTTCsDQyJzAwLjAiTiAxMDfCsDU0JzAwLjAiRQ!5e0!3m2!1svi!2svn!4v1000000000000"
                  role="img"
@@ -175,8 +181,8 @@ if($visitor_session_id !== ''){
                 <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/>
               </svg>
               <span style="color:rgba(255,255,255,.6);font-size:12px;">Đang tải bản đồ...</span>
-            </div>
-            <a href="https://goo.gl/maps/example" target="_blank" rel="noopener noreferrer"
+            </div> -->
+            <a href="https://www.google.com/maps/place/05+%C4%90%C3%A0o+Duy+T%E1%BB%AB,+%C4%90%C4%83k+H%C3%A0,+Qu%E1%BA%A3ng+Ng%C3%A3i+62007,+Vi%E1%BB%87t+Nam/@14.5179477,107.9158027,825m/data=!3m2!1e3!4b1!4m6!3m5!1s0x316be4cdefd7c827:0x1750c383c6017dcb!8m2!3d14.5179477!4d107.9183776!16s%2Fg%2F11z84nm4m5?entry=ttu&g_ep=EgoyMDI2MTAwNi4wIKXMDSoASAFQAw%3D%3D" target="_blank" rel="noopener noreferrer"
                style="display:inline-flex;align-items:center;gap:6px;margin-top:10px;font-size:13px;color:rgba(255,255,255,.6);"
                id="footer-map-link">
               <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
@@ -225,15 +231,14 @@ if($visitor_session_id !== ''){
       <div class="container">
         <div class="footer-bottom-inner">
           <p>
-            © <time datetime="2026">2026</time> Bệnh viện đa khoa khu vực Đăk Hà — Thuộc
+            © <time datetime="<?php echo date('Y'); ?>"><?php echo date('Y'); ?></time> Bệnh viện đa khoa khu vực Đăk Hà — Thuộc
             <a href="https://soytekontum.gov.vn" target="_blank" rel="noopener noreferrer">Sở Y tế tỉnh Quảng Ngãi</a>.
            </p>
           <nav aria-label="Liên kết pháp lý">
-            <a href="<?php echo XC_URL; ?>/trang/chinh-sach-bao-mat">Chính sách bảo mật</a>
+            <a href="<?php echo XC_URL; ?>/trang/chinh-sach-bao-mat.html">Chính sách bảo mật</a>
             &nbsp;·&nbsp;
-            <a href="<?php echo XC_URL; ?>/trang/dieu-khoan-su-dung">Điều khoản sử dụng</a>
-            &nbsp;·&nbsp;
-            <a href="<?php echo XC_URL; ?>/admin" rel="noindex,nofollow">Nội bộ</a>
+            <a href="<?php echo XC_URL; ?>/trang/dieu-khoan-su-dung.html">Điều khoản sử dụng</a>
+            &nbsp;
           </nav>
         </div>
       </div>
@@ -244,8 +249,8 @@ if($visitor_session_id !== ''){
        STICKY EMERGENCY BUTTON (mobile)
        ============================================================ -->
   <div class="sticky-emergency" aria-label="Gọi cấp cứu khẩn cấp">
-    <a href="tel:<?php echo $this->helper->get_config('site_phone'); ?>" class="emergency-fab" id="emergency-fab-btn"
-       aria-label="Gọi hotline cấp cứu <?php echo $this->helper->get_config('site_phone'); ?>">
+    <a href="tel:<?php echo $siteEsc($siteContact['hotline_tel']); ?>" class="emergency-fab" id="emergency-fab-btn"
+       aria-label="Gọi hotline cấp cứu <?php echo $siteEsc($siteContact['hotline']); ?>">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
         <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 10.8 19.79 19.79 0 01.01 2.18 2 2 0 012 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/>
       </svg>

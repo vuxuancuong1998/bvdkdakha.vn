@@ -86,11 +86,11 @@ $excerpt = function($value){
                   </div>
                   <div class="feedback-cell feedback-preview feedback-ellipsis"><?php echo $escape($excerpt($item->content)); ?></div>
                   <div class="feedback-actions">
-                     <button class="btn btn-sm btn-outline-primary" type="button" data-bs-toggle="modal" data-bs-target="#feedbackDetailModal" data-feedback="<?php echo $escape($payload); ?>">Xem chi tiết</button>
-                     <form method="post" onsubmit="return confirm('Xóa vĩnh viễn góp ý này?');">
+                     <button class="btn-action is-view" type="button" data-bs-toggle="modal" data-bs-target="#feedbackDetailModal" data-feedback="<?php echo $escape($payload); ?>" title="Xem chi tiết"><i class="fa-regular fa-eye"></i></button>
+                     <form method="post" onsubmit="return confirm('Xóa vĩnh viễn góp ý này?');" class="d-inline m-0">
                         <input type="hidden" name="csrf_token" value="<?php echo $escape($admin_csrf_token); ?>">
                         <input type="hidden" name="id" value="<?php echo (int)$item->id; ?>">
-                        <button class="btn btn-sm btn-outline-danger" name="customer_feedback_action" value="delete" type="submit">Xóa</button>
+                        <button class="btn-action is-delete" name="customer_feedback_action" value="delete" type="submit" title="Xóa góp ý"><i class="fa-regular fa-trash-can"></i></button>
                      </form>
                   </div>
                </div>

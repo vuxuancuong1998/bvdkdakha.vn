@@ -13,6 +13,10 @@
       <link rel="stylesheet" href="<?php echo $admintemplate_path;?>/assets/css/dark.min.css">
       <link rel="stylesheet" href="<?php echo $admintemplate_path;?>/assets/css/customizer.min.css">
       <link rel="stylesheet" href="<?php echo $admintemplate_path;?>/assets/css/rtl.min.css">
+      <link rel="preconnect" href="https://fonts.googleapis.com">
+      <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+      <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+      <link rel="stylesheet" href="<?php echo $admintemplate_path;?>/assets/css/admin-responsive.css?v=<?php echo time(); ?>">
       <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
       <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
       <script>
@@ -269,27 +273,13 @@
                   <div class="col-md-10">
                      <div class="card card-transparent shadow-none d-flex justify-content-center mb-0 auth-card">
                         <div class="card-body">
-                           <a href="../../dashboard/index.html" class="navbar-brand d-flex align-items-center mb-3">
-                              <div class="logo-main">
-                                  <div class="logo-normal">
-                                      <svg class="text-primary icon-30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                          <rect x="-0.757324" y="19.2427" width="28" height="4" rx="2" transform="rotate(-45 -0.757324 19.2427)" fill="currentColor"/>
-                                          <rect x="7.72803" y="27.728" width="28" height="4" rx="2" transform="rotate(-45 7.72803 27.728)" fill="currentColor"/>
-                                          <rect x="10.5366" y="16.3945" width="16" height="4" rx="2" transform="rotate(45 10.5366 16.3945)" fill="currentColor"/>
-                                          <rect x="10.5562" y="-0.556152" width="28" height="4" rx="2" transform="rotate(45 10.5562 -0.556152)" fill="currentColor"/>
-                                      </svg>
-                                  </div>
-                                  <div class="logo-mini">
-                                      <svg class="text-primary icon-30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                          <rect x="-0.757324" y="19.2427" width="28" height="4" rx="2" transform="rotate(-45 -0.757324 19.2427)" fill="currentColor"/>
-                                          <rect x="7.72803" y="27.728" width="28" height="4" rx="2" transform="rotate(-45 7.72803 27.728)" fill="currentColor"/>
-                                          <rect x="10.5366" y="16.3945" width="16" height="4" rx="2" transform="rotate(45 10.5366 16.3945)" fill="currentColor"/>
-                                          <rect x="10.5562" y="-0.556152" width="28" height="4" rx="2" transform="rotate(45 10.5562 -0.556152)" fill="currentColor"/>
-                                      </svg>
-                                  </div>
+                           <div class="d-flex align-items-center gap-3 mb-4">
+                              <img src="<?php echo XC_URL; ?>/template/frontend/assets/images/logo.png" alt="Logo" class="rounded-3 shadow-sm" style="width: 52px; height: 52px; object-fit: contain; background: #fff; padding: 4px; border: 1px solid #e2e8f0;">
+                              <div>
+                                 <h5 class="fw-bold text-dark mb-0" style="font-size: 16px;">BVĐK ĐẮK HÀ</h5>
+                                 <div class="text-muted small">Hệ thống Quản trị Bệnh viện</div>
                               </div>
-                              <h4 class="logo-title ms-3">Chào mừng đến với trang quản trị</h4>
-                           </a>
+                           </div>
                            <h2 class="mb-2 text-center">Đăng nhập</h2>
                            <p class="text-center">Nhập email và mật khẩu để đăng nhập!</p>
                            <form>
@@ -328,6 +318,7 @@
             </div>
             <div class="col-md-6 d-md-block d-none bg-primary p-0 mt-n1 vh-100 overflow-hidden">
                <img src="<?php echo $admintemplate_path;?>/assets/images/auth/01.png" class="img-fluid gradient-main animated-scaleX" alt="images">
+               
             </div>
          </div>
       </section>

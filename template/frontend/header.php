@@ -1,4 +1,11 @@
-<?php require_once 'config.php'; ?>
+<?php
+require_once 'config.php';
+$siteContact = $this->helper->get_site_contact();
+$siteEsc = function ($value) { return htmlspecialchars((string)$value, ENT_QUOTES, 'UTF-8'); };
+$siteJson = function ($value) { return json_encode($value, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT); };
+$siteSameAs = array_values(array_filter(array($siteContact['facebook_url'], $siteContact['zalo_url'])));
+$siteEmergencyDescription = 'Đường dây cấp cứu khẩn cấp 24/7: ' . implode(' hoặc ', array_filter(array($siteContact['hotline'], $siteContact['phone']))) . '. Đội ngũ cấp cứu luôn trực sẵn sàng.';
+?>
 <!DOCTYPE html>
 <html lang="vi" itemscope itemtype="https://schema.org/MedicalOrganization">
 
@@ -12,7 +19,7 @@
 
   <title>Bệnh viện đa khoa khu vực Đăk Hà — Chăm sóc sức khỏe toàn diện cho cộng đồng</title>
   <meta name="description"
-    content="Bệnh viện đa khoa khu vực Đăk Hà — đơn vị y tế công lập hàng đầu tỉnh Kon Tum, cung cấp dịch vụ khám chữa bệnh, chăm sóc sức khỏe toàn diện cho nhân dân. Hotline cấp cứu 24/7: 1900 xxxx." />
+    content="Bệnh viện đa khoa khu vực Đăk Hà — đơn vị y tế công lập hàng đầu tỉnh Kon Tum, cung cấp dịch vụ khám chữa bệnh, chăm sóc sức khỏe toàn diện cho nhân dân. Hotline cấp cứu 24/7: <?php echo $siteEsc($siteContact['hotline']); ?>." />
   <meta name="keywords"
     content="Bệnh viện đa khoa Đăk Hà, bệnh viện Đăk Hà, khám chữa bệnh Kon Tum, y tế khu vực Đăk Hà" />
   <meta name="author" content="Bệnh viện đa khoa khu vực Đăk Hà" />
@@ -49,7 +56,9 @@
 
   <!-- Stylesheet -->
   <link rel="stylesheet" href="<?php echo XC_URL;?>/template/frontend/assets/css/style.css?version=<?php echo time(); ?>" />
+  <?php if (empty($isHomeDesign)): ?>
   <link rel="stylesheet" href="<?php echo XC_URL;?>/template/frontend/assets/css/tin-tuc.css?version=<?php echo time(); ?>" />
+  <?php endif; ?>
 
   <!-- ============================================================
        STRUCTURED DATA — JSON-LD
@@ -65,14 +74,11 @@
     "logo": "https://ttytdakha.gov.vn/assets/icons/favicon.svg",
     "image": "https://ttytdakha.gov.vn/assets/images/banner-01.jpg",
     "description": "Bệnh viện đa khoa khu vực Đăk Hà là đơn vị sự nghiệp y tế công lập thuộc Sở Y tế tỉnh Quảng Ngãi, chịu trách nhiệm chăm sóc sức khỏe toàn diện cho nhân dân huyện Đăk Hà và các vùng lân cận.",
-    "telephone": "+84-260-3862xxx",
-    "email": "ttytdakha@kontum.gov.vn",
+    "telephone": <?php echo $siteJson($siteContact['phone']); ?>,
+    "email": <?php echo $siteJson($siteContact['email']); ?>,
     "address": {
       "@type": "PostalAddress",
-      "streetAddress": "Đường Trần Phú, Thị trấn Đăk Hà",
-      "addressLocality": "Đăk Hà",
-      "addressRegion": "Kon Tum",
-      "postalCode": "58000",
+      "streetAddress": <?php echo $siteJson($siteContact['address']); ?>,
       "addressCountry": "VN"
     },
     "openingHoursSpecification": [
@@ -94,10 +100,7 @@
       "@type": "MedicalTherapy",
       "name": "Khám chữa bệnh đa khoa"
     },
-    "sameAs": [
-      "https://www.facebook.com/ttytdakha",
-      "https://zalo.me/ttytdakha"
-    ]
+    "sameAs": <?php echo $siteJson($siteSameAs); ?>
   }
   </script>
 
@@ -119,7 +122,7 @@
         "name": "Hotline cấp cứu của Bệnh viện đa khoa khu vực Đăk Hà là bao nhiêu?",
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": "Đường dây cấp cứu khẩn cấp 24/7: 1900 xxxx hoặc (0260) 386 2xxx. Đội ngũ cấp cứu luôn trực sẵn sàng."
+          "text": <?php echo $siteJson($siteEmergencyDescription); ?>
         }
       },
       {
@@ -133,5 +136,9 @@
     ]
   }
   </script>
+<?php if (!empty($isHomeDesign)): ?>
+<link rel="stylesheet" href="<?php echo XC_URL; ?>/template/frontend/assets/css/home-design.css?v=<?php echo filemtime(__DIR__.'/assets/css/home-design.css'); ?>">
+<link rel="stylesheet" href="<?php echo XC_URL; ?>/template/frontend/assets/css/home-utilities.css?v=<?php echo filemtime(__DIR__.'/assets/css/home-utilities.css'); ?>">
+<?php endif; ?>
 </head>
 <?php require_once 'menu.php'; ?>

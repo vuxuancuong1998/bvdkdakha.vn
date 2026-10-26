@@ -1,6 +1,6 @@
 <?php require "header.php"; ?>
 
-<div class="conatiner-fluid content-inner mt-n5 py-0">
+<div class="container-fluid content-inner mt-n5 py-0">
    <div class="row">
       <div class="col-sm-12">
          <div class="card shadow-sm border-0">
@@ -15,7 +15,7 @@
             <div class="card-body">
                
                <div class="table-responsive">
-                  <table class="table table-hover align-middle border text-nowrap">
+                  <table class="table table-hover align-middle border">
                      <thead class="bg-light text-dark fw-bold">
                         <tr>
                            <th width="60" class="text-center">ID</th>
@@ -43,9 +43,9 @@
                               </td>
                               <td class="text-center">
                                  <?php if(intval($cat->status) === 1): ?>
-                                    <span class="badge bg-success"><i class="fa-solid fa-circle-check me-1"></i> Hiển thị</span>
+                                    <span class="badge bg-success-subtle text-success border border-success-subtle"><i class="fa-solid fa-circle-check me-1"></i>Hiển thị</span>
                                  <?php else: ?>
-                                    <span class="badge bg-secondary"><i class="fa-solid fa-eye-slash me-1"></i> Ẩn</span>
+                                    <span class="badge bg-secondary-subtle text-secondary border border-secondary-subtle"><i class="fa-solid fa-eye-slash me-1"></i>Ẩn</span>
                                  <?php endif; ?>
                               </td>
                               <td class="text-center">

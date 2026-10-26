@@ -36,11 +36,36 @@ Class general{
         }
         return self::$instance;
     }
+	private $configCache = array();
+
 	public function get_config($key)
 	{
 		global $db;
-		$db->query("SELECT config_value FROM hicrm_configs WHERE config_key = '".$key."' LIMIT 1");
-		return $db->fetch_object(true)->config_value;
+		if (!array_key_exists($key, $this->configCache)) {
+			$db->query("SELECT config_value FROM hicrm_configs WHERE config_key = '".$db->escapestring($key)."' LIMIT 1");
+			$row = $db->fetch_object(true);
+			$this->configCache[$key] = $row ? (string)$row->config_value : '';
+		}
+		return $this->configCache[$key];
+	}
+
+	public function get_site_contact()
+	{
+		$keys = array('phone' => 'site_phone', 'hotline' => 'site_hotline', 'email' => 'site_email',
+			'address' => 'site_address', 'facebook' => 'site_facebook', 'zalo' => 'site_phonezalo');
+		$contact = array();
+		foreach ($keys as $name => $key) {
+			$contact[$name] = trim($this->get_config($key));
+		}
+		$contact['phone_tel'] = preg_replace('/[^+0-9]/', '', $contact['phone']);
+		$contact['hotline_tel'] = '';
+		if (preg_match('/\+?\d[\d .()-]{5,}\d/u', $contact['hotline'], $match)) {
+			$contact['hotline_tel'] = preg_replace('/[^+0-9]/', '', $match[0]);
+		}
+		$contact['zalo_url'] = $contact['zalo'] === '' ? '' :
+			(preg_match('~^https?://~i', $contact['zalo']) ? $contact['zalo'] : 'https://zalo.me/'.rawurlencode($contact['zalo']));
+		$contact['facebook_url'] = preg_match('~^https?://~i', $contact['facebook']) ? $contact['facebook'] : '';
+		return $contact;
 	}
 	public function _s($string)
 	{

@@ -1,6 +1,6 @@
 <?php include_once "header.php";
 $doctors = is_array($doctors) ? $doctors : array();
-$departments = is_array($departments) ? $departments : array();
+$departments = isset($departments) && is_array($departments) ? $departments : array();
 $page = isset($doctor_page) ? (int)$doctor_page : 1;
 $per_page = isset($doctor_per_page) ? (int)$doctor_per_page : 20;
 $total_results = isset($doctor_total) ? (int)$doctor_total : count($doctors);
@@ -94,24 +94,17 @@ if (!function_exists('backendDoctorPaginationItems')) {
 
    <!-- Bảng danh sách bác sĩ -->
    <div class="card card-table">
-      <div class="card-body">
+      <div class="card-body p-0">
          <div class="table-responsive">
-            <table class="table table-hover table-center mb-0 align-middle">
-               <thead class="table-light">
+            <table class="table table-hover mb-0 align-middle">
+               <thead>
                   <tr>
-                     <th style="width: 50px;">STT</th>
-                     <th style="width: 70px;">Ảnh</th>
-                     <th>Họ và tên</th>
-                     <th>Ngày sinh</th>
-                     <th>Quê quán</th>
-                     <th>Số CCCD</th>
-                     <th>Chức vụ</th>
-                     <th>Mã ngạch/CDNN</th>
-                     <th>Phòng ban</th>
-                     <th>Đơn vị công tác</th>
-                     <th>Mã số</th>
-                     <th>Trạng thái</th>
-                     <th style="width: 130px;" class="text-end">Thao tác</th>
+                     <th style="width: 45px;" class="text-center">#</th>
+                     <th>Bác sĩ / Cán bộ</th>
+                     <th>Chức vụ & Khoa phòng</th>
+                     <th>Thông tin cá nhân</th>
+                     <th style="width: 120px;" class="text-center">Trạng thái</th>
+                     <th style="width: 110px;" class="text-end">Thao tác</th>
                   </tr>
                </thead>
                <tbody>
@@ -119,7 +112,6 @@ if (!function_exists('backendDoctorPaginationItems')) {
                      <?php $stt = $row_offset + 1; foreach($doctors as $item): 
                         $itemName = !empty($item->doctor_name) ? $item->doctor_name : (!empty($item->fullname) ? $item->fullname : '');
                         $itemPosition = !empty($item->doctor_position) ? $item->doctor_position : (!empty($item->position) ? $item->position : '');
-                        $itemWorkplace = !empty($item->doctor_workplace) ? $item->doctor_workplace : (!empty($item->workplace) ? $item->workplace : 'Bệnh viện Đa khoa khu vực Đắk Hà');
                         $itemAvatar = !empty($item->doctor_avatar) ? $item->doctor_avatar : (!empty($item->avatar) ? $item->avatar : '');
                         $itemDob = !empty($item->doctor_dob) ? $item->doctor_dob : (!empty($item->dob) ? $item->dob : '');
                         $itemHometown = !empty($item->doctor_hometown) ? $item->doctor_hometown : (!empty($item->hometown) ? $item->hometown : '');
@@ -134,70 +126,73 @@ if (!function_exists('backendDoctorPaginationItems')) {
                            : XC_URL . '/template/frontend/assets/images/doctor-01.jpg';
                      ?>
                         <tr>
-                           <td><?php echo $stt++; ?></td>
+                           <td class="text-center text-muted fw-bold"><?php echo $stt++; ?></td>
                            <td>
-                              <img src="<?php echo $avatarSrc; ?>" alt="<?php echo htmlspecialchars($itemName, ENT_QUOTES, 'UTF-8'); ?>" class="rounded-circle border" style="width: 44px; height: 44px; object-fit: cover;">
+                              <div class="d-flex align-items-center gap-2">
+                                 <img src="<?php echo $avatarSrc; ?>" alt="<?php echo htmlspecialchars($itemName, ENT_QUOTES, 'UTF-8'); ?>" class="table-avatar-round" style="width: 38px; height: 38px; object-fit: cover;">
+                                 <div>
+                                    <div class="fw-bold text-dark" style="font-size: 13.5px;"><?php echo htmlspecialchars($itemName, ENT_QUOTES, 'UTF-8'); ?></div>
+                                    <div class="cell-meta">
+                                       <?php if(!empty($itemCode)): ?>
+                                          <span class="badge bg-light text-secondary border me-1" style="font-size: 10.5px;">Mã: <?php echo htmlspecialchars($itemCode, ENT_QUOTES, 'UTF-8'); ?></span>
+                                       <?php endif; ?>
+                                       <?php if(!empty($itemCccd)): ?>
+                                          <span>CCCD: <?php echo htmlspecialchars($itemCccd, ENT_QUOTES, 'UTF-8'); ?></span>
+                                       <?php endif; ?>
+                                    </div>
+                                 </div>
+                              </div>
                            </td>
                            <td>
-                              <span class="fw-bold text-dark d-block"><?php echo htmlspecialchars($itemName, ENT_QUOTES, 'UTF-8'); ?></span>
-                              <?php if(!empty($itemCode)): ?>
-                                 <small class="badge bg-light text-secondary border">Mã: <?php echo htmlspecialchars($itemCode, ENT_QUOTES, 'UTF-8'); ?></small>
+                              <?php if(!empty($itemPosition)): ?>
+                                 <span class="badge bg-primary-subtle text-primary border border-primary-subtle mb-1">
+                                    <?php echo htmlspecialchars($itemPosition, ENT_QUOTES, 'UTF-8'); ?>
+                                 </span>
                               <?php endif; ?>
+                              <div class="text-muted small">
+                                 <i class="fa-solid fa-hospital-user text-muted me-1"></i><?php echo htmlspecialchars($item->depart_name ?: 'Chưa phân khoa', ENT_QUOTES, 'UTF-8'); ?>
+                              </div>
                            </td>
                            <td>
-                              <?php echo !empty($itemDob) && $itemDob !== '0000-00-00' ? htmlspecialchars(date('d/m/Y', strtotime($itemDob)), ENT_QUOTES, 'UTF-8') : '<span class="text-muted">-</span>'; ?>
+                              <div class="small">
+                                 <?php if(!empty($itemDob) && $itemDob !== '0000-00-00'): ?>
+                                    <div><i class="fa-regular fa-calendar text-muted me-1"></i><?php echo htmlspecialchars(date('d/m/Y', strtotime($itemDob)), ENT_QUOTES, 'UTF-8'); ?></div>
+                                 <?php endif; ?>
+                                 <?php if(!empty($itemHometown)): ?>
+                                    <div class="text-muted"><i class="fa-solid fa-location-dot text-muted me-1"></i><?php echo htmlspecialchars($itemHometown, ENT_QUOTES, 'UTF-8'); ?></div>
+                                 <?php endif; ?>
+                                 <?php if(!empty($itemJobCode)): ?>
+                                    <small class="badge bg-info-subtle text-info border border-info-subtle mt-1" style="font-size: 10px;">Ngạch: <?php echo htmlspecialchars($itemJobCode, ENT_QUOTES, 'UTF-8'); ?></small>
+                                 <?php endif; ?>
+                              </div>
                            </td>
-                           <td>
-                              <?php echo !empty($itemHometown) ? htmlspecialchars($itemHometown, ENT_QUOTES, 'UTF-8') : '<span class="text-muted">-</span>'; ?>
-                           </td>
-                           <td>
-                              <?php echo !empty($itemCccd) ? htmlspecialchars($itemCccd, ENT_QUOTES, 'UTF-8') : '<span class="text-muted">-</span>'; ?>
-                           </td>
-                           <td>
-                              <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-2 py-1">
-                                 <?php echo htmlspecialchars($itemPosition, ENT_QUOTES, 'UTF-8'); ?>
-                              </span>
-                           </td>
-                           <td>
-                              <?php echo !empty($itemJobCode) ? '<span class="badge bg-info-subtle text-info border border-info-subtle">' . htmlspecialchars($itemJobCode, ENT_QUOTES, 'UTF-8') . '</span>' : '<span class="text-muted">-</span>'; ?>
-                           </td>
-                           <td>
-                              <span class="fw-semibold text-secondary">
-                                 <?php echo htmlspecialchars($item->depart_name ?: 'Chưa phân khoa', ENT_QUOTES, 'UTF-8'); ?>
-                              </span>
-                           </td>
-                           <td>
-                              <small class="text-muted"><?php echo htmlspecialchars($itemWorkplace, ENT_QUOTES, 'UTF-8'); ?></small>
-                           </td>
-                           <td>
-                              <?php echo !empty($itemCode) ? htmlspecialchars($itemCode, ENT_QUOTES, 'UTF-8') : '<span class="text-muted">-</span>'; ?>
-                           </td>
-                           <td>
+                           <td class="text-center">
                               <?php if($itemStatus === 1): ?>
-                                 <span class="badge bg-success">Hoạt động</span>
+                                 <span class="badge bg-success"><i class="fa-solid fa-circle-check me-1"></i>Hoạt động</span>
                               <?php else: ?>
-                                 <span class="badge bg-secondary">Đang ẩn</span>
+                                 <span class="badge bg-secondary"><i class="fa-solid fa-eye-slash me-1"></i>Đang ẩn</span>
                               <?php endif; ?>
                            </td>
                            <td class="text-end">
-                              <div class="d-flex align-items-center justify-content-end gap-1">
-                                 <a class="btn btn-sm btn-outline-warning" href="<?php echo XC_URL; ?>/admin/doctors/toggle/<?php echo (int)$item->id; ?>" title="<?php echo $itemStatus === 1 ? 'Bấm để ẩn' : 'Bấm để hiển thị'; ?>">
+                              <div class="btn-action-group">
+                                 <a class="btn-action <?php echo $itemStatus === 1 ? 'btn-soft-warning' : 'btn-soft-info'; ?>" href="<?php echo XC_URL; ?>/admin/doctors/toggle/<?php echo (int)$item->id; ?>" title="<?php echo $itemStatus === 1 ? 'Bấm để ẩn' : 'Bấm để hiển thị'; ?>">
                                     <i class="fa-solid <?php echo $itemStatus === 1 ? 'fa-eye-slash' : 'fa-eye'; ?>"></i>
                                  </a>
-                                 <a class="btn btn-sm btn-outline-primary" href="<?php echo XC_URL; ?>/admin/doctors/edit/<?php echo (int)$item->id; ?>" title="Chỉnh sửa">
+                                 <a class="btn-action is-edit" href="<?php echo XC_URL; ?>/admin/doctors/edit/<?php echo (int)$item->id; ?>" title="Chỉnh sửa">
                                     <i class="fa-solid fa-pen-to-square"></i>
                                  </a>
-                                 <a class="btn btn-sm btn-outline-danger" href="<?php echo XC_URL; ?>/admin/doctors/delete/<?php echo (int)$item->id; ?>" onclick="return confirm('Bạn có chắc chắn muốn xóa cán bộ / bác sĩ này không?');" title="Xóa">
-                                    <i class="fa-solid fa-trash"></i>
-                                 </a>
+                                 <form method="post" action="<?php echo XC_URL; ?>/admin/doctors/delete/<?php echo (int)$item->id; ?>" class="m-0" onsubmit="return confirm('Chuyển cán bộ / bác sĩ này vào Sọt rác?');">
+                                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($admin_csrf_token ?? '', ENT_QUOTES, 'UTF-8'); ?>">
+                                    <button type="submit" class="btn-action is-delete" title="Chuyển vào Sọt rác"><i class="fa-solid fa-trash"></i></button>
+                                 </form>
                               </div>
                            </td>
                         </tr>
                      <?php endforeach; ?>
                   <?php else: ?>
                      <tr>
-                        <td colspan="13" class="text-center py-4 text-muted">
-                           <i class="fa fa-info-circle me-1"></i> Chưa có dữ liệu bác sĩ nào phù hợp điều kiện lọc.
+                        <td colspan="6" class="text-center py-5 text-muted">
+                           <i class="fa fa-info-circle fs-3 d-block mb-2 text-muted"></i> Chưa có dữ liệu bác sĩ nào phù hợp điều kiện lọc.
                         </td>
                      </tr>
                   <?php endif; ?>

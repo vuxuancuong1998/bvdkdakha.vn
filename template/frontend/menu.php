@@ -9,17 +9,17 @@
         <div class="topbar-hotline">
           <span class="hotline-badge">Cấp cứu</span>
           <span>Đường dây nóng:</span>
-          <a href="tel:<?php echo $this->helper->get_config('site_phone'); ?>" aria-label="Gọi hotline cấp cứu <?php echo $this->helper->get_config('site_phone'); ?>"><?php echo $this->helper->get_config('site_hotline'); ?></a>
+          <a href="tel:<?php echo $siteEsc($siteContact['hotline_tel']); ?>" aria-label="Gọi hotline cấp cứu <?php echo $siteEsc($siteContact['hotline']); ?>"><?php echo $siteEsc($siteContact['hotline']); ?></a>
         </div>
         <div class="topbar-right">
           <nav class="topbar-socials" aria-label="Mạng xã hội">
-            <a href="<?php echo $this->helper->get_config('site_facebook'); ?>" target="_blank" rel="noopener noreferrer"
+            <a href="<?php echo $siteEsc($siteContact['facebook_url']); ?>" target="_blank" rel="noopener noreferrer"
                aria-label="Trang Facebook Bệnh viện đa khoa Đăk Hà">
               <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                 <path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/>
               </svg>
             </a>
-            <a href="https://zalo.me/<?php echo $this->helper->get_config('site_zalo'); ?>" target="_blank" rel="noopener noreferrer"
+            <a href="<?php echo $siteEsc($siteContact['zalo_url']); ?>" target="_blank" rel="noopener noreferrer"
                aria-label="Trang Zalo Bệnh viện đa khoa Đăk Hà">
               <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                 <path d="M12 2C6.477 2 2 6.477 2 12c0 1.89.525 3.66 1.438 5.168L2 22l4.832-1.438A9.955 9.955 0 0012 22c5.523 0 10-4.477 10-10S17.523 2 12 2zm-1 13H9V9h2v6zm3.5 0h-2V9h2v6z"/>
@@ -80,11 +80,11 @@
                 </svg>
               </a>
               <div class="dropdown" role="menu" aria-label="Menu giới thiệu">
-                <a href="<?php echo XC_URL; ?>/trang/gioi-thieu" role="menuitem">
+                <a href="<?php echo XC_URL; ?>/trang/gioi-thieu.html" role="menuitem">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
                   Giới thiệu bệnh viện
                 </a>
-                <a href="<?php echo XC_URL; ?>/trang/co-cau-to-chuc" role="menuitem">
+                <a href="<?php echo XC_URL; ?>/trang/co-cau-to-chuc.html" role="menuitem">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
                   Cơ cấu & Sơ đồ tổ chức
                 </a>
@@ -280,7 +280,7 @@
                   loading="lazy" />
         </div>
         <div class="logo-text">
-          <span class="name">Đăk Hà Medical</span>
+          <span class="name">Bệnh viện đa khoa khu vực Đăk Hà</span>
           <span class="sub">Menu chính</span>
         </div>
       </a>
@@ -324,10 +324,9 @@
         </svg>
       </button>
       <div class="mobile-submenu" id="sub-gioi-thieu" role="menu">
-        <a href="<?php echo XC_URL; ?>/trang/gioi-thieu#lich-su">Lịch sử hình thành</a>
-        <a href="<?php echo XC_URL; ?>/trang/gioi-thieu#chuc-nang">Chức năng nhiệm vụ</a>
-        <a href="<?php echo XC_URL; ?>/trang/co-cau-to-chuc">Sơ đồ tổ chức</a>
-        <a href="<?php echo XC_URL; ?>/trang/ban-lanh-dao">Ban lãnh đạo</a>
+        <a href="<?php echo XC_URL; ?>/trang/gioi-thieu.html">Giới thiệu bệnh viện</a>
+        <a href="<?php echo XC_URL; ?>/trang/co-cau-to-chuc.html">Sơ đồ tổ chức</a>
+        <a href="<?php echo XC_URL; ?>/trang/bac-si">Đội ngũ Y/bác sĩ</a>
       </div>
 
       <button class="mobile-nav-link" data-submenu="sub-tintuc" aria-expanded="false">
@@ -338,7 +337,7 @@
       </button>
       <div class="mobile-submenu" id="sub-tintuc" role="menu">
         <?php foreach( $item_events as $item){ ?>
-        <a href="<?php echo XC_URL; ?>/tin-tuc/<?php echo $item->id;?>-<?php echo $item->event_type_slug; ?>.html"><?php echo $item->event_type_name; ?>
+        <a href="<?php echo XC_URL; ?>/tin-tuc/<?php echo $item->id;?>-<?php echo $item->event_type_slug; ?>.html"><?php echo $item->event_type_name; ?></a>
           
                 <?php }?>
         </div>
@@ -350,9 +349,9 @@
         </svg>
       </button>
       <div class="mobile-submenu" id="sub-dichvu" role="menu">
-        <a href="<?php echo XC_URL; ?>/dich-vu-y-te.html#kham-chua-benh">Khám chữa bệnh</a>
-        <a href="<?php echo XC_URL; ?>/dich-vu-y-te.html#bang-gia">Bảng giá dịch vụ</a>
-        <a href="<?php echo XC_URL; ?>/dich-vu-y-te.html#goi-kham">Gói khám sức khỏe</a>
+        <a href="<?php echo XC_URL; ?>/trang/kham-bhyt.html">Khám BHYT</a>
+        <a href="<?php echo XC_URL; ?>/trang/vien-phi-goi-dich-vu.html">Viện phí & dịch vụ</a>
+        <a href="<?php echo XC_URL; ?>/trang/goi-kham-suc-khoe.html">Gói khám sức khỏe</a>
       </div>
 
       <a href="<?php echo XC_URL; ?>/lay-giay-tt25" class="mobile-nav-link fw-bold text-primary">Chế độ BHXH</a>
@@ -367,7 +366,6 @@
         <a href="<?php echo XC_URL; ?>/hoat-dong/dao-tao-tap-huan.html">Kế hoạch</a>
         <a href="<?php echo XC_URL; ?>/hoat-dong/chien-dich-y-te.html">Chiến dịch</a>
       </div>
-      <a href="<?php echo XC_URL; ?>/trang/van-ban" class="mobile-nav-link">Văn bản</a>
       <a href="<?php echo XC_URL; ?>/lien-he.html" class="mobile-nav-link">Liên hệ</a>
     </div>
 
@@ -381,11 +379,11 @@
           <i class="fa-solid fa-right-to-bracket"></i> Đăng nhập NVYT
         </button>
       <?php endif; ?>
-      <a href="tel:1900xxxx" class="btn btn-danger w-100" style="border-radius: 12px; display: flex; align-items: center; justify-content: center; gap: 8px; font-weight: 600; padding: 12px 18px;">
+      <a href="tel:<?php echo $siteEsc($siteContact['hotline_tel']); ?>" class="btn btn-danger w-100" style="border-radius: 12px; display: flex; align-items: center; justify-content: center; gap: 8px; font-weight: 600; padding: 12px 18px;">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" style="width: 18px; height: 18px;">
           <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 10.8 19.79 19.79 0 01.01 2.18 2 2 0 012 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/>
         </svg>
-        Gọi cấp cứu: 1900 xxxx
+        Gọi cấp cứu: <?php echo $siteEsc($siteContact['hotline']); ?>
       </a>
     </div>
   </nav>
@@ -561,4 +559,4 @@
     }
   });
   </script>
-<?php require_once "slider.php";?>
+<?php if (empty($isHomeDesign)) require_once "slider.php";?>

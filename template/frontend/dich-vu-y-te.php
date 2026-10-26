@@ -185,8 +185,8 @@
           </p>
         </div>
         <div class="d-flex flex-wrap gap-3 flex-shrink-0">
-          <a href="tel:1900xxxx" class="btn btn-light btn-lg font-weight-bold px-4 text-primary rounded-pill shadow-sm" style="font-weight: 700; font-size: 15px;">
-            <i class="fa-solid fa-phone me-2"></i> Gọi Hotline 1900 xxxx
+          <a href="tel:<?php echo $siteEsc($siteContact['hotline_tel']); ?>" class="btn btn-light btn-lg font-weight-bold px-4 text-primary rounded-pill shadow-sm" style="font-weight: 700; font-size: 15px;">
+            <i class="fa-solid fa-phone me-2"></i> Gọi Hotline <?php echo $siteEsc($siteContact['hotline']); ?>
           </a>
           <a href="<?php echo XC_URL; ?>/lien-he.html" class="btn btn-outline-light btn-lg font-weight-bold px-4 rounded-pill" style="font-weight: 700; font-size: 15px;">
             Đặt Lịch Ngay

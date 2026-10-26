@@ -34,7 +34,7 @@ $(document).ready(function () {
 });
 </script>
 
-<div class="conatiner-fluid content-inner mt-n5 py-0">
+<div class="container-fluid content-inner mt-n5 py-0">
    <?php if(!empty($newscomment_flash)): ?>
       <div class="alert alert-<?php echo $newscomment_flash['type'] == 'success' ? 'success' : 'info'; ?> rounded-3"><?php echo htmlspecialchars($newscomment_flash['message']); ?></div>
    <?php endif; ?>

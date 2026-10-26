@@ -501,19 +501,50 @@ select {
     gap: 10px;
   }
 
-  .site-header.is-authenticated .main-nav { min-width: 0; }
-  .site-header.is-authenticated .nav-list { gap: 0; flex-wrap: nowrap; }
-  .site-header.is-authenticated .nav-link { padding: 6px 8px; font-size: 13px; }
-  .site-header.is-authenticated .header-cta { margin-left: 0; }
-  .site-header.is-authenticated .user-name-text { display: none; }
-  .site-header.is-authenticated .user-chevron { display: none; }
-  .site-header.is-authenticated .user-avatar-btn { padding: 4px; }
+  .site-header.is-authenticated .main-nav {
+    min-width: 0;
+  }
+
+  .site-header.is-authenticated .nav-list {
+    gap: 0;
+    flex-wrap: nowrap;
+  }
+
+  .site-header.is-authenticated .nav-link {
+    padding: 6px 8px;
+    font-size: 13px;
+  }
+
+  .site-header.is-authenticated .header-cta {
+    margin-left: 0;
+  }
+
+  .site-header.is-authenticated .user-name-text {
+    display: none;
+  }
+
+  .site-header.is-authenticated .user-chevron {
+    display: none;
+  }
+
+  .site-header.is-authenticated .user-avatar-btn {
+    padding: 4px;
+  }
 }
 
 @media (min-width: 1201px) and (max-width: 1300px) {
-  .site-header.is-authenticated .header-inner { gap: 6px; }
-  .site-header.is-authenticated .logo-text .name { font-size: 13px; }
-  .site-header.is-authenticated .nav-link { padding-inline: 6px; font-size: 12.5px; }
+  .site-header.is-authenticated .header-inner {
+    gap: 6px;
+  }
+
+  .site-header.is-authenticated .logo-text .name {
+    font-size: 13px;
+  }
+
+  .site-header.is-authenticated .nav-link {
+    padding-inline: 6px;
+    font-size: 12.5px;
+  }
 }
 
 /* Logo */
@@ -629,7 +660,7 @@ select {
 /* Dropdown */
 .dropdown {
   position: absolute;
-  top: calc(100% + 8px);
+  top: 100%;
   left: 0;
   background: var(--color-bg);
   border-radius: var(--radius-lg);
@@ -1068,6 +1099,11 @@ select {
   position: relative;
   overflow: hidden;
   background: var(--color-primary-dark);
+}
+
+.hero[hidden],
+.hero [hidden] {
+  display: none !important;
 }
 
 .slider-wrapper {
@@ -1901,7 +1937,7 @@ section.bg-dark {
 /* Doctor Name */
 .doctor-card-name {
   font-family: inherit;
-  font-size: 19px;
+  font-size: 14px;
   font-weight: 800;
   color: #1e293b;
   text-transform: uppercase;
@@ -1913,7 +1949,7 @@ section.bg-dark {
 
 /* Specialty / Department Line */
 .doctor-card-dept {
-  font-size: 15px;
+  font-size: 13px;
   color: #475569;
   text-align: center;
   line-height: 1.45;
@@ -3355,6 +3391,16 @@ textarea.form-control {
     grid-template-columns: 1fr;
   }
 
+  .site-footer .footer-links {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: var(--space-4);
+  }
+
+  .site-footer .footer-links a {
+    min-width: 0;
+  }
+
   .quick-info-inner {
     grid-template-columns: 1fr 1fr;
   }
@@ -3527,7 +3573,6 @@ textarea.form-control {
 
   .logo-text .name {
     font-size: 12px;
-    max-width: 150px;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -3927,4 +3972,28 @@ textarea.form-control {
   font-size: 15px;
   color: #10b981;
   flex-shrink: 0;
+}
+/* Trang chủ: chân dung bác sĩ lùi nhẹ trong khung tròn. */
+#doctorHomeSlider .doctor-avatar-circle {
+  width: 178px;
+  height: 178px;
+  padding: 8px;
+  background: radial-gradient(circle at 50% 32%, #ffffff, #e9f3fa);
+  border: 4px solid #fff;
+  box-shadow: 0 0 0 1px #d8eaf5, 0 8px 20px rgba(22, 75, 112, .09);
+}
+#doctorHomeSlider .doctor-avatar-img {
+  object-fit: contain;
+  object-position: center;
+  transform: scale(.88);
+}
+#doctorHomeSlider .doctor-card:hover .doctor-avatar-img {
+  transform: scale(.92);
+}
+@media (max-width: 575px) {
+  #doctorHomeSlider .doctor-avatar-circle {
+    width: 152px;
+    height: 152px;
+    padding: 7px;
+  }
 }

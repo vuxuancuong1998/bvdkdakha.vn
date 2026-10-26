@@ -19,11 +19,11 @@ if (!defined('XVN_CONFIG_LOADED')) {
 	date_default_timezone_set('Asia/Ho_Chi_Minh');
 
 	//=============== Custom configuration ==================//
-	define('DB_NAME', 'bvdkdakha.vn'); //database name
+	define('DB_NAME', 'bvdkdakha_vn'); //database name
 	define('DB_USER', 'root'); //database user
 	define('DB_PASSWORD', ''); //database password
 	define('DB_HOST', 'localhost'); //sql server
-define('DB_PORT', '3307');
+define('DB_PORT', '3306');
 	// $mail_acc = $this->helper->get_config('smtp_protocol');
 	// $mail_pass = $this->helper->get_config('smtp_password');
 	/*** define mailer ***/
@@ -44,7 +44,7 @@ define('DB_PORT', '3307');
 	define('AdminThemeMaster', 'backend'); //Replace xpanel by your admin theme's name
 
 	/*** define site path ***/
-	define('XC_URL','http://localhost/bvdkdakha.vn'); //Replace by your site url
+	define('XC_URL','https://surface-port-globe-course.trycloudflare.com/bvdkdakha.vn'); //Replace by your site url
 
 }
 
@@ -56,5 +56,5 @@ $upload_path = XC_URL.'/uploads';
 $image_path = XC_URL.'/uploads/images';
 
 /*** Set Application Name ***/
-$app_name = 'Cong thong tin viec lam';
+$app_name = 'Bệnh viện Đa khoa Khu vực Đắk Hà';
 ?>

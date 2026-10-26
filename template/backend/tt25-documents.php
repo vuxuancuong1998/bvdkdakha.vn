@@ -52,16 +52,16 @@
           
           <!-- Summary Counters -->
           <div class="d-flex align-items-center gap-2 flex-wrap">
-            <span class="badge bg-soft-primary text-primary px-3 py-2" style="font-size: 13px; border-radius: 20px;">
+            <span class="badge bg-primary-subtle border border-primary-subtle text-primary px-3 py-2" style="font-size: 13px; border-radius: 20px;">
               Tổng số: <strong><?php echo isset($tt25_status_counts['all']) ? $tt25_status_counts['all'] : 0; ?></strong>
             </span>
-            <span class="badge bg-soft-warning text-warning px-3 py-2" style="font-size: 13px; border-radius: 20px;">
+            <span class="badge bg-warning-subtle border border-warning-subtle text-warning px-3 py-2" style="font-size: 13px; border-radius: 20px;">
               Mới tiếp nhận: <strong><?php echo isset($tt25_status_counts['0']) ? $tt25_status_counts['0'] : 0; ?></strong>
             </span>
-            <span class="badge bg-soft-success text-success px-3 py-2" style="font-size: 13px; border-radius: 20px;">
+            <span class="badge bg-success-subtle border border-success-subtle text-success px-3 py-2" style="font-size: 13px; border-radius: 20px;">
               Hoàn thành: <strong><?php echo isset($tt25_status_counts['1']) ? $tt25_status_counts['1'] : 0; ?></strong>
             </span>
-            <span class="badge bg-soft-danger text-danger px-3 py-2" style="font-size: 13px; border-radius: 20px;">
+            <span class="badge bg-danger-subtle border border-danger-subtle text-danger px-3 py-2" style="font-size: 13px; border-radius: 20px;">
               Từ chối: <strong><?php echo isset($tt25_status_counts['2']) ? $tt25_status_counts['2'] : 0; ?></strong>
             </span>
           </div>
@@ -134,11 +134,11 @@
                   </div>
                   <div class="tt25-cell" id="status-cell-<?php echo (int)$item->id; ?>">
                     <?php if($status === 1): ?>
-                      <span class="badge bg-soft-success text-success">Hoàn thành</span>
+                      <span class="badge bg-success-subtle border border-success-subtle text-success">Hoàn thành</span>
                     <?php elseif($status === 2): ?>
-                      <span class="badge bg-soft-danger text-danger">Từ chối</span>
+                      <span class="badge bg-danger-subtle border border-danger-subtle text-danger">Từ chối</span>
                     <?php else: ?>
-                      <span class="badge bg-soft-warning text-warning">Mới tiếp nhận</span>
+                      <span class="badge bg-warning-subtle border border-warning-subtle text-warning">Mới tiếp nhận</span>
                     <?php endif; ?>
                   </div>
                   <div class="tt25-actions">

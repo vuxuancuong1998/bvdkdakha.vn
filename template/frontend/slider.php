@@ -24,7 +24,11 @@
     $siteSlides = array();
     $db->query("SHOW TABLES LIKE 'hicrm_sliders'");
     if ($db->num_row() > 0) {
-      $db->query('SELECT * FROM hicrm_sliders WHERE is_active=1 ORDER BY sort_order ASC,id ASC');
+      $db->query("SHOW COLUMNS FROM hicrm_sliders LIKE 'device'");
+      $hasSliderDevice = $db->num_row() > 0;
+      $db->query("SHOW COLUMNS FROM hicrm_sliders LIKE 'status'");
+      $hasSliderStatus = $db->num_row() > 0;
+      $db->query('SELECT * FROM hicrm_sliders WHERE is_active=1'.($hasSliderStatus ? ' AND status <> 99' : '').($hasSliderDevice ? " AND device IN ('pc','mobile','all')" : '').' ORDER BY sort_order ASC,id ASC');
       $siteSlides = $db->fetch_object();
     }
     if (!is_array($siteSlides)) $siteSlides = array();
@@ -37,8 +41,8 @@
           $buttonUrl = trim((string)$banner->button_url);
           if ($buttonUrl !== '' && !preg_match('~^https?://~i', $buttonUrl)) $buttonUrl = XC_URL.'/'.ltrim($buttonUrl, '/');
         ?>
-        <article class="slide<?php echo $index === 0 ? ' active' : ''; ?>" id="slide-<?php echo $index + 1; ?>" role="group" aria-roledescription="slide" aria-label="Slide <?php echo $index + 1; ?> / <?php echo count($siteSlides); ?>">
-          <div class="slide-bg" style="background-image:url('<?php echo htmlspecialchars($image, ENT_QUOTES, 'UTF-8'); ?>')" role="img" aria-label="<?php echo htmlspecialchars((string)$banner->alt_text, ENT_QUOTES, 'UTF-8'); ?>"></div>
+        <article class="slide" data-device="<?php echo htmlspecialchars((string)($banner->device ?? 'all'), ENT_QUOTES, 'UTF-8'); ?>" id="slide-<?php echo $index + 1; ?>" role="group" aria-roledescription="slide" aria-label="Slide <?php echo $index + 1; ?> / <?php echo count($siteSlides); ?>" hidden>
+          <div class="slide-bg" data-image="<?php echo htmlspecialchars($image, ENT_QUOTES, 'UTF-8'); ?>" role="img" aria-label="<?php echo htmlspecialchars((string)$banner->alt_text, ENT_QUOTES, 'UTF-8'); ?>"></div>
           <div class="slide-overlay" aria-hidden="true"></div>
           <?php if ($banner->eyebrow || $banner->title || $banner->description || ($banner->button_label && $buttonUrl)): ?>
           <div class="container"><div class="slide-content">

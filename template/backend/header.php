@@ -15,41 +15,45 @@ $adminCanAny = function($keys) use ($adminCan){
     <meta charset="utf-8">
       <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
       <title>Bệnh viện đa khoa Khu vực Đăk Hà</title>
-      
+
       <!-- Favicon -->
       <link rel="shortcut icon" href="<?php echo XC_URL; ?>/template/frontend/assets/images/logo.png">
-                  
+
+      <!-- Google Fonts -->
+      <link rel="preconnect" href="https://fonts.googleapis.com">
+      <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+      <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
       <!-- Library / Plugin Css Build -->
       <link rel="stylesheet" href="<?php echo $admintemplate_path; ?>/assets/css/core/libs.min.css?v=<?php echo time(); ?>">
-      
+
       <!-- Aos Animation Css -->
       <link rel="stylesheet" href="<?php echo $admintemplate_path; ?>/assets/vendor/aos/dist/aos.css?v=<?php echo time(); ?>">
-      
+
       <!-- Hope Ui Design System Css -->
       <link rel="stylesheet" href="<?php echo $admintemplate_path; ?>/assets/css/hope-ui.min.css?v=<?php echo time(); ?>">
-      
+
       <!-- Custom Css -->
       <link rel="stylesheet" href="<?php echo $admintemplate_path; ?>/assets/css/custom.min.css?v=<?php echo time(); ?>">
-      
+
       <!-- Dark Css -->
       <link rel="stylesheet" href="<?php echo $admintemplate_path; ?>/assets/css/dark.min.css?v=<?php echo time(); ?>">
-      
+
       <!-- Customizer Css -->
       <link rel="stylesheet" href="<?php echo $admintemplate_path; ?>/assets/css/customizer.min.css?v=<?php echo time(); ?>">
-      
+
       <!-- RTL Css -->
       <link rel="stylesheet" href="<?php echo $admintemplate_path; ?>/assets/css/rtl.min.css?v=<?php echo time(); ?>">
 
       <!-- Admin responsive fixes -->
       <link rel="stylesheet" href="<?php echo $admintemplate_path; ?>/assets/css/admin-responsive.css?v=<?php echo time(); ?>">
-      
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <script src="<?php echo $admintemplate_path; ?>/assets/js/core/libs.min.js"></script>
-     
+
        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-      <link rel='stylesheet' href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
       <!-- <script src="<?php echo $admintemplate_path;?>/assets/js/core.js"></script> -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/jquery.validate.min.js"></script>
-      
+
   </head>
   <body class="  ">
     <!-- loader Start -->
@@ -59,19 +63,15 @@ $adminCanAny = function($keys) use ($adminCan){
           </div>
       </div>    </div>
     <aside class="sidebar sidebar-default sidebar-white sidebar-base navs-rounded-all ">
-        <div class="sidebar-header d-flex align-items-center justify-content-start">
-            <a href="#" class="navbar-brand">
-                
-                <!--Logo start-->
+        <div class="sidebar-header d-flex align-items-center justify-content-between">
+            <a href="<?php echo XC_URL;?>/admin" class="navbar-brand">
                 <div class="logo-main">
-                    <img src="<?php echo XC_URL; ?>/template/frontend/assets/images/logo.png" class="logo-normal" alt="logo" width="30px" height="30px">
+                    <img src="<?php echo XC_URL; ?>/template/frontend/assets/images/logo.png" class="logo-normal" alt="logo" width="26px" height="26px">
                 </div>
-                <!--logo End-->
-                
-                
-                
-                
-                <h4 class="logo-title">Dak Ha Hospital</h4>
+                <div>
+                    <h4 class="logo-title">BVĐK ĐẮK HÀ</h4>
+                    <span class="logo-subtitle">Hệ thống Quản trị</span>
+                </div>
             </a>
             <div class="sidebar-toggle" data-toggle="sidebar" data-active="true">
                 <i class="icon">
@@ -105,9 +105,9 @@ $adminCanAny = function($keys) use ($adminCan){
                         </a>
                     </li>
                     <?php endif; ?>
-                    
-                    
-                    <?php if($adminCanAny(array('doctors','employers','employer_posts','candidates','students','tt25_documents','events','activities','news_comments','google_meet','market_results','customer_feedbacks','job_support_customers','users','groups'))): ?>
+
+
+                    <?php if($adminCanAny(array('quick_appointments','doctors','employers','employer_posts','candidates','students','tt25_documents','events','activities','news_comments','google_meet','market_results','customer_feedbacks','job_support_customers','users','groups'))): ?>
                     <li><hr class="hr-horizontal"></li>
                     <li class="nav-item static-item">
                         <a class="nav-link static-item disabled" href="#" tabindex="-1">
@@ -116,7 +116,10 @@ $adminCanAny = function($keys) use ($adminCan){
                         </a>
                     </li>
                     <?php endif; ?>
-                   
+
+                    <?php if($adminCan('quick_appointments')): ?>
+                    <li class="nav-item"><a class="nav-link <?php echo (($active_menu ?? '') === 'quick_appointments') ? 'active' : ''; ?>" href="<?php echo XC_URL; ?>/admin/quickappointments"><i class="fa-solid fa-calendar-check"></i><span class="item-name">Đặt lịch khám nhanh</span></a></li>
+                    <?php endif; ?>
                     <?php if($adminCan('doctors')): ?>
                     <li class="nav-item">
                         <a class="nav-link <?php echo (isset($active_menu) && $active_menu == 'doctors') ? 'active' : ''; ?>" href="<?php echo XC_URL;?>/admin/doctors">
@@ -176,8 +179,8 @@ $adminCanAny = function($keys) use ($adminCan){
                                 </a>
                             </li>
                             <?php endif; ?>
-                             
-                         
+
+
                         </ul>
                     </li>
                     <?php endif; ?>
@@ -188,8 +191,8 @@ $adminCanAny = function($keys) use ($adminCan){
                             <span class="item-name">Trang tĩnh (CMS)</span>
                         </a>
                     </li>
-                    <?php endif; ?>                  
-                    
+                    <?php endif; ?>
+
 
                     <!-- <li class="nav-item">
                         <a class="nav-link <?php echo (isset($active_menu) && $active_menu == 'newscomments') ? 'active' : ''; ?>"  href="<?php echo XC_URL;?>/admin/newscomments">
@@ -197,7 +200,7 @@ $adminCanAny = function($keys) use ($adminCan){
                             <span class="item-name">Bình luận tin tức</span>
                         </a>
                     </li> -->
-                  
+
                     <?php if($adminCan('customer_feedbacks')): ?>
                     <li class="nav-item">
                         <a class="nav-link <?php echo (isset($active_menu) && $active_menu == 'customerfeedbacks') ? 'active' : ''; ?>"  href="<?php echo XC_URL;?>/admin/customerfeedbacks">
@@ -206,7 +209,7 @@ $adminCanAny = function($keys) use ($adminCan){
                         </a>
                     </li>
                     <?php endif; ?>
-                    
+
                     <?php if($adminCan('users') || $adminCan('groups')): ?>
                     <li class="nav-item">
                         <a class="nav-link" data-bs-toggle="collapse" href="#sidebar-user" role="button" aria-expanded="false" aria-controls="sidebar-user">
@@ -277,11 +280,11 @@ $adminCanAny = function($keys) use ($adminCan){
                                     <span class="item-name <?php echo (isset($active_menu) && $active_menu == 'groups') ? 'active' : ''; ?>">Quản lý Nhóm Quyền</span>
                                 </a>
                             </li> -->
-                            
+
                         </ul>
                     </li>
                     <?php endif; ?>
-                    <?php if($adminCan('images') || $adminCan('sliders') || $adminCan('videos')): ?>
+                    <?php if($adminCan('files') || $adminCan('images') || $adminCan('sliders') || $adminCan('videos') || $adminCan('equipment')): ?>
                     <li><hr class="hr-horizontal"></li>
                     <li class="nav-item static-item">
                         <a class="nav-link static-item disabled" href="#" tabindex="-1">
@@ -293,18 +296,27 @@ $adminCanAny = function($keys) use ($adminCan){
                     <li class="nav-item">
                         <a class="nav-link <?php echo (isset($active_menu) && $active_menu == 'images') ? 'active' : ''; ?>" href="<?php echo XC_URL;?>/admin/images">
                             <i class="fa-solid fa-image">
-                                
+
                             </i>
                             <span class="item-name">Thư viện hình ảnh</span>
                         </a>
                     </li>
                     <?php endif; ?>
+                    <?php if($adminCan('files')): ?>
+                    <li class="nav-item"><a class="nav-link <?php echo (($active_menu ?? '') === 'files') ? 'active' : ''; ?>" href="<?php echo XC_URL; ?>/admin/files"><i class="fa-solid fa-folder-open"></i><span class="item-name">Quản lý file</span></a></li>
+                    <?php endif; ?>
                     <?php if($adminCan('sliders')): ?>
                     <li class="nav-item"><a class="nav-link <?php echo (($active_menu ?? '') === 'sliders') ? 'active' : ''; ?>" href="<?php echo XC_URL; ?>/admin/sliders"><i class="fa-solid fa-images"></i><span class="item-name">Quản lý Slider</span></a></li>
                     <?php endif; ?>
-                    
+                    <?php if($adminCan('equipment')): ?>
+                    <li class="nav-item"><a class="nav-link <?php echo (($active_menu ?? '') === 'equipment') ? 'active' : ''; ?>" href="<?php echo XC_URL; ?>/admin/equipment"><i class="fa-solid fa-microscope"></i><span class="item-name">Trang thiết bị</span></a></li>
                     <?php endif; ?>
 
+                    <?php endif; ?>
+
+                    <?php if($adminCan('trash')): ?>
+                    <li class="nav-item"><a class="nav-link <?php echo (($active_menu ?? '') === 'trash') ? 'active' : ''; ?>" href="<?php echo XC_URL; ?>/admin/trash"><i class="fa-solid fa-trash-can-arrow-up"></i><span class="item-name">Sọt rác</span></a></li>
+                    <?php endif; ?>
                     <?php if($adminCan('config') || $adminCan('settings')): ?>
                     <li><hr class="hr-horizontal"></li>
                     <li class="nav-item static-item">
@@ -317,107 +329,75 @@ $adminCanAny = function($keys) use ($adminCan){
                     <li class="nav-item">
                         <a class="nav-link <?php echo (isset($active_menu) && $active_menu == 'config') ? 'active' : ''; ?>" href="<?php echo XC_URL;?>/admin/config">
                             <i class="fa-solid fa-gears">
-                                
+
                             </i>
                             <span class="item-name">DM Tham số</span>
                         </a>
                     </li>
                     <?php endif; ?>
                     <?php if($adminCan('settings')): ?>
-                    
+
                     <?php endif; ?>
                     <?php endif; ?>
                    <br><br>
                 </ul>
-                <!-- Sidebar Menu End -->        </div>
+                <!-- Sidebar Menu End -->
+            </div>
         </div>
-        
         <div class="sidebar-footer"></div>
-    </aside>    <main class="main-content">
-      <div class="position-relative iq-banner">
+    </aside>
+    <main class="main-content">
+      <div class="position-relative">
         <!--Nav Start-->
         <nav class="nav navbar navbar-expand-lg navbar-light iq-navbar">
           <div class="container-fluid navbar-inner">
-            <a href="../../dashboard/index.html" class="navbar-brand">
-                
-                <!--Logo start-->
-                <div class="logo-main">
-                        <img src="<?php echo XC_URL; ?>/template/frontend/assets/images/logo.png" class="logo-normal" alt="logo" width="30px" height="30px">
-
-                </div>
-                <!--logo End-->
-                
-                
-                
-                
-                <h4 class="logo-title">Cổng việc làm CĐKT</h4>
-            </a>
-            <button class="sidebar-toggle admin-mobile-menu-toggle" type="button" data-toggle="sidebar" data-active="true" aria-label="Mở menu quản trị" aria-expanded="false">
-                <i class="icon">
-                 <svg  width="20px" class="icon-20" viewBox="0 0 24 24">
-                    <path fill="currentColor" d="M4,11V13H16L10.5,18.5L11.92,19.92L19.84,12L11.92,4.08L10.5,5.5L16,11H4Z" />
-                </svg>
-                </i>
-            </button>
-            <div class="input-group search-input">
-              <span class="input-group-text" id="search-input">
-                <svg class="icon-18" width="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <circle cx="11.7669" cy="11.7666" r="8.98856" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></circle>
-                    <path d="M18.0186 18.4851L21.5426 22" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-                </svg>
-              </span>
-              <input type="search" class="form-control" placeholder="Search...">
+            <div class="d-flex align-items-center gap-3">
+              <button class="sidebar-toggle admin-mobile-menu-toggle btn btn-sm btn-icon btn-light" type="button" data-toggle="sidebar" data-active="true" aria-label="Mở menu quản trị" aria-expanded="false">
+                  <i class="icon">
+                   <svg width="20px" class="icon-20" viewBox="0 0 24 24">
+                      <path fill="currentColor" d="M4,11V13H16L10.5,18.5L11.92,19.92L19.84,12L11.92,4.08L10.5,5.5L16,11H4Z" />
+                  </svg>
+                  </i>
+              </button>
+              <div class="admin-topbar-brand d-flex align-items-center gap-2">
+                  <span class="fw-bold text-dark d-none d-sm-inline" style="font-size: 14.5px;">Bệnh viện Đa khoa Khu vực Đắk Hà</span>
+                  <span class="badge-tag">Hệ thống Quản trị</span>
+              </div>
             </div>
-            <button class="navbar-toggler collapsed" type="button" data-toggle="sidebar" data-active="true" aria-controls="sidebar-menu" aria-expanded="false" aria-label="Mở menu quản trị">
-              <span class="navbar-toggler-icon">
-                  <span class="mt-2 navbar-toggler-bar bar1"></span>
-                  <span class="navbar-toggler-bar bar2"></span>
-                  <span class="navbar-toggler-bar bar3"></span>
-                </span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarSupportedContent">
-              <ul class="mb-2 navbar-nav ms-auto align-items-center navbar-list mb-lg-0">
-               
-                <!-- <li class="nav-item dropdown">
-                    <a href="#" class="search-toggle nav-link" id="dropdownMenuButton2" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    <img src="../../assets/images/Flag/flag001.png" class="img-fluid rounded-circle" alt="user" style="height: 30px; min-width: 30px; width: 30px;">
-                    <span class="bg-primary"></span>
-                    </a>
-                    <div class="p-0 sub-drop dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton2">
-                        <div class="m-0 border-0 shadow-none card">
-                            <div class="p-0 ">
-                                <ul class="p-0 list-group list-group-flush">
-                                    <li class="iq-sub-card list-group-item"><a class="p-0" href="#"><img src="../../assets/images/Flag/flag-03.png" alt="img-flaf" class="img-fluid me-2" style="width: 15px;height: 15px;min-width: 15px;"/>Spanish</a></li>
-                                    <li class="iq-sub-card list-group-item"><a class="p-0" href="#"><img src="../../assets/images/Flag/flag-04.png" alt="img-flaf" class="img-fluid me-2" style="width: 15px;height: 15px;min-width: 15px;"/>Italian</a></li>
-                                    <li class="iq-sub-card list-group-item"><a class="p-0" href="#"><img src="../../assets/images/Flag/flag-02.png" alt="img-flaf" class="img-fluid me-2" style="width: 15px;height: 15px;min-width: 15px;"/>French</a></li>
-                                    <li class="iq-sub-card list-group-item"><a class="p-0" href="#"><img src="../../assets/images/Flag/flag-05.png" alt="img-flaf" class="img-fluid me-2" style="width: 15px;height: 15px;min-width: 15px;"/>German</a></li>
-                                    <li class="iq-sub-card list-group-item"><a class="p-0" href="#"><img src="../../assets/images/Flag/flag-06.png" alt="img-flaf" class="img-fluid me-2" style="width: 15px;height: 15px;min-width: 15px;"/>Japanese</a></li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                </li> -->
-                
-                
-                <li class="nav-item dropdown">
-                  <a class="py-0 nav-link d-flex align-items-center" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                    <div class="caption ms-3 d-none d-md-block ">
-                        <h6 class="mb-0 caption-title"><?php echo isset($_SESSION['user']['full_name']) ? $_SESSION['user']['full_name'] : 'Admin'; ?></h6>
-                    </div>
-                  </a>
-                  <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                    <li><a class="dropdown-item" href="<?php echo XC_URL; ?>/admin/change_password">Đổi mật khẩu</a></li>
-                    <li><hr class="dropdown-divider"></li>
-                    <li><a class="dropdown-item" href="<?php echo XC_URL; ?>/admin/logout">Logout</a></li>
-                  </ul>
-                </li>
-              </ul>
+
+            <div class="ms-auto d-flex align-items-center gap-2">
+              <a href="<?php echo XC_URL; ?>" target="_blank" class="admin-quick-link" title="Xem trang chủ website trong tab mới">
+                <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                <span class="d-none d-md-inline">Xem Website</span>
+              </a>
+
+              <div class="dropdown">
+                <div class="admin-user-pill" role="button" id="navbarDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                  <div class="admin-user-avatar">
+                    <?php
+                      $userName = isset($_SESSION['user']['full_name']) && !empty($_SESSION['user']['full_name']) ? $_SESSION['user']['full_name'] : 'Admin';
+                      $firstChar = mb_substr($userName, 0, 1, 'UTF-8');
+                      echo htmlspecialchars(mb_strtoupper($firstChar, 'UTF-8'));
+                    ?>
+                  </div>
+                  <div class="d-none d-md-block text-start">
+                    <div class="admin-user-name"><?php echo htmlspecialchars($userName); ?></div>
+                    <span class="admin-user-role"><?php echo isset($_SESSION['user']['group_name']) ? htmlspecialchars($_SESSION['user']['group_name']) : 'Quản trị viên'; ?></span>
+                  </div>
+                  <i class="fa-solid fa-chevron-down text-muted" style="font-size: 10px;"></i>
+                </div>
+                <ul class="dropdown-menu dropdown-menu-end shadow-sm border" aria-labelledby="navbarDropdown" style="border-radius: 12px; min-width: 200px;">
+                  <li class="px-3 py-2 border-bottom">
+                    <div class="fw-bold text-dark" style="font-size: 13px;"><?php echo htmlspecialchars($userName); ?></div>
+                    <small class="text-muted"><?php echo htmlspecialchars($_SESSION['user']['email'] ?? 'admin@bvdkdakha.vn'); ?></small>
+                  </li>
+                  <li><a class="dropdown-item py-2" href="<?php echo XC_URL; ?>/admin/change_password"><i class="fa-solid fa-key text-muted me-2"></i>Đổi mật khẩu</a></li>
+                  <li><hr class="dropdown-divider my-1"></li>
+                  <li><a class="dropdown-item py-2 text-danger" href="<?php echo XC_URL; ?>/admin/logout"><i class="fa-solid fa-arrow-right-from-bracket me-2"></i>Đăng xuất</a></li>
+                </ul>
+              </div>
             </div>
           </div>
-        </nav>          <!-- Nav Header Component Start -->
-          <div class="iq-navbar-header" style="height: 75px;">
-            
-             
-          </div>          <!-- Nav Header Component End -->
+        </nav>
         <!--Nav End-->
       </div>

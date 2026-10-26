@@ -1,6 +1,6 @@
 <?php $active_menu = 'staticpage_categories'; require "header.php"; ?>
 
-<div class="conatiner-fluid content-inner mt-n5 py-0">
+<div class="container-fluid content-inner mt-n5 py-0">
    <div class="row">
       <div class="col-sm-12">
          <div class="card shadow-sm border-0">
@@ -18,16 +18,16 @@
             <div class="card-body">
                
                <div class="table-responsive">
-                  <table class="table table-hover align-middle border text-nowrap">
+                  <table class="table table-hover align-middle border">
                      <thead class="bg-light text-dark fw-bold">
                         <tr>
-                           <th width="50" class="text-center">#</th>
-                           <th>Tên danh mục</th>
-                           <th>Slug URL</th>
+                           <th style="width: 48px;" class="text-center">#</th>
+                           <th style="width: 25%;">Tên danh mục</th>
+                           <th style="width: 20%;">Slug URL</th>
                            <th>Mô tả</th>
-                           <th class="text-center">Số trang tĩnh</th>
-                           <th class="text-center">Trạng thái</th>
-                           <th class="text-center" width="120">Thao tác</th>
+                           <th style="width: 120px;" class="text-center">Số trang</th>
+                           <th style="width: 110px;" class="text-center">Trạng thái</th>
+                           <th style="width: 90px;" class="text-center">Thao tác</th>
                         </tr>
                      </thead>
                      <tbody>
@@ -45,23 +45,23 @@
                                     <span class="text-muted small"><?php echo !empty($cat->category_description) ? htmlspecialchars($cat->category_description) : '---'; ?></span>
                                  </td>
                                  <td class="text-center">
-                                    <span class="badge bg-soft-info text-info rounded-pill px-2 py-1">
+                                    <span class="badge bg-info-subtle text-info border border-info-subtle">
                                        <?php echo (int)$cat->total_pages; ?> trang
                                     </span>
                                  </td>
                                  <td class="text-center">
                                     <?php if($cat->category_status == 1): ?>
-                                       <span class="badge bg-success rounded-pill px-2 py-1">Hoạt động</span>
+                                       <span class="badge bg-success-subtle text-success border border-success-subtle"><i class="fa-solid fa-circle-check me-1"></i>Hoạt động</span>
                                     <?php else: ?>
-                                       <span class="badge bg-secondary rounded-pill px-2 py-1">Tạm ẩn</span>
+                                       <span class="badge bg-secondary-subtle text-secondary border border-secondary-subtle"><i class="fa-solid fa-eye-slash me-1"></i>Tạm ẩn</span>
                                     <?php endif; ?>
                                  </td>
                                  <td class="text-center">
-                                    <div class="d-flex align-items-center justify-content-center gap-1">
-                                       <button type="button" onclick="openCatModal(<?php echo $cat->id; ?>, '<?php echo addslashes(htmlspecialchars($cat->category_name)); ?>', '<?php echo addslashes(htmlspecialchars($cat->category_slug)); ?>', '<?php echo addslashes(htmlspecialchars($cat->category_description)); ?>', <?php echo $cat->category_status; ?>)" class="btn btn-sm btn-icon btn-soft-warning" title="Chỉnh sửa">
+                                    <div class="btn-action-group justify-content-center">
+                                       <button type="button" onclick="openCatModal(<?php echo $cat->id; ?>, '<?php echo addslashes(htmlspecialchars($cat->category_name)); ?>', '<?php echo addslashes(htmlspecialchars($cat->category_slug)); ?>', '<?php echo addslashes(htmlspecialchars($cat->category_description)); ?>', <?php echo $cat->category_status; ?>)" class="btn-action is-edit" title="Chỉnh sửa">
                                           <i class="fa-solid fa-pen-to-square"></i>
                                        </button>
-                                       <button type="button" onclick="deleteCategory(<?php echo $cat->id; ?>, '<?php echo addslashes(htmlspecialchars($cat->category_name)); ?>')" class="btn btn-sm btn-icon btn-soft-danger" title="Xóa danh mục">
+                                       <button type="button" onclick="deleteCategory(<?php echo $cat->id; ?>, '<?php echo addslashes(htmlspecialchars($cat->category_name)); ?>')" class="btn-action is-delete" title="Xóa danh mục">
                                           <i class="fa-solid fa-trash-can"></i>
                                        </button>
                                     </div>

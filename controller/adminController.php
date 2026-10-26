@@ -1,6 +1,10 @@
 <?php
+require_once __DIR__.'/admin-equipment.php';
+require_once __DIR__.'/admin-quick-appointments.php';
 Class adminController extends baseController
 {
+    use AdminEquipmentActions;
+    use AdminQuickAppointmentActions;
 	private function ensureAdminPermissionTables()
 	{
 		global $db;
@@ -48,7 +52,11 @@ Class adminController extends baseController
 			array('key' => 'users', 'name' => 'Quản lý tài khoản', 'parent' => 'account_section', 'sort' => 70),
 			array('key' => 'groups', 'name' => 'Quản lý nhóm quyền', 'parent' => 'account_section', 'sort' => 71),
 			array('key' => 'images', 'name' => 'Thư viện hình ảnh', 'parent' => '', 'sort' => 80),
+			array('key' => 'files', 'name' => 'Quản lý file', 'parent' => '', 'sort' => 81),
+			array('key' => 'trash', 'name' => 'Sọt rác', 'parent' => '', 'sort' => 95),
 			array('key' => 'sliders', 'name' => 'Quản lý Slider', 'parent' => '', 'sort' => 81),
+            array('key' => 'equipment', 'name' => 'Quản lý trang thiết bị', 'parent' => '', 'sort' => 82),
+            array('key' => 'quick_appointments', 'name' => 'Quản lý đặt lịch khám nhanh', 'parent' => '', 'sort' => 57),
 			array('key' => 'videos', 'name' => 'Thư viện video', 'parent' => '', 'sort' => 90),
 			array('key' => 'staticpages', 'name' => 'Quản lý trang tĩnh CMS', 'parent' => 'staticpages_section', 'sort' => 53),
 			array('key' => 'doctors', 'name' => 'Quản lý đội ngũ bác sĩ', 'parent' => '', 'sort' => 52),
@@ -165,7 +173,7 @@ Class adminController extends baseController
 			$this->view->admintmp('index');
 			return;
 		}
-		$routes = array('employers'=>'/admin/employers','employer_posts'=>'/admin/employers/posts','candidates'=>'/admin/candidates','students'=>'/admin/students','events'=>'/admin/events','activities'=>'/admin/activities','news_comments'=>'/admin/newscomments','staticpages'=>'/admin/staticpages','staticpage_categories'=>'/admin/staticpagecategories','customer_feedbacks'=>'/admin/customerfeedbacks','tt25_documents'=>'/admin/tt25documents','job_support_customers'=>'/admin/jobsupportcustomers','market_results'=>'/admin/marketresults','google_meet'=>'/admin/googlemeet','users'=>'/admin/users','groups'=>'/admin/groups','images'=>'/admin/images','sliders'=>'/admin/sliders','videos'=>'/admin/videos','config'=>'/admin/config','settings'=>'/admin/settings');
+		$routes = array('employers'=>'/admin/employers','employer_posts'=>'/admin/employers/posts','candidates'=>'/admin/candidates','students'=>'/admin/students','events'=>'/admin/events','activities'=>'/admin/activities','news_comments'=>'/admin/newscomments','staticpages'=>'/admin/staticpages','staticpage_categories'=>'/admin/staticpagecategories','customer_feedbacks'=>'/admin/customerfeedbacks','tt25_documents'=>'/admin/tt25documents','job_support_customers'=>'/admin/jobsupportcustomers','market_results'=>'/admin/marketresults','google_meet'=>'/admin/googlemeet','users'=>'/admin/users','groups'=>'/admin/groups','images'=>'/admin/images','files'=>'/admin/files','sliders'=>'/admin/sliders','equipment'=>'/admin/equipment','quick_appointments'=>'/admin/quickappointments','videos'=>'/admin/videos','config'=>'/admin/config','settings'=>'/admin/settings','trash'=>'/admin/trash');
 		foreach($routes as $key => $route){
 			if($this->adminHasMenuPermission($allowed, $key)){ header('Location: '.XC_URL.$route); return; }
 		}
@@ -1850,6 +1858,103 @@ Class adminController extends baseController
 		$this->view->show("backend/dmimage");
 	}
 
+	public function trash($para = array())
+	{
+		if(!$this->prepareAdminAccess('trash')){ return; }
+		global $db;
+		require_once dirname(__DIR__).'/application/admin_trash.class.php';
+		$trash = new AdminTrash($db, $this->view->data['allowed_admin_menu']);
+		$error = '';
+		$category = isset($_GET['category']) && is_string($_GET['category']) ? $_GET['category'] : '';
+		$search = isset($_GET['q']) && is_string($_GET['q']) ? trim($_GET['q']) : '';
+		if($_SERVER['REQUEST_METHOD'] === 'POST'){
+			try {
+				$token = $_POST['csrf_token'] ?? '';
+				if(!is_string($token) || !hash_equals($_SESSION['admin_csrf_token'], $token)){ throw new Exception('Phiên làm việc không hợp lệ. Vui lòng tải lại trang.'); }
+				$action = $_POST['trash_action'] ?? '';
+				$source = $_POST['category'] ?? '';
+				if(!is_string($action) || !is_string($source)){ throw new Exception('Thao tác không hợp lệ.'); }
+				$trash->act($action, $source, (int)($_POST['id'] ?? 0));
+				$this->setAdminFlash('success', $action === 'restore' ? 'Đã khôi phục bản ghi về trạng thái 1.' : 'Đã xóa vĩnh viễn bản ghi trong database.');
+				$this->adminRedirect('/admin/trash?'.http_build_query(array('category'=>$category, 'q'=>$search, 'page'=>max(1, (int)($_GET['page'] ?? 1)))));
+			} catch(Exception $e){ $error = $e->getMessage(); }
+		}
+		try { $listing = $trash->listing($category, $search, (int)($_GET['page'] ?? 1)); }
+		catch(Exception $e){ $error = $e->getMessage(); $category = ''; $listing = $trash->listing('', $search, 1); }
+		$this->view->data = array_merge($this->view->data, array('active_menu'=>'trash', 'trash_categories'=>$trash->categories(), 'trash_listing'=>$listing, 'trash_category'=>$category, 'trash_search'=>$search, 'trash_error'=>$error, 'trash_flash'=>$this->getAdminFlash()));
+		$this->view->admintmp('trash');
+	}
+
+	public function files($para = array())
+	{
+		if(!$this->prepareAdminAccess('files')){ return; }
+		global $db;
+		$db->query(file_get_contents(dirname(__DIR__).'/database/migrations/20261017_files.sql'));
+		$error = '';
+		$edit = null;
+		if($_SERVER['REQUEST_METHOD'] === 'POST'){
+			try {
+				if(!isset($_POST['csrf_token']) || !is_string($_POST['csrf_token']) || !hash_equals($_SESSION['admin_csrf_token'], $_POST['csrf_token'])){
+					throw new Exception('Phiên làm việc không hợp lệ. Vui lòng tải lại trang.');
+				}
+				$id = isset($_POST['id']) ? (int)$_POST['id'] : 0;
+				$action = isset($_POST['file_action']) ? $_POST['file_action'] : '';
+				if(!in_array($action, array('save', 'delete'), true)){ throw new Exception('Thao tác không hợp lệ.'); }
+				$existing = null;
+				if($id > 0){
+					$db->query('SELECT * FROM hicrm_files WHERE status <> 99 AND id = '.$id.' LIMIT 1');
+					$existing = $db->fetch_object(true);
+					if(!$existing){ throw new Exception('File không tồn tại hoặc đã bị xóa.'); }
+				}
+				if($action === 'delete'){
+					if(!$existing){ throw new Exception('Vui lòng chọn file cần xóa.'); }
+					$db->query('UPDATE hicrm_files SET status = 99 WHERE id = '.$id);
+					$this->setAdminFlash('success', 'Đã xóa file.');
+				} else {
+					$name = trim((string)($_POST['file_name'] ?? ''));
+					if($name === '' || mb_strlen($name, 'UTF-8') > 255){ throw new Exception('Vui lòng nhập tên file không quá 255 ký tự.'); }
+					$upload = $_FILES['file_upload'] ?? null;
+					$uploaded = $upload && $upload['error'] !== UPLOAD_ERR_NO_FILE;
+					if(!$existing && !$uploaded){ throw new Exception('Vui lòng chọn file tải lên.'); }
+					$values = "file_name = '".$db->escapestring($name)."'";
+					if($uploaded){
+						if(is_array($upload['error']) || $upload['error'] !== UPLOAD_ERR_OK || !is_uploaded_file($upload['tmp_name'])){ throw new Exception('Tải file thất bại. Kiểm tra giới hạn tải lên của máy chủ.'); }
+						$original = basename(str_replace('\\', '/', $upload['name']));
+						$ext = strtolower(pathinfo($original, PATHINFO_EXTENSION));
+						$allowed = array('pdf','doc','docx','xls','xlsx','ppt','pptx','txt','csv','zip','rar','7z','jpg','jpeg','png','gif','webp','mp3','mp4');
+						$size = filesize($upload['tmp_name']);
+						if(!in_array($ext, $allowed, true)){ throw new Exception('Định dạng file không được hỗ trợ.'); }
+						if($size <= 0 || $size > 20 * 1024 * 1024 || strlen($original) > 255){ throw new Exception('File phải có dung lượng từ 1 byte đến 20 MB và tên không quá 255 byte.'); }
+						$directory = dirname(__DIR__).'/Uploads/files';
+						if(!is_dir($directory) && !mkdir($directory, 0755, true)){ throw new Exception('Không thể tạo thư mục lưu file.'); }
+						$path = bin2hex(random_bytes(16)).'.'.$ext;
+						if(!move_uploaded_file($upload['tmp_name'], $directory.'/'.$path)){ throw new Exception('Không thể lưu file tải lên.'); }
+						$values .= ", file_path = '".$path."', original_name = '".$db->escapestring($original)."', file_size = ".(int)$size;
+					}
+					$db->query($existing ? 'UPDATE hicrm_files SET '.$values.' WHERE id = '.$id : 'INSERT INTO hicrm_files SET '.$values);
+					$this->setAdminFlash('success', $existing ? 'Đã cập nhật file.' : 'Đã thêm file.');
+				}
+				$this->adminRedirect('/admin/files');
+			} catch(Exception $e){ $error = $e->getMessage(); }
+		}
+		$editId = (int)($_GET['edit'] ?? ($_POST['id'] ?? 0));
+		if($editId > 0){
+			$db->query('SELECT * FROM hicrm_files WHERE status <> 99 AND id = '.$editId.' LIMIT 1');
+			$edit = $db->fetch_object(true);
+			if(!$edit && $error === ''){ $error = 'File không tồn tại hoặc đã bị xóa.'; }
+		}
+		$search = trim((string)($_GET['q'] ?? ''));
+		$where = ' FROM hicrm_files WHERE status <> 99';
+		if($search !== ''){ $where .= " AND (file_name LIKE '%".$db->escapestring($search)."%' OR original_name LIKE '%".$db->escapestring($search)."%')"; }
+		$db->query('SELECT COUNT(*) AS total'.$where);
+		$total = (int)$db->fetch_object(true)->total;
+		$pages = max(1, (int)ceil($total / 20));
+		$page = min($pages, max(1, (int)($_GET['page'] ?? 1)));
+		$db->query('SELECT *'.$where.' ORDER BY id DESC LIMIT '.(($page - 1) * 20).',20');
+		$this->view->data = array_merge($this->view->data, array('active_menu'=>'files', 'files'=>$db->fetch_object(), 'file_edit'=>$edit, 'file_error'=>$error, 'file_flash'=>$this->getAdminFlash(), 'file_search'=>$search, 'page'=>$page, 'total_pages'=>$pages, 'total_files'=>$total));
+		$this->view->admintmp('files');
+	}
+
 	public function images($para = array())
 	{
 		if(!$this->prepareAdminAccess('images')){ return; }
@@ -2335,13 +2440,13 @@ Class adminController extends baseController
 				$this->setAdminFlash('info', 'Không tìm thấy phản hồi.');
 				$this->adminRedirect($listRedirect);
 			}
-			$db->query("DELETE FROM hicrm_customer_feedback WHERE id = '".$postId."' LIMIT 1");
+			$db->query("UPDATE hicrm_customer_feedback SET status = 99 WHERE id = '".$postId."' LIMIT 1");
 			$this->setAdminFlash('success', 'Đã xóa phản hồi.');
 			$this->adminRedirect($listRedirect);
 		}
 
 		$perPage = 6;
-		$where = array('1=1');
+		$where = array('status <> 99');
 		if($keyword !== ''){
 			$kw = $db->escapestring($keyword);
 			$where[] = "(customer_name LIKE '%".$kw."%' OR customer_phone LIKE '%".$kw."%' OR customer_email LIKE '%".$kw."%' OR customer_address LIKE '%".$kw."%' OR content LIKE '%".$kw."%')";
@@ -2520,7 +2625,7 @@ Class adminController extends baseController
 				$this->setAdminFlash('info', 'Đã chuyển trạng thái về Mới tiếp nhận.');
 			}
 			elseif($action === 'delete' && $reqId > 0){
-				$db->query("DELETE FROM hicrm_tt25_requests WHERE id = '".$reqId."' LIMIT 1");
+				$db->query("UPDATE hicrm_tt25_requests SET status = 99, updated_at = NOW() WHERE id = '".$reqId."' LIMIT 1");
 				if($isAjax){
 					header('Content-Type: application/json; charset=utf-8');
 					echo json_encode(array('status' => 'success', 'message' => 'Đã xóa bản ghi yêu cầu.'));
@@ -2539,7 +2644,7 @@ Class adminController extends baseController
 		$keyword = isset($_GET['keyword']) ? trim($_GET['keyword']) : '';
 		$statusFilter = isset($_GET['status']) ? trim($_GET['status']) : 'all';
 
-		$where = array("1=1");
+		$where = array("status <> 99");
 
 		if($keyword !== ''){
 			$kw = $db->escapestring($keyword);
@@ -2561,7 +2666,7 @@ Class adminController extends baseController
 		$db->query("SELECT * ".$baseSql." ORDER BY created_at DESC, id DESC LIMIT ".$offset.",".$perPage);
 		$items = $db->fetch_object();
 
-		$db->query("SELECT status, COUNT(id) as total FROM hicrm_tt25_requests GROUP BY status");
+		$db->query("SELECT status, COUNT(id) as total FROM hicrm_tt25_requests WHERE status <> 99 GROUP BY status");
 		$statusCountsRaw = $db->fetch_object();
 		$statusCounts = array('all' => 0, '0' => 0, '1' => 0, '2' => 0);
 		if(is_array($statusCountsRaw)){
@@ -3124,7 +3229,7 @@ Class adminController extends baseController
 				}
 				$this->adminRedirect('/admin/marketresults');
 			}elseif($action === 'delete' && $postId > 0){
-				$db->query("DELETE FROM hicrm_market_results WHERE id = '".$postId."' LIMIT 1");
+				$db->query("UPDATE hicrm_market_results SET result_status = 99 WHERE id = '".$postId."' LIMIT 1");
 				$this->setAdminFlash('success', 'Đã xóa kết quả sàn.');
 				$this->adminRedirect('/admin/marketresults');
 			}
@@ -3134,7 +3239,7 @@ Class adminController extends baseController
 		$perPage = 20;
 		$baseSql = "FROM hicrm_market_results mr
 			LEFT JOIN hicrm_users u ON mr.created_by = u.id
-			WHERE 1=1";
+			WHERE mr.result_status <> 99";
 		$db->query("SELECT COUNT(mr.id) AS total ".$baseSql);
 		$totalResults = intval($db->fetch_object(true)->total);
 		$totalPages = max(1, ceil($totalResults / $perPage));
@@ -3274,7 +3379,7 @@ Class adminController extends baseController
 
 		// 2. Handle Toggle status
 		if($method === 'toggle' && $id > 0){
-			$db->query("UPDATE hicrm_doctors SET doctor_status = 1 - doctor_status, doctor_updated_at = NOW() WHERE id = '".$id."' LIMIT 1");
+			$db->query("UPDATE hicrm_doctors SET doctor_status = 1 - doctor_status, doctor_updated_at = NOW() WHERE id = '".$id."' AND doctor_status IN (0,1) LIMIT 1");
 			$this->setAdminFlash('success', 'Đã chuyển đổi trạng thái hiển thị của cán bộ/bác sĩ.');
 			$this->adminRedirect('/admin/doctors');
 			return;
@@ -3282,16 +3387,12 @@ Class adminController extends baseController
 
 		// 3. Handle Delete
 		if($method === 'delete' && $id > 0){
-			$db->query("SELECT doctor_avatar FROM hicrm_doctors WHERE id = '".$id."' LIMIT 1");
-			$doc = $db->fetch_object(true);
-			if($doc && !empty($doc->doctor_avatar)){
-				$filePath = __SITE_PATH . '/uploads/doctors/' . $doc->doctor_avatar;
-				if(file_exists($filePath)){
-					@unlink($filePath);
-				}
+			$token = $_POST['csrf_token'] ?? '';
+			if($_SERVER['REQUEST_METHOD'] !== 'POST' || !is_string($token) || !hash_equals($_SESSION['admin_csrf_token'], $token)){
+				http_response_code(403); return;
 			}
-			$db->query("DELETE FROM hicrm_doctors WHERE id = '".$id."' LIMIT 1");
-			$this->setAdminFlash('success', 'Đã xóa cán bộ/bác sĩ thành công.');
+			$db->query("UPDATE hicrm_doctors SET doctor_status = 99, doctor_updated_at = NOW() WHERE id = '".$id."' AND doctor_status <> 99 LIMIT 1");
+			$this->setAdminFlash('success', 'Đã chuyển cán bộ/bác sĩ vào Sọt rác.');
 			$this->adminRedirect('/admin/doctors');
 			return;
 		}
@@ -3339,7 +3440,7 @@ Class adminController extends baseController
 
 		// 6. Handle Edit view
 		if($method === 'edit' && $id > 0){
-			$db->query("SELECT * FROM hicrm_doctors WHERE id = '".$id."' LIMIT 1");
+			$db->query("SELECT * FROM hicrm_doctors WHERE id = '".$id."' AND doctor_status <> 99 LIMIT 1");
 			$editDoc = $db->fetch_object(true);
 			if(!$editDoc){
 				$this->setAdminFlash('danger', 'Không tìm thấy thông tin cán bộ/bác sĩ.');
@@ -3358,7 +3459,7 @@ Class adminController extends baseController
 		$filterDept = isset($_GET['department_id']) ? intval($_GET['department_id']) : 0;
 		$filterStatus = isset($_GET['status']) && $_GET['status'] !== '' ? intval($_GET['status']) : -1;
 
-		$whereSql = "WHERE 1=1";
+		$whereSql = "WHERE d.doctor_status <> 99";
 		if($keyword !== ''){
 			$kw_esc = $db->escapestring($keyword);
 			$whereSql .= " AND (d.doctor_name LIKE '%".$kw_esc."%' OR d.doctor_code LIKE '%".$kw_esc."%' OR d.doctor_cccd LIKE '%".$kw_esc."%' OR d.doctor_cchn LIKE '%".$kw_esc."%' OR d.doctor_position LIKE '%".$kw_esc."%' OR d.doctor_job_title_code LIKE '%".$kw_esc."%' OR d.doctor_hometown LIKE '%".$kw_esc."%' OR d.doctor_workplace LIKE '%".$kw_esc."%')";
@@ -4209,6 +4310,29 @@ Class adminController extends baseController
 			$this->view->data['page_detail']      = $page_detail;
 			$this->view->data['page_attachments'] = $page_attachments;
 			$this->view->data['categories']       = $categories;
+			if(!$this->adminTableExists('hicrm_static_page_code_templates')){
+				$db->query(file_get_contents(dirname(__DIR__).'/database/migrations/20261017_static_page_code_templates.sql'));
+				$templates = array(
+					array('Nội dung giới thiệu', "<section>\n  <h2>Tiêu đề giới thiệu</h2>\n  <p>Nhập nội dung giới thiệu tại đây.</p>\n  <h3>Thông tin chi tiết</h3>\n  <p>Nhập nội dung chi tiết tại đây.</p>\n</section>"),
+					array('Bảng thông tin', "<table style=\"border-collapse: collapse; width: 100%;\">\n  <thead>\n    <tr><th style=\"border: 1px solid #ddd; padding: 8px;\">Nội dung</th><th style=\"border: 1px solid #ddd; padding: 8px;\">Chi tiết</th></tr>\n  </thead>\n  <tbody>\n    <tr><td style=\"border: 1px solid #ddd; padding: 8px;\">Thông tin 1</td><td style=\"border: 1px solid #ddd; padding: 8px;\">Mô tả thông tin</td></tr>\n  </tbody>\n</table>"),
+					array('Danh sách và liên kết tài liệu', "<section>\n  <h2>Tài liệu tham khảo</h2>\n  <ul>\n    <li><a href=\"https://example.com/tai-lieu.pdf\" target=\"_blank\" rel=\"noopener noreferrer\">Tên tài liệu</a></li>\n    <li>Nội dung bổ sung</li>\n  </ul>\n</section>")
+				);
+				foreach($templates as $order => $template){
+					$db->query("INSERT INTO hicrm_static_page_code_templates (template_name, code, sort_order) VALUES ('".$db->escapestring($template[0])."','".$db->escapestring($template[1])."',".(int)$order.")");
+				}
+			}
+			$db->query("SELECT id FROM hicrm_static_page_code_templates WHERE template_name = 'Tài liệu đính kèm nhiều file' LIMIT 1");
+			if(!$db->fetch_object(true)){
+				$attachmentCode = file_get_contents(dirname(__DIR__).'/database/templates/static-page-attachments.html');
+				$db->query("INSERT INTO hicrm_static_page_code_templates (template_name, code, sort_order) VALUES ('Tài liệu đính kèm nhiều file','".$db->escapestring($attachmentCode)."',3)");
+			}
+			$db->query("SELECT id FROM hicrm_static_page_code_templates WHERE template_name = 'Hình ảnh căn giữa responsive' LIMIT 1");
+			if(!$db->fetch_object(true)){
+				$imageCode = file_get_contents(dirname(__DIR__).'/database/templates/static-page-image.html');
+				$db->query("INSERT INTO hicrm_static_page_code_templates (template_name, code, sort_order) VALUES ('Hình ảnh căn giữa responsive','".$db->escapestring($imageCode)."',4)");
+			}
+			$db->query('SELECT id, template_name, code FROM hicrm_static_page_code_templates WHERE status = 1 ORDER BY sort_order ASC, id ASC');
+			$this->view->data['code_templates'] = $db->fetch_object();
 			$this->view->admintmp('static-page-form');
 			return;
 		}
@@ -4337,9 +4461,15 @@ Class adminController extends baseController
 		$action = isset($para[1]) ? (string)$para[1] : '';
 		$id = isset($para[2]) ? intval($para[2]) : 0;
 		$this->view->data['active_menu'] = 'sliders';
+		if(!$this->adminColumnExists('hicrm_sliders', 'device')){
+			$db->query("ALTER TABLE hicrm_sliders ADD COLUMN device ENUM('all','pc','mobile') NOT NULL DEFAULT 'all' AFTER image_path");
+		}
+		if(!$this->adminColumnExists('hicrm_sliders', 'status')){
+			$db->query('ALTER TABLE hicrm_sliders ADD COLUMN status TINYINT NOT NULL DEFAULT 1');
+		}
 		$slide = null;
 		if($id > 0){
-			$db->query('SELECT * FROM hicrm_sliders WHERE id='.$id.' LIMIT 1');
+			$db->query('SELECT * FROM hicrm_sliders WHERE status <> 99 AND id='.$id.' LIMIT 1');
 			$slide = $db->fetch_object(true);
 		}
 		if($_SERVER['REQUEST_METHOD'] === 'POST'){
@@ -4348,8 +4478,19 @@ Class adminController extends baseController
 				http_response_code(403); exit('Phiên làm việc không hợp lệ.');
 			}
 			if($action === 'delete' && $slide){
-				$db->query('DELETE FROM hicrm_sliders WHERE id='.$id);
-				$this->setAdminFlash('success', 'Đã xóa banner.');
+				$db->query('UPDATE hicrm_sliders SET status = 99 WHERE id='.$id);
+				$this->setAdminFlash('success', 'Đã chuyển banner vào Sọt rác.');
+				$this->adminRedirect('/admin/sliders');
+			}
+			if($action === 'device'){
+				if(!$slide){ http_response_code(404); exit('Không tìm thấy banner.'); }
+				$device = $_POST['device'] ?? '';
+				if(!is_string($device) || !in_array($device, array('pc', 'mobile', 'all'), true)){
+					$this->setAdminFlash('danger', 'Cấu hình thiết bị không hợp lệ.');
+					$this->adminRedirect('/admin/sliders');
+				}
+				$db->query("UPDATE hicrm_sliders SET device='".$db->escapestring($device)."' WHERE id=".$id);
+				$this->setAdminFlash('success', 'Đã cập nhật thiết bị hiển thị banner.');
 				$this->adminRedirect('/admin/sliders');
 			}
 			if($action !== 'save'){
@@ -4365,6 +4506,10 @@ Class adminController extends baseController
 			$order = max(0, min(99999, intval($_POST['sort_order'] ?? 0)));
 			$active = !empty($_POST['is_active']) ? 1 : 0;
 			$back = '/admin/sliders'.($id ? '/edit/'.$id : '/add');
+			$device = $_POST['device'] ?? 'pc';
+			if(!in_array($device, array('all', 'pc', 'mobile'), true)){
+				$this->setAdminFlash('danger', 'Cấu hình thiết bị không hợp lệ.'); $this->adminRedirect($back);
+			}
 			if($alt === '' || mb_strlen($alt) > 255 || mb_strlen($title) > 255 || mb_strlen($eyebrow) > 120 || mb_strlen($buttonLabel) > 100){
 				$this->setAdminFlash('danger', 'Vui lòng nhập mô tả ảnh và kiểm tra độ dài các trường.'); $this->adminRedirect($back);
 			}
@@ -4394,6 +4539,7 @@ Class adminController extends baseController
 			}
 			if($imagePath === ''){ $this->setAdminFlash('danger', 'Vui lòng chọn ảnh banner.'); $this->adminRedirect($back); }
 			$fields = array(
+				"device='".$db->escapestring($device)."'",
 				"image_path='".$db->escapestring($imagePath)."'",
 				"alt_text='".$db->escapestring($alt)."'",
 				"eyebrow='".$db->escapestring($eyebrow)."'",
@@ -4414,7 +4560,7 @@ Class adminController extends baseController
 			$this->view->data['slide'] = $action === 'edit' ? $slide : null;
 			$this->view->admintmp('slider-form'); return;
 		}
-		$db->query('SELECT * FROM hicrm_sliders ORDER BY sort_order ASC,id ASC');
+		$db->query('SELECT * FROM hicrm_sliders WHERE status <> 99 ORDER BY sort_order ASC,id ASC');
 		$this->view->data['slides'] = $db->fetch_object();
 		$this->view->admintmp('sliders');
 	}

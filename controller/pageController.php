@@ -17,6 +17,8 @@ Class pageController extends baseController
 		if(empty($slug) && isset($_GET['slug'])){
 			$slug = trim($_GET['slug']);
 		}
+		// Public page URLs may include an .html suffix; stored slugs do not.
+		$slug = preg_replace('/\.html$/i', '', $slug);
 
 		$page_data = null;
 		if(!empty($slug)){

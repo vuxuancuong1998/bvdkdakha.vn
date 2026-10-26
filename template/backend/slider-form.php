@@ -7,6 +7,9 @@ function sliderFormH($value){ return htmlspecialchars((string)$value, ENT_QUOTES
   <?php if(!empty($slider_flash)): ?><div class="alert alert-<?php echo sliderFormH($slider_flash['type']); ?>"><?php echo sliderFormH($slider_flash['message']); ?></div><?php endif; ?>
   <form method="post" enctype="multipart/form-data" action="<?php echo XC_URL; ?>/admin/sliders/save<?php echo $editing ? '/'.intval($slide->id) : ''; ?>" class="card"><div class="card-body row g-3">
     <input type="hidden" name="csrf_token" value="<?php echo sliderFormH($admin_csrf_token ?? ''); ?>">
+    <div class="col-12"><label class="form-label" for="slider-device">Cấu hình thiết bị *</label><select class="form-select" id="slider-device" name="device" required>
+      <?php foreach(array('pc'=>'Desktop', 'mobile'=>'Mobile', 'all'=>'Desktop và Mobile') as $value=>$label): ?><option value="<?php echo $value; ?>" <?php echo ($slide->device ?? 'pc') === $value ? 'selected' : ''; ?>><?php echo $label; ?></option><?php endforeach; ?>
+    </select><div class="form-text">Mobile: chiều rộng màn hình từ 768px trở xuống. Desktop: trên 768px. Chọn riêng Desktop hoặc Mobile để ảnh chỉ xuất hiện trên giao diện tương ứng; chọn Desktop và Mobile nếu muốn dùng chung.</div></div>
     <?php if($editing): ?><div class="col-12"><img src="<?php echo XC_URL.'/'.sliderFormH($slide->image_path); ?>" alt="" style="max-width:420px;width:100%;border-radius:8px"></div><?php endif; ?>
     <div class="col-12"><label class="form-label">Ảnh banner <?php echo $editing ? '(để trống nếu giữ ảnh cũ)' : '*'; ?></label><input class="form-control" type="file" name="image" accept="image/jpeg,image/png,image/webp" <?php echo $editing ? '' : 'required'; ?>></div>
     <div class="col-md-6"><label class="form-label">Mô tả ảnh *</label><input class="form-control" name="alt_text" maxlength="255" required value="<?php echo sliderFormH($slide->alt_text ?? ''); ?>"></div>

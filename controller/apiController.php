@@ -7,8 +7,10 @@
  * Create Date: 09:54 - 07/10/2016
  * Website: www.xiao.vn
  */
+require_once __DIR__.'/api-quick-appointments.php';
 Class apiController extends baseController
 { 
+    use ApiQuickAppointmentActions;
 	private function ensureAdminPermissionTables()
 	{
 		global $db;

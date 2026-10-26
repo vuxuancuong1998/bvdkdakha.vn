@@ -1,4 +1,7 @@
 <?php
+$page_title = isset($page_title) ? $page_title : 'Không tìm thấy trang';
+$page_description = isset($page_description) ? $page_description : 'Trang bạn yêu cầu không tồn tại hoặc đã được di chuyển.';
+$verify_email = isset($verify_email) ? $verify_email : 0;
 $is_success = isset($page_status) && $page_status == "success";
 $disable_auto_redirect = isset($page_action_label) && trim((string)$page_action_label) !== '';
 http_response_code($is_success ? 200 : 404);

@@ -1,0 +1,62 @@
+[
+  {
+    "sample_code": "equipment-demo-1",
+    "name": "Hệ thống máy X-quang nhũ ảnh 3D kỹ thuật số MAMMOMAT INSPIRATION",
+    "manufacturer": "Siemens",
+    "origin": "Đức",
+    "description": "Máy chụp X-quang hệ thống nhũ ảnh mới có độ sắc nét và tương phản cao. Thiết bị giúp tầm soát và chẩn đoán bệnh lý ung thư vú, có thể tăng tỷ lệ phát hiện bệnh lên đến 40%.",
+    "image_path": "template/frontend/assets/images/equipment/sample-1.svg",
+    "sort_order": 10,
+    "status": 1
+  },
+  {
+    "sample_code": "equipment-demo-2",
+    "name": "Hệ thống máy xét nghiệm sinh hóa – miễn dịch: COBAS® PURE",
+    "manufacturer": "Roche",
+    "origin": "Thụy Sĩ",
+    "description": "Máy xét nghiệm tự động hóa hoàn toàn, kết quả nhanh và chính xác, phân tích hơn 230 xét nghiệm chuyên sâu về tim mạch, ung thư, nhiễm trùng, chức năng gan – thận và vi chất dinh dưỡng.",
+    "image_path": "template/frontend/assets/images/equipment/sample-2.svg",
+    "sort_order": 20,
+    "status": 1
+  },
+  {
+    "sample_code": "equipment-demo-3",
+    "name": "Hệ thống máy siêu âm tim 4D Vivid E95 R6",
+    "manufacturer": "GE Healthcare",
+    "origin": "Mỹ",
+    "description": "Tích hợp trí tuệ nhân tạo (AI) phát hiện sớm bất thường tim thai, tim bẩm sinh. Công nghệ siêu âm 4D tự động kết hợp đánh dấu mô cơ tim chẩn đoán chính xác bệnh lý tim.",
+    "image_path": "template/frontend/assets/images/equipment/sample-3.svg",
+    "sort_order": 30,
+    "status": 1
+  },
+  {
+    "sample_code": "equipment-demo-4",
+    "name": "Hệ thống máy nội soi EPK – i8020c",
+    "manufacturer": "Pentax",
+    "origin": "Nhật Bản",
+    "description": "Hệ thống nội soi 4K thế hệ mới cho hình ảnh siêu nét; đầu ống soi uốn cong 210° giúp quan sát toàn diện đường tiêu hóa, phát hiện chính xác và hạn chế bỏ sót tổn thương.",
+    "image_path": "template/frontend/assets/images/equipment/sample-4.svg",
+    "sort_order": 40,
+    "status": 1
+  },
+  {
+    "sample_code": "equipment-demo-5",
+    "name": "Hệ thống siêu âm tổng quát tân tiến nhất ACUSON Sequoia",
+    "manufacturer": "Siemens",
+    "origin": "Đức",
+    "description": "Bệnh viện đa khoa khu vực Đăk Hà sở hữu hệ thống Siêu âm tổng quát cao cấp nhất – Acuson Sequoia. Đây là dòng máy siêu âm High-end của Siemens Healthineers với công nghệ tân tiến bậc nhất hiện nay.",
+    "image_path": "template/frontend/assets/images/equipment/sample-5.svg",
+    "sort_order": 50,
+    "status": 1
+  },
+  {
+    "sample_code": "equipment-demo-6",
+    "name": "Máy CT Scanner Revolution ACT ES",
+    "manufacturer": "GE Healthcare",
+    "origin": "Mỹ",
+    "description": "Là thế hệ máy hiện đại với nhiều tính năng được nâng cao 20% so với máy tương đương, giảm tối đa độ nhiễm tia lên đến 40%. Bộ thu hình có độ phân giải không gian 18lp/cm, cho phép chụp ảnh 3D rõ nét.",
+    "image_path": "template/frontend/assets/images/equipment/sample-6.svg",
+    "sort_order": 60,
+    "status": 1
+  }
+]

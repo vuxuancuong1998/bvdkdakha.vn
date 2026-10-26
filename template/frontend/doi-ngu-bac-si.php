@@ -176,9 +176,13 @@ if (!function_exists('frontendDoctorPaginationItems')) {
             $docCode = !empty($doc->doctor_code) ? $doc->doctor_code : (!empty($doc->code) ? $doc->code : '');
 
             $hasAvatar = !empty($docAvatar) && file_exists(__SITE_PATH . '/uploads/doctors/' . $docAvatar);
-            $avatarSrc = $hasAvatar 
-              ? XC_URL . '/uploads/doctors/' . htmlspecialchars($docAvatar, ENT_QUOTES, 'UTF-8')
-              : XC_URL . '/template/frontend/assets/images/doctor-0' . (($idx % 3) + 1) . '.jpg';
+            $cutoutName = $hasAvatar ? pathinfo($docAvatar, PATHINFO_FILENAME) . '.png' : '';
+            $hasCutout = $hasAvatar && file_exists(__SITE_PATH . '/uploads/doctors/transparent/' . $cutoutName);
+            $avatarSrc = $hasCutout
+              ? XC_URL . '/uploads/doctors/transparent/' . rawurlencode($cutoutName)
+              : ($hasAvatar
+                  ? XC_URL . '/uploads/doctors/' . rawurlencode($docAvatar)
+                  : XC_URL . '/template/frontend/assets/images/doctor-0' . (($idx % 3) + 1) . '.jpg');
             
             $docData = array(
               'fullname' => (string)$docName,

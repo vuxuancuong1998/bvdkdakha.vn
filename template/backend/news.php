@@ -6,7 +6,7 @@ $is_qtv = (intval($_SESSION['user']['group']) === 1);
 $current_user_id = intval($_SESSION['user']['id']);
 ?>
 
-<div class="conatiner-fluid content-inner mt-n5 py-0">
+<div class="content container-fluid">
    <div class="row">
       <div class="col-sm-12">
          <div class="card shadow-sm border-0">
@@ -78,20 +78,19 @@ $current_user_id = intval($_SESSION['user']['id']);
 
                <!-- Data Table -->
                <div class="table-responsive">
-                  <table class="table table-hover align-middle border text-nowrap">
+                  <table class="table table-hover align-middle border">
                      <thead class="bg-light text-dark fw-bold">
                         <tr>
-                           <th width="40" class="text-center">
+                           <th width="36" class="text-center">
                               <input type="checkbox" class="form-check-input" id="checkAllNews">
                            </th>
-                           <th width="80">Ảnh</th>
+                           <th width="65">Ảnh</th>
                            <th>Tiêu đề bài viết</th>
-                           <th>Danh mục</th>
-                           <th>Tác giả</th>
-                           <th class="text-center">Lượt xem</th>
-                           <th>Ngày đăng / Phát hành</th>
-                           <th class="text-center">Trạng thái</th>
-                           <th class="text-center" width="160">Thao tác</th>
+                           <th>Chuyên mục</th>
+                           <th>Tác giả / Ngày đăng</th>
+                           <th class="text-center" width="85">Lượt xem</th>
+                           <th class="text-center" width="115">Trạng thái</th>
+                           <th class="text-end" width="125">Thao tác</th>
                         </tr>
                      </thead>
                      <tbody>
@@ -102,7 +101,7 @@ $current_user_id = intval($_SESSION['user']['id']);
                            elseif(intval($item->status) === 4) $badge_color = 'bg-success text-white';
                            elseif(intval($item->status) === 98) $badge_color = 'bg-danger text-white';
 
-                           $frontend_url = $this->url->permalink($item->id, 'news');
+                           $frontend_url = (isset($this) && isset($this->url)) ? $this->url->permalink($item->id, 'news') : (XC_URL . '/tin-tuc/' . ($item->slug ?? $item->id));
                         ?>
                            <tr id="row-news-<?php echo $item->id; ?>">
                               <td class="text-center">
@@ -110,32 +109,30 @@ $current_user_id = intval($_SESSION['user']['id']);
                               </td>
                               <td>
                                  <img src="<?php echo !empty($item->thumbnail_url) ? XC_URL . htmlspecialchars($item->thumbnail_url) : XC_URL . '/template/frontend/assets/images/banner-01.jpg'; ?>" 
-                                      alt="Thumbnail" class="rounded border" style="width: 60px; height: 38px; object-fit: cover;">
+                                      alt="Thumbnail" class="rounded border" style="width: 56px; height: 36px; object-fit: cover;">
                               </td>
-                              <td style="max-width: 300px; white-space: normal;">
-                                 <div class="fw-bold text-dark mb-0"><?php echo htmlspecialchars($item->title); ?></div>
-                                 <small class="text-muted"><i class="fa-solid fa-link"></i> <a href="<?php echo $frontend_url; ?>" target="_blank"><?php echo $item->slug; ?></a></small>
+                              <td>
+                                 <div class="cell-title fw-bold text-dark mb-0"><?php echo htmlspecialchars($item->title); ?></div>
+                                 <small class="text-muted"><i class="fa-solid fa-link me-1"></i><a href="<?php echo $frontend_url; ?>" target="_blank" class="text-decoration-none"><?php echo $item->slug; ?></a></small>
                               </td>
                               <td>
                                  <span class="badge bg-light text-dark border"><?php echo htmlspecialchars($item->category_name ?? 'Không'); ?></span>
                               </td>
                               <td>
-                                 <span class="small"><i class="fa-solid fa-user-pen text-muted me-1"></i><?php echo htmlspecialchars($item->author_name ?? 'Ban biên tập'); ?></span>
-                              </td>
-                              <td class="text-center small"><?php echo number_format($item->views_count); ?></td>
-                              <td class="small">
-                                 <div><i class="fa-solid fa-calendar-day text-muted me-1"></i><?php echo date('d/m/Y H:i', strtotime($item->published_at ?? $item->created_at)); ?></div>
+                                 <div class="small fw-semibold text-dark"><i class="fa-solid fa-user-pen text-muted me-1"></i><?php echo htmlspecialchars($item->author_name ?? 'Ban biên tập'); ?></div>
+                                 <div class="text-muted small"><i class="fa-regular fa-calendar-day text-muted me-1"></i><?php echo date('d/m/Y H:i', strtotime($item->published_at ?? $item->created_at)); ?></div>
                                  <?php if(intval($item->new_category) === 3 && !empty($item->event_start_at)): ?>
-                                    <span class="badge bg-light text-primary border" style="font-size:10px;"><i class="fa-solid fa-calendar-check me-1"></i>Sự kiện</span>
+                                    <span class="badge bg-light text-primary border mt-1" style="font-size:10px;"><i class="fa-solid fa-calendar-check me-1"></i>Sự kiện</span>
                                  <?php endif; ?>
                               </td>
+                              <td class="text-center small fw-semibold"><?php echo number_format($item->views_count); ?></td>
                               <td class="text-center">
                                  <span class="badge <?php echo $badge_color; ?>"><?php echo htmlspecialchars($item->status_label ?? 'Không xác định'); ?></span>
                               </td>
-                              <td class="text-center">
-                                 <div class="d-inline-flex gap-2">
+                              <td class="text-end">
+                                 <div class="btn-action-group">
                                     <!-- View Frontend link -->
-                                    <a href="<?php echo $frontend_url; ?>" target="_blank" class="btn btn-sm btn-outline-info" title="Xem trên website">
+                                    <a href="<?php echo $frontend_url; ?>" target="_blank" class="btn-action is-view" title="Xem trên website">
                                        <i class="fa-solid fa-eye"></i>
                                     </a>
 
@@ -150,7 +147,7 @@ $current_user_id = intval($_SESSION['user']['id']);
                                     ?>
 
                                     <?php if ($can_edit): ?>
-                                    <a href="<?php echo XC_URL; ?>/admin/news/edit/<?php echo $item->id; ?>" class="btn btn-sm btn-outline-primary" title="Chỉnh sửa">
+                                    <a href="<?php echo XC_URL; ?>/admin/news/edit/<?php echo $item->id; ?>" class="btn-action is-edit" title="Chỉnh sửa">
                                        <i class="fa-solid fa-pen-to-square"></i>
                                     </a>
                                     <?php endif; ?>
@@ -158,11 +155,11 @@ $current_user_id = intval($_SESSION['user']['id']);
                                     <!-- Quick State Action Buttons -->
                                     <?php if ($is_btv && intval($item->author_id) === $current_user_id): ?>
                                        <?php if (intval($item->status) === 1 || intval($item->status) === 98): ?>
-                                          <button type="button" onclick="updateNewsStatus(<?php echo $item->id; ?>, 'submit')" class="btn btn-sm btn-warning text-dark" title="Gửi yêu cầu phê duyệt">
+                                          <button type="button" onclick="updateNewsStatus(<?php echo $item->id; ?>, 'submit')" class="btn-action btn-soft-warning" title="Gửi yêu cầu phê duyệt">
                                              <i class="fa-solid fa-paper-plane"></i>
                                           </button>
                                        <?php elseif (intval($item->status) === 2): ?>
-                                          <button type="button" onclick="updateNewsStatus(<?php echo $item->id; ?>, 'cancel')" class="btn btn-sm btn-outline-warning" title="Hủy yêu cầu phê duyệt">
+                                          <button type="button" onclick="updateNewsStatus(<?php echo $item->id; ?>, 'cancel')" class="btn-action btn-soft-warning" title="Hủy yêu cầu phê duyệt">
                                              <i class="fa-solid fa-ban"></i>
                                           </button>
                                        <?php endif; ?>
@@ -170,18 +167,18 @@ $current_user_id = intval($_SESSION['user']['id']);
 
                                     <?php if ($is_qtv): ?>
                                        <?php if (intval($item->status) === 2): ?>
-                                          <button type="button" onclick="updateNewsStatus(<?php echo $item->id; ?>, 'approve')" class="btn btn-sm btn-info text-white" title="Phê duyệt">
+                                          <button type="button" onclick="updateNewsStatus(<?php echo $item->id; ?>, 'approve')" class="btn-action is-approve" title="Phê duyệt">
                                              <i class="fa-solid fa-circle-check"></i>
                                           </button>
-                                          <button type="button" onclick="updateNewsStatus(<?php echo $item->id; ?>, 'reject')" class="btn btn-sm btn-outline-danger" title="Từ chối">
+                                          <button type="button" onclick="updateNewsStatus(<?php echo $item->id; ?>, 'reject')" class="btn-action is-delete" title="Từ chối">
                                              <i class="fa-solid fa-circle-xmark"></i>
                                           </button>
                                        <?php elseif (intval($item->status) === 3 || intval($item->status) === 1): ?>
-                                          <button type="button" onclick="updateNewsStatus(<?php echo $item->id; ?>, 'publish')" class="btn btn-sm btn-success" title="Phát hành">
+                                          <button type="button" onclick="updateNewsStatus(<?php echo $item->id; ?>, 'publish')" class="btn-action is-approve" title="Phát hành">
                                              <i class="fa-solid fa-upload"></i>
                                           </button>
                                        <?php elseif (intval($item->status) === 4): ?>
-                                          <button type="button" onclick="updateNewsStatus(<?php echo $item->id; ?>, 'submit')" class="btn btn-sm btn-secondary" title="Hạ xuống nháp">
+                                          <button type="button" onclick="updateNewsStatus(<?php echo $item->id; ?>, 'submit')" class="btn-action btn-soft-secondary" title="Hạ xuống nháp">
                                              <i class="fa-solid fa-arrow-down-long"></i>
                                           </button>
                                        <?php endif; ?>
@@ -189,7 +186,7 @@ $current_user_id = intval($_SESSION['user']['id']);
 
                                     <!-- Delete Button -->
                                     <?php if ($is_qtv || ($is_btv && intval($item->author_id) === $current_user_id && (intval($item->status) === 1 || intval($item->status) === 98))): ?>
-                                    <button type="button" onclick="deleteNews(<?php echo $item->id; ?>)" class="btn btn-sm btn-outline-danger" title="Xóa bài viết">
+                                    <button type="button" onclick="deleteNews(<?php echo $item->id; ?>)" class="btn-action is-delete" title="Xóa bài viết">
                                        <i class="fa-solid fa-trash"></i>
                                     </button>
                                     <?php endif; ?>
@@ -198,9 +195,8 @@ $current_user_id = intval($_SESSION['user']['id']);
                            </tr>
                         <?php endforeach; else: ?>
                            <tr>
-                              <td colspan="9" class="text-center py-4 text-muted">
-                                 <i class="fa-regular fa-folder-open fa-2xl mb-3 d-block"></i>
-                                 Không tìm thấy bài viết nào phù hợp.
+                              <td colspan="8" class="text-center py-5 text-muted">
+                                 <i class="fa-solid fa-newspaper fs-3 d-block mb-2 text-muted"></i> Không có bài viết nào phù hợp bộ lọc.
                               </td>
                            </tr>
                         <?php endif; ?>

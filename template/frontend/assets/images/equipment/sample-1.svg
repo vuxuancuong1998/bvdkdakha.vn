@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" class="equip-svg w-40 h-48 transition duration-500" viewBox="0 0 200 240" fill="none">
+                  <ellipse cx="100" cy="222" rx="52" ry="9" fill="#cbd5e1"/>
+                  <rect x="86" y="24" width="32" height="196" rx="10" fill="#e2e8f0" stroke="#94a3b8" stroke-width="2"/>
+                  <rect x="94" y="34" width="16" height="175" rx="6" fill="#f8fafc"/>
+                  <path d="M62 56C62 42 74 34 90 34H110C126 34 138 42 138 56V96C138 106 128 112 118 112H82C72 112 62 106 62 96V56Z" fill="#ffffff" stroke="#94a3b8" stroke-width="2.5"/>
+                  <rect x="78" y="46" width="44" height="10" rx="4" fill="#0056b3"/>
+                  <rect x="76" y="92" width="48" height="28" rx="3" fill="#bae6fd" fill-opacity="0.55" stroke="#38bdf8" stroke-width="1.5"/>
+                  <path d="M58 142L80 132H124L138 146L114 158H68L58 142Z" fill="#1e293b" stroke="#475569" stroke-width="2"/>
+                  <path d="M114 120C122 145 122 175 112 206" stroke="#10b981" stroke-width="4" stroke-linecap="round"/>
+                  <text x="82" y="68" fill="#0056b3" font-size="8" font-weight="bold">SIEMENS</text>
+                </svg>

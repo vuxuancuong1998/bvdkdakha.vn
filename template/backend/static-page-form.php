@@ -6,6 +6,8 @@
 <style>
 .static-page-form { max-width: 1080px; margin: 0 auto; }
 .static-page-form .ck-editor__editable_inline { min-height: 380px; }
+.static-page-form .ck-editor { width: 100%; min-width: 0; }
+.static-page-form .ck-content { overflow-wrap: anywhere; }
 #dropZone { border: 2px dashed #cbd5e1; border-radius: 10px; background: #f8fafc; cursor: pointer; }
 #dropZone:hover, #dropZone.dragover { border-color: #4e73df; background: #eef2ff; }
 .attach-item { display: flex; align-items: center; gap: 10px; padding: 8px 12px; border: 1px solid #e2e8f0; border-radius: 8px; margin-bottom: 8px; }
@@ -13,12 +15,16 @@
 .attach-item .a-size { color: #667085; font-size: 12px; }
 .attach-item .btn-rm { border: 0; background: none; color: #dc3545; }
 #bannerPrev { max-width: 100%; max-height: 180px; object-fit: contain; }
+.code-template-source { min-width: 260px; min-height: 160px; font-family: Consolas, monospace; font-size: 13px; white-space: pre; }
 </style>
 <div class="conatiner-fluid content-inner mt-n5 py-0">
   <div class="static-page-form card border-0 shadow-sm">
-    <div class="card-header bg-white border-bottom py-3 d-flex justify-content-between align-items-center">
+    <div class="card-header bg-white border-bottom py-3 d-flex flex-wrap gap-3 justify-content-between align-items-center">
       <div><h4 class="card-title mb-1"><?php echo ($method == 'edit') ? 'Chỉnh sửa trang tĩnh' : 'Thêm trang tĩnh'; ?></h4><p class="text-muted small mb-0">Thông tin và nội dung hiển thị trên trang.</p></div>
-      <a href="<?php echo XC_URL; ?>/admin/staticpages" class="btn btn-outline-secondary btn-sm">Quay lại</a>
+      <div class="d-flex gap-2 flex-shrink-0">
+        <button type="button" class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#codeTemplatesModal"><i class="fa-solid fa-code me-1"></i>Code mẫu</button>
+        <a href="<?php echo XC_URL; ?>/admin/staticpages" class="btn btn-outline-secondary btn-sm">Quay lại</a>
+      </div>
     </div>
     <div class="card-body p-3 p-md-4">
       <form id="formStaticPage" enctype="multipart/form-data" novalidate>
@@ -46,6 +52,7 @@
           <div class="col-12">
             <label for="editor_content" class="form-label fw-bold">Mô tả chi tiết</label>
             <textarea name="page_content" id="editor_content" class="form-control" rows="14" placeholder="Nhập nội dung chi tiết..."><?php echo htmlspecialchars($page_detail->page_content ?? '', ENT_QUOTES, 'UTF-8'); ?></textarea>
+            <div id="editorNotice" class="alert alert-warning mt-2 d-none" role="status"></div>
           </div>
           <div class="col-md-7">
             <label class="form-label fw-bold">File đính kèm <span class="badge bg-light text-secondary" id="attachBadge">0 file</span></label>
@@ -86,6 +93,58 @@
     </div>
   </div>
 </div>
+<div class="modal fade" id="codeTemplatesModal" tabindex="-1" aria-labelledby="codeTemplatesTitle" aria-hidden="true">
+  <div class="modal-dialog modal-xl modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="codeTemplatesTitle">Danh sách code mẫu</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+      </div>
+      <div class="modal-body">
+        <p class="text-muted small">Copy mã HTML và dán vào chế độ chỉnh sửa mã nguồn của trường Mô tả chi tiết.</p>
+        <div id="codeTemplateCopyFeedback" class="d-none alert" role="status" aria-live="polite"></div>
+        <div class="table-responsive">
+          <table class="table table-bordered align-middle">
+            <thead class="bg-light"><tr><th style="width:22%">Tên code mẫu</th><th>Code HTML</th><th style="width:100px">Thao tác</th></tr></thead>
+            <tbody>
+              <?php foreach(($code_templates ?? array()) as $codeTemplate): ?>
+              <tr>
+                <td><?php echo htmlspecialchars($codeTemplate->template_name, ENT_QUOTES, 'UTF-8'); ?></td>
+                <td><textarea readonly class="form-control code-template-source" id="codeTemplateSource_<?php echo (int)$codeTemplate->id; ?>" aria-label="<?php echo htmlspecialchars('Code HTML: '.$codeTemplate->template_name, ENT_QUOTES, 'UTF-8'); ?>" spellcheck="false"><?php echo htmlspecialchars($codeTemplate->code, ENT_QUOTES, 'UTF-8'); ?></textarea></td>
+                <td><button type="button" class="btn btn-outline-primary btn-sm copy-code-template" data-source="codeTemplateSource_<?php echo (int)$codeTemplate->id; ?>"><i class="fa-regular fa-copy me-1"></i>Copy</button></td>
+              </tr>
+              <?php endforeach; ?>
+              <?php if(empty($code_templates)): ?><tr><td colspan="3" class="text-center text-muted py-4">Chưa có code mẫu.</td></tr><?php endif; ?>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button></div>
+    </div>
+  </div>
+</div>
+<script>
+document.querySelectorAll('.copy-code-template').forEach(function(button) {
+   button.addEventListener('click', async function() {
+      const source = document.getElementById(button.dataset.source);
+      const feedback = document.getElementById('codeTemplateCopyFeedback');
+      let copied = false;
+      try {
+         if(navigator.clipboard && window.isSecureContext) {
+            await navigator.clipboard.writeText(source.value);
+            copied = true;
+         }
+      } catch(error) {}
+      if(!copied) {
+         source.focus(); source.select(); source.setSelectionRange(0, source.value.length);
+         try { copied = document.execCommand('copy'); } catch(error) {}
+      }
+      feedback.className = 'alert ' + (copied ? 'alert-success' : 'alert-warning');
+      feedback.textContent = copied ? 'Đã copy code HTML.' : 'Không thể copy tự động. Mã đã được chọn, hãy nhấn Ctrl+C hoặc chọn Sao chép.';
+      if(copied) button.focus();
+   });
+});
+</script>
 <!-- =====================================================
      JavaScript
      ===================================================== -->
@@ -96,18 +155,41 @@
    1. CKEditor 5 Super Build – Full MS Word Toolbar
    ───────────────────────────────────────────────────── */
 let editorInstance;
+let editorLoading = true;
+function showEditorNotice(message) {
+   var notice = document.getElementById('editorNotice');
+   notice.textContent = message;
+   notice.classList.remove('d-none');
+}
+class StaticPageImageUploadAdapter {
+   constructor(loader) { this.loader = loader; this.controller = new AbortController(); }
+   async upload() {
+      const file = await this.loader.file;
+      const body = new FormData();
+      body.append('upload', file);
+      const response = await fetch(<?php echo json_encode(XC_URL.'/api/newsimageupload'); ?>, {
+         method: 'POST', body: body, credentials: 'same-origin', signal: this.controller.signal
+      });
+      const result = await response.json();
+      if(!response.ok || !result.url) throw new Error(result.error?.message || 'Không thể tải ảnh lên.');
+      return { default: result.url };
+   }
+   abort() { this.controller.abort(); }
+}
+function staticPageImageUploadPlugin(editor) {
+   editor.plugins.get('FileRepository').createUploadAdapter = loader => new StaticPageImageUploadAdapter(loader);
+}
 document.addEventListener('DOMContentLoaded', function () {
-
-   // Đọc nội dung ban đầu từ textarea (PHP đã render)
-   var initialContent = document.getElementById('editor_content').textContent || '';
 
    // Kiểm tra CKEDITOR có tồn tại
    if (typeof CKEDITOR === 'undefined' || typeof CKEDITOR.ClassicEditor === 'undefined') {
-      console.warn('CKEditor Super Build chưa load, người dùng tiếp tục với textarea chuẩn.');
+      editorLoading = false;
+      showEditorNotice('Không tải được CKEditor. Vui lòng tải lại trang để dùng đầy đủ công cụ; nội dung hiện tại vẫn được giữ trong ô bên dưới.');
       return;
    }
 
    CKEDITOR.ClassicEditor.create(document.querySelector('#editor_content'), {
+      extraPlugins: [staticPageImageUploadPlugin],
       toolbar: {
          items: [
             'findAndReplace', 'selectAll', '|',
@@ -119,7 +201,7 @@ document.addEventListener('DOMContentLoaded', function () {
             'undo', 'redo', '|',
             'fontSize', 'fontFamily', 'fontColor', 'fontBackgroundColor', 'highlight', '|',
             'alignment', '|',
-            'link', 'uploadImage', 'blockQuote',
+            'link', 'insertImage', 'blockQuote',
             'insertTable', 'mediaEmbed', 'codeBlock', 'htmlEmbed', '|',
             'specialCharacters', 'horizontalLine', 'pageBreak', '|',
             'sourceEditing'
@@ -134,7 +216,8 @@ document.addEventListener('DOMContentLoaded', function () {
             { model: 'heading2',  view: 'h2', title: 'Tiêu đề 2', class: 'ck-heading_heading2' },
             { model: 'heading3',  view: 'h3', title: 'Tiêu đề 3', class: 'ck-heading_heading3' },
             { model: 'heading4',  view: 'h4', title: 'Tiêu đề 4', class: 'ck-heading_heading4' },
-            { model: 'heading5',  view: 'h5', title: 'Tiêu đề 5', class: 'ck-heading_heading5' }
+            { model: 'heading5',  view: 'h5', title: 'Tiêu đề 5', class: 'ck-heading_heading5' },
+            { model: 'heading6', view: 'h6', title: 'Tiêu đề 6', class: 'ck-heading_heading6' }
          ]
       },
       fontFamily: {
@@ -169,9 +252,13 @@ document.addEventListener('DOMContentLoaded', function () {
          ]
       },
       htmlSupport: { allow: [{ name: /.*/, attributes: true, classes: true, styles: true }] },
+      link: { addTargetToExternalLinks: true, defaultProtocol: 'https://' },
       placeholder: 'Nhập nội dung chi tiết trang tĩnh tại đây...',
       removePlugins: [
-         'CKBox','CKFinder','EasyImage',
+         'CKBox','CKFinder','EasyImage','Base64UploadAdapter',
+         'ExportPdf','ExportWord','AIAssistant','OpenAIAssistant',
+         'SlashCommand','Template','DocumentOutline','FormatPainter',
+         'TableOfContents','PasteFromOfficeEnhanced',
          'RealTimeCollaborativeComments','RealTimeCollaborativeTrackChanges',
          'RealTimeCollaborativeRevisionHistory','PresenceList',
          'Comments','TrackChanges','TrackChangesData',
@@ -179,8 +266,10 @@ document.addEventListener('DOMContentLoaded', function () {
       ]
    }).then(function (ed) {
       editorInstance = ed;
-      console.log('CKEditor 5 đã khởi tạo thành công!');
+      editorLoading = false;
    }).catch(function (err) {
+      editorLoading = false;
+      showEditorNotice('Không khởi tạo được CKEditor. Vui lòng tải lại trang; nội dung hiện tại vẫn được giữ trong ô nhập.');
       console.error('Lỗi khi mở CKEditor:', err);
    });
 
@@ -319,6 +408,13 @@ updateBadge();
    ───────────────────────────────────────────────────── */
 $('#formStaticPage').on('submit', function(e){
    e.preventDefault();
+
+   if(editorLoading){
+      Swal.fire('Đang tải trình soạn thảo', 'Vui lòng chờ CKEditor khởi tạo xong.', 'info'); return;
+   }
+   if(editorInstance && editorInstance.plugins.get('PendingActions').hasAny){
+      Swal.fire('Đang tải ảnh', 'Vui lòng chờ tải ảnh hoàn tất trước khi lưu.', 'info'); return;
+   }
 
    // Sync CKEditor
    if(editorInstance) document.querySelector('#editor_content').value = editorInstance.getData();

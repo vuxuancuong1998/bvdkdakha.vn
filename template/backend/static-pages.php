@@ -1,6 +1,6 @@
 <?php $active_menu = 'staticpages'; require "header.php"; ?>
 
-<div class="conatiner-fluid content-inner mt-n5 py-0">
+<div class="container-fluid content-inner mt-n5 py-0">
    <div class="row">
       <div class="col-sm-12">
          <div class="card shadow-sm border-0">
@@ -37,14 +37,14 @@
 
                <!-- Data Table -->
                <div class="table-responsive">
-                  <table class="table table-hover align-middle border text-nowrap">
+                  <table class="table table-hover align-middle border">
                      <thead class="bg-light text-dark fw-bold">
                         <tr>
-                           <th width="50" class="text-center">#</th>
-                           <th>Tên trang tĩnh</th>
-                           <th>Link URL</th>
-                           <th class="text-center">Trạng thái</th>
-                           <th class="text-center" width="160">Thao tác</th>
+                           <th style="width: 48px;" class="text-center">#</th>
+                           <th style="width: 45%;">Tên trang tĩnh</th>
+                           <th style="width: 30%;">Đường dẫn liên kết</th>
+                           <th style="width: 110px;" class="text-center">Trạng thái</th>
+                           <th style="width: 90px;" class="text-center">Thao tác</th>
                         </tr>
                      </thead>
                      <tbody>
@@ -70,30 +70,31 @@
                                     </div>
                                  </td>
                                  <td>
-                                    <?php if(!empty($item->link_url)): ?>
-                                       <a href="<?php echo (strpos($item->link_url, 'http') === 0) ? $item->link_url : XC_URL . $item->link_url; ?>" target="_blank" class="small text-primary text-decoration-none">
-                                          <i class="fa-solid fa-link me-1"></i><?php echo htmlspecialchars($item->link_url); ?>
-                                       </a>
-                                    <?php else: ?>
-                                       <a href="<?php echo XC_URL; ?>/trang/<?php echo $item->page_slug; ?>" target="_blank" class="small text-primary text-decoration-none">
-                                          <i class="fa-solid fa-arrow-up-right-from-square me-1"></i>/trang/<?php echo $item->page_slug; ?>
-                                       </a>
-                                    <?php endif; ?>
+                                    <div class="cell-truncate" style="max-width: 280px;">
+                                       <?php if(!empty($item->link_url)): ?>
+                                          <a href="<?php echo (strpos($item->link_url, 'http') === 0) ? $item->link_url : XC_URL . $item->link_url; ?>" target="_blank" class="small text-primary text-decoration-none" title="<?php echo htmlspecialchars($item->link_url); ?>">
+                                             <i class="fa-solid fa-link me-1"></i><?php echo htmlspecialchars($item->link_url); ?>
+                                          </a>
+                                       <?php else: ?>
+                                          <a href="<?php echo XC_URL; ?>/trang/<?php echo $item->page_slug; ?>" target="_blank" class="small text-primary text-decoration-none" title="/trang/<?php echo $item->page_slug; ?>">
+                                             <i class="fa-solid fa-arrow-up-right-from-square me-1"></i>/trang/<?php echo $item->page_slug; ?>
+                                          </a>
+                                       <?php endif; ?>
+                                    </div>
                                  </td>
                                  <td class="text-center">
                                     <?php if($item->page_status == 1): ?>
-                                       <span class="badge bg-success rounded-pill px-2 py-1"><i class="fa-solid fa-eye me-1"></i>Hiển thị</span>
+                                       <span class="badge bg-success-subtle text-success border border-success-subtle"><i class="fa-solid fa-circle-check me-1"></i>Hiển thị</span>
                                     <?php else: ?>
-                                       <span class="badge bg-secondary rounded-pill px-2 py-1"><i class="fa-solid fa-eye-slash me-1"></i>Ẩn</span>
+                                       <span class="badge bg-secondary-subtle text-secondary border border-secondary-subtle"><i class="fa-solid fa-eye-slash me-1"></i>Ẩn</span>
                                     <?php endif; ?>
                                  </td>
                                  <td class="text-center">
-                                    <div class="d-flex align-items-center justify-content-center gap-1">
-                                       
-                                       <a href="<?php echo XC_URL; ?>/admin/staticpages/edit/<?php echo $item->id; ?>" class="btn btn-sm btn-icon btn-soft-warning" title="Chỉnh sửa nội dung">
+                                    <div class="btn-action-group justify-content-center">
+                                       <a href="<?php echo XC_URL; ?>/admin/staticpages/edit/<?php echo $item->id; ?>" class="btn-action is-edit" title="Chỉnh sửa nội dung">
                                           <i class="fa-solid fa-pen-to-square"></i>
                                        </a>
-                                       <button type="button" onclick="deleteStaticPage(<?php echo $item->id; ?>, '<?php echo addslashes(htmlspecialchars($item->page_title)); ?>')" class="btn btn-sm btn-icon btn-soft-danger" title="Xóa trang">
+                                       <button type="button" onclick="deleteStaticPage(<?php echo $item->id; ?>, '<?php echo addslashes(htmlspecialchars($item->page_title)); ?>')" class="btn-action is-delete" title="Xóa trang">
                                           <i class="fa-solid fa-trash-can"></i>
                                        </button>
                                     </div>

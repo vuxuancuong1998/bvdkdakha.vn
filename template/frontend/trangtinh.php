@@ -77,6 +77,8 @@
                   </div>
                 <?php endforeach; ?>
               </div>
+            </section>
+          <?php endif; ?>
               <div id="inlineDocumentViewer" class="inline-document-viewer" hidden>
                 <div class="inline-viewer-toolbar">
                   <div><i class="fa-solid fa-file-lines"></i><strong id="inlineViewerTitle">Tài liệu</strong></div>
@@ -87,8 +89,6 @@
                 </div>
                 <div id="inlineViewerBody" class="inline-viewer-body"></div>
               </div>
-            </section>
-          <?php endif; ?>
 
           <!-- Bottom Tags / Social share -->
           <div style="margin-top: var(--space-8); padding-top: var(--space-6); border-top: 1px solid var(--color-border-light); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: var(--space-4);">
@@ -97,7 +97,7 @@
               <a href="https://www.facebook.com/sharer/sharer.php?u=<?php echo urlencode(XC_URL . '/trang/' . ($page ? $page->page_slug : '')); ?>" target="_blank" style="display: inline-flex; align-items: center; justify-content: center; width: 34px; height: 34px; border-radius: 50%; background: #1877F2; color: #fff; text-decoration: none; margin-right: 6px;">
                 <i class="fa-brands fa-facebook-f"></i>
               </a>
-              <a href="https://zalo.me" target="_blank" style="display: inline-flex; align-items: center; justify-content: center; width: 34px; height: 34px; border-radius: 50%; background: #0068FF; color: #fff; text-decoration: none;">
+              <a href="<?php echo $siteEsc($siteContact['zalo_url']); ?>" target="_blank" style="display: inline-flex; align-items: center; justify-content: center; width: 34px; height: 34px; border-radius: 50%; background: #0068FF; color: #fff; text-decoration: none;">
                 <i class="fa-solid fa-comment"></i>
               </a>
             </div>
@@ -166,6 +166,34 @@
   margin: 1rem 0;
 }
 
+/* Centered image template: preserve aspect ratio and intrinsic resolution. */
+.static-article .ck-content figure.static-page-image {
+  display: block;
+  float: none;
+  clear: both;
+  width: auto !important;
+  max-width: 100%;
+  margin: 24px auto;
+  text-align: center;
+}
+.static-article .ck-content figure.static-page-image img {
+  display: block;
+  width: auto !important;
+  max-width: 100% !important;
+  height: auto !important;
+  object-fit: contain;
+  margin: 0 auto;
+}
+.static-article .ck-content figure.static-page-image figcaption {
+  margin-top: 10px;
+  padding: 0 8px;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--color-text-muted, #64748b);
+  overflow-wrap: anywhere;
+  text-align: center;
+}
+
 /* Attachment list and inline eOffice-style document viewer */
 .attachments-box{margin:28px 0;border:1px solid #d9e1ec;border-radius:14px;background:#fff;overflow:hidden}
 .attachments-heading{min-height:50px;padding:0 14px;display:flex;align-items:center;justify-content:space-between;background:#f8fafc;border-bottom:1px solid #d9e1ec;color:#60708a;text-transform:uppercase;letter-spacing:.02em}
@@ -184,6 +212,18 @@
 .attachment-view-btn:hover,.attachment-view-btn.active{background:#eff6ff;border-color:#3b82f6;color:#0757b7}
 .attachment-download-btn{border:1px solid #f15b25;background:#f15b25;color:#fff}
 .attachment-download-btn:hover{background:#d94715;color:#fff}
+.static-content-attachments{padding:64px 0 60px}
+.static-content-attachments .attachments-heading{min-height:62px;padding:0 18px}
+.static-content-attachments .attachments-heading h2,.static-content-attachments .attachments-heading span{font-size:16px;color:#60708a;margin:0;line-height:1.5;font-weight:600}
+.static-content-attachments .attachment-item{min-height:104px;padding:24px 18px}
+.static-content-attachments .attachment-file-icon{width:56px;height:56px;color:#10243d;background:#fff0f0}
+.static-content-attachments .attachment-name-wrap{flex-wrap:wrap}
+.static-content-attachments .attachment-name-wrap strong{white-space:normal;overflow-wrap:anywhere;font-size:17px}
+.static-content-attachments .attachment-view-btn,.static-content-attachments .attachment-download-btn{height:48px;padding:0 18px;border-radius:10px;font-size:16px;text-decoration:none}
+.static-content-attachments .attachment-download-btn{color:#fff}
+.static-content-attachments .attachment-download-btn:hover{color:#fff}
+.static-content-attachments .inline-document-viewer{margin-bottom:-60px}
+@media(max-width:640px){.static-content-attachments{padding:20px 0}.static-content-attachments .attachment-item{padding:18px 14px}.static-content-attachments .attachment-name-wrap strong{font-size:15px}.static-content-attachments .inline-document-viewer{margin-bottom:-20px}}
 .inline-document-viewer{border-top:1px solid #d9e1ec;background:#eef2f7}
 .inline-viewer-toolbar{min-height:52px;padding:8px 14px;display:flex;align-items:center;justify-content:space-between;gap:14px;background:#fff;border-bottom:1px solid #d9e1ec}
 .inline-viewer-toolbar>div{display:flex;align-items:center;gap:9px;min-width:0}
@@ -251,5 +291,6 @@ function closeInlineAttachment() {
   document.querySelectorAll('.attachment-view-btn').forEach(function(item){ item.classList.remove('active'); });
 }
 </script>
+<script src="<?php echo XC_URL; ?>/template/frontend/assets/js/static-page-files.js?v=20261018"></script>
 
 <?php require_once 'footer.php'; ?>

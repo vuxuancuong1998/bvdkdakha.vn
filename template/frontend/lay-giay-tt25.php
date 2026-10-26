@@ -140,48 +140,7 @@
   <!-- ============================================================
        TOP BAR
        ============================================================ -->
-  <aside class="topbar" role="banner" aria-label="Thanh thông tin nhanh">
-    <div class="container">
-      <div class="topbar-inner">
-        <div class="topbar-hotline">
-          <span class="hotline-badge">Cấp cứu</span>
-          <span>Đường dây nóng:</span>
-          <a href="tel:1900xxxx" aria-label="Gọi hotline cấp cứu 1900 xxxx">1900 xxxx</a>
-        </div>
-        <div class="topbar-right">
-          <nav class="topbar-socials" aria-label="Mạng xã hội">
-            <a href="https://www.facebook.com/ttytdakha" target="_blank" rel="noopener noreferrer"
-               aria-label="Trang Facebook Bệnh viện đa khoa Đăk Hà">
-              <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                <path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/>
-              </svg>
-            </a>
-            <a href="https://zalo.me/ttytdakha" target="_blank" rel="noopener noreferrer"
-               aria-label="Trang Zalo Bệnh viện đa khoa Đăk Hà">
-              <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                <path d="M12 2C6.477 2 2 6.477 2 12c0 1.89.525 3.66 1.438 5.168L2 22l4.832-1.438A9.955 9.955 0 0012 22c5.523 0 10-4.477 10-10S17.523 2 12 2zm-1 13H9V9h2v6zm3.5 0h-2V9h2v6z"/>
-              </svg>
-            </a>
-            <a href="https://youtube.com" target="_blank" rel="noopener noreferrer"
-               aria-label="Kênh YouTube Bệnh viện đa khoa Đăk Hà">
-              <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                <path d="M22.54 6.42a2.78 2.78 0 00-1.94-1.96C18.88 4 12 4 12 4s-6.88 0-8.6.46A2.78 2.78 0 001.46 6.42 29 29 0 001 12a29 29 0 00.46 5.58 2.78 2.78 0 001.94 1.96C5.12 20 12 20 12 20s6.88 0 8.6-.46a2.78 2.78 0 001.94-1.96A29 29 0 0023 12a29 29 0 00-.46-5.58z"/>
-                <polygon points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02" fill="white"/>
-              </svg>
-            </a>
-          </nav>
-          <!-- <div class="topbar-lang" role="button" tabindex="0" aria-label="Chuyển đổi ngôn ngữ">
-            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
-              <circle cx="12" cy="12" r="10"/>
-              <line x1="2" y1="12" x2="22" y2="12"/>
-              <path d="M12 2a15.3 15.3 0 010 20M12 2a15.3 15.3 0 000 20"/>
-            </svg>
-            VI | EN
-          </div> -->
-        </div>
-      </div>
-    </div>
-  </aside>
+  
 
   <!-- ============================================================
        HEADER
@@ -202,7 +161,7 @@
                   itemprop="logo" />
           </div>
           <div class="logo-text" itemprop="name">
-            <span class="name">Bệnh viện đa khoa khu vực Đăk Hà</span>
+            <span class="name">Bệnh viện ĐK KV Đăk Hà</span>
             <span class="sub">Sở Y tế tỉnh Quảng Ngãi</span>
           </div>
         </a>
@@ -223,13 +182,17 @@
                 </svg>
               </a>
               <div class="dropdown" role="menu" aria-label="Menu giới thiệu">
-                <a href="<?php echo XC_URL; ?>/trang/gioi-thieu" role="menuitem">
+                <a href="<?php echo XC_URL; ?>/trang/gioi-thieu.html" role="menuitem">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
                   Giới thiệu bệnh viện
                 </a>
-                <a href="<?php echo XC_URL; ?>/trang/co-cau-to-chuc" role="menuitem">
+                <a href="<?php echo XC_URL; ?>/trang/co-cau-to-chuc.html" role="menuitem">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
                   Cơ cấu & Sơ đồ tổ chức
+                </a>
+                <a href="<?php echo XC_URL; ?>/bac-si" role="menuitem">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                  Đội ngũ Y Bác sĩ
                 </a>
               </div>
             </li>
@@ -258,22 +221,22 @@
             </li>
 
             <li class="nav-item">
-              <a href="<?php echo XC_URL; ?>/" class="nav-link" aria-haspopup="true" aria-expanded="false">
+              <a href="#" class="nav-link" aria-haspopup="true" aria-expanded="false">
                 Dịch vụ Y tế
                 <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
                   <polyline points="6 9 12 15 18 9"/>
                 </svg>
               </a>
               <div class="dropdown" role="menu" aria-label="Menu dịch vụ">
-                <a href="<?php echo XC_URL; ?>/" role="menuitem">
+                <a href="<?php echo XC_URL; ?>/trang/kham-bhyt.html" role="menuitem">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
                   Khám BHYT
                 </a>
-                <a href="<?php echo XC_URL; ?>" role="menuitem">
+                <a href="<?php echo XC_URL; ?>/trang/vien-phi-goi-dich-vu.html" role="menuitem">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 100 7h5a3.5 3.5 0 110 7H6"/></svg>
                   Viện phí và dịch vụ
                 </a>
-                <a href="<?php echo XC_URL; ?>" role="menuitem">
+                <a href="<?php echo XC_URL; ?>/trang/goi-kham-suc-khoe.html" role="menuitem">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
                   Gói khám sức khỏe
                 </a>
@@ -287,9 +250,24 @@
             </li>
 
             <li class="nav-item">
-              <a href="<?php echo XC_URL; ?>/hoat-dong.html" class="nav-link">Hoạt động</a>
+              <a href="<?php echo XC_URL; ?>/hoat-dong/lich-cong-tac.html" class="nav-link" aria-haspopup="true" aria-expanded="false">
+                Hoạt động
+                <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+                  <polyline points="6 9 12 15 18 9"/>
+                </svg>
+              </a>
+              <div class="dropdown" role="menu" aria-label="Menu hoạt động">
+                <a href="<?php echo XC_URL; ?>/hoat-dong/lich-cong-tac.html" role="menuitem">
+                  <i class="fa-regular fa-calendar-days"></i> Lịch công tác
+                </a>
+                <a href="<?php echo XC_URL; ?>/hoat-dong/dao-tao-tap-huan.html" role="menuitem">
+                  <i class="fa-solid fa-list-check"></i> Kế hoạch
+                </a>
+                <a href="<?php echo XC_URL; ?>/hoat-dong/chien-dich-y-te.html" role="menuitem">
+                  <i class="fa-solid fa-hand-holding-medical"></i> Chiến dịch
+                </a>
+              </div>
             </li>
-
             <!-- <li class="nav-item">
               <a href="<?php echo XC_URL; ?>/trang/van-ban" class="nav-link">Văn bản</a>
             </li> -->
@@ -403,8 +381,7 @@
                   loading="lazy" />
         </div>
         <div class="logo-text">
-          <span class="name">Đăk Hà Medical</span>
-          <span class="sub">Menu chính</span>
+          <span class="name">Bệnh viện ĐK KV Đăk Hà</span>
         </div>
       </a>
       <button class="mobile-nav-close" id="mobile-nav-close" aria-label="Đóng menu mobile">
@@ -774,7 +751,7 @@
 
 .tt25-card-header {
   background: linear-gradient(135deg, #0284c7 0%, #0d9488 100%);
-  padding: 24px 30px;
+  padding: 10px 30px;
   color: #ffffff;
   display: flex;
   align-items: center;
@@ -993,11 +970,8 @@
         <li style="color: #ffffff; font-weight: 600;">Lấy giấy TT25</li>
       </ul> -->
 
-      <div class="tt25-badge">
-        <i class="fa-solid fa-file-medical"></i> Thông tư 25/BYT
-      </div>
-      <h1 class="tt25-title">Đăng Ký Lấy Giấy Tờ TT25/BYT</h1>
-      <p class="tt25-subtitle">Hệ thống tiếp nhận yêu cầu cấp phát giấy chứng nhận y tế điện tử chính thức cho bệnh nhân Bệnh viện đa khoa khu vực Đăk Hà.</p>
+      
+    
 
     </div>
   </section>
@@ -1012,8 +986,8 @@
           <i class="fa-solid fa-file-signature"></i>
         </div>
         <div>
-          <h3 style="margin: 0 0 4px 0; font-size: 18px; font-weight: 800; color: #ffffff;">Yêu cầu cấp giấy tờ TT25/BYT</h3>
-          <p style="margin: 0; font-size: 13.5px; opacity: 0.9; color: #ffffff;">Vui lòng nhập chính xác thông tin để bệnh viện xử lý trong 24h</p>
+          <h3 style="margin: 0 0 4px 0; font-size: 18px; font-weight: 800; color: #ffffff;">Cấp giấy tờ hưởng BHXH</h3>
+          <p style="margin: 0; font-size: 13.5px; opacity: 0.9; color: #ffffff;">(Nghỉ việc hưởng BHXH, nghỉ thai sản/dưỡng thai, tóm tắt bệnh án, cấp lại giấy ra viện,...)</p>
         </div>
       </div>
 
@@ -1111,12 +1085,12 @@
             <!-- HÀNG TOÀN CHIỀU RỘNG: Loại giấy -->
             <div class="tt25-form-group full-width">
               <label for="category_id" class="tt25-label">
-                Loại giấy (Danh mục TT25/BYT) <span class="required">*</span>
+                Loại giấy hưởng chế độ BHXH <span class="required">*</span>
               </label>
               <div class="tt25-input-wrapper">
                 <i class="fa-solid fa-file-medical tt25-input-icon"></i>
                 <select class="tt25-select" id="category_id" name="category_id" required>
-                  <option value="">-- Chọn Loại giấy theo danh mục giấy TT25/BYT --</option>
+                  <option value="">-- Chọn loại giấy hưởng chế độ BHXH --</option>
                   <?php if(!empty($tt25_categories) && is_array($tt25_categories)): ?>
                     <?php foreach($tt25_categories as $cat): ?>
                       <option value="<?php echo intval($cat->id); ?>"><?php echo htmlspecialchars($cat->name); ?></option>
@@ -1136,7 +1110,7 @@
             <div class="tt25-email-warning-box">
               <i class="fa-solid fa-triangle-exclamation"></i>
               <div class="tt25-email-warning-text">
-                Lưu ý nhập đúng Email để nhận giấy. Giấy chứng nhận TT25/BYT đính kèm mã QR sẽ được gửi về hòm thư này trong vòng 24h.
+                Lưu ý nhập đúng Email để nhận giấy. Giấy hưởng chế độ BHXH sẽ được gửi về hòm thư này trong vòng 24h.
               </div>
             </div>
 
@@ -1276,3 +1250,439 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 
+<script>
+(function () {
+  'use strict';
+
+  /* ============================================================
+     1. HERO BANNER SLIDER
+     ============================================================ */
+  const Slider = (() => {
+    const wrapper  = document.querySelector('.slider-wrapper');
+    if (!wrapper) return;
+
+    const slides   = wrapper.querySelectorAll('.slide');
+    const dots     = wrapper.querySelectorAll('.slider-dot');
+    const prevBtn  = wrapper.querySelector('.slider-prev');
+    const nextBtn  = wrapper.querySelector('.slider-next');
+
+    let current    = 0;
+    let autoTimer  = null;
+    const INTERVAL = 5500;
+
+    function goTo(index) {
+      slides[current].classList.remove('active');
+      dots[current]?.classList.remove('active');
+      current = (index + slides.length) % slides.length;
+      slides[current].classList.add('active');
+      dots[current]?.classList.add('active');
+    }
+
+    function startAuto() {
+      stopAuto();
+      autoTimer = setInterval(() => goTo(current + 1), INTERVAL);
+    }
+
+    function stopAuto() {
+      clearInterval(autoTimer);
+    }
+
+    if (prevBtn) prevBtn.addEventListener('click', () => { goTo(current - 1); startAuto(); });
+    if (nextBtn) nextBtn.addEventListener('click', () => { goTo(current + 1); startAuto(); });
+
+    dots.forEach((dot, i) => {
+      dot.addEventListener('click', () => { goTo(i); startAuto(); });
+    });
+
+    // Pause on hover
+    wrapper.addEventListener('mouseenter', stopAuto);
+    wrapper.addEventListener('mouseleave', startAuto);
+
+    // Touch / Swipe support
+    let touchStartX = 0;
+    wrapper.addEventListener('touchstart', e => {
+      touchStartX = e.changedTouches[0].clientX;
+    }, { passive: true });
+
+    wrapper.addEventListener('touchend', e => {
+      const diff = touchStartX - e.changedTouches[0].clientX;
+      if (Math.abs(diff) > 50) {
+        diff > 0 ? goTo(current + 1) : goTo(current - 1);
+        startAuto();
+      }
+    }, { passive: true });
+
+    // Keyboard accessibility
+    wrapper.setAttribute('tabindex', '0');
+    wrapper.addEventListener('keydown', e => {
+      if (e.key === 'ArrowRight') { goTo(current + 1); startAuto(); }
+      if (e.key === 'ArrowLeft')  { goTo(current - 1); startAuto(); }
+    });
+
+    startAuto();
+  })();
+
+
+  /* ============================================================
+     2. MOBILE NAVIGATION
+     ============================================================ */
+  const MobileNav = (() => {
+    const hamburger  = document.querySelector('.hamburger');
+    const mobileNav  = document.querySelector('.mobile-nav');
+    const overlay    = document.querySelector('.nav-overlay');
+    const closeBtn   = document.querySelector('.mobile-nav-close') || document.querySelector('.mobile-close');
+    const expandBtns = document.querySelectorAll('.mobile-nav-link[data-submenu]');
+
+    if (!hamburger || !mobileNav) return;
+
+    function openNav() {
+      mobileNav.classList.add('open');
+      overlay.classList.add('show');
+      hamburger.classList.add('open');
+      hamburger.setAttribute('aria-expanded', 'true');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeNav() {
+      mobileNav.classList.remove('open');
+      overlay?.classList.remove('show');
+      hamburger.classList.remove('open');
+      hamburger.setAttribute('aria-expanded', 'false');
+      document.body.style.overflow = '';
+    }
+
+    window.closeMobileNav = closeNav;
+
+    hamburger.addEventListener('click', () => {
+      mobileNav.classList.contains('open') ? closeNav() : openNav();
+    });
+
+    overlay?.addEventListener('click', closeNav);
+    closeBtn?.addEventListener('click', closeNav);
+
+    // Submenu accordion
+    expandBtns.forEach(btn => {
+      btn.addEventListener('click', e => {
+        e.preventDefault();
+        const subId  = btn.dataset.submenu;
+        const sub    = document.getElementById(subId);
+        if (!sub) return;
+
+        const isOpen = btn.classList.contains('expanded');
+        // Close all
+        expandBtns.forEach(b => {
+          b.classList.remove('expanded');
+          const s = document.getElementById(b.dataset.submenu);
+          s?.classList.remove('open');
+        });
+        // Toggle clicked
+        if (!isOpen) {
+          btn.classList.add('expanded');
+          sub.classList.add('open');
+        }
+      });
+    });
+
+    // Escape key
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') closeNav();
+    });
+  })();
+
+
+  /* ============================================================
+     3. SCROLL-BASED BEHAVIORS
+     ============================================================ */
+  const ScrollEffects = (() => {
+    const header    = document.querySelector('.site-header');
+    const scrollTop = document.querySelector('.scroll-top');
+    let   lastScroll = 0;
+
+    function onScroll() {
+      const y = window.scrollY;
+      // Sticky header shadow
+      header?.classList.toggle('scrolled', y > 40);
+      // Scroll to top button
+      scrollTop?.classList.toggle('show', y > 400);
+      lastScroll = y;
+    }
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+
+    scrollTop?.addEventListener('click', () => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  })();
+
+
+  /* ============================================================
+     4. SCROLL ANIMATIONS (Intersection Observer)
+     ============================================================ */
+  const ScrollAnimate = (() => {
+    const elements = document.querySelectorAll('[data-animate]');
+    if (!elements.length) return;
+
+    const observer = new IntersectionObserver(
+      entries => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('in-view');
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.12, rootMargin: '0px 0px -40px 0px' }
+    );
+
+    elements.forEach(el => observer.observe(el));
+  })();
+
+
+  /* ============================================================
+     5. COUNT-UP ANIMATION (Statistics)
+     ============================================================ */
+  const CountUp = (() => {
+    const counters = document.querySelectorAll('[data-count]');
+    if (!counters.length) return;
+
+    function animateCounter(el) {
+      const target    = parseInt(el.dataset.count, 10);
+      const suffix    = el.dataset.suffix || '';
+      const duration  = 2000;
+      const step      = 16;
+      const increment = target / (duration / step);
+      let   current   = 0;
+
+      const timer = setInterval(() => {
+        current += increment;
+        if (current >= target) {
+          current = target;
+          clearInterval(timer);
+        }
+        el.textContent = Math.round(current).toLocaleString('vi-VN') + suffix;
+      }, step);
+    }
+
+    const observer = new IntersectionObserver(
+      entries => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            animateCounter(entry.target);
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.5 }
+    );
+
+    counters.forEach(el => observer.observe(el));
+  })();
+
+
+  /* ============================================================
+     6. FAQ ACCORDION
+     ============================================================ */
+  const FAQ = (() => {
+    const items = document.querySelectorAll('.faq-item');
+    if (!items.length) return;
+
+    items.forEach(item => {
+      const btn = item.querySelector('.faq-question');
+      btn?.addEventListener('click', () => {
+        const isOpen = item.classList.contains('open');
+        // Close all
+        items.forEach(i => i.classList.remove('open'));
+        // Toggle clicked
+        if (!isOpen) item.classList.add('open');
+      });
+    });
+  })();
+
+
+  /* ============================================================
+     7. CONTACT FORM VALIDATION
+     ============================================================ */
+  const FormValidate = (() => {
+    const form = document.getElementById('contact-form');
+    if (!form) return;
+
+    const rules = {
+      'contact-name'    : { required: true, minLength: 2, label: 'Họ và tên' },
+      'contact-phone'   : { required: true, pattern: /^(0[3-9])\d{8}$/, label: 'Số điện thoại' },
+      'contact-email'   : { required: false, pattern: /^[^\s@]+@[^\s@]+\.[^\s@]+$/, label: 'Email' },
+      'contact-subject' : { required: true, minLength: 5, label: 'Tiêu đề' },
+      'contact-message' : { required: true, minLength: 20, label: 'Nội dung' },
+    };
+
+    function validateField(id) {
+      const input  = document.getElementById(id);
+      const rule   = rules[id];
+      const error  = input?.nextElementSibling;
+      if (!input || !rule) return true;
+
+      let msg = '';
+      const val = input.value.trim();
+
+      if (rule.required && !val) {
+        msg = `${rule.label} không được để trống.`;
+      } else if (val && rule.minLength && val.length < rule.minLength) {
+        msg = `${rule.label} phải có ít nhất ${rule.minLength} ký tự.`;
+      } else if (val && rule.pattern && !rule.pattern.test(val)) {
+        msg = `${rule.label} không hợp lệ.`;
+      }
+
+      input.classList.toggle('error', !!msg);
+      if (error?.classList.contains('form-error')) {
+        error.textContent = msg;
+        error.style.display = msg ? 'block' : 'none';
+      }
+      return !msg;
+    }
+
+    // Real-time validate on blur
+    Object.keys(rules).forEach(id => {
+      const input = document.getElementById(id);
+      input?.addEventListener('blur', () => validateField(id));
+      input?.addEventListener('input', () => {
+        if (input.classList.contains('error')) validateField(id);
+      });
+    });
+
+    form.addEventListener('submit', e => {
+      e.preventDefault();
+      let valid = true;
+      Object.keys(rules).forEach(id => {
+        if (!validateField(id)) valid = false;
+      });
+
+      if (valid) {
+        const successMsg = document.getElementById('form-success');
+        successMsg?.classList.add('show');
+        form.reset();
+        setTimeout(() => successMsg?.classList.remove('show'), 6000);
+      }
+    });
+  })();
+
+
+  /* ============================================================
+     8. READING PROGRESS BAR (for news detail pages)
+     ============================================================ */
+  const ReadingProgress = (() => {
+    const bar = document.getElementById('reading-progress');
+    if (!bar) return;
+
+    window.addEventListener('scroll', () => {
+      const total   = document.documentElement.scrollHeight - window.innerHeight;
+      const progress = (window.scrollY / total) * 100;
+      bar.style.width = Math.min(progress, 100) + '%';
+    }, { passive: true });
+  })();
+
+
+  /* ============================================================
+     9. LAZY LOAD MAPS (iframe)
+     ============================================================ */
+  const LazyMap = (() => {
+    const mapWrap = document.querySelector('.map-lazy-wrap');
+    if (!mapWrap) return;
+
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const src = mapWrap.dataset.src;
+          if (src) {
+            const iframe = document.createElement('iframe');
+            iframe.src          = src;
+            iframe.width        = '100%';
+            iframe.height       = '100%';
+            iframe.style.border = '0';
+            iframe.allowFullscreen = true;
+            iframe.loading      = 'lazy';
+            iframe.referrerPolicy = 'no-referrer-when-downgrade';
+            mapWrap.innerHTML   = '';
+            mapWrap.appendChild(iframe);
+          }
+          observer.disconnect();
+        }
+      });
+    }, { threshold: 0.1 });
+
+    observer.observe(mapWrap);
+  })();
+
+
+  /* ============================================================
+     10. ACTIVE NAV LINK HIGHLIGHT
+     ============================================================ */
+  (() => {
+    const links   = document.querySelectorAll('.nav-link, .mobile-nav-link');
+    const current = window.location.pathname.toLowerCase();
+
+    links.forEach(link => {
+      const href = link.getAttribute('href');
+      if (!href || href === '#' || href.startsWith('javascript:')) return;
+      
+      try {
+        const linkPath = new URL(href, window.location.origin).pathname.toLowerCase();
+        if (linkPath !== '/' && current.endsWith(linkPath)) {
+          link.classList.add('active');
+        }
+      } catch(e) {}
+    });
+
+    // Home page check
+    const isHome = current === '/' || current.endsWith('/bvdkdakha.vn/') || current.endsWith('/index') || current.endsWith('/index.php') || current.endsWith('/index.html');
+    if (isHome) {
+      links.forEach(link => {
+        const href = link.getAttribute('href');
+        if (href && (href.endsWith('/') || href.endsWith('index.html'))) {
+          link.classList.add('active');
+        }
+      });
+    }
+  })();
+
+
+  /* ============================================================
+     11. ANNOUNCEMENT MARQUEE (seamless loop with 1 announcement)
+     ============================================================ */
+  (() => {
+    const track = document.querySelector('.marquee-track');
+    const content = document.querySelector('.marquee-content');
+    if (!track || !content) return;
+
+    // Clean up any extra sibling containers from older implementations
+    const siblingContents = track.querySelectorAll('.marquee-content');
+    for (let i = 1; i < siblingContents.length; i++) {
+      siblingContents[i].remove();
+    }
+
+    const items = content.querySelectorAll('.marquee-item');
+    if (items.length === 1) {
+      // Clone 3 more items inside content for mathematically seamless 50% loop
+      for (let i = 0; i < 3; i++) {
+        const clone = items[0].cloneNode(true);
+        clone.setAttribute('aria-hidden', 'true');
+        content.appendChild(clone);
+      }
+    }
+  })();
+
+
+  /* ============================================================
+     12. SMOOTH ANCHOR SCROLL with offset
+     ============================================================ */
+  document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function (e) {
+      const target = document.querySelector(this.getAttribute('href'));
+      if (!target) return;
+      e.preventDefault();
+      const offset = 80; // header height offset
+      const top    = target.getBoundingClientRect().top + window.scrollY - offset;
+      window.scrollTo({ top, behavior: 'smooth' });
+    });
+  });
+
+})();
+	  </script>

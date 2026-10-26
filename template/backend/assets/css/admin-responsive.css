@@ -1,0 +1,877 @@
+/* ==========================================================================
+   DAK HA HOSPITAL (BVDKDAKHA.VN) - MODERN BACKEND DESIGN SYSTEM
+   Ultra-modern, unified, and compact dashboard styles for Hope UI
+   ========================================================================== */
+
+/* --- 1. Typography & Global Reset --- */
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap');
+
+:root {
+  --admin-font: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --admin-bg: #f8fafc;
+  --admin-card-bg: #ffffff;
+  --admin-border: #e2e8f0;
+  --admin-border-subtle: #f1f5f9;
+  
+  /* Primary & Medical Accents */
+  --admin-primary: #0284c7;
+  --admin-primary-hover: #0369a1;
+  --admin-primary-subtle: #f0f9ff;
+  --admin-primary-border: #bae6fd;
+  
+  --admin-success: #10b981;
+  --admin-success-subtle: #ecfdf5;
+  --admin-success-border: #a7f3d0;
+  
+  --admin-warning: #f59e0b;
+  --admin-warning-subtle: #fffbeb;
+  --admin-warning-border: #fde68a;
+  
+  --admin-danger: #ef4444;
+  --admin-danger-subtle: #fef2f2;
+  --admin-danger-border: #fecaca;
+  
+  --admin-info: #0ea5e9;
+  --admin-info-subtle: #f0f9ff;
+  --admin-info-border: #bae6fd;
+  
+  /* Neutral Slate Text */
+  --admin-text-main: #0f172a;
+  --admin-text-body: #334155;
+  --admin-text-muted: #64748b;
+  --admin-text-subtle: #94a3b8;
+  
+  /* Radius & Shadows */
+  --admin-radius: 12px;
+  --admin-radius-sm: 8px;
+  --admin-radius-lg: 16px;
+  --admin-shadow: 0 1px 3px rgba(15, 23, 42, 0.05), 0 4px 14px rgba(15, 23, 42, 0.03);
+  --admin-shadow-hover: 0 6px 20px rgba(15, 23, 42, 0.08);
+}
+
+/* Unify text typography while allowing icon classes to use their own font. */
+body, 
+body * {
+  font-family: var(--admin-font);
+}
+
+body {
+  background-color: var(--admin-bg) !important;
+  color: var(--admin-text-body) !important;
+  font-size: 13.5px !important;
+  line-height: 1.5 !important;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Base Headings */
+h1, .h1 { font-size: 22px !important; font-weight: 700 !important; color: var(--admin-text-main) !important; letter-spacing: -0.02em; }
+h2, .h2 { font-size: 19px !important; font-weight: 700 !important; color: var(--admin-text-main) !important; letter-spacing: -0.02em; }
+h3, .h3 { font-size: 16.5px !important; font-weight: 600 !important; color: var(--admin-text-main) !important; letter-spacing: -0.01em; }
+h4, .h4 { font-size: 15px !important; font-weight: 600 !important; color: var(--admin-text-main) !important; }
+h5, .h5 { font-size: 13.5px !important; font-weight: 600 !important; color: var(--admin-text-main) !important; }
+h6, .h6 { font-size: 12.5px !important; font-weight: 600 !important; color: var(--admin-text-muted) !important; }
+
+/* Remove broken Hope UI negative margins and banner hack */
+.iq-navbar-header {
+  height: auto !important;
+  min-height: 0 !important;
+  display: none !important;
+}
+
+.content-inner {
+  margin-top: 0 !important;
+  padding: 24px 28px !important;
+}
+
+.content.container-fluid,
+.conatiner-fluid.content-inner {
+  padding: 24px 28px !important;
+  margin-top: 0 !important;
+}
+
+/* --- 2. Sidebar Navigation Revamp --- */
+aside.sidebar {
+  width: 260px !important;
+  background: #ffffff !important;
+  border-right: 1px solid var(--admin-border) !important;
+  box-shadow: 2px 0 10px rgba(15, 23, 42, 0.02) !important;
+  z-index: 1020;
+}
+
+.sidebar-header {
+  padding: 16px 20px !important;
+  border-bottom: 1px solid var(--admin-border-subtle) !important;
+  height: 64px !important;
+}
+
+.sidebar-header .navbar-brand {
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+  text-decoration: none !important;
+}
+
+.sidebar-header .logo-main {
+  width: 34px !important;
+  height: 34px !important;
+  border-radius: 8px !important;
+  background: var(--admin-primary-subtle) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border: 1px solid var(--admin-primary-border) !important;
+}
+
+.sidebar-header .logo-title {
+  font-size: 15px !important;
+  font-weight: 700 !important;
+  color: var(--admin-text-main) !important;
+  margin: 0 !important;
+  line-height: 1.2 !important;
+}
+
+.sidebar-header .logo-subtitle {
+  font-size: 11px !important;
+  color: var(--admin-text-muted) !important;
+  font-weight: 500 !important;
+  display: block;
+}
+
+/* Sidebar List */
+.sidebar-list {
+  padding: 12px 14px !important;
+}
+
+.sidebar-list .navbar-nav .nav-item {
+  margin-bottom: 3px !important;
+}
+
+.sidebar-list .nav-item.static-item {
+  margin-top: 14px !important;
+  margin-bottom: 6px !important;
+}
+
+.sidebar-list .nav-item.static-item .default-icon {
+  font-size: 10.5px !important;
+  font-weight: 700 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.07em !important;
+  color: var(--admin-text-subtle) !important;
+  padding: 0 10px !important;
+}
+
+.sidebar-list hr.hr-horizontal {
+  margin: 12px 10px !important;
+  border-color: var(--admin-border-subtle) !important;
+  opacity: 1 !important;
+}
+
+/* Sidebar Links */
+.sidebar-list .nav-link {
+  display: flex !important;
+  align-items: center !important;
+  gap: 11px !important;
+  padding: 8px 12px !important;
+  border-radius: var(--admin-radius-sm) !important;
+  color: var(--admin-text-body) !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  transition: all 0.18s ease !important;
+  text-decoration: none !important;
+}
+
+.sidebar-list .nav-link i,
+.sidebar-list .nav-link svg {
+  font-size: 15px !important;
+  width: 18px !important;
+  text-align: center !important;
+  color: var(--admin-text-muted) !important;
+  transition: color 0.18s ease !important;
+}
+
+.sidebar-list .nav-link:hover {
+  background-color: var(--admin-border-subtle) !important;
+  color: var(--admin-primary) !important;
+}
+
+.sidebar-list .nav-link:hover i,
+.sidebar-list .nav-link:hover svg {
+  color: var(--admin-primary) !important;
+}
+
+.sidebar-list .nav-link.active,
+.sidebar-list .nav-item.active > .nav-link {
+  background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%) !important;
+  color: #ffffff !important;
+  font-weight: 600 !important;
+  box-shadow: 0 3px 10px rgba(2, 132, 199, 0.28) !important;
+}
+
+.sidebar-list .nav-link.active i,
+.sidebar-list .nav-link.active svg {
+  color: #ffffff !important;
+}
+
+/* Sub-nav in collapse */
+.sidebar-list .sub-nav {
+  padding-left: 28px !important;
+  margin-top: 3px !important;
+  position: relative;
+}
+
+.sidebar-list .sub-nav::before {
+  content: "";
+  position: absolute;
+  left: 20px;
+  top: 4px;
+  bottom: 8px;
+  width: 1.5px;
+  background-color: var(--admin-border);
+}
+
+.sidebar-list .sub-nav .nav-link {
+  padding: 6px 10px !important;
+  font-size: 12.5px !important;
+  font-weight: 500 !important;
+}
+
+/* Right toggle icon */
+.sidebar-list .nav-link .right-icon {
+  margin-left: auto !important;
+  font-size: 12px !important;
+  transition: transform 0.2s ease !important;
+}
+
+.sidebar-list .nav-link[aria-expanded="true"] .right-icon {
+  transform: rotate(90deg);
+}
+
+/* --- 3. Navbar / Topbar Revamp --- */
+.iq-navbar {
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 1010 !important;
+  height: 64px !important;
+  background: rgba(255, 255, 255, 0.92) !important;
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+  border-bottom: 1px solid var(--admin-border) !important;
+  box-shadow: 0 1px 4px rgba(15, 23, 42, 0.02) !important;
+  padding: 0 24px !important;
+}
+
+.iq-navbar .navbar-inner {
+  height: 100% !important;
+}
+
+.admin-topbar-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.admin-topbar-brand .badge-tag {
+  background: var(--admin-primary-subtle);
+  color: var(--admin-primary);
+  border: 1px solid var(--admin-primary-border);
+  padding: 3px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.admin-quick-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: var(--admin-radius-sm);
+  background: var(--admin-border-subtle);
+  color: var(--admin-text-body);
+  font-size: 12.5px;
+  font-weight: 500;
+  text-decoration: none;
+  border: 1px solid var(--admin-border);
+  transition: all 0.15s ease;
+}
+
+.admin-quick-link:hover {
+  background: var(--admin-primary-subtle);
+  color: var(--admin-primary);
+  border-color: var(--admin-primary-border);
+}
+
+.admin-user-pill {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 5px 12px 5px 6px;
+  border-radius: 999px;
+  background: var(--admin-border-subtle);
+  border: 1px solid var(--admin-border);
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.admin-user-pill:hover {
+  background: #ffffff;
+  border-color: var(--admin-primary-border);
+  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.06);
+}
+
+.admin-user-avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #0284c7, #0369a1);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 12px;
+}
+
+.admin-user-name {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--admin-text-main);
+  line-height: 1.2;
+}
+
+.admin-user-role {
+  font-size: 10.5px;
+  color: var(--admin-text-muted);
+  font-weight: 500;
+  display: block;
+}
+
+/* --- 4. Cards & Containers --- */
+.card {
+  background: var(--admin-card-bg) !important;
+  border: 1px solid var(--admin-border) !important;
+  border-radius: var(--admin-radius) !important;
+  box-shadow: var(--admin-shadow) !important;
+  margin-bottom: 20px !important;
+  overflow: hidden;
+}
+
+.card-header {
+  background: #ffffff !important;
+  border-bottom: 1px solid var(--admin-border-subtle) !important;
+  padding: 14px 20px !important;
+}
+
+.card-header .card-title {
+  font-size: 15px !important;
+  font-weight: 700 !important;
+  color: var(--admin-text-main) !important;
+  margin-bottom: 0 !important;
+}
+
+.card-body {
+  padding: 18px 20px !important;
+}
+
+.card-footer {
+  background: #ffffff !important;
+  border-top: 1px solid var(--admin-border-subtle) !important;
+  padding: 12px 20px !important;
+}
+
+/* Page Header & Breadcrumb Bar */
+.page-header {
+  margin-bottom: 18px !important;
+}
+
+.page-header .page-title {
+  font-size: 20px !important;
+  font-weight: 700 !important;
+  color: var(--admin-text-main) !important;
+  margin-bottom: 4px !important;
+  letter-spacing: -0.02em;
+}
+
+.breadcrumb {
+  margin-bottom: 0 !important;
+  font-size: 12px !important;
+}
+
+.breadcrumb-item a {
+  color: var(--admin-text-muted) !important;
+  text-decoration: none !important;
+}
+
+.breadcrumb-item a:hover {
+  color: var(--admin-primary) !important;
+}
+
+.breadcrumb-item.active {
+  color: var(--admin-text-body) !important;
+  font-weight: 500 !important;
+}
+
+/* --- 5. ULTRA-OPTIMIZED TABLE SYSTEM (FIT IN 1 SCREEN / ZERO HORIZONTAL SCROLL) --- */
+.table-responsive {
+  border: 1px solid var(--admin-border);
+  border-radius: var(--admin-radius-sm);
+  background: #ffffff;
+  overflow-x: auto;
+  max-width: 100%;
+}
+
+/* Custom Scrollbar for tables if ever needed */
+.table-responsive::-webkit-scrollbar {
+  height: 6px;
+  width: 6px;
+}
+.table-responsive::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 999px;
+}
+.table-responsive::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+
+/* Table Base Styling */
+table.table {
+  width: 100% !important;
+  margin-bottom: 0 !important;
+  border-collapse: collapse !important;
+  border-spacing: 0 !important;
+  font-size: 13px !important;
+}
+
+/* Override Hope UI excessive cell padding */
+table.table th,
+table.table td {
+  padding: 9px 12px !important;
+  vertical-align: middle !important;
+  border-color: var(--admin-border-subtle) !important;
+}
+
+/* Elegant Sticky Header */
+table.table thead th,
+table.table thead td {
+  background-color: #f8fafc !important;
+  color: var(--admin-text-muted) !important;
+  font-size: 11.5px !important;
+  font-weight: 700 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.05em !important;
+  border-bottom: 1px solid var(--admin-border) !important;
+  border-top: 0 !important;
+  white-space: nowrap !important;
+}
+
+/* Smooth Row Hover */
+table.table tbody tr {
+  transition: background-color 0.12s ease !important;
+}
+
+table.table tbody tr:hover {
+  background-color: #f8fafc !important;
+}
+
+table.table tbody td {
+  color: var(--admin-text-body) !important;
+  border-bottom: 1px solid var(--admin-border-subtle) !important;
+}
+
+/* Remove text-nowrap from table body so tables fit naturally */
+table.table.text-nowrap td.cell-wrap,
+table.table.text-nowrap td:not(.text-nowrap):not(.col-actions) {
+  white-space: normal !important;
+}
+
+/* Table Cell Helper Classes */
+.cell-title {
+  font-weight: 600 !important;
+  color: var(--admin-text-main) !important;
+  line-height: 1.35 !important;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  max-width: 320px;
+}
+
+.cell-sub {
+  font-size: 11.5px !important;
+  color: var(--admin-text-muted) !important;
+  margin-top: 2px !important;
+  display: block;
+}
+
+.cell-truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 240px;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.cell-meta {
+  font-size: 11.5px;
+  color: var(--admin-text-muted);
+  line-height: 1.3;
+}
+
+/* Avatar / Image Thumbnail in table */
+.table-avatar-sm {
+  width: 36px !important;
+  height: 36px !important;
+  border-radius: 8px !important;
+  object-fit: cover !important;
+  border: 1px solid var(--admin-border) !important;
+}
+
+.table-avatar-round {
+  width: 38px !important;
+  height: 38px !important;
+  border-radius: 50% !important;
+  object-fit: cover !important;
+  border: 1.5px solid #ffffff !important;
+  box-shadow: 0 1px 4px rgba(15, 23, 42, 0.1) !important;
+}
+
+/* --- 6. Modern Soft Badges --- */
+.badge {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 4px !important;
+  padding: 3px 8px !important;
+  font-size: 11.5px !important;
+  font-weight: 600 !important;
+  border-radius: 999px !important;
+  line-height: 1.3 !important;
+  letter-spacing: 0.01em !important;
+  border: 1px solid transparent !important;
+}
+
+.badge.bg-success,
+.badge-soft-success {
+  background-color: var(--admin-success-subtle) !important;
+  color: #047857 !important;
+  border-color: var(--admin-success-border) !important;
+}
+
+.badge.bg-primary,
+.badge-soft-primary {
+  background-color: var(--admin-primary-subtle) !important;
+  color: #0369a1 !important;
+  border-color: var(--admin-primary-border) !important;
+}
+
+.badge.bg-info,
+.badge-soft-info {
+  background-color: var(--admin-info-subtle) !important;
+  color: #0284c7 !important;
+  border-color: var(--admin-info-border) !important;
+}
+
+.badge.bg-warning,
+.badge-soft-warning {
+  background-color: var(--admin-warning-subtle) !important;
+  color: #b45309 !important;
+  border-color: var(--admin-warning-border) !important;
+}
+
+.badge.bg-danger,
+.badge-soft-danger {
+  background-color: var(--admin-danger-subtle) !important;
+  color: #b91c1c !important;
+  border-color: var(--admin-danger-border) !important;
+}
+
+.badge.bg-secondary,
+.badge.bg-light,
+.badge-soft-secondary {
+  background-color: var(--admin-border-subtle) !important;
+  color: var(--admin-text-muted) !important;
+  border-color: var(--admin-border) !important;
+}
+
+/* --- 7. Action Buttons & Groups --- */
+.btn-action-group,
+.d-inline-flex.gap-1,
+.d-flex.gap-1 {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 4px !important;
+}
+
+/* Compact Icon Button */
+.btn-action,
+.btn-icon-sm,
+.btn.btn-sm.btn-icon {
+  width: 29px !important;
+  height: 29px !important;
+  min-width: 29px !important;
+  padding: 0 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border-radius: var(--admin-radius-sm) !important;
+  font-size: 12px !important;
+  transition: all 0.15s ease !important;
+  border: 1px solid var(--admin-border) !important;
+  background: #ffffff !important;
+  color: var(--admin-text-body) !important;
+}
+
+.btn-action:hover,
+.btn-icon-sm:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.08);
+}
+
+.btn-action.is-view,
+.btn-action.btn-soft-info {
+  background: var(--admin-primary-subtle) !important;
+  color: var(--admin-primary) !important;
+  border-color: var(--admin-primary-border) !important;
+}
+
+.btn-action.is-edit,
+.btn-action.btn-soft-warning {
+  background: var(--admin-warning-subtle) !important;
+  color: #b45309 !important;
+  border-color: var(--admin-warning-border) !important;
+}
+
+.btn-action.is-delete,
+.btn-action.btn-soft-danger {
+  background: var(--admin-danger-subtle) !important;
+  color: #b91c1c !important;
+  border-color: var(--admin-danger-border) !important;
+}
+
+.btn-action.is-approve,
+.btn-action.btn-soft-success {
+  background: var(--admin-success-subtle) !important;
+  color: #047857 !important;
+  border-color: var(--admin-success-border) !important;
+}
+
+/* Standard Buttons */
+.btn {
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  border-radius: var(--admin-radius-sm) !important;
+  padding: 6px 14px !important;
+  transition: all 0.15s ease !important;
+}
+
+.btn-sm {
+  font-size: 12px !important;
+  padding: 4px 10px !important;
+}
+
+.btn-primary {
+  background: var(--admin-primary) !important;
+  border-color: var(--admin-primary) !important;
+  color: #ffffff !important;
+}
+
+.btn-primary:hover {
+  background: var(--admin-primary-hover) !important;
+  border-color: var(--admin-primary-hover) !important;
+  box-shadow: 0 3px 10px rgba(2, 132, 199, 0.3) !important;
+}
+
+/* --- 8. Filter Bars & Form Controls --- */
+.form-control,
+.form-select {
+  font-size: 13px !important;
+  border-radius: var(--admin-radius-sm) !important;
+  border: 1px solid var(--admin-border) !important;
+  padding: 6px 11px !important;
+  color: var(--admin-text-main) !important;
+  background-color: #ffffff !important;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease !important;
+}
+
+.form-control:focus,
+.form-select:focus {
+  border-color: var(--admin-primary) !important;
+  box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.12) !important;
+  outline: none !important;
+}
+
+.form-control-sm,
+.form-select-sm {
+  font-size: 12px !important;
+  padding: 4px 8px !important;
+}
+
+.input-group-text {
+  font-size: 13px !important;
+  background-color: var(--admin-border-subtle) !important;
+  border-color: var(--admin-border) !important;
+  color: var(--admin-text-muted) !important;
+}
+
+/* --- 9. Pagination --- */
+.pagination {
+  gap: 3px !important;
+}
+
+.pagination .page-link {
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  color: var(--admin-text-body) !important;
+  background: #ffffff !important;
+  border: 1px solid var(--admin-border) !important;
+  border-radius: var(--admin-radius-sm) !important;
+  padding: 5px 10px !important;
+  transition: all 0.15s ease !important;
+}
+
+.pagination .page-item.active .page-link {
+  background-color: var(--admin-primary) !important;
+  border-color: var(--admin-primary) !important;
+  color: #ffffff !important;
+  box-shadow: 0 2px 6px rgba(2, 132, 199, 0.25) !important;
+}
+
+.pagination .page-link:hover:not(.active) {
+  background-color: var(--admin-border-subtle) !important;
+  border-color: var(--admin-border) !important;
+  color: var(--admin-primary) !important;
+}
+
+/* --- 10. Dashboard Stats Cards --- */
+.dashboard-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.modern-stat-card {
+  background: #ffffff;
+  border: 1px solid var(--admin-border);
+  border-radius: var(--admin-radius);
+  padding: 18px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  box-shadow: var(--admin-shadow);
+  transition: all 0.2s ease;
+  text-decoration: none;
+  color: inherit;
+  position: relative;
+  overflow: hidden;
+}
+
+.modern-stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--admin-shadow-hover);
+  border-color: var(--admin-primary-border);
+  color: inherit;
+}
+
+.modern-stat-card::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  background-color: var(--card-accent, var(--admin-primary));
+}
+
+.stat-card-info {
+  flex: 1;
+}
+
+.stat-card-title {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--admin-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  margin-bottom: 4px;
+}
+
+.stat-card-value {
+  font-size: 26px;
+  font-weight: 800;
+  color: var(--admin-text-main);
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+
+.stat-card-subtitle {
+  font-size: 11.5px;
+  color: var(--admin-text-muted);
+  margin-top: 4px;
+}
+
+.stat-card-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--admin-radius-sm);
+  background: var(--card-accent-subtle, var(--admin-primary-subtle));
+  color: var(--card-accent, var(--admin-primary));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+/* Modals */
+.modal-content {
+  border: 1px solid var(--admin-border) !important;
+  border-radius: var(--admin-radius-lg) !important;
+  box-shadow: 0 10px 40px rgba(15, 23, 42, 0.16) !important;
+  overflow: hidden;
+}
+
+.modal-header {
+  border-bottom: 1px solid var(--admin-border-subtle) !important;
+  padding: 16px 20px !important;
+  background: #ffffff !important;
+}
+
+.modal-footer {
+  border-top: 1px solid var(--admin-border-subtle) !important;
+  padding: 14px 20px !important;
+  background: #f8fafc !important;
+}
+
+/* Hide setting button floater for cleaner look */
+.btn-setting.btn-fixed-end {
+  display: none !important;
+}
+
+/* Responsive tweaks */
+@media (max-width: 991.98px) {
+  .content-inner,
+  .content.container-fluid,
+  .conatiner-fluid.content-inner {
+    padding: 16px 14px !important;
+  }
+}
+
+/* Additional utility subtles and clamps */
+.cell-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; line-height: 1.35; }
+.cell-clamp-1 { display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; line-height: 1.35; }
+.border-primary-subtle { border-color: var(--admin-primary-border) !important; }
+.border-success-subtle { border-color: var(--admin-success-border) !important; }
+.border-warning-subtle { border-color: var(--admin-warning-border) !important; }
+.border-danger-subtle { border-color: var(--admin-danger-border) !important; }
+.border-secondary-subtle { border-color: var(--admin-border) !important; }
+.border-info-subtle { border-color: var(--admin-info-border) !important; }
+.bg-primary-subtle { background-color: var(--admin-primary-subtle) !important; }
+.bg-success-subtle { background-color: var(--admin-success-subtle) !important; }
+.bg-warning-subtle { background-color: var(--admin-warning-subtle) !important; }
+.bg-danger-subtle { background-color: var(--admin-danger-subtle) !important; }
+.bg-secondary-subtle { background-color: var(--admin-border-subtle) !important; }
+.bg-info-subtle { background-color: var(--admin-info-subtle) !important; }

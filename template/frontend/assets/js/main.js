@@ -14,8 +14,11 @@
     const wrapper  = document.querySelector('.slider-wrapper');
     if (!wrapper) return;
 
-    const slides   = wrapper.querySelectorAll('.slide');
-    const dots     = wrapper.querySelectorAll('.slider-dot');
+    const allSlides = Array.from(wrapper.querySelectorAll('.slide'));
+    const allDots = Array.from(wrapper.querySelectorAll('.slider-dot'));
+    const mobileScreen = window.matchMedia('(max-width: 768px)');
+    let slides = [];
+    let dots = [];
     const prevBtn  = wrapper.querySelector('.slider-prev');
     const nextBtn  = wrapper.querySelector('.slider-next');
 
@@ -24,6 +27,7 @@
     const INTERVAL = 5500;
 
     function goTo(index) {
+      if (!slides.length) return;
       slides[current].classList.remove('active');
       dots[current]?.classList.remove('active');
       dots[current]?.setAttribute('aria-selected', 'false');
@@ -35,6 +39,7 @@
 
     function startAuto() {
       stopAuto();
+      if (slides.length < 2) return;
       autoTimer = setInterval(() => goTo(current + 1), INTERVAL);
     }
 
@@ -45,8 +50,8 @@
     if (prevBtn) prevBtn.addEventListener('click', () => { goTo(current - 1); startAuto(); });
     if (nextBtn) nextBtn.addEventListener('click', () => { goTo(current + 1); startAuto(); });
 
-    dots.forEach((dot, i) => {
-      dot.addEventListener('click', () => { goTo(i); startAuto(); });
+    allDots.forEach(dot => {
+      dot.addEventListener('click', () => { const index = dots.indexOf(dot); if (index >= 0) goTo(index); startAuto(); });
     });
 
     // Pause on hover
@@ -74,7 +79,38 @@
       if (e.key === 'ArrowLeft')  { goTo(current - 1); startAuto(); }
     });
 
-    if (slides.length > 1) startAuto();
+    function configureDevice() {
+      stopAuto();
+      const device = mobileScreen.matches ? 'mobile' : 'pc';
+      slides = allSlides.filter(slide => slide.dataset.device === 'all' || slide.dataset.device === device);
+      dots = allDots.filter(dot => slides.some(slide => slide.id === dot.getAttribute('aria-controls')));
+      allSlides.forEach(slide => {
+        slide.classList.remove('active');
+        slide.hidden = !slides.includes(slide);
+        const background = slide.querySelector('.slide-bg');
+        if (!slide.hidden && background?.dataset.image) {
+          background.style.backgroundImage = 'url(' + JSON.stringify(background.dataset.image) + ')';
+        } else if (background) {
+          background.style.backgroundImage = '';
+        }
+      });
+      allDots.forEach(dot => {
+        dot.hidden = !dots.includes(dot);
+        dot.classList.remove('active');
+        dot.setAttribute('aria-selected', 'false');
+      });
+      wrapper.closest('.hero').hidden = slides.length === 0;
+      [prevBtn, nextBtn, wrapper.querySelector('.slider-dots')].forEach(control => {
+        if (control) control.hidden = slides.length < 2;
+      });
+      slides.forEach((slide, index) => slide.setAttribute('aria-label', 'Slide ' + (index + 1) + ' / ' + slides.length));
+      dots.forEach((dot, index) => dot.setAttribute('aria-label', 'Slide ' + (index + 1)));
+      current = 0;
+      goTo(0);
+      startAuto();
+    }
+    mobileScreen.addEventListener('change', configureDevice);
+    configureDevice();
   })();
 
 

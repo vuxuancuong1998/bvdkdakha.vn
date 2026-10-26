@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" class="equip-svg w-48 h-44 transition duration-500" viewBox="0 0 240 200" fill="none">
+                  <ellipse cx="120" cy="176" rx="92" ry="7" fill="#cbd5e1"/>
+                  <rect x="108" y="34" width="38" height="26" rx="3" fill="#1e293b" stroke="#64748b" stroke-width="2"/>
+                  <rect x="112" y="38" width="30" height="18" fill="#38bdf8"/>
+                  <rect x="124" y="60" width="6" height="14" fill="#64748b"/>
+                  <path d="M28 74H105V96H24L28 74Z" fill="#0056b3" fill-opacity="0.85"/>
+                  <path d="M135 74H212L216 96H135V74Z" fill="#0ea5e9" fill-opacity="0.85"/>
+                  <rect x="105" y="72" width="30" height="24" fill="#f1f5f9" stroke="#cbd5e1"/>
+                  <rect x="24" y="96" width="192" height="76" rx="4" fill="#ffffff" stroke="#cbd5e1" stroke-width="2"/>
+                  <line x1="76" y1="96" x2="76" y2="172" stroke="#e2e8f0" stroke-width="2"/>
+                  <line x1="135" y1="96" x2="135" y2="172" stroke="#e2e8f0" stroke-width="2"/>
+                  <line x1="178" y1="96" x2="178" y2="172" stroke="#e2e8f0" stroke-width="2"/>
+                  <rect x="109" y="106" width="22" height="16" rx="2" fill="#334155"/>
+                  <circle cx="42" cy="112" r="3" fill="#10b981"/>
+                  <text x="184" y="114" fill="#0056b3" font-size="7" font-weight="bold">cobas</text>
+                </svg>

@@ -3,13 +3,13 @@ require_once 'header.php';
 if (empty($_SESSION['contact_csrf_token'])) {
   $_SESSION['contact_csrf_token'] = bin2hex(random_bytes(32));
 }
-$contactPhone = trim((string)$this->helper->get_config('site_phone'));
-$contactHotline = trim((string)$this->helper->get_config('site_hotline'));
-$contactEmail = trim((string)$this->helper->get_config('site_email'));
-$contactAddress = trim((string)$this->helper->get_config('site_address'));
-$contactFacebook = trim((string)$this->helper->get_config('site_facebook'));
-$contactZalo = trim((string)$this->helper->get_config('site_phonezalo'));
-$contactZaloUrl = preg_match('~^https?://~i', $contactZalo) ? $contactZalo : 'https://zalo.me/'.rawurlencode($contactZalo);
+$contactPhone = $siteContact['phone'];
+$contactHotline = $siteContact['hotline'];
+$contactEmail = $siteContact['email'];
+$contactAddress = $siteContact['address'];
+$contactFacebook = $siteContact['facebook_url'];
+$contactZalo = $siteContact['zalo'];
+$contactZaloUrl = $siteContact['zalo_url'];
 $contactEscape = function ($value) { return htmlspecialchars($value, ENT_QUOTES, 'UTF-8'); };
 ?>
   <style>
@@ -76,11 +76,12 @@ $contactEscape = function ($value) { return htmlspecialchars($value, ENT_QUOTES,
     /* Contact cards */
     .contact-info-grid {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: repeat(3, minmax(0, 1fr));
       gap: var(--space-5);
       margin-bottom: var(--space-8);
     }
     .contact-info-card {
+      min-width: 0;
       background: var(--color-bg);
       border-radius: var(--radius-xl);
       padding: var(--space-6);
@@ -106,6 +107,7 @@ $contactEscape = function ($value) { return htmlspecialchars($value, ENT_QUOTES,
     .contact-info-card:hover .ci-icon svg { color: #fff; }
     .contact-info-card h3 { font-size: var(--font-size-sm); font-weight: 700; color: var(--color-text-muted); text-transform: uppercase; letter-spacing: .05em; margin-bottom: var(--space-2); }
     .contact-info-card p, .contact-info-card a { font-size: var(--font-size-base); font-weight: 600; color: var(--color-text); line-height: 1.5; }
+    .contact-info-card p, .contact-info-card a { overflow-wrap: anywhere; }
     .contact-info-card a:hover { color: var(--color-primary); }
 
     /* Form card */
@@ -139,15 +141,15 @@ $contactEscape = function ($value) { return htmlspecialchars($value, ENT_QUOTES,
       border-radius: var(--radius-full);
     }
 
+    @media (max-width: 1024px) {
+      .contact-info-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .contact-layout { grid-template-columns: 1fr; }
+    }
     @media (max-width: 768px) {
-      .contact-info-grid { grid-template-columns: 1fr; }
+      .contact-info-grid { grid-template-columns: minmax(0, 1fr); }
       .contact-layout { grid-template-columns: 1fr; }
       .contact-form-card { padding: var(--space-6); }
       .page-hero h1 { font-size: var(--font-size-3xl); }
-    }
-    @media (max-width: 1024px) {
-      .contact-info-grid { grid-template-columns: repeat(2, 1fr); }
-      .contact-layout { grid-template-columns: 1fr; }
     }
   </style>
   <script type="application/ld+json">
@@ -186,7 +188,7 @@ $contactEscape = function ($value) { return htmlspecialchars($value, ENT_QUOTES,
             </svg>
           </div>
           <h2>🚨 Đường dây cấp cứu khẩn cấp 24/7</h2>
-          <a href="tel:<?php echo $contactEscape(preg_replace('/[^+0-9]/', '', $contactHotline)); ?>" class="emg-number"><?php echo $contactEscape($contactHotline); ?></a>
+          <a href="tel:<?php echo $contactEscape($siteContact['hotline_tel']); ?>" class="emg-number"><?php echo $contactEscape($contactHotline); ?></a>
           <p>Hoạt động 24 giờ / 7 ngày, kể cả ngày lễ và Tết Nguyên Đán</p>
         </div>
 
@@ -209,8 +211,8 @@ $contactEscape = function ($value) { return htmlspecialchars($value, ENT_QUOTES,
               </svg>
             </div>
             <h3>Điện thoại</h3>
-            <a href="tel:<?php echo $contactEscape(preg_replace('/[^+0-9]/', '', $contactPhone)); ?>">Hành chính: <?php echo $contactEscape($contactPhone); ?></a><br>
-            <a href="tel:<?php echo $contactEscape(preg_replace('/[^+0-9]/', '', $contactHotline)); ?>" style="color:var(--color-danger);">Cấp cứu: <?php echo $contactEscape($contactHotline); ?></a>
+            <a href="tel:<?php echo $contactEscape($siteContact['phone_tel']); ?>">Hành chính: <?php echo $contactEscape($contactPhone); ?></a><br>
+            <a href="tel:<?php echo $contactEscape($siteContact['hotline_tel']); ?>" style="color:var(--color-danger);">Cấp cứu: <?php echo $contactEscape($contactHotline); ?></a>
           </article>
 
           <article class="contact-info-card">

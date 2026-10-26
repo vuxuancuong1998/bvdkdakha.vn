@@ -4,10 +4,17 @@
   <!-- Thư viện Font chữ & Tailwind CSS để hỗ trợ hiển thị độc lập -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <script>window.tailwind = window.tailwind || {}; window.tailwind.config = { corePlugins: { preflight: false } };</script>
+  <script>window.tailwind = window.tailwind || {}; window.tailwind.config = { corePlugins: { preflight: false }, important: '#eoffice-training-root' };</script>
   <script src="https://cdn.tailwindcss.com"></script>
 
   <style>
+    .topbar > .container,
+    #site-header > .container,
+    #main-content > .announcements-bar > .container,
+    .site-footer .container {
+      max-width: var(--container-max);
+    }
+
     #eoffice-training-root {
       font-family: var(--font-primary);
       font-size: var(--font-size-base);

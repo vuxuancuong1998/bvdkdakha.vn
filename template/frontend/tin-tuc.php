@@ -409,21 +409,21 @@ $badge_classes = [
               </h2>
               <div class="widget-body hotline-body">
                 <p class="widget-desc">Đội ngũ tư vấn y tế sẵn sàng hỗ trợ bạn trong giờ hành chính và cấp cứu 24/7.</p>
-                <a href="tel:1900xxxx" class="hotline-link hotline-main" id="sidebar-hotline-main">
+                <a href="tel:<?php echo $siteEsc($siteContact['phone_tel']); ?>" class="hotline-link hotline-main" id="sidebar-hotline-main">
                   <span class="hotline-link-icon" aria-hidden="true">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 10.8 19.79 19.79 0 01.01 2.18 2 2 0 012 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
                   </span>
                   <span>
-                    <strong>1900 xxxx</strong>
+                    <strong><?php echo $siteEsc($siteContact['phone']); ?></strong>
                     <small>Đường dây tư vấn & đặt lịch</small>
                   </span>
                 </a>
-                <a href="tel:02603862xxx" class="hotline-link hotline-emergency" id="sidebar-hotline-emergency">
+                <a href="tel:<?php echo $siteEsc($siteContact['hotline_tel']); ?>" class="hotline-link hotline-emergency" id="sidebar-hotline-emergency">
                   <span class="hotline-link-icon" aria-hidden="true">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
                   </span>
                   <span>
-                    <strong>(0260) 386 2xxx</strong>
+                    <strong><?php echo $siteEsc($siteContact['hotline']); ?></strong>
                     <small>Cấp cứu 24/7</small>
                   </span>
                 </a>

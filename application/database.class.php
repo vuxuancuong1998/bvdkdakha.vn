@@ -20,7 +20,7 @@ class Database{
 	}
     //Mở kết nối CSDL 
     function connect($address, $account, $pwd, $name) {
-        $this->connection = mysqli_connect($address, $account, $pwd,$name);
+        $this->connection = mysqli_connect($address, $account, $pwd,$name, defined('DB_PORT') ? intval(DB_PORT) : intval(ini_get('mysqli.default_port')));
         if ($this->connection){
             $this->connection->set_charset("utf8mb4");
             mysqli_query($this->connection, "SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci");
@@ -78,7 +78,17 @@ class Database{
     } 
      
     //Chạy câu truy vấn query 
-    public function query($sql){ 
+    public function tryQuery($sql){
+        try {
+            $this->result = @mysqli_query($this->connection, $sql);
+            return $this->result !== false;
+        } catch (mysqli_sql_exception $e) {
+            $this->result = null;
+            return false;
+        }
+    }
+
+    public function query($sql){
         $this->result = mysqli_query($this->connection,$sql ); 
         if (!$this->result){ 
             $output = "Database query failed: " . mysqli_error($this->connection) . "<br /><br />";

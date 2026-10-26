@@ -194,7 +194,7 @@ $service = $all_services[$current_slug];
           <div class="p-4 rounded-3 text-center" style="background-color: #f0f9ff; border: 1px dashed #7dd3fc;">
             <h4 class="h6 font-weight-bold text-dark mb-2" style="font-weight: 700;">Bạn cần đặt lịch khám chuyên khoa này?</h4>
             <p class="small text-secondary mb-3">Vui lòng đăng ký trước để được phục vụ ưu tiên và không phải chờ đợi lâu.</p>
-            <a href="tel:1900xxxx" class="btn btn-primary px-4 py-2 font-weight-bold rounded-pill shadow-sm" style="font-weight: 600;">
+            <a href="tel:<?php echo $siteEsc($siteContact['hotline_tel']); ?>" class="btn btn-primary px-4 py-2 font-weight-bold rounded-pill shadow-sm" style="font-weight: 600;">
               <i class="fa-solid fa-calendar-check me-2"></i> Đặt Lịch Hẹn Khám
             </a>
           </div>
@@ -259,8 +259,8 @@ $service = $all_services[$current_slug];
               <small class="text-white-50" style="font-size: 12px;">Hỗ trợ phương tiện & xe cấp cứu khẩn cấp</small>
             </div>
           </div>
-          <a href="tel:1900xxxx" class="btn btn-warning w-100 font-weight-bold mt-2 text-dark shadow-sm" style="font-weight: 800; font-size: 16px;">
-            <i class="fa-solid fa-phone me-1"></i> 1900 xxxx
+          <a href="tel:<?php echo $siteEsc($siteContact['hotline_tel']); ?>" class="btn btn-warning w-100 font-weight-bold mt-2 text-dark shadow-sm" style="font-weight: 800; font-size: 16px;">
+            <i class="fa-solid fa-phone me-1"></i> <?php echo $siteEsc($siteContact['hotline']); ?>
           </a>
         </div>
 

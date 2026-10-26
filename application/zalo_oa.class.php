@@ -50,7 +50,7 @@ class ZaloOA
             return array('success' => false, 'message' => 'Noi dung Zalo OA dang rong.');
         }
 
-        $tokens = $this->getUsableTokens(false);
+        $tokens = $this->getUsableTokens(false, true);
         if(empty($tokens['access_token'])){
             return array('success' => false, 'message' => isset($tokens['message']) ? $tokens['message'] : 'Khong co Zalo OA access token.');
         }
@@ -62,6 +62,9 @@ class ZaloOA
 
         if($this->isTokenError($response)){
             $tokens = $this->getUsableTokens(true);
+            if(empty($tokens['access_token'])){
+                return array('success' => false, 'message' => 'Khong the lam moi token: '.(isset($tokens['message']) ? $tokens['message'] : 'Zalo khong tra ve token.'));
+            }
             if(!empty($tokens['access_token'])){
                 $response = $this->callGroupMessageApi($text, $tokens['access_token']);
                 if($this->isSuccessResponse($response)){
@@ -71,6 +74,24 @@ class ZaloOA
         }
 
         return array('success' => false, 'message' => $this->safeErrorMessage($response));
+    }
+
+    /** CLI maintenance: never expose token values. */
+    public function maintainTokens()
+    {
+        $this->reloadConfig();
+        if($this->getConfig('zalo_oa_enabled') !== '1'){
+            return array('success' => true, 'message' => 'Zalo OA dang tat; bo qua.');
+        }
+        foreach(array('zalo_oa_app_id', 'zalo_oa_secret_key', 'zalo_oa_refresh_token') as $key){
+            if($this->getConfig($key) === ''){
+                return array('success' => false, 'message' => 'Thieu cau hinh: '.$key);
+            }
+        }
+        $tokens = $this->getUsableTokens(false);
+        return empty($tokens['access_token'])
+            ? array('success' => false, 'message' => $tokens['message'])
+            : array('success' => true, 'message' => 'Zalo OA token san sang.', 'expires_at' => $tokens['expires_at']);
     }
 
     private function callGroupMessageApi($text, $accessToken)
@@ -94,7 +115,8 @@ class ZaloOA
             'zalo_oa_group_id' => '',
             'zalo_oa_access_token' => '',
             'zalo_oa_refresh_token' => '',
-            'zalo_oa_access_token_expires_at' => ''
+            'zalo_oa_access_token_expires_at' => '',
+            'zalo_oa_token_updated_at' => ''
         );
         foreach($defaults as $key => $value){
             $safeKey = $this->db->escapestring($key);
@@ -138,12 +160,17 @@ class ZaloOA
         $this->config[$key] = (string)$value;
     }
 
-    private function getUsableTokens($forceRefresh)
+    private function getUsableTokens($forceRefresh, $allowUnknownExpiry = false)
     {
         $accessToken = $this->getConfig('zalo_oa_access_token');
         $refreshToken = $this->getConfig('zalo_oa_refresh_token');
         $expiresAt = intval($this->getConfig('zalo_oa_access_token_expires_at'));
-        $needsRefresh = $forceRefresh || $accessToken === '' || ($expiresAt > 0 && $expiresAt <= (time() + 300));
+        // Manually entered tokens have no recorded expiry: try them when sending.
+        // Scheduled maintenance still refreshes unknown expiry to establish a deadline.
+        if($allowUnknownExpiry && !$forceRefresh && $accessToken !== '' && $expiresAt === 0){
+            return array('access_token' => $accessToken, 'refresh_token' => $refreshToken, 'expires_at' => $expiresAt);
+        }
+        $needsRefresh = $forceRefresh || $accessToken === '' || ($expiresAt <= (time() + 600));
 
         if(!$needsRefresh){
             return array('access_token' => $accessToken, 'refresh_token' => $refreshToken, 'expires_at' => $expiresAt);
@@ -169,7 +196,7 @@ class ZaloOA
             if($latestRefresh !== '' && $latestRefresh !== $refreshTokenBeforeLock && $latestAccess !== ''){
                 return array('access_token' => $latestAccess, 'refresh_token' => $latestRefresh, 'expires_at' => $latestExpiry);
             }
-            if(!$forceRefresh && $latestAccess !== '' && $latestExpiry > (time() + 300)){
+            if(!$forceRefresh && $latestAccess !== '' && $latestExpiry > (time() + 600)){
                 return array('access_token' => $latestAccess, 'refresh_token' => $latestRefresh, 'expires_at' => $latestExpiry);
             }
             if($latestRefresh === ''){
@@ -181,11 +208,27 @@ class ZaloOA
                 return array('message' => isset($refreshed['message']) ? $refreshed['message'] : 'Zalo khong tra ve token moi.');
             }
 
-            $expiresIn = isset($refreshed['expires_in']) ? max(300, intval($refreshed['expires_in'])) : 90000;
+            $expiresIn = isset($refreshed['expires_in']) ? intval($refreshed['expires_in']) : 0;
+            if($expiresIn <= 0){
+                return array('message' => 'Zalo khong tra ve expires_in hop le.');
+            }
             $newExpiry = time() + $expiresIn;
-            $this->setConfig('zalo_oa_access_token', $refreshed['access_token']);
-            $this->setConfig('zalo_oa_refresh_token', $refreshed['refresh_token']);
-            $this->setConfig('zalo_oa_access_token_expires_at', (string)$newExpiry);
+            // Persist the rotated token pair and expiry in one atomic statement.
+            $values = array(
+                'zalo_oa_access_token' => $refreshed['access_token'],
+                'zalo_oa_refresh_token' => $refreshed['refresh_token'],
+                'zalo_oa_access_token_expires_at' => (string)$newExpiry,
+                'zalo_oa_token_updated_at' => (string)time()
+            );
+            $cases = array();
+            $keys = array();
+            foreach($values as $key => $value){
+                $quotedKey = "'".$this->db->escapestring($key)."'";
+                $keys[] = $quotedKey;
+                $cases[] = 'WHEN '.$quotedKey." THEN '".$this->db->escapestring($value)."'";
+            }
+            $this->db->query('UPDATE hicrm_configs SET config_value = CASE config_key '.implode(' ', $cases).' END WHERE config_key IN ('.implode(',', $keys).')');
+            $this->reloadConfig();
 
             return array('access_token' => $refreshed['access_token'], 'refresh_token' => $refreshed['refresh_token'], 'expires_at' => $newExpiry);
         } finally {
@@ -204,7 +247,7 @@ class ZaloOA
             ),
             array('secret_key: '.$this->getConfig('zalo_oa_secret_key'))
         );
-        if(isset($response['json']['access_token'], $response['json']['refresh_token'])){
+        if($response['http_code'] >= 200 && $response['http_code'] < 300 && !empty($response['json']['access_token']) && !empty($response['json']['refresh_token'])){
             return $response['json'];
         }
         return array('message' => $this->safeErrorMessage($response));

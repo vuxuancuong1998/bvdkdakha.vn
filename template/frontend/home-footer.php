@@ -61,20 +61,19 @@ if($visitor_session_id !== ''){
   }
 }
 ?>
-       <footer class="site-footer" role="contentinfo" itemscope itemtype="https://schema.org/MedicalOrganization">
+       <footer class="site-footer home-footer-pearl" role="contentinfo" itemscope itemtype="https://schema.org/MedicalOrganization">
     <div class="footer-main">
-      <div class="container">
+      <div class="container-fluid">
         <div class="footer-grid">
 
           <div class="footer-brand">
             <a href="<?php echo XC_URL; ?>/" class="logo" aria-label="Trang chủ">
               <div class="logo-icon" aria-hidden="true">
                 <img
-                  src="<?php echo XC_URL; ?>/template/frontend/assets/images/logo.png"
+                  <?php echo site_image_attributes(XC_URL.'/template/frontend/assets/images/logo.png', '80px', false, false); ?>
                   alt="Logo Bệnh viện đa khoa khu vực Đăk Hà"
                   width="48"
                   height="48"
-                  loading="lazy"
                   itemprop="logo" />
               </div>
               <div class="logo-text">
@@ -172,7 +171,7 @@ if($visitor_session_id !== ''){
             <h3>Bản đồ vị trí</h3>
             <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3590.843561782325!2d107.91580267476482!3d14.517947685958656!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x316be4cdefd7c827%3A0x1750c383c6017dcb!2zMDUgxJDDoG8gRHV5IFThu6ssIMSQxINrIEjDoCwgUXXhuqNuZyBOZ8OjaSA2MjAwNywgVmnhu4d0IE5hbQ!5e1!3m2!1svi!2s!4v1791512653512!5m2!1svi!2s" width="300" height="300" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe>
             <a href="https://www.google.com/maps/place/05+%C4%90%C3%A0o+Duy+T%E1%BB%AB,+%C4%90%C4%83k+H%C3%A0,+Qu%E1%BA%A3ng+Ng%C3%A3i+62007,+Vi%E1%BB%87t+Nam/@14.5179477,107.9158027,825m/data=!3m2!1e3!4b1!4m6!3m5!1s0x316be4cdefd7c827:0x1750c383c6017dcb!8m2!3d14.5179477!4d107.9183776!16s%2Fg%2F11z84nm4m5" target="_blank" rel="noopener noreferrer"
-               style="display:inline-flex;align-items:center;gap:6px;margin-top:10px;font-size:13px;color:rgba(255,255,255,.6);"
+               style="display:inline-flex;align-items:center;gap:6px;margin-top:10px;font-size:13px;"
                id="footer-map-link">
               <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
                 <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3"/>
@@ -217,7 +216,7 @@ if($visitor_session_id !== ''){
 
     <!-- Footer Bottom -->
     <div class="footer-bottom">
-      <div class="container">
+      <div class="container-fluid">
         <div class="footer-bottom-inner">
           <p>
             © <time datetime="<?php echo date('Y'); ?>"><?php echo date('Y'); ?></time> Bệnh viện đa khoa khu vực Đăk Hà — Thuộc
@@ -236,7 +235,7 @@ if($visitor_session_id !== ''){
   <!-- ============================================================
        STICKY EMERGENCY BUTTON & SCROLL TO TOP (Từ footer.php)
        ============================================================ -->
-  <div class="sticky-emergency" aria-label="Gọi cấp cứu khẩn cấp">
+  <div class="sticky-emergency contact-actions" aria-label="Liên hệ bệnh viện">
     <a href="tel:<?php echo $siteEsc($siteContact['hotline_tel']); ?>" class="emergency-fab" id="emergency-fab-btn"
        aria-label="Gọi hotline cấp cứu <?php echo $siteEsc($siteContact['hotline']); ?>">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
@@ -245,7 +244,8 @@ if($visitor_session_id !== ''){
     </a>
   </div>
 
-  <button class="scroll-top" id="scroll-top-btn" onclick="window.scrollTo({top:0,behavior:'smooth'})" aria-label="Cuộn lên đầu trang">
+  <a class="contact-zalo" href="<?php echo $siteEsc($siteContact['zalo_url']); ?>" target="_blank" rel="noopener noreferrer" aria-label="Liên hệ bệnh viện qua Zalo" title="Liên hệ qua Zalo"><span aria-hidden="true">Zalo</span></a>
+  <button class="scroll-top" id="scroll-top-btn" aria-label="Cuộn lên đầu trang">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
       <polyline points="18 15 12 9 6 15"/>
     </svg>
@@ -254,7 +254,7 @@ if($visitor_session_id !== ''){
   <!-- ============================================================
        MODAL XÁC NHẬN ĐẶT LỊCH & MODAL XUẤT CODE PHP GHÉP NỐI
        ============================================================ -->
-  <div id="booking-modal" class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+  <div id="booking-modal" data-lenis-prevent class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
     <div class="bg-white rounded-3xl max-w-md w-full p-6 sm:p-8 shadow-2xl border border-medical-100 text-center space-y-4">
       <div class="w-14 h-14 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center text-2xl mx-auto">
         <i class="fa-solid fa-check"></i>
@@ -266,4 +266,9 @@ if($visitor_session_id !== ''){
       </button>
     </div>
   </div>
-
+</div>
+<script>window.homeDoctors=<?php echo $siteJson($homeDoctors); ?>; window.homeBookingToken=<?php echo $siteJson($_SESSION['quick_appointment_csrf']); ?>; window.homeBookingToday=<?php echo $siteJson(QuickAppointment::today()); ?>;</script>
+<script src="<?php echo XC_URL; ?>/template/frontend/assets/js/main.js?v=<?php echo filemtime(__DIR__.'/assets/js/main.js'); ?>" defer></script>
+<script src="<?php echo XC_URL; ?>/template/frontend/assets/js/quick-appointment-validation.js?v=<?php echo filemtime(__DIR__.'/assets/js/quick-appointment-validation.js'); ?>" defer></script>
+<script src="<?php echo XC_URL; ?>/template/frontend/assets/js/home.js?v=<?php echo filemtime(__DIR__.'/assets/js/home.js'); ?>" defer></script>
+</body></html>

@@ -36,11 +36,9 @@
   <meta name="twitter:image"       content="https://ttytdakha.gov.vn/assets/images/og-cover.jpg" />
 
   <!-- Preconnect fonts -->
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link
-    href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap"
-    rel="stylesheet" />
+  
+  
+  
 
   <!-- Favicon -->
   <link rel="icon" type="image/svg+xml" href="<?php echo XC_URL;?>/template/frontend/assets/images/logo.png" />
@@ -49,8 +47,8 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
 
   <!-- Stylesheet -->
-  <link rel="stylesheet" href="<?php echo XC_URL;?>/template/frontend/assets/css/style.css?version=<?php echo time(); ?>" />
-  <link rel="stylesheet" href="<?php echo XC_URL;?>/template/frontend/assets/css/tin-tuc.css?version=<?php echo time(); ?>" />
+  <link rel="stylesheet" href="<?php echo XC_URL;?>/template/frontend/assets/css/style.css?version=<?php echo filemtime(__DIR__.'/assets/css/style.css'); ?>" />
+  <link rel="stylesheet" href="<?php echo XC_URL;?>/template/frontend/assets/css/tin-tuc.css?version=<?php echo filemtime(__DIR__.'/assets/css/tin-tuc.css'); ?>" />
 
   <!-- ============================================================
        STRUCTURED DATA — JSON-LD
@@ -134,6 +132,7 @@
     ]
   }
   </script>
+<?php require __DIR__.'/ui-assets.php'; ?>
 </head>
 <body>
 
@@ -153,7 +152,7 @@
         <a href="<?php echo XC_URL; ?>/" class="logo" aria-label="Trang chủ Bệnh viện đa khoa khu vực Đăk Hà">
           <div class="logo-icon" aria-hidden="true">
            <img
-                  src="<?php echo XC_URL;?>/template/frontend/assets/images/logo.png"
+                  <?php echo site_image_attributes(XC_URL.'/template/frontend/assets/images/logo.png', '80px', 'eager', false); ?>
                   alt="Logo Bệnh viện đa khoa khu vực Đăk Hà"
                   width="48"
                   height="48"
@@ -306,7 +305,7 @@
             <div class="header-user-dropdown">
               <button class="user-avatar-btn" type="button" onclick="toggleUserMenu(event)">
                 <?php if(!empty($u_avatar)): ?>
-                  <img src="<?php echo XC_URL . '/' . $u_avatar; ?>" alt="<?php echo htmlspecialchars($u_name); ?>" class="user-avatar-img">
+                  <img <?php echo site_image_attributes(XC_URL . '/' . $u_avatar, '64px', 'eager', true); ?> alt="<?php echo htmlspecialchars($u_name); ?>" class="user-avatar-img">
                 <?php else: ?>
                   <div class="user-initials-avatar">
                     <?php echo htmlspecialchars($u_initials); ?>
@@ -369,7 +368,7 @@
   </header>
 
   <!-- Mobile Navigation Drawer -->
-  <nav class="mobile-nav" id="mobile-nav" aria-label="Menu mobile" aria-hidden="true">
+  <nav class="mobile-nav" id="mobile-nav" data-lenis-prevent aria-label="Menu mobile" aria-hidden="true">
     <div class="mobile-nav-header">
       <a href="<?php echo XC_URL; ?>/" class="logo">
         <div class="logo-icon" aria-hidden="true">
@@ -396,7 +395,7 @@
       <?php if(isset($_SESSION['user']['id']) && !empty($_SESSION['user']['id'])): ?>
         <div class="mobile-user-box" style="padding: 12px 14px; margin-bottom: 12px; background: rgba(2, 132, 199, 0.08); border-radius: 12px; border: 1px solid rgba(2, 132, 199, 0.15); display: flex; align-items: center; gap: 12px;">
           <?php if(!empty($u_avatar)): ?>
-            <img src="<?php echo XC_URL . '/' . $u_avatar; ?>" alt="<?php echo htmlspecialchars($u_name); ?>" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 2px solid #fff;">
+            <img <?php echo site_image_attributes(XC_URL . '/' . $u_avatar, '64px', 'eager', true); ?> alt="<?php echo htmlspecialchars($u_name); ?>" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 2px solid #fff;">
           <?php else: ?>
             <div style="width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-teal) 100%); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px; border: 2px solid #fff;">
               <?php echo htmlspecialchars($u_initials); ?>
@@ -652,16 +651,16 @@
   });
   </script>
 <!-- Google Font, FontAwesome 6, SweetAlert2 -->
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+
+
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <style>
 /* Reset & Scope Styles for Lay Giay TT25 Page */
 .tt25-page-wrapper {
-  font-family: 'Be Vietnam Pro', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-family: var(--font-primary);
   background-color: #f8fafc;
   color: #0f172a;
   line-height: 1.5;
@@ -720,7 +719,7 @@
 
 .tt25-title {
   font-size: clamp(1.75rem, 3vw, 2.3rem);
-  font-weight: 800;
+  font-weight: 700;
   margin-bottom: 8px;
   line-height: 1.25;
 }
@@ -844,7 +843,7 @@
   padding: 12px 14px 12px 42px;
   font-size: 14.5px;
   font-family: inherit;
-  font-weight: 500;
+  font-weight: 600;
   color: #0f172a;
   background-color: #ffffff;
   border: 1.5px solid #cbd5e1;
@@ -986,7 +985,7 @@
           <i class="fa-solid fa-file-signature"></i>
         </div>
         <div>
-          <h3 style="margin: 0 0 4px 0; font-size: 18px; font-weight: 800; color: #ffffff;">Cấp giấy tờ hưởng BHXH</h3>
+          <h3 style="margin: 0 0 4px 0; font-size: 18px; font-weight: 700; color: #ffffff;">Cấp giấy tờ hưởng BHXH</h3>
           <p style="margin: 0; font-size: 13.5px; opacity: 0.9; color: #ffffff;">(Nghỉ việc hưởng BHXH, nghỉ thai sản/dưỡng thai, tóm tắt bệnh án, cấp lại giấy ra viện,...)</p>
         </div>
       </div>
@@ -1178,7 +1177,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 errorText.innerHTML = errors.join('<br>');
                 errorAlert.style.display = 'flex';
                 successAlert.style.display = 'none';
-                window.scrollTo({ top: form.offsetTop - 100, behavior: 'smooth' });
+                if (window.SiteUI) window.SiteUI.scrollTo(form); else form.scrollIntoView();
                 return;
             }
 
@@ -1218,7 +1217,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         });
                     }
 
-                    window.scrollTo({ top: successAlert.offsetTop - 120, behavior: 'smooth' });
+                    if (window.SiteUI) window.SiteUI.scrollTo(successAlert); else successAlert.scrollIntoView();
                 } else {
                     errorText.innerHTML = data.message || 'Có lỗi xảy ra, vui lòng thử lại.';
                     errorAlert.style.display = 'flex';
@@ -1337,6 +1336,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function openNav() {
       mobileNav.classList.add('open');
+      mobileNav.setAttribute('aria-hidden', 'false');
       overlay.classList.add('show');
       hamburger.classList.add('open');
       hamburger.setAttribute('aria-expanded', 'true');
@@ -1345,6 +1345,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function closeNav() {
       mobileNav.classList.remove('open');
+      mobileNav.setAttribute('aria-hidden', 'true');
       overlay?.classList.remove('show');
       hamburger.classList.remove('open');
       hamburger.setAttribute('aria-expanded', 'false');
@@ -1410,7 +1411,7 @@ document.addEventListener('DOMContentLoaded', function() {
     window.addEventListener('scroll', onScroll, { passive: true });
 
     scrollTop?.addEventListener('click', () => {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      if(window.SiteUI) window.SiteUI.scrollTo(0); else window.scrollTo({top:0,behavior:'auto'});
     });
   })();
 
@@ -1418,24 +1419,8 @@ document.addEventListener('DOMContentLoaded', function() {
   /* ============================================================
      4. SCROLL ANIMATIONS (Intersection Observer)
      ============================================================ */
-  const ScrollAnimate = (() => {
-    const elements = document.querySelectorAll('[data-animate]');
-    if (!elements.length) return;
-
-    const observer = new IntersectionObserver(
-      entries => {
-        entries.forEach(entry => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add('in-view');
-            observer.unobserve(entry.target);
-          }
-        });
-      },
-      { threshold: 0.12, rootMargin: '0px 0px -40px 0px' }
-    );
-
-    elements.forEach(el => observer.observe(el));
-  })();
+  // Shared progressive reveal also handles legacy data-animate components.
+  window.SiteUI?.register(document);
 
 
   /* ============================================================
@@ -1443,7 +1428,7 @@ document.addEventListener('DOMContentLoaded', function() {
      ============================================================ */
   const CountUp = (() => {
     const counters = document.querySelectorAll('[data-count]');
-    if (!counters.length) return;
+    if (!counters.length || !('IntersectionObserver' in window) || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
     function animateCounter(el) {
       const target    = parseInt(el.dataset.count, 10);
@@ -1586,6 +1571,10 @@ document.addEventListener('DOMContentLoaded', function() {
   const LazyMap = (() => {
     const mapWrap = document.querySelector('.map-lazy-wrap');
     if (!mapWrap) return;
+    if (!('IntersectionObserver' in window)) {
+      if (mapWrap.dataset.src) mapWrap.innerHTML = '<iframe src="' + mapWrap.dataset.src.replace(/"/g, '&quot;') + '" title="Bản đồ" loading="lazy"></iframe>';
+      return;
+    }
 
     const observer = new IntersectionObserver(entries => {
       entries.forEach(entry => {
@@ -1675,7 +1664,10 @@ document.addEventListener('DOMContentLoaded', function() {
      ============================================================ */
   document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     anchor.addEventListener('click', function (e) {
-      const target = document.querySelector(this.getAttribute('href'));
+      if (window.SiteUI) return;
+      const href = this.getAttribute('href');
+      if (!href || href === '#') return;
+      const target = document.getElementById(href.slice(1));
       if (!target) return;
       e.preventDefault();
       const offset = 80; // header height offset
@@ -1686,3 +1678,5 @@ document.addEventListener('DOMContentLoaded', function() {
 
 })();
 	  </script>
+</body>
+</html>

@@ -64,7 +64,7 @@
         font-size: 25px;
         line-height: 1.3;
         margin: 10px 0 5px;
-        font-weight: 800;
+        font-weight: 700;
         color: #0f172a
     }
     
@@ -492,7 +492,7 @@
     
     #activity-page .electronic-schedule-picker label {
         font-size: 13px;
-        font-weight: 800;
+        font-weight: 700;
         text-transform: uppercase;
         margin: 0
     }
@@ -514,7 +514,7 @@
         background: #1760a5;
         color: #fff;
         font-size: 13px;
-        font-weight: 800;
+        font-weight: 700;
         text-transform: uppercase;
         cursor: pointer
     }
@@ -527,7 +527,7 @@
         padding: 13px 24px;
         color: #475569;
         font-size: 14px;
-        font-weight: 800;
+        font-weight: 700;
         text-transform: none;
         border-bottom: 1px solid #d7dee8
     }
@@ -677,7 +677,7 @@
 <?php endif;return ob_get_clean();} function activityFrontendCard($a,$files,$badge){ob_start();?>
 <article class="act-card">
     <?php if($a->thumbnail):?>
-    <div class="act-thumb"><img loading="lazy" src="<?php echo XC_URL.'/uploads/activities/'.rawurlencode($a->thumbnail);?>" alt="<?php echo actH($a->title);?>">
+    <div class="act-thumb"><img <?php echo site_image_attributes(XC_URL.'/uploads/activities/'.rawurlencode($a->thumbnail), '(max-width: 767px) calc(100vw - 40px), 400px', false, true); ?> alt="<?php echo actH($a->title);?>">
     </div>
     <?php endif;?>
     <div class="act-card-body"><span class="act-badge"><?php echo $badge;?></span>

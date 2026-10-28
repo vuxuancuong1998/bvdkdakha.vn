@@ -1,25 +1,10 @@
 <?php
-$isHomeDesign = true;
+
 require_once 'header.php';
-$homeAsset = function ($path, $folder = '') {
- $path = trim((string)$path);
- if ($path === '') return XC_URL.'/template/frontend/assets/images/banner-02.jpg';
- if (preg_match('~^https?://~i', $path)) return $path;
- return XC_URL.'/'.($path[0] === '/' || strpos($path,'uploads/') === 0 ? ltrim($path,'/') : $folder.$path);
-};
-require_once __SITE_PATH.'/application/quick_appointment.class.php';
-if (empty($_SESSION['quick_appointment_csrf'])) $_SESSION['quick_appointment_csrf'] = bin2hex(random_bytes(32));
-global $db;
-$db->query("SELECT id, depart_name FROM hicrm_departments WHERE depart_status = 1 AND (depart_name LIKE 'Khoa %' OR depart_name IN ('Nội khoa','Ngoại khoa','Sản khoa','Cận lâm Sàng')) ORDER BY id ASC");
-$homeDepartments = $db->fetch_object();
-if (!is_array($homeDepartments)) $homeDepartments = array();
-$homeDoctors = array();
-foreach ((is_array($featured_doctors ?? null) ? $featured_doctors : array()) as $doctor) {
- $homeDoctors[] = array('name'=>$doctor->doctor_name, 'role'=>$doctor->doctor_position, 'dept'=>$doctor->depart_name ?? '', 'unit'=>$doctor->doctor_workplace ?? '', 'img'=>$homeAsset($doctor->doctor_avatar ?? '', 'uploads/doctors/'), 'desc'=>$doctor->depart_name ?? '', 'service'=>$doctor->depart_name ?? '', 'code'=>$doctor->doctor_code ?? '');
-}
+
 ?>
 <div id="home-design">
-<main id="main-content">
+<main id="main-content" class="home-flow">
 
     <!-- 1. HERO BANNER SLIDER -->
         <?php
@@ -57,13 +42,18 @@ foreach ((is_array($featured_doctors ?? null) ? $featured_doctors : array()) as 
     <?php if ($siteSlides): ?>
     <section class="hero" aria-label="Banner trang chủ">
       <div class="slider-wrapper" role="region" aria-roledescription="slideshow" aria-label="Ảnh banner">
-        <?php foreach ($siteSlides as $index => $banner):
+        <?php $initialDevices = array(); foreach ($siteSlides as $index => $banner):
           $image = $homeAsset($banner->image_path);
+          $bannerDevice = (string)($banner->device ?? 'all');
+          $initialPc = $bannerDevice !== 'mobile' && empty($initialDevices['pc']);
+          $initialMobile = $bannerDevice !== 'pc' && empty($initialDevices['mobile']);
+          if ($initialPc) $initialDevices['pc'] = true;
+          if ($initialMobile) $initialDevices['mobile'] = true;
           $buttonUrl = trim((string)$banner->button_url);
           if ($buttonUrl !== '' && !preg_match('~^https?://~i', $buttonUrl)) $buttonUrl = XC_URL.'/'.ltrim($buttonUrl, '/');
         ?>
-        <article class="slide" data-device="<?php echo htmlspecialchars((string)($banner->device ?? 'all'), ENT_QUOTES, 'UTF-8'); ?>" id="slide-<?php echo $index + 1; ?>" role="group" aria-roledescription="slide" aria-label="Slide <?php echo $index + 1; ?> / <?php echo count($siteSlides); ?>" hidden>
-          <div class="slide-bg" data-image="<?php echo htmlspecialchars($image, ENT_QUOTES, 'UTF-8'); ?>" role="img" aria-label="<?php echo htmlspecialchars((string)$banner->alt_text, ENT_QUOTES, 'UTF-8'); ?>"></div>
+        <article class="slide" data-initial-pc="<?php echo $initialPc ? 1 : 0; ?>" data-initial-mobile="<?php echo $initialMobile ? 1 : 0; ?>" data-device="<?php echo htmlspecialchars((string)($banner->device ?? 'all'), ENT_QUOTES, 'UTF-8'); ?>" id="slide-<?php echo $index + 1; ?>" role="group" aria-roledescription="slide" aria-label="Slide <?php echo $index + 1; ?> / <?php echo count($siteSlides); ?>" hidden>
+          <img class="slide-bg" <?php echo site_image_attributes($image, '100vw', $index === 0 ? true : ($initialPc || $initialMobile ? 'eager' : false)); ?> alt="<?php echo htmlspecialchars((string)$banner->alt_text, ENT_QUOTES, 'UTF-8'); ?>">
           <div class="slide-overlay" aria-hidden="true"></div>
           <?php if ($banner->eyebrow || $banner->title || $banner->description || ($banner->button_label && $buttonUrl)): ?>
           <div class="container"><div class="slide-content">
@@ -147,8 +137,8 @@ foreach ((is_array($featured_doctors ?? null) ? $featured_doctors : array()) as 
         <!-- Cột trái: Tổ hợp hình ảnh & Huy hiệu nổi -->
         <div class="lg:col-span-6 relative" data-reveal>
           <div class="relative rounded-3xl overflow-hidden border-4 border-white shadow-floating bg-medical-100">
-            <img src="https://images.unsplash.com/photo-1586773860418-d37222d8fce3?auto=format&fit=crop&w=1000&q=80"
-                 onerror="this.src='https://placehold.co/800x600/0056b3/ffffff?text=Benh+Vien+Da+Khoa+Khu+Vuc+Dak+Ha'"
+            <img src="https://images.unsplash.com/photo-1586773860418-d37222d8fce3?auto=format&fit=crop&w=1000&q=80" width="1000" height="750" loading="lazy" decoding="async"
+                 onerror="this.onerror=null;this.src='https://placehold.co/800x600/0056b3/ffffff?text=Benh+Vien+Da+Khoa+Khu+Vuc+Dak+Ha'"
                  alt="Toàn cảnh Bệnh viện đa khoa khu vực Đăk Hà"
                  class="w-full h-[360px] sm:h-[450px] object-cover hover:scale-105 transition duration-700" />
             <div class="absolute inset-0 bg-gradient-to-t from-medical-900/75 via-transparent to-transparent"></div>
@@ -200,9 +190,9 @@ foreach ((is_array($featured_doctors ?? null) ? $featured_doctors : array()) as 
             <span>VỀ CHÚNG TÔI</span>
           </div>
 
-          <h2 class="font-extrabold text-2xl sm:text-3xl lg:text-4xl text-medical-900 leading-tight">
+          <h3 class="font-extrabold text-2xl sm:text-3xl lg:text-4xl text-medical-900 leading-tight">
             BỆNH VIỆN ĐA KHOA KHU VỰC ĐĂK HÀ — <span class="text-medical-700">Nơi gửi trọn niềm tin sức khỏe</span>
-          </h2>
+          </h3>
 
           <p class="text-slate-600 text-sm sm:text-base leading-relaxed">
             Là đơn vị sự nghiệp y tế công lập trọng điểm khu vực trực thuộc Sở Y tế, <strong>Bệnh viện đa khoa khu vực Đăk Hà</strong> đảm nhận sứ mệnh khám chữa bệnh, cấp cứu 24/7 và chăm sóc sức khỏe toàn diện cho nhân dân huyện Đăk Hà cùng các địa phương lân cận.
@@ -259,12 +249,10 @@ foreach ((is_array($featured_doctors ?? null) ? $featured_doctors : array()) as 
     <!-- 3. VỀ CHÚNG TÔI & 5 GIÁ TRỊ CỐT LÕI (BỐ CỤC THIỆN NHÂN HOSPITAL) -->
     <section id="gia-tri-cot-loi" class="py-16 sm:py-24 section-mist"><div class="container-fluid">
       <div class="text-center max-w-3xl mx-auto mb-12" data-reveal>
-        <span class="text-xs font-bold uppercase tracking-widest text-medical-700 bg-medical-50 px-3.5 py-1.5 rounded-full border border-medical-200">
-          Giá Trị Khác Biệt
-        </span>
-        <h2 class="font-extrabold text-2xl sm:text-3xl lg:text-4xl text-medical-900 mt-3">
-          5 GIÁ TRỊ CỐT LÕI
-        </h2>
+        <h2 class="text-xs font-bold uppercase tracking-widest text-medical-700 bg-medical-50 px-3.5 py-1.5 rounded-full border border-medical-200">
+         5 GIÁ TRỊ CỐT LÕI
+      </h2>
+        
         <p class="text-slate-600 text-sm sm:text-base mt-2">
           Lấy người bệnh làm trung tâm, chuẩn hóa chất lượng chẩn đoán và điều trị toàn diện
         </p>
@@ -347,7 +335,7 @@ foreach ((is_array($featured_doctors ?? null) ? $featured_doctors : array()) as 
     <!-- ============================================================
          3.5. DẤU ẤN CHUYỂN ĐỔI SỐ (SMART HUB TURBINE - PHÍA DƯỚI GIÁ TRỊ CỐT LÕI)
          ============================================================ -->
-    <section id="dau-an-chuyen-doi-so" class="relative pearl-tech-bg border-y border-sapphire-100 overflow-hidden" data-reveal>
+    <section id="dau-an-chuyen-doi-so" class="relative pearl-tech-bg overflow-hidden" data-reveal>
       <!-- Thanh điều khiển trực quan (Interactive Control Bar) -->
       <div class="bg-white/85 backdrop-blur-md border-b border-slate-200/80 shadow-sm">
       </div>
@@ -485,145 +473,65 @@ foreach ((is_array($featured_doctors ?? null) ? $featured_doctors : array()) as 
     </section>
 
     <!-- 4. DỊCH VỤ NỔI BẬT & GÓI KHÁM SỨC KHỎE -->
-    <section id="dich-vu-noi-bat" class="py-16 sm:py-24 bg-pearl-gradient border-y border-medical-100">
+    
+    <!-- 5. HỆ THỐNG CHUYÊN KHOA MŨI NHỌN -->
+   <section id="dich-vu-noi-bat" class="py-16 sm:py-24 bg-pearl-gradient">
       <div class="container">
-        <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10" data-reveal>
-          <div class="max-w-2xl">
-            <span class="text-xs font-bold uppercase tracking-widest text-medical-700 bg-white px-3.5 py-1.5 rounded-full border border-medical-200">
-              Gói Khám Nổi Bật
-            </span>
-            <h2 class="font-extrabold text-2xl sm:text-3xl lg:text-4xl text-medical-900 mt-3">
-              DỊCH VỤ & GÓI KHÁM SỨC KHỎE
-            </h2>
-            <p class="text-slate-500 text-sm sm:text-base mt-2">
-              Lựa chọn gói khám phù hợp, đặt lịch trực tuyến và được tiếp đón ưu tiên tại bệnh viện
-            </p>
+       <div class="text-center max-w-3xl mx-auto mb-6 lg:mb-4">
+            <h2 class="text-xs font-bold uppercase tracking-widest text-medical-700 bg-medical-50 px-3.5 py-1.5 rounded-full border border-medical-200" style = 'background:none;'>
+         CHUYÊN KHOA
+      </h2>
+           
           </div>
-          <div class="flex flex-wrap gap-2.5">
-            <button id="tab-pkg-all" onclick="filterPackages('all')" class="pkg-btn px-4 py-2 rounded-xl text-xs sm:text-sm font-bold bg-medical-700 text-white shadow-sm transition">Tất cả</button>
-            <button id="tab-pkg-tong-quat" onclick="filterPackages('tong-quat')" class="pkg-btn px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-white text-slate-700 hover:bg-medical-50 border border-medical-100 transition">Khám tổng quát</button>
-            <button id="tab-pkg-tam-soat" onclick="filterPackages('tam-soat')" class="pkg-btn px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-white text-slate-700 hover:bg-medical-50 border border-medical-100 transition">Tầm soát chuyên sâu</button>
-          </div>
-        </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-7" data-stagger-group>
-          <!-- Gói 1 -->
-          <article data-reveal data-pkg="tong-quat" class="pkg-card bg-white rounded-3xl overflow-hidden border border-medical-100 shadow-pearl hover:shadow-pearl-hover transition flex flex-col">
-            <div class="relative h-52 overflow-hidden">
-              <img src="https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=800&q=80"
-                   onerror="this.src='https://placehold.co/600x400/0056b3/ffffff?text=Kham+Suc+Khoe+Tong+Quat'"
-                   alt="Gói khám sức khỏe tổng quát" class="w-full h-full object-cover hover:scale-105 transition duration-500" />
-              <span class="absolute top-4 left-4 px-3 py-1 rounded-full bg-emerald-600/90 text-white text-xs font-bold">Khám Tổng Quát</span>
+<?php foreach ($homeDepartments as $department):
+ $departmentName = (string)$department->depart_name;
+ $departmentImage = trim((string)($department->depart_image ?? ''));
+ if ($departmentImage === '') $departmentImage = 'fa-solid fa-stethoscope';
+ $departmentIsIcon = preg_match('/\bfa-[a-z0-9-]+\b/i', $departmentImage) && preg_match('/^[a-zA-Z0-9_\s-]+$/D', $departmentImage);
+ $departmentImageUrl = $homeAsset($departmentImage, 'uploads/images/');
+?>
+          <article data-reveal data-department-id="<?php echo (int)$department->id; ?>" class="pkg-card bg-white rounded-3xl overflow-hidden border border-medical-100 shadow-pearl hover:shadow-pearl-hover transition flex flex-col">
+            <div class="relative h-52 overflow-hidden bg-medical-50 flex items-center justify-center">
+              <?php if ($departmentIsIcon): ?>
+              <i class="<?php echo $siteEsc($departmentImage); ?> text-medical-700 text-4xl" aria-hidden="true"></i>
+              <?php else: ?>
+              <img <?php echo site_image_attributes($departmentImageUrl, '(max-width: 767px) calc(100vw - 40px), (max-width: 1023px) 45vw, 380px', false, true); ?> alt="<?php echo $siteEsc($departmentName); ?>" class="w-full h-full object-contain transition duration-500" />
+              <?php endif; ?>
             </div>
             <div class="p-6 flex-1 flex flex-col justify-between space-y-4">
-              <div>
-                <h3 class="font-bold text-lg text-medical-900">Gói Khám Sức Khỏe Tổng Quát</h3>
-                <p class="text-slate-600 text-xs sm:text-sm mt-2 leading-relaxed">
-                  Khám lâm sàng toàn diện, xét nghiệm trên hệ thống tự động Cobas Pure, chẩn đoán hình ảnh cơ bản và tư vấn kết quả trực tiếp cùng bác sĩ.
-                </p>
-              </div>
+              <h3 class="font-bold text-lg text-medical-900"><?php echo $siteEsc($departmentName); ?></h3>
               <div class="pt-4 border-t border-slate-100 flex items-center justify-between">
-                <a href="<?php echo XC_URL; ?>/trang/goi-kham-suc-khoe.html" class="text-xs font-bold text-medical-700 hover:underline">Chi tiết gói khám</a>
-                <button onclick="selectServiceForBooking('Gói Khám Sức Khỏe Tổng Quát')" class="px-4 py-2.5 rounded-xl bg-medical-700 hover:bg-medical-800 text-white font-bold text-xs transition">
-                  ĐẶT LỊCH NGAY
-                </button>
+                  
               </div>
             </div>
           </article>
-
-          <!-- Gói 2 -->
-          <article data-reveal data-pkg="tam-soat" class="pkg-card bg-white rounded-3xl overflow-hidden border border-medical-100 shadow-pearl hover:shadow-pearl-hover transition flex flex-col">
-            <div class="relative h-52 overflow-hidden">
-              <img src="https://images.unsplash.com/photo-1559757175-5700dde675bc?auto=format&fit=crop&w=800&q=80"
-                   onerror="this.src='https://placehold.co/600x400/1760a5/ffffff?text=Tam+Soat+Dot+Quy+CT+4D'"
-                   alt="Tầm soát đột quỵ và tim mạch" class="w-full h-full object-cover hover:scale-105 transition duration-500" />
-              <span class="absolute top-4 left-4 px-3 py-1 rounded-full bg-red-600/90 text-white text-xs font-bold">Tim Mạch – Đột Quỵ</span>
-            </div>
-            <div class="p-6 flex-1 flex flex-col justify-between space-y-4">
-              <div>
-                <h3 class="font-bold text-lg text-medical-900">Tầm Soát Đột Quỵ Sớm & Siêu Âm Tim 4D Vivid E95 R6</h3>
-                <p class="text-slate-600 text-xs sm:text-sm mt-2 leading-relaxed">
-                  Kết hợp chụp CT Scanner Revolution ACT ES sọ não, siêu âm tim 4D tích hợp AI và xét nghiệm sinh hóa mạch máu chuyên sâu.
-                </p>
-              </div>
-              <div class="pt-4 border-t border-slate-100 flex items-center justify-between">
-                <a href="<?php echo XC_URL; ?>/trang/vien-phi-goi-dich-vu.html" class="text-xs font-bold text-medical-700 hover:underline">Bảng giá dịch vụ</a>
-                <button onclick="selectServiceForBooking('Tầm Soát Đột Quỵ & Tim Mạch')" class="px-4 py-2.5 rounded-xl bg-medical-700 hover:bg-medical-800 text-white font-bold text-xs transition">
-                  ĐẶT LỊCH NGAY
-                </button>
-              </div>
-            </div>
-          </article>
-
-          <!-- Gói 3 -->
-          <article data-reveal data-pkg="tam-soat" class="pkg-card bg-white rounded-3xl overflow-hidden border border-medical-100 shadow-pearl hover:shadow-pearl-hover transition flex flex-col">
-            <div class="relative h-52 overflow-hidden">
-              <img src="https://images.unsplash.com/photo-1581595220892-b0739db3ba8c?auto=format&fit=crop&w=800&q=80"
-                   onerror="this.src='https://placehold.co/600x400/092652/ffffff?text=Tam+Soat+Ung+Thu+Som'"
-                   alt="Tầm soát ung thư sớm" class="w-full h-full object-cover hover:scale-105 transition duration-500" />
-              <span class="absolute top-4 left-4 px-3 py-1 rounded-full bg-medical-700/90 text-white text-xs font-bold">Công Nghệ Cao</span>
-            </div>
-            <div class="p-6 flex-1 flex flex-col justify-between space-y-4">
-              <div>
-                <h3 class="font-bold text-lg text-medical-900">Tầm Soát Ung Thư Vú 3D Mammomat & Nội Soi Tiêu Hóa 4K</h3>
-                <p class="text-slate-600 text-xs sm:text-sm mt-2 leading-relaxed">
-                  Phát hiện sớm ung thư vú bằng X-quang nhũ ảnh 3D Siemens và tầm soát tổn thương đường tiêu hóa qua hệ thống nội soi Pentax EPK-i8020c.
-                </p>
-              </div>
-              <div class="pt-4 border-t border-slate-100 flex items-center justify-between">
-                <a href="<?php echo XC_URL; ?>/trang/kham-bhyt.html" class="text-xs font-bold text-medical-700 hover:underline">Quyền lợi BHYT</a>
-                <button onclick="selectServiceForBooking('Tầm Soát Ung Thư Sớm')" class="px-4 py-2.5 rounded-xl bg-medical-700 hover:bg-medical-800 text-white font-bold text-xs transition">
-                  ĐẶT LỊCH NGAY
-                </button>
-              </div>
-            </div>
-          </article>
+<?php endforeach; ?>
         </div>
       </div>
-    </section>
-
-    <!-- 5. HỆ THỐNG CHUYÊN KHOA MŨI NHỌN -->
-    <section id="chuyen-khoa" class="py-16 sm:py-24 section-pearl"><div class="container">
-      <div class="text-center max-w-3xl mx-auto mb-14" data-reveal>
-        <span class="text-xs font-bold uppercase tracking-widest text-medical-700 bg-medical-50 px-3.5 py-1.5 rounded-full border border-medical-200">
-          Đa Chuyên Khoa Đồng Bộ
-        </span>
-        <h2 class="font-extrabold text-2xl sm:text-3xl lg:text-4xl text-medical-900 mt-3">
-          CÁC CHUYÊN KHOA TRỌNG ĐIỂM
-        </h2>
-        <p class="text-slate-500 text-sm sm:text-base mt-2">
-          Đáp ứng đầy đủ nhu cầu khám chữa bệnh nội trú, ngoại trú và cấp cứu 24/7 của nhân dân
-        </p>
-      </div>
-
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6" data-stagger-group>
-<?php foreach ($homeDepartments as $department): ?>
-<button type="button" data-service="<?php echo $siteEsc($department->depart_name); ?>" class="specialty-card text-left cursor-pointer bg-white rounded-3xl p-6 border border-medical-100 shadow-pearl">
- <span class="spec-icon w-14 h-14 rounded-2xl bg-medical-50 text-medical-700 flex items-center justify-center text-2xl mb-4"><i class="fa-solid fa-stethoscope" aria-hidden="true"></i></span>
- <h3 class="font-bold text-lg mb-2"><?php echo $siteEsc($department->depart_name); ?></h3>
- <span class="text-xs font-bold text-medical-700">Tư vấn lịch khám →</span>
-</button><?php endforeach; ?>
-      </div>
-    </div>
     </section>
 
     <!-- 6. ĐỘI NGŨ CHUYÊN GIA - BÁC SĨ -->
-    <section id="doi-ngu-bac-si" class="py-16 sm:py-24 bg-medical-gradient text-white">
+    <section id="doi-ngu-bac-si" class="py-16 sm:py-24">
+      <div class="med-team-decoration" aria-hidden="true">
+        <span class="med-team-cross med-team-cross-one">+</span>
+        <span class="med-team-cross med-team-cross-two">+</span>
+        <svg class="med-team-hex" viewBox="0 0 300 240" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M75 20l52 30v60l-52 30-52-30V50z M179 20l52 30v60l-52 30-52-30V50z M127 110l52 30v60l-52 30-52-30v-60z M231 110l52 30v60l-52 30-52-30v-60z"/></svg>
+        <svg class="med-team-ecg" viewBox="0 0 1440 110" fill="none" preserveAspectRatio="none"><path d="M0 65H240l18-20 22 35 30-65 32 85 24-35h300l18-20 22 35 30-65 32 85 24-35h300l18-20 22 35 30-65 32 85 24-35h252" stroke="currentColor" stroke-width="2"/></svg>
+      </div>
       <div class="container">
         <div class="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6" data-reveal>
           <div>
-            <span class="text-xs font-bold uppercase tracking-widest text-sky-200 bg-white/10 px-3.5 py-1.5 rounded-full border border-white/20">
+            <h3 class="med-team-subtitle text-center">
               Đội Ngũ Y Bác Sĩ
-            </span>
-            <h2 class="font-extrabold text-2xl sm:text-3xl lg:text-4xl mt-3">
-              CHUYÊN GIA GIÀU Y ĐỨC & KINH NGHIỆM
-            </h2>
+            </h3>
           </div>
           <div class="flex items-center gap-3 self-start md:self-auto">
             <button type="button" onclick="doctorSlide(-1)" aria-label="Bác sĩ trước" class="doc-arrow"><i class="fa-solid fa-arrow-left"></i></button>
             <button type="button" onclick="doctorSlide(1)" aria-label="Bác sĩ tiếp theo" class="doc-arrow"><i class="fa-solid fa-arrow-right"></i></button>
-            <a href="<?php echo XC_URL; ?>/trang/bac-si" class="px-5 py-3 rounded-xl bg-white text-medical-800 hover:bg-sky-50 font-bold text-sm transition">
-            Xem toàn bộ danh sách Bác sĩ <i class="fa-solid fa-arrow-right ml-1"></i>
+            <a href="<?php echo XC_URL; ?>/trang/bac-si" class="med-team-view-all">
+            Xem thêm 
           </a>
           </div>
         </div>
@@ -639,35 +547,28 @@ foreach ((is_array($featured_doctors ?? null) ? $featured_doctors : array()) as 
          ============================================================ -->
     <?php require 'home-equipment.php'; ?>
 
-    <!-- 8. TIN TỨC & HOẠT ĐỘNG Y TẾ -->
-    <section class="py-16 sm:py-24 bg-pearl-gradient border-t border-medical-100">
+    <!-- 8. TIN TỨC & SỰ KIỆN -->
+    <section id="tin-tuc-noi-bat" class="home-news" aria-labelledby="home-news-heading">
       <div class="container">
-        <div class="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6" data-reveal>
-          <div>
-            <span class="text-xs font-bold uppercase tracking-widest text-medical-700 bg-white px-3.5 py-1.5 rounded-full border border-medical-200">
-              Bản Tin Bệnh Viện
-            </span>
-            <h2 class="font-extrabold text-2xl sm:text-3xl lg:text-4xl text-medical-900 mt-3">
-              TIN TỨC HOẠT ĐỘNG & Y TẾ CỘNG ĐỒNG
-            </h2>
-          </div>
-          <a href="<?php echo XC_URL; ?>/tin-tuc/1-tin-hoat-dong.html" class="text-sm font-bold text-medical-700 hover:text-medical-900 flex items-center gap-1.5">
-            Xem tất cả bản tin <i class="fa-solid fa-arrow-right"></i>
-          </a>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-7" data-stagger-group>
-<?php foreach (array_slice(is_array($home_featured_news ?? null) ? $home_featured_news : array(), 0, 3) as $news):
+        <h2 id="home-news-heading" class="home-news-heading">TIN TỨC NỔI BẬT</h2>
+        <div class="home-news-grid">
+<?php foreach (array_slice(is_array($home_featured_news ?? null) ? $home_featured_news : array(), 0, 4) as $newsIndex => $news):
  $newsUrl = $this->url->permalink($news->id, 'event_detail');
- $newsImage = $homeAsset($news->thumbnail_url ?? '', 'uploads/events/'); ?>
-<article data-reveal class="bg-white rounded-3xl overflow-hidden border border-medical-100 shadow-pearl flex flex-col">
- <a href="<?php echo $siteEsc($newsUrl); ?>"><img loading="lazy" src="<?php echo $siteEsc($newsImage); ?>" alt="<?php echo $siteEsc($news->title); ?>" class="h-52 w-full object-cover"></a>
- <div class="p-6 flex-1 space-y-4"><span class="text-xs font-bold text-medical-700"><?php echo $siteEsc($news->category_name ?? ''); ?></span>
- <h3 class="font-bold text-lg text-medical-900"><a href="<?php echo $siteEsc($newsUrl); ?>"><?php echo $siteEsc($news->title); ?></a></h3>
- <p class="text-slate-600 text-sm"><?php echo $siteEsc(strip_tags($news->description ?? '')); ?></p>
- <a href="<?php echo $siteEsc($newsUrl); ?>" class="text-xs font-bold text-medical-700">Đọc tiếp →</a></div>
-</article><?php endforeach; ?>
+ $newsImage = $homeAsset($news->thumbnail_url ?? '', 'uploads/events/');
+ $newsExcerpt = trim(preg_replace('/\s+/u', ' ', html_entity_decode(strip_tags((string)($news->description ?? '')), ENT_QUOTES, 'UTF-8')));
+?>
+          <article class="home-news-item<?php echo $newsIndex === 0 ? ' home-news-featured' : ''; ?>" data-reveal>
+            <a class="home-news-image" href="<?php echo $siteEsc($newsUrl); ?>" tabindex="-1" aria-hidden="true">
+              <img <?php echo site_image_attributes($newsImage, $newsIndex === 0 ? '(max-width: 767px) calc(100vw - 40px), (max-width: 1023px) 46vw, 600px' : '(max-width: 479px) 110px, 180px', false, true); ?> alt="" />
+            </a>
+            <div class="home-news-copy">
+              <h3><a href="<?php echo $siteEsc($newsUrl); ?>"><?php echo $siteEsc($news->title); ?></a></h3>
+              <?php if ($newsExcerpt !== ''): ?><p><?php echo $siteEsc($newsExcerpt); ?></p><?php endif; ?>
+            </div>
+          </article>
+<?php endforeach; ?>
         </div>
+        
       </div>
     </section>
 
@@ -676,10 +577,10 @@ foreach ((is_array($featured_doctors ?? null) ? $featured_doctors : array()) as 
   <!-- MODAL THÔNG TIN CHI TIẾT CÁN BỘ / BÁC SĨ -->
   <div id="doctor-modal" class="hidden fixed inset-0 z-[70] items-center justify-center p-4 sm:p-6" role="dialog" aria-modal="true" aria-labelledby="dm-heading">
     <div class="absolute inset-0 bg-slate-900/50 backdrop-blur-sm" onclick="closeDoctorModal()"></div>
-    <div class="dm-panel relative w-full max-w-4xl max-h-[92vh] overflow-y-auto bg-white rounded-3xl shadow-2xl p-5 sm:p-8">
+    <div data-lenis-prevent class="dm-panel relative w-full max-w-4xl max-h-[92vh] overflow-y-auto bg-white rounded-3xl shadow-2xl p-5 sm:p-8">
       <div class="flex items-center justify-between pb-4 mb-5 border-b border-slate-100">
         <h3 id="dm-heading" class="flex items-center gap-3 text-lg sm:text-xl font-bold text-[#0b86c7]">
-          <i class="fa-solid fa-id-card text-xl"></i> Thông Tin Chi Tiết Cán Bộ / Bác Sĩ
+          <i class="fa-solid fa-id-card text-xl"></i> Thông tin chi tiết
         </h3>
         <button type="button" onclick="closeDoctorModal()" aria-label="Đóng" class="w-10 h-10 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 flex items-center justify-center transition">
           <i class="fa-solid fa-xmark"></i>
@@ -711,9 +612,6 @@ foreach ((is_array($featured_doctors ?? null) ? $featured_doctors : array()) as 
       </div>
 
       <div class="flex flex-wrap items-center justify-end gap-3 pt-5 mt-6 border-t border-slate-100">
-        <button type="button" id="dm-book" class="px-5 py-2.5 rounded-full bg-medical-700 hover:bg-medical-800 text-white font-bold text-sm transition flex items-center gap-2">
-          <i class="fa-regular fa-calendar-check"></i> Đặt lịch khám
-        </button>
         <button type="button" onclick="closeDoctorModal()" class="px-7 py-2.5 rounded-full bg-slate-50 hover:bg-slate-100 border border-slate-300 text-slate-700 font-bold text-sm transition">Đóng</button>
       </div>
     </div>
@@ -721,9 +619,4 @@ foreach ((is_array($featured_doctors ?? null) ? $featured_doctors : array()) as 
 
 
 <?php require 'home-footer.php'; ?>
-</div>
-<script>window.homeDoctors=<?php echo $siteJson($homeDoctors); ?>; window.homeBookingToken=<?php echo $siteJson($_SESSION['quick_appointment_csrf']); ?>; window.homeBookingToday=<?php echo $siteJson(QuickAppointment::today()); ?>;</script>
-<script src="<?php echo XC_URL; ?>/template/frontend/assets/js/main.js?v=<?php echo filemtime(__DIR__.'/assets/js/main.js'); ?>" defer></script>
-<script src="<?php echo XC_URL; ?>/template/frontend/assets/js/quick-appointment-validation.js?v=<?php echo filemtime(__DIR__.'/assets/js/quick-appointment-validation.js'); ?>" defer></script>
-<script src="<?php echo XC_URL; ?>/template/frontend/assets/js/home.js?v=<?php echo filemtime(__DIR__.'/assets/js/home.js'); ?>" defer></script>
-</body></html>
+

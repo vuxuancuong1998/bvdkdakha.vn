@@ -206,10 +206,9 @@ if (!function_exists('frontendDoctorPaginationItems')) {
                    itemscope itemtype="https://schema.org/Physician">
             <div class="doctor-avatar-circle">
               <img 
-                src="<?php echo $avatarSrc; ?>" 
+                <?php echo site_image_attributes($avatarSrc, '(max-width: 767px) 42vw, 300px', false, true); ?> 
                 alt="<?php echo htmlspecialchars($docName, ENT_QUOTES, 'UTF-8'); ?>"
-                class="doctor-avatar-img" 
-                loading="lazy"
+                class="doctor-avatar-img"
                 itemprop="image">
             </div>
 
@@ -296,7 +295,7 @@ if (!function_exists('frontendDoctorPaginationItems')) {
          DOCTOR DETAIL MODAL POPUP
          ============================================================ -->
     <div id="doctorDetailModal" class="doctor-modal-backdrop" onclick="if(event.target === this) closeDoctorModal();" aria-hidden="true" role="dialog" aria-labelledby="modalDoctorName">
-      <div class="doctor-modal-dialog">
+      <div class="doctor-modal-dialog" data-lenis-prevent>
         <button type="button" class="doctor-modal-close" aria-label="Đóng" onclick="closeDoctorModal()">&times;</button>
         
         <div class="doctor-modal-header">
@@ -413,7 +412,7 @@ if (!function_exists('frontendDoctorPaginationItems')) {
 
 .doctor-hero-title {
   font-size: clamp(24px, 4vw, 32px);
-  font-weight: 800;
+  font-weight: 700;
   color: #fff;
   margin: 0 0 8px 0;
   line-height: 1.25;
@@ -558,7 +557,7 @@ if (!function_exists('frontendDoctorPaginationItems')) {
   -moz-appearance: none;
   cursor: pointer;
   padding-right: 42px;
-  font-weight: 500;
+  font-weight: 600;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -699,7 +698,7 @@ if (!function_exists('frontendDoctorPaginationItems')) {
   padding: 5px 12px;
   border-radius: 9999px;
   font-size: 13px;
-  font-weight: 500;
+  font-weight: 600;
 }
 
 .doctor-active-tag strong {
@@ -823,7 +822,7 @@ if (!function_exists('frontendDoctorPaginationItems')) {
 .doctor-card-name {
   font-family: inherit;
   font-size: 19px;
-  font-weight: 800;
+  font-weight: 700;
   color: #1e293b;
   text-transform: uppercase;
   margin: 0 0 10px 0;
@@ -1050,7 +1049,7 @@ if (!function_exists('frontendDoctorPaginationItems')) {
 
 .doctor-modal-name {
   font-size: 22px;
-  font-weight: 800;
+  font-weight: 700;
   color: #0f172a;
   margin: 0 0 8px 0;
   line-height: 1.25;
@@ -1093,7 +1092,7 @@ if (!function_exists('frontendDoctorPaginationItems')) {
 .doctor-modal-table td {
   padding: 8px 10px;
   color: #1e293b;
-  font-weight: 500;
+  font-weight: 600;
   border-bottom: 1px solid #edf2f7;
 }
 
@@ -1496,6 +1495,7 @@ function openDoctorModal(cardEl) {
     if (modal) {
       modal.classList.add('active');
       document.body.style.overflow = 'hidden';
+      if (window.SiteUI) window.SiteUI.stop();
     }
   } catch (err) {
     console.error('Error opening doctor modal:', err);
@@ -1507,6 +1507,7 @@ function closeDoctorModal() {
   if (modal) {
     modal.classList.remove('active');
     document.body.style.overflow = '';
+    if (window.SiteUI) window.SiteUI.start();
   }
 }
 

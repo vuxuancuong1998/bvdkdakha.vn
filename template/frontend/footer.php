@@ -61,20 +61,19 @@ if($visitor_session_id !== ''){
   }
 }
 ?>
-       <footer class="site-footer" role="contentinfo" itemscope itemtype="https://schema.org/MedicalOrganization">
+       <footer class="site-footer home-footer-pearl" role="contentinfo" itemscope itemtype="https://schema.org/MedicalOrganization">
     <div class="footer-main">
-      <div class="container">
+      <div class="container-fluid">
         <div class="footer-grid">
 
           <div class="footer-brand">
             <a href="<?php echo XC_URL; ?>/" class="logo" aria-label="Trang chủ">
               <div class="logo-icon" aria-hidden="true">
                 <img
-                  src="<?php echo XC_URL; ?>/template/frontend/assets/images/logo.png"
+                  <?php echo site_image_attributes(XC_URL.'/template/frontend/assets/images/logo.png', '80px', false, false); ?>
                   alt="Logo Bệnh viện đa khoa khu vực Đăk Hà"
                   width="48"
                   height="48"
-                  loading="lazy"
                   itemprop="logo" />
               </div>
               <div class="logo-text">
@@ -148,7 +147,7 @@ if($visitor_session_id !== ''){
                 </svg>
                 <span>
                   Cấp cứu 24/7: <a href="tel:<?php echo $siteEsc($siteContact['hotline_tel']); ?>" style="color:var(--color-danger);font-weight:700;"><?php echo $siteEsc($siteContact['hotline']); ?></a><br>
-                 </span>
+                </span>
               </div>
               <div class="footer-contact-item">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
@@ -162,62 +161,51 @@ if($visitor_session_id !== ''){
             <div class="footer-hours">
               <p>
                 <strong>Giờ làm việc: Theo giờ hành chính</strong><br>
-                
                 Cấp cứu: 24/7 kể cả ngày lễ
               </p>
             </div>
           </div>
 
-          <!-- Map placeholder -->
+          <!-- Map & Visit Stats -->
           <div class="footer-col">
             <h3>Bản đồ vị trí</h3>
             <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3590.843561782325!2d107.91580267476482!3d14.517947685958656!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x316be4cdefd7c827%3A0x1750c383c6017dcb!2zMDUgxJDDoG8gRHV5IFThu6ssIMSQxINrIEjDoCwgUXXhuqNuZyBOZ8OjaSA2MjAwNywgVmnhu4d0IE5hbQ!5e1!3m2!1svi!2s!4v1791512653512!5m2!1svi!2s" width="300" height="300" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe>
-            <!-- <div class="map-lazy-wrap"
-                 style="height:180px;background:var(--color-primary);border-radius:var(--radius-md);overflow:hidden;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:8px;"
-                 data-src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3867.1!2d107.9!3d14.7!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMTTCsDQyJzAwLjAiTiAxMDfCsDU0JzAwLjAiRQ!5e0!3m2!1svi!2svn!4v1000000000000"
-                 role="img"
-                 aria-label="Bản đồ vị trí Bệnh viện đa khoa khu vực Đăk Hà (sẽ tải khi cuộn đến)">
-              <svg viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="1.5" aria-hidden="true">
-                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/>
-              </svg>
-              <span style="color:rgba(255,255,255,.6);font-size:12px;">Đang tải bản đồ...</span>
-            </div> -->
-            <a href="https://www.google.com/maps/place/05+%C4%90%C3%A0o+Duy+T%E1%BB%AB,+%C4%90%C4%83k+H%C3%A0,+Qu%E1%BA%A3ng+Ng%C3%A3i+62007,+Vi%E1%BB%87t+Nam/@14.5179477,107.9158027,825m/data=!3m2!1e3!4b1!4m6!3m5!1s0x316be4cdefd7c827:0x1750c383c6017dcb!8m2!3d14.5179477!4d107.9183776!16s%2Fg%2F11z84nm4m5?entry=ttu&g_ep=EgoyMDI2MTAwNi4wIKXMDSoASAFQAw%3D%3D" target="_blank" rel="noopener noreferrer"
-               style="display:inline-flex;align-items:center;gap:6px;margin-top:10px;font-size:13px;color:rgba(255,255,255,.6);"
+            <a href="https://www.google.com/maps/place/05+%C4%90%C3%A0o+Duy+T%E1%BB%AB,+%C4%90%C4%83k+H%C3%A0,+Qu%E1%BA%A3ng+Ng%C3%A3i+62007,+Vi%E1%BB%87t+Nam/@14.5179477,107.9158027,825m/data=!3m2!1e3!4b1!4m6!3m5!1s0x316be4cdefd7c827:0x1750c383c6017dcb!8m2!3d14.5179477!4d107.9183776!16s%2Fg%2F11z84nm4m5" target="_blank" rel="noopener noreferrer"
+               style="display:inline-flex;align-items:center;gap:6px;margin-top:10px;font-size:13px;"
                id="footer-map-link">
               <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
                 <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3"/>
               </svg>
               Xem trên Google Maps
             </a>
-            <div class="footer-visit-stats" aria-label="Thống kê lượt truy cập website">
+            <div class="footer-visit-stats" id="visit-stats-counter" aria-label="Thống kê lượt truy cập website">
               <div class="footer-visit-stat">
                 <span class="footer-visit-label">
                   <span class="footer-online-dot" aria-hidden="true"></span>
                   Đang truy cập
                 </span>
-                <strong><?php echo number_format($visit_stats['online'], 0, ',', '.'); ?></strong>
+                <strong data-count="<?php echo (int)$visit_stats['online']; ?>"><?php echo number_format($visit_stats['online'],0,',','.'); ?></strong>
               </div>
               <div class="footer-visit-stat">
                 <span class="footer-visit-label">
                   <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/></svg>
                   Tổng hôm nay
                 </span>
-                <strong><?php echo number_format($visit_stats['today'], 0, ',', '.'); ?></strong>
+                <strong data-count="<?php echo (int)$visit_stats['today']; ?>"><?php echo number_format($visit_stats['today'],0,',','.'); ?></strong>
               </div>
               <div class="footer-visit-stat">
                 <span class="footer-visit-label">
                   <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3v18h18"/><path d="m7 15 4-4 3 3 5-6"/></svg>
                   Tổng tháng này
                 </span>
-                <strong><?php echo number_format($visit_stats['month'], 0, ',', '.'); ?></strong>
+                <strong data-count="<?php echo (int)$visit_stats['month']; ?>"><?php echo number_format($visit_stats['month'],0,',','.'); ?></strong>
               </div>
               <div class="footer-visit-stat">
                 <span class="footer-visit-label">
                   <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19V9M10 19V5M16 19v-7M22 19H2"/></svg>
                   Tổng cộng
                 </span>
-                <strong><?php echo number_format($visit_stats['total'], 0, ',', '.'); ?></strong>
+                <strong data-count="<?php echo (int)$visit_stats['total']; ?>"><?php echo number_format($visit_stats['total'],0,',','.'); ?></strong>
               </div>
             </div>
           </div>
@@ -228,17 +216,16 @@ if($visitor_session_id !== ''){
 
     <!-- Footer Bottom -->
     <div class="footer-bottom">
-      <div class="container">
+      <div class="container-fluid">
         <div class="footer-bottom-inner">
           <p>
             © <time datetime="<?php echo date('Y'); ?>"><?php echo date('Y'); ?></time> Bệnh viện đa khoa khu vực Đăk Hà — Thuộc
             <a href="https://soytekontum.gov.vn" target="_blank" rel="noopener noreferrer">Sở Y tế tỉnh Quảng Ngãi</a>.
-           </p>
+          </p>
           <nav aria-label="Liên kết pháp lý">
             <a href="<?php echo XC_URL; ?>/trang/chinh-sach-bao-mat.html">Chính sách bảo mật</a>
             &nbsp;·&nbsp;
             <a href="<?php echo XC_URL; ?>/trang/dieu-khoan-su-dung.html">Điều khoản sử dụng</a>
-            &nbsp;
           </nav>
         </div>
       </div>
@@ -246,9 +233,9 @@ if($visitor_session_id !== ''){
   </footer>
 
   <!-- ============================================================
-       STICKY EMERGENCY BUTTON (mobile)
+       STICKY EMERGENCY BUTTON & SCROLL TO TOP (Từ footer.php)
        ============================================================ -->
-  <div class="sticky-emergency" aria-label="Gọi cấp cứu khẩn cấp">
+  <div class="sticky-emergency contact-actions" aria-label="Liên hệ bệnh viện">
     <a href="tel:<?php echo $siteEsc($siteContact['hotline_tel']); ?>" class="emergency-fab" id="emergency-fab-btn"
        aria-label="Gọi hotline cấp cứu <?php echo $siteEsc($siteContact['hotline']); ?>">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
@@ -257,20 +244,31 @@ if($visitor_session_id !== ''){
     </a>
   </div>
 
-  <!-- Scroll to Top -->
+  <a class="contact-zalo" href="<?php echo $siteEsc($siteContact['zalo_url']); ?>" target="_blank" rel="noopener noreferrer" aria-label="Liên hệ bệnh viện qua Zalo" title="Liên hệ qua Zalo"><span aria-hidden="true">Zalo</span></a>
   <button class="scroll-top" id="scroll-top-btn" aria-label="Cuộn lên đầu trang">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
       <polyline points="18 15 12 9 6 15"/>
     </svg>
   </button>
 
-  <!-- Hidden text for SR -->
-  <style>.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}</style>
-
-  <!-- Bootstrap 5 Bundle JS -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-  <!-- Main JS -->
-  <script src="<?php echo XC_URL;?>/template/frontend/assets/js/main.js?v=<?php echo filemtime(__SITE_PATH.'/template/frontend/assets/js/main.js'); ?>" defer></script>
-
-</body>
-</html>
+  <!-- ============================================================
+       MODAL XÁC NHẬN ĐẶT LỊCH & MODAL XUẤT CODE PHP GHÉP NỐI
+       ============================================================ -->
+  <div id="booking-modal" data-lenis-prevent class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-md w-full p-6 sm:p-8 shadow-2xl border border-medical-100 text-center space-y-4">
+      <div class="w-14 h-14 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center text-2xl mx-auto">
+        <i class="fa-solid fa-check"></i>
+      </div>
+      <h3 class="font-extrabold text-xl text-medical-900">ĐÃ TIẾP NHẬN ĐĂNG KÝ KHÁM</h3>
+      <div id="booking-summary" class="bg-medical-50 rounded-2xl p-4 text-left text-xs sm:text-sm space-y-1.5 border border-medical-100 text-slate-700"></div>
+      <button onclick="document.getElementById('booking-modal').classList.add('hidden')" class="w-full py-3 rounded-xl bg-medical-gradient text-white font-bold text-sm">
+        Đóng thông báo
+      </button>
+    </div>
+  </div>
+</div>
+<script>window.homeDoctors=<?php echo $siteJson($homeDoctors); ?>; window.homeBookingToken=<?php echo $siteJson($_SESSION['quick_appointment_csrf']); ?>; window.homeBookingToday=<?php echo $siteJson(QuickAppointment::today()); ?>;</script>
+<script src="<?php echo XC_URL; ?>/template/frontend/assets/js/main.js?v=<?php echo filemtime(__DIR__.'/assets/js/main.js'); ?>" defer></script>
+<script src="<?php echo XC_URL; ?>/template/frontend/assets/js/quick-appointment-validation.js?v=<?php echo filemtime(__DIR__.'/assets/js/quick-appointment-validation.js'); ?>" defer></script>
+<script src="<?php echo XC_URL; ?>/template/frontend/assets/js/home.js?v=<?php echo filemtime(__DIR__.'/assets/js/home.js'); ?>" defer></script>
+</body></html>

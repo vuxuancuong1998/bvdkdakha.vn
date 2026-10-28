@@ -3,42 +3,7 @@
   <!-- ============================================================
        TOP BAR
        ============================================================ -->
-  <aside class="topbar" role="banner" aria-label="Thanh thông tin nhanh">
-    <div class="container">
-      <div class="topbar-inner">
-        <div class="topbar-hotline">
-          <span class="hotline-badge">Cấp cứu</span>
-          <span>Đường dây nóng:</span>
-          <a href="tel:<?php echo $siteEsc($siteContact['hotline_tel']); ?>" aria-label="Gọi hotline cấp cứu <?php echo $siteEsc($siteContact['hotline']); ?>"><?php echo $siteEsc($siteContact['hotline']); ?></a>
-        </div>
-        <div class="topbar-right">
-          <nav class="topbar-socials" aria-label="Mạng xã hội">
-            <a href="<?php echo $siteEsc($siteContact['facebook_url']); ?>" target="_blank" rel="noopener noreferrer"
-               aria-label="Trang Facebook Bệnh viện đa khoa Đăk Hà">
-              <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                <path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/>
-              </svg>
-            </a>
-            <a href="<?php echo $siteEsc($siteContact['zalo_url']); ?>" target="_blank" rel="noopener noreferrer"
-               aria-label="Trang Zalo Bệnh viện đa khoa Đăk Hà">
-              <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                <path d="M12 2C6.477 2 2 6.477 2 12c0 1.89.525 3.66 1.438 5.168L2 22l4.832-1.438A9.955 9.955 0 0012 22c5.523 0 10-4.477 10-10S17.523 2 12 2zm-1 13H9V9h2v6zm3.5 0h-2V9h2v6z"/>
-              </svg>
-            </a>
-            
-          </nav>
-          <!-- <div class="topbar-lang" role="button" tabindex="0" aria-label="Chuyển đổi ngôn ngữ">
-            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
-              <circle cx="12" cy="12" r="10"/>
-              <line x1="2" y1="12" x2="22" y2="12"/>
-              <path d="M12 2a15.3 15.3 0 010 20M12 2a15.3 15.3 0 000 20"/>
-            </svg>
-            VI | EN
-          </div> -->
-        </div>
-      </div>
-    </div>
-  </aside>
+  <!-- -->
 
   <!-- ============================================================
        HEADER
@@ -51,11 +16,10 @@
         <a href="<?php echo XC_URL; ?>/" class="logo" aria-label="Trang chủ Bệnh viện đa khoa khu vực Đăk Hà">
           <div class="logo-icon" aria-hidden="true">
            <img
-                  src="<?php echo XC_URL;?>/template/frontend/assets/images/logo.png"
+                  <?php echo site_image_attributes(XC_URL.'/template/frontend/assets/images/logo.png', '80px', 'eager', false); ?>
                   alt="Logo Bệnh viện đa khoa khu vực Đăk Hà"
                   width="48"
                   height="48"
-                  loading="lazy"
                   itemprop="logo" />
           </div>
           <div class="logo-text" itemprop="name">
@@ -82,7 +46,7 @@
               <div class="dropdown" role="menu" aria-label="Menu giới thiệu">
                 <a href="<?php echo XC_URL; ?>/trang/gioi-thieu.html" role="menuitem">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                  Giới thiệu bệnh viện
+                  Về chúng tôi
                 </a>
                 <a href="<?php echo XC_URL; ?>/trang/co-cau-to-chuc.html" role="menuitem">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
@@ -205,7 +169,7 @@
             <div class="header-user-dropdown">
               <button class="user-avatar-btn" type="button" onclick="toggleUserMenu(event)" aria-label="Tài khoản <?php echo htmlspecialchars($u_name, ENT_QUOTES, 'UTF-8'); ?>" aria-haspopup="true" aria-controls="userMenuDropdown">
                 <?php if(!empty($u_avatar)): ?>
-                  <img src="<?php echo XC_URL . '/' . $u_avatar; ?>" alt="<?php echo htmlspecialchars($u_name); ?>" class="user-avatar-img">
+                  <img <?php echo site_image_attributes(XC_URL . '/' . $u_avatar, '64px', 'eager', true); ?> alt="<?php echo htmlspecialchars($u_name); ?>" class="user-avatar-img">
                 <?php else: ?>
                   <div class="user-initials-avatar">
                     <?php echo htmlspecialchars($u_initials); ?>
@@ -246,9 +210,9 @@
             </div>
 
           <?php else: ?>
-            <button type="button" class="btn btn-accent btn-sm shadow-sm" onclick="openLoginModal()" style="display: inline-flex; align-items: center; gap: 6px; font-weight: 600; padding: 8px 18px; border-radius: 20px;">
+            <button type="button" class="btn btn-primary shadow-sm  " onclick="openLoginModal()" style="display: inline-flex; align-items: center; gap: 6px; font-weight: 600; padding: 8px 18px; border-radius: 20px;">
               <i class="fa-solid fa-right-to-bracket"></i>
-              <span>Đăng nhập NVYT</span>
+              <span>Đăng nhập</span>
             </button>
           <?php endif; ?>
         </div>
@@ -268,16 +232,15 @@
   </header>
 
   <!-- Mobile Navigation Drawer -->
-  <nav class="mobile-nav" id="mobile-nav" aria-label="Menu mobile" aria-hidden="true">
+  <nav class="mobile-nav" id="mobile-nav" data-lenis-prevent aria-label="Menu mobile" aria-hidden="true">
     <div class="mobile-nav-header">
       <a href="<?php echo XC_URL; ?>/" class="logo">
         <div class="logo-icon" aria-hidden="true">
           <img
-                  src="<?php echo XC_URL; ?>/template/frontend/assets/images/logo.png"
+                  <?php echo site_image_attributes(XC_URL.'/template/frontend/assets/images/logo.png', '80px', 'eager', false); ?>
                   alt="Logo Bệnh viện đa khoa khu vực Đăk Hà"
                   width="48"
-                  height="48"
-                  loading="lazy" />
+                  height="48" />
         </div>
         <div class="logo-text">
           <span class="name">Bệnh viện đa khoa khu vực Đăk Hà</span>
@@ -296,7 +259,7 @@
       <?php if(isset($_SESSION['user']['id']) && !empty($_SESSION['user']['id'])): ?>
         <div class="mobile-user-box" style="padding: 12px 14px; margin-bottom: 12px; background: rgba(2, 132, 199, 0.08); border-radius: 12px; border: 1px solid rgba(2, 132, 199, 0.15); display: flex; align-items: center; gap: 12px;">
           <?php if(!empty($u_avatar)): ?>
-            <img src="<?php echo XC_URL . '/' . $u_avatar; ?>" alt="<?php echo htmlspecialchars($u_name); ?>" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 2px solid #fff;">
+            <img <?php echo site_image_attributes(XC_URL . '/' . $u_avatar, '64px', 'eager', true); ?> alt="<?php echo htmlspecialchars($u_name); ?>" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 2px solid #fff;">
           <?php else: ?>
             <div style="width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-teal) 100%); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px; border: 2px solid #fff;">
               <?php echo htmlspecialchars($u_initials); ?>
@@ -393,7 +356,7 @@
   <!-- ============================================================
        NVYT LOGIN MODAL
        ============================================================ -->
-  <div class="custom-modal-overlay" id="modalLogin" tabindex="-1" aria-hidden="true">
+  <div class="custom-modal-overlay" id="modalLogin" data-lenis-prevent tabindex="-1" aria-hidden="true">
     <div class="custom-modal-dialog">
       <div class="custom-modal-content">
         
@@ -559,4 +522,4 @@
     }
   });
   </script>
-<?php if (empty($isHomeDesign)) require_once "slider.php";?>
+<?php  require_once "slider.php";?>

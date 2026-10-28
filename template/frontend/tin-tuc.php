@@ -88,10 +88,9 @@ $badge_classes = [
               <div class="post-featured-inner">
                 <div class="post-featured-img-wrap">
                   <a href="<?php echo $feat_url; ?>" aria-label="Xem bài viết nổi bật">
-                    <img src="<?php echo $feat_img; ?>"
+                    <img <?php echo site_image_attributes($feat_img, '(max-width: 767px) calc(100vw - 40px), (max-width: 1023px) 45vw, 680px', 'eager', false); ?>
                          alt="<?php echo htmlspecialchars($featured_event->event_name, ENT_QUOTES, 'UTF-8'); ?>"
-                         class="post-featured-img"
-                         loading="eager" width="680" height="400"
+                         class="post-featured-img" width="680" height="400"
                          itemprop="image" />
                     <!-- <span class="post-cat-badge <?php echo $badge_cls; ?>"><?php echo htmlspecialchars($cat_name, ENT_QUOTES, 'UTF-8'); ?></span> -->
                   </a>
@@ -156,9 +155,8 @@ $badge_classes = [
               <article class="post-card" id="post-<?php echo $card_index; ?>" role="listitem" itemscope itemtype="https://schema.org/NewsArticle">
                 <div class="post-thumbnail">
                   <a href="<?php echo $item_url; ?>" tabindex="-1" aria-hidden="true">
-                    <img src="<?php echo $item_img; ?>"
-                         alt="<?php echo htmlspecialchars($ev->event_name, ENT_QUOTES, 'UTF-8'); ?>"
-                         loading="lazy" width="380" height="230" itemprop="image" />
+                    <img <?php echo site_image_attributes($item_img, '(max-width: 600px) calc(100vw - 40px), (max-width: 1023px) 45vw, 380px', false, false); ?>
+                         alt="<?php echo htmlspecialchars($ev->event_name, ENT_QUOTES, 'UTF-8'); ?>" width="380" height="230" itemprop="image" />
                     <!-- <span class="post-cat-badge <?php echo $badge_cls; ?>"><?php echo htmlspecialchars($cat_name, ENT_QUOTES, 'UTF-8'); ?></span> -->
                   </a>
                 </div>
@@ -381,7 +379,7 @@ $badge_classes = [
                   <li class="popular-post-item">
                     <a href="<?php echo $pop_url; ?>" class="popular-post-link" id="popular-<?php echo $pop_rank; ?>">
                       <div class="popular-post-img-wrap">
-                        <img src="<?php echo $pop_img; ?>" alt="<?php echo htmlspecialchars($pop->event_name, ENT_QUOTES, 'UTF-8'); ?>" loading="lazy" width="70" height="52" class="popular-post-img" />
+                        <img <?php echo site_image_attributes($pop_img, '70px', false, false); ?> alt="<?php echo htmlspecialchars($pop->event_name, ENT_QUOTES, 'UTF-8'); ?>" width="70" height="52" class="popular-post-img" />
                         <span class="popular-rank" aria-label="Vị trí <?php echo $pop_rank; ?>"><?php echo $pop_rank; ?></span>
                       </div>
                       <div class="popular-post-text">

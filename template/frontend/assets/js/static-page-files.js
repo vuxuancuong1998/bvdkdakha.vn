@@ -44,12 +44,13 @@
       actions.className = 'attachment-actions';
       const view = document.createElement('button');
       view.type = 'button';
+      view.title = 'Xem tài liệu';
       view.className = 'attachment-view-btn';
       view.dataset.url = url.href;
       view.dataset.name = name;
       view.dataset.ext = ext;
       view.setAttribute('aria-label', 'Xem ' + name);
-      view.innerHTML = '<i class="fa-regular fa-eye" aria-hidden="true"></i><span>Xem</span>';
+      view.innerHTML = '<i class="fa-regular fa-eye" aria-hidden="true"></i>';
       view.addEventListener('click', function () {
         const viewer = document.getElementById('inlineDocumentViewer');
         box.appendChild(viewer);
@@ -57,10 +58,11 @@
       });
       const download = document.createElement('a');
       download.className = 'attachment-download-btn';
+      download.title = 'Tải tài liệu về';
       download.href = url.href;
       download.download = name;
       download.setAttribute('aria-label', 'Tải về ' + name);
-      download.innerHTML = '<i class="fa-solid fa-download" aria-hidden="true"></i><span>Tải về</span>';
+      download.innerHTML = '<i class="fa-solid fa-download" aria-hidden="true"></i>';
       actions.append(view, download);
       row.append(info, actions);
       list.appendChild(row);

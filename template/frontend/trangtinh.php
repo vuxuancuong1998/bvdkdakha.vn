@@ -5,25 +5,25 @@
     <div class="row" style="display: flex; gap: var(--space-8); flex-wrap: wrap;">
       
       <!-- Article Content (Left Column) -->
-      <div class="col-lg-8" style="flex: 1; min-width: 300px;">
+      <div class="col-lg-8" style="flex: 1; min-width: 0;">
         <article class="static-article" style="background: #fff; border-radius: var(--radius-xl); padding: var(--space-8); box-shadow: var(--shadow-card); border: 1px solid var(--color-border-light);">
           
           <?php if(!empty($page->page_title)): ?>
-            <h1 style="font-size: 24px; font-weight: 700; color: #1e293b; margin-bottom: 20px; line-height: 1.35; padding-bottom: 12px; border-bottom: 2px solid #e2e8f0;">
+            <h1 style="font-size: var(--ui-h1); font-weight: 700; color: #1e293b; margin-bottom: 20px; line-height: 1.35; padding-bottom: 12px; border-bottom: 2px solid #e2e8f0;">
               <?php echo htmlspecialchars($page->page_title); ?>
             </h1>
           <?php endif; ?>
 
           <?php if(!empty($page->banner_image)): ?>
             <div class="article-banner mb-4" style="border-radius: var(--radius-lg); overflow: hidden; margin-bottom: var(--space-6);">
-              <img src="<?php echo XC_URL . '/' . $page->banner_image; ?>" alt="<?php echo htmlspecialchars($page->page_title ?? 'Banner'); ?>" style="width: 100%; height: auto; max-height: 420px; object-fit: cover;">
+              <img <?php echo site_image_attributes(XC_URL . '/' . $page->banner_image, '(max-width: 767px) calc(100vw - 80px), (max-width: 1023px) 70vw, 860px', true, true); ?> alt="<?php echo htmlspecialchars($page->page_title ?? 'Banner'); ?>" style="width: 100%; height: auto; max-height: 420px; object-fit: cover;">
             </div>
           <?php endif; ?>
 
           <!-- 1. Rich Content (Kiểm tra có mới hiển thị, không thì để rỗng) -->
           <?php if(!empty($page->page_content) && trim(strip_tags($page->page_content)) !== ''): ?>
             <div class="ck-content mb-4" style="font-size: var(--font-size-base); line-height: 1.8; color: var(--color-text);">
-              <?php echo $page->page_content; ?>
+              <?php echo site_content_images($page->page_content, empty($page->banner_image)); ?>
             </div>
           <?php endif; ?>
 
@@ -67,11 +67,11 @@
                               data-url="<?php echo htmlspecialchars($file_url, ENT_QUOTES, 'UTF-8'); ?>"
                               data-name="<?php echo htmlspecialchars($att->file_name, ENT_QUOTES, 'UTF-8'); ?>"
                               data-ext="<?php echo htmlspecialchars($ext, ENT_QUOTES, 'UTF-8'); ?>"
-                              onclick="showInlineAttachment(this)">
-                        <i class="fa-regular fa-eye"></i><span>Xem</span>
+                              title="Xem tài liệu" aria-label="Xem tài liệu" onclick="showInlineAttachment(this)">
+                        <i class="fa-regular fa-eye" aria-hidden="true"></i>
                       </button>
-                      <a href="<?php echo htmlspecialchars($file_url, ENT_QUOTES, 'UTF-8'); ?>" download="<?php echo htmlspecialchars($att->file_name, ENT_QUOTES, 'UTF-8'); ?>" class="attachment-download-btn">
-                        <i class="fa-solid fa-download"></i><span>Tải về</span>
+                      <a href="<?php echo htmlspecialchars($file_url, ENT_QUOTES, 'UTF-8'); ?>" download="<?php echo htmlspecialchars($att->file_name, ENT_QUOTES, 'UTF-8'); ?>" class="attachment-download-btn" title="Tải tài liệu về" aria-label="Tải tài liệu về">
+                        <i class="fa-solid fa-download" aria-hidden="true"></i>
                       </a>
                     </div>
                   </div>
@@ -83,8 +83,8 @@
                 <div class="inline-viewer-toolbar">
                   <div><i class="fa-solid fa-file-lines"></i><strong id="inlineViewerTitle">Tài liệu</strong></div>
                   <div class="inline-viewer-controls">
-                    <a id="inlineViewerNewTab" href="#" target="_blank" rel="noopener" title="Mở trong tab mới"><i class="fa-solid fa-up-right-from-square"></i><span>Tab mới</span></a>
-                    <button type="button" onclick="closeInlineAttachment()" title="Đóng trình xem"><i class="fa-solid fa-xmark"></i><span>Đóng</span></button>
+                    <a id="inlineViewerNewTab" href="#" target="_blank" rel="noopener" title="Mở trong tab mới" aria-label="Mở trong tab mới"><i class="fa-solid fa-up-right-from-square"></i></a>
+                    <button type="button" onclick="closeInlineAttachment()" title="Đóng trình xem" aria-label="Đóng trình xem"><i class="fa-solid fa-xmark"></i></button>
                   </div>
                 </div>
                 <div id="inlineViewerBody" class="inline-viewer-body"></div>
@@ -204,26 +204,14 @@
 .attachment-info{display:flex;align-items:center;gap:14px;min-width:0;flex:1}
 .attachment-file-icon{width:45px;height:45px;border-radius:7px;background:#fff0f0;display:inline-flex;align-items:center;justify-content:center;font-size:20px;flex:0 0 auto}
 .attachment-name-wrap{display:flex;align-items:center;gap:10px;min-width:0}
-.attachment-name-wrap strong{font-size:16px;font-weight:500;color:#0f172a;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.attachment-name-wrap strong{font-size:16px;font-weight:600;color:#0f172a;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .attachment-size{padding:4px 9px;border-radius:999px;background:#f4f7fb;color:#8b9ab0;font-size:12px;white-space:nowrap}
 .attachment-actions{display:flex;align-items:center;gap:10px;flex:0 0 auto}
-.attachment-view-btn,.attachment-download-btn{height:38px;padding:0 16px;border-radius:8px;display:inline-flex;align-items:center;justify-content:center;gap:8px;font-size:14px;font-weight:500;text-decoration:none;cursor:pointer;transition:.2s}
+.attachment-view-btn,.attachment-download-btn{height:38px;padding:0 16px;border-radius:8px;display:inline-flex;align-items:center;justify-content:center;gap:8px;font-size:14px;font-weight:600;text-decoration:none;cursor:pointer;transition:.2s}
 .attachment-view-btn{border:1px solid #8db9ff;background:#fff;color:#0757b7}
 .attachment-view-btn:hover,.attachment-view-btn.active{background:#eff6ff;border-color:#3b82f6;color:#0757b7}
 .attachment-download-btn{border:1px solid #f15b25;background:#f15b25;color:#fff}
 .attachment-download-btn:hover{background:#d94715;color:#fff}
-.static-content-attachments{padding:64px 0 60px}
-.static-content-attachments .attachments-heading{min-height:62px;padding:0 18px}
-.static-content-attachments .attachments-heading h2,.static-content-attachments .attachments-heading span{font-size:16px;color:#60708a;margin:0;line-height:1.5;font-weight:600}
-.static-content-attachments .attachment-item{min-height:104px;padding:24px 18px}
-.static-content-attachments .attachment-file-icon{width:56px;height:56px;color:#10243d;background:#fff0f0}
-.static-content-attachments .attachment-name-wrap{flex-wrap:wrap}
-.static-content-attachments .attachment-name-wrap strong{white-space:normal;overflow-wrap:anywhere;font-size:17px}
-.static-content-attachments .attachment-view-btn,.static-content-attachments .attachment-download-btn{height:48px;padding:0 18px;border-radius:10px;font-size:16px;text-decoration:none}
-.static-content-attachments .attachment-download-btn{color:#fff}
-.static-content-attachments .attachment-download-btn:hover{color:#fff}
-.static-content-attachments .inline-document-viewer{margin-bottom:-60px}
-@media(max-width:640px){.static-content-attachments{padding:20px 0}.static-content-attachments .attachment-item{padding:18px 14px}.static-content-attachments .attachment-name-wrap strong{font-size:15px}.static-content-attachments .inline-document-viewer{margin-bottom:-20px}}
 .inline-document-viewer{border-top:1px solid #d9e1ec;background:#eef2f7}
 .inline-viewer-toolbar{min-height:52px;padding:8px 14px;display:flex;align-items:center;justify-content:space-between;gap:14px;background:#fff;border-bottom:1px solid #d9e1ec}
 .inline-viewer-toolbar>div{display:flex;align-items:center;gap:9px;min-width:0}
@@ -234,7 +222,39 @@
 .inline-viewer-loading,.inline-viewer-message{height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;text-align:center;padding:30px;background:#fff;color:#64748b}
 .inline-viewer-image{min-height:100%;display:flex;align-items:flex-start;justify-content:center;padding:22px;background:#27303c}
 .inline-viewer-image img{max-width:100%;height:auto;box-shadow:0 8px 30px rgba(0,0,0,.35)}
-@media(max-width:640px){.attachments-heading>span{display:none}.attachment-item{align-items:flex-start;flex-direction:column}.attachment-actions{width:100%}.attachment-view-btn,.attachment-download-btn{flex:1}.attachment-name-wrap{align-items:flex-start;flex-direction:column;gap:5px;width:100%}.attachment-name-wrap strong{max-width:100%}.inline-viewer-controls span{display:none}.inline-viewer-body{height:68vh;min-height:420px}}
+
+/* Compact attachment list for uploaded files and rich-content templates. */
+.static-article .attachments-box{margin:20px 0;padding:0;border-radius:10px}
+.static-article .attachments-heading{min-height:40px;padding:8px 14px;text-transform:none;letter-spacing:0}
+.static-article .attachments-heading h2,.static-article .attachments-heading span{margin:0;font-size:13px;line-height:1.5;font-weight:600;color:#64748b}
+.static-article .attachment-item{min-height:66px;padding:12px 14px;gap:14px;transition:background .15s}
+.static-article .attachment-item:hover{background:#f8fafc}
+.static-article .attachment-info{gap:10px}
+.static-article .attachment-file-icon{width:36px;height:40px;border-radius:7px;font-size:18px;color:#b44b4b;background:#fff1f2}
+.static-article .attachment-name-wrap{flex:1;flex-wrap:wrap;gap:3px 10px}
+.static-article .attachment-name-wrap strong{font-size:14px;line-height:1.5;font-weight:500;white-space:normal;overflow-wrap:anywhere}
+.static-article .attachment-size{padding:0;background:none;border-radius:0;font-size:12px;color:#64748b;flex-shrink:0}
+.static-article .attachment-actions{gap:6px;flex-shrink:0}
+.static-article .attachment-actions .attachment-view-btn,.static-article .attachment-actions .attachment-download-btn{width:36px;height:36px;min-width:36px;padding:0;border-radius:8px;font-size:15px;line-height:1;border:1px solid #dbe5ef;background:#fff;color:#1760a5}
+.static-article .attachment-actions .attachment-download-btn{background:#fff7ed;border-color:#ffdfc4;color:#c3541c}
+.static-article .attachment-actions .attachment-view-btn:hover,.static-article .attachment-actions .attachment-view-btn.active{background:#eaf3ff;border-color:#93b9e8}
+.static-article .attachment-actions .attachment-download-btn:hover{background:#ffedd5;border-color:#fdba74}
+.static-article .inline-viewer-toolbar{min-height:48px;padding:7px 12px;gap:10px}
+.static-article .inline-viewer-toolbar strong{font-size:13px;font-weight:500}
+.static-article .inline-viewer-controls{flex-shrink:0;gap:6px}
+.static-article .inline-viewer-controls a,.static-article .inline-viewer-controls button{width:32px;height:32px;padding:0;justify-content:center;font-size:14px}
+.static-article .inline-viewer-controls a:hover,.static-article .inline-viewer-controls button:hover{background:#f1f5f9;color:#1760a5}
+.static-article .attachment-actions :focus-visible,.static-article .inline-viewer-controls :focus-visible{outline:2px solid #1760a5;outline-offset:3px}
+@media(max-width:640px){
+.static-article .attachments-heading>span{display:none}
+.static-article .attachment-item{padding:10px;gap:8px}
+.static-article .attachment-info{gap:8px}
+.static-article .attachment-file-icon{width:28px;height:34px;font-size:16px}
+.static-article .attachment-name-wrap{flex-direction:column;align-items:flex-start;gap:2px}
+.static-article .attachment-name-wrap strong{font-size:13px}
+.static-article .attachment-actions .attachment-view-btn,.static-article .attachment-actions .attachment-download-btn{height:40px}
+.inline-viewer-body{height:68vh;min-height:420px}
+}
 </style>
 
 <script>
@@ -278,7 +298,7 @@ function showInlineAttachment(button) {
     const message = ['doc','docx','xls','xlsx','ppt','pptx'].includes(ext)
       ? 'Trình xem Microsoft Office chỉ truy cập được khi website sử dụng tên miền công khai. Trên máy nội bộ, vui lòng tải tệp để mở bằng ứng dụng Office.'
       : 'Định dạng .' + viewerEscape(ext.toUpperCase()) + ' chưa hỗ trợ xem trực tiếp trên trình duyệt.';
-    content = '<div class="inline-viewer-message"><i class="fa-solid fa-file-arrow-down fa-3x text-primary"></i><strong>Không thể xem trực tiếp</strong><p>' + message + '</p><a href="' + safeUrl + '" download="' + safeName + '" class="attachment-download-btn"><i class="fa-solid fa-download"></i>Tải tệp về</a></div>';
+    content = '<div class="inline-viewer-message"><i class="fa-solid fa-file-arrow-down fa-3x text-primary"></i><strong>Không thể xem trực tiếp</strong><p>' + message + '</p><a href="' + safeUrl + '" download="' + safeName + '" class="attachment-download-btn" title="Tải tài liệu về" aria-label="Tải tài liệu về"><i class="fa-solid fa-download"></i>Tải tệp về</a></div>';
   }
   body.innerHTML = content;
   viewer.scrollIntoView({behavior:'smooth', block:'start'});
@@ -291,6 +311,6 @@ function closeInlineAttachment() {
   document.querySelectorAll('.attachment-view-btn').forEach(function(item){ item.classList.remove('active'); });
 }
 </script>
-<script src="<?php echo XC_URL; ?>/template/frontend/assets/js/static-page-files.js?v=20261018"></script>
+<script src="<?php echo XC_URL; ?>/template/frontend/assets/js/static-page-files.js?v=20261026"></script>
 
-<?php require_once 'footer.php'; ?>
+<?php require_once 'home-footer.php'; ?>

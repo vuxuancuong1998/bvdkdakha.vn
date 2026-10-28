@@ -9,7 +9,7 @@
     <div class="container">
       <div class="row align-items-center">
         <div class="col-lg-8">
-          <h1 class="h2 font-weight-extrabold mb-2" style="font-weight: 800;">Dịch Vụ Y Tế Chuyên Khoa</h1>
+          <h1 class="h2 font-weight-extrabold mb-2" style="font-weight: 700;">Dịch Vụ Y Tế Chuyên Khoa</h1>
           <p class="lead mb-0 text-white-50" style="font-size: 15px;">
             Bệnh viện Đa khoa Khu vực Đắk Hà cung cấp đầy đủ các dịch vụ khám, chữa bệnh chất lượng cao với đội ngũ y bác sĩ giàu kinh nghiệm và trang thiết bị hiện đại.
           </p>
@@ -179,7 +179,7 @@
     <div class="container">
       <div class="p-4 p-md-5 rounded-4 shadow-sm text-white d-flex flex-column flex-md-row align-items-center justify-content-between gap-4" style="background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);">
         <div>
-          <h2 class="h3 font-weight-bold mb-2" style="font-weight: 800;">Cần Tư Vấn Hoặc Đặt Lịch Khám?</h2>
+          <h2 class="h3 font-weight-bold mb-2" style="font-weight: 700;">Cần Tư Vấn Hoặc Đặt Lịch Khám?</h2>
           <p class="mb-0 text-white-50" style="font-size: 15px;">
             Đội ngũ tư vấn y tế sẵn sàng hỗ trợ giải đáp mọi thắc mắc và xếp lịch hẹn khám nhanh chóng.
           </p>

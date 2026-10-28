@@ -1,11 +1,30 @@
 <?php
 require_once 'config.php';
+require_once __DIR__.'/ui-images.php';
 $siteContact = $this->helper->get_site_contact();
 $siteEsc = function ($value) { return htmlspecialchars((string)$value, ENT_QUOTES, 'UTF-8'); };
 $siteJson = function ($value) { return json_encode($value, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT); };
 $siteSameAs = array_values(array_filter(array($siteContact['facebook_url'], $siteContact['zalo_url'])));
 $siteEmergencyDescription = 'Đường dây cấp cứu khẩn cấp 24/7: ' . implode(' hoặc ', array_filter(array($siteContact['hotline'], $siteContact['phone']))) . '. Đội ngũ cấp cứu luôn trực sẵn sàng.';
+$isHomeDesign = true;
+$homeAsset = function ($path, $folder = '') {
+ $path = trim((string)$path);
+ if ($path === '') return XC_URL.'/template/frontend/assets/images/banner-02.jpg';
+ if (preg_match('~^https?://~i', $path)) return $path;
+ return XC_URL.'/'.($path[0] === '/' || strpos($path,'uploads/') === 0 ? ltrim($path,'/') : $folder.$path);
+};
+require_once __SITE_PATH.'/application/quick_appointment.class.php';
+if (empty($_SESSION['quick_appointment_csrf'])) $_SESSION['quick_appointment_csrf'] = bin2hex(random_bytes(32));
+global $db;
+$db->query("SELECT id, depart_name, depart_image FROM hicrm_departments WHERE depart_status = 1 AND (depart_name LIKE 'Khoa %' OR depart_name IN ('Nội khoa','Ngoại khoa','Sản khoa','Cận lâm Sàng')) ORDER BY id ASC");
+$homeDepartments = $db->fetch_object();
+if (!is_array($homeDepartments)) $homeDepartments = array();
+$homeDoctors = array();
+foreach ((is_array($featured_doctors ?? null) ? $featured_doctors : array()) as $doctor) {
+ $homeDoctors[] = array('name'=>$doctor->doctor_name, 'role'=>$doctor->doctor_position, 'dept'=>$doctor->depart_name ?? '', 'unit'=>$doctor->doctor_workplace ?? '', 'img'=>$homeAsset($doctor->doctor_avatar ?? '', 'uploads/doctors/'), 'srcset'=>site_image_srcset($homeAsset($doctor->doctor_avatar ?? '', 'uploads/doctors/')), 'desc'=>$doctor->depart_name ?? '', 'service'=>$doctor->depart_name ?? '', 'code'=>$doctor->doctor_code ?? '');
+}
 ?>
+
 <!DOCTYPE html>
 <html lang="vi" itemscope itemtype="https://schema.org/MedicalOrganization">
 
@@ -41,13 +60,6 @@ $siteEmergencyDescription = 'Đường dây cấp cứu khẩn cấp 24/7: ' . i
   <meta name="twitter:description" content="Đơn vị y tế công lập hàng đầu huyện Đăk Hà, tỉnh Kon Tum. Khám chữa bệnh, cấp cứu 24/7." />
   <meta name="twitter:image"       content="https://ttytdakha.gov.vn/assets/images/og-cover.jpg" />
 
-  <!-- Preconnect fonts -->
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link
-    href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap"
-    rel="stylesheet" />
-
   <!-- Favicon -->
   <link rel="icon" type="image/svg+xml" href="<?php echo XC_URL;?>/template/frontend/assets/images/logo.png" />
 
@@ -55,9 +67,9 @@ $siteEmergencyDescription = 'Đường dây cấp cứu khẩn cấp 24/7: ' . i
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
 
   <!-- Stylesheet -->
-  <link rel="stylesheet" href="<?php echo XC_URL;?>/template/frontend/assets/css/style.css?version=<?php echo time(); ?>" />
+  <link rel="stylesheet" href="<?php echo XC_URL;?>/template/frontend/assets/css/style.css?version=<?php echo filemtime(__DIR__.'/assets/css/style.css'); ?>" />
   <?php if (empty($isHomeDesign)): ?>
-  <link rel="stylesheet" href="<?php echo XC_URL;?>/template/frontend/assets/css/tin-tuc.css?version=<?php echo time(); ?>" />
+  <link rel="stylesheet" href="<?php echo XC_URL;?>/template/frontend/assets/css/tin-tuc.css?version=<?php echo filemtime(__DIR__.'/assets/css/tin-tuc.css'); ?>" />
   <?php endif; ?>
 
   <!-- ============================================================
@@ -140,5 +152,6 @@ $siteEmergencyDescription = 'Đường dây cấp cứu khẩn cấp 24/7: ' . i
 <link rel="stylesheet" href="<?php echo XC_URL; ?>/template/frontend/assets/css/home-design.css?v=<?php echo filemtime(__DIR__.'/assets/css/home-design.css'); ?>">
 <link rel="stylesheet" href="<?php echo XC_URL; ?>/template/frontend/assets/css/home-utilities.css?v=<?php echo filemtime(__DIR__.'/assets/css/home-utilities.css'); ?>">
 <?php endif; ?>
+<?php require __DIR__.'/ui-assets.php'; ?>
 </head>
 <?php require_once 'menu.php'; ?>

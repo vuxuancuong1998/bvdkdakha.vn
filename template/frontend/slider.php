@@ -1,25 +1,11 @@
 <!-- ============================================================
        MAIN CONTENT
        ============================================================ -->
-  <main id="main-content" role="main">
 
-    <!-- ============================================================
-         ANNOUNCEMENT MARQUEE
-         ============================================================ -->
-    <section class="announcements-bar" aria-label="Thông báo mới">
-      <div class="container">
-        <div class="announcements-inner">
-          <span class="announcements-label" aria-hidden="true"><i class="fa-solid fa-bullhorn"></i> Thông báo</span>
-          <div class="marquee-track" role="marquee" aria-live="polite" aria-label="Thông báo cuộn">
-            <div class="marquee-content">
-              <?php $thong_bao_text = $this->helper->get_config('thong_bao'); ?>
-              <span class="marquee-item"><?php echo $thong_bao_text; ?></span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-    <?php
+  <main id="main-content" class="home-flow">
+
+    <!-- 1. HERO BANNER SLIDER -->
+        <?php
     global $db;
     $siteSlides = array();
     $db->query("SHOW TABLES LIKE 'hicrm_sliders'");
@@ -30,19 +16,42 @@
       $hasSliderStatus = $db->num_row() > 0;
       $db->query('SELECT * FROM hicrm_sliders WHERE is_active=1'.($hasSliderStatus ? ' AND status <> 99' : '').($hasSliderDevice ? " AND device IN ('pc','mobile','all')" : '').' ORDER BY sort_order ASC,id ASC');
       $siteSlides = $db->fetch_object();
+      // An empty slider table can accompany an existing installation's banner files.
+      // Do not use fallbacks when managed slides exist but have been disabled.
+      if (empty($siteSlides)) {
+        $db->query('SELECT COUNT(*) AS total FROM hicrm_sliders');
+        $sliderCount = $db->fetch_object(true);
+        if ((int)$sliderCount->total === 0) {
+          foreach (array('banner_01.png', 'banner_02.png') as $bannerFile) {
+            if (!is_file(__SITE_PATH.'/uploads/slider/'.$bannerFile)) continue;
+            $siteSlides[] = (object)array(
+              'image_path' => 'uploads/slider/'.$bannerFile,
+              'device' => 'all',
+              'alt_text' => 'Bệnh viện đa khoa khu vực Đăk Hà',
+              'eyebrow' => '', 'title' => '', 'description' => '',
+              'button_label' => '', 'button_url' => ''
+            );
+          }
+        }
+      }
     }
     if (!is_array($siteSlides)) $siteSlides = array();
     ?>
     <?php if ($siteSlides): ?>
     <section class="hero" aria-label="Banner trang chủ">
       <div class="slider-wrapper" role="region" aria-roledescription="slideshow" aria-label="Ảnh banner">
-        <?php foreach ($siteSlides as $index => $banner):
-          $image = XC_URL.'/'.ltrim((string)$banner->image_path, '/');
+        <?php $initialDevices = array(); foreach ($siteSlides as $index => $banner):
+          $image = $homeAsset($banner->image_path);
+          $bannerDevice = (string)($banner->device ?? 'all');
+          $initialPc = $bannerDevice !== 'mobile' && empty($initialDevices['pc']);
+          $initialMobile = $bannerDevice !== 'pc' && empty($initialDevices['mobile']);
+          if ($initialPc) $initialDevices['pc'] = true;
+          if ($initialMobile) $initialDevices['mobile'] = true;
           $buttonUrl = trim((string)$banner->button_url);
           if ($buttonUrl !== '' && !preg_match('~^https?://~i', $buttonUrl)) $buttonUrl = XC_URL.'/'.ltrim($buttonUrl, '/');
         ?>
-        <article class="slide" data-device="<?php echo htmlspecialchars((string)($banner->device ?? 'all'), ENT_QUOTES, 'UTF-8'); ?>" id="slide-<?php echo $index + 1; ?>" role="group" aria-roledescription="slide" aria-label="Slide <?php echo $index + 1; ?> / <?php echo count($siteSlides); ?>" hidden>
-          <div class="slide-bg" data-image="<?php echo htmlspecialchars($image, ENT_QUOTES, 'UTF-8'); ?>" role="img" aria-label="<?php echo htmlspecialchars((string)$banner->alt_text, ENT_QUOTES, 'UTF-8'); ?>"></div>
+        <article class="slide" data-initial-pc="<?php echo $initialPc ? 1 : 0; ?>" data-initial-mobile="<?php echo $initialMobile ? 1 : 0; ?>" data-device="<?php echo htmlspecialchars((string)($banner->device ?? 'all'), ENT_QUOTES, 'UTF-8'); ?>" id="slide-<?php echo $index + 1; ?>" role="group" aria-roledescription="slide" aria-label="Slide <?php echo $index + 1; ?> / <?php echo count($siteSlides); ?>" hidden>
+          <img class="slide-bg" <?php echo site_image_attributes($image, '100vw', $index === 0 ? true : ($initialPc || $initialMobile ? 'eager' : false)); ?> alt="<?php echo htmlspecialchars((string)$banner->alt_text, ENT_QUOTES, 'UTF-8'); ?>">
           <div class="slide-overlay" aria-hidden="true"></div>
           <?php if ($banner->eyebrow || $banner->title || $banner->description || ($banner->button_label && $buttonUrl)): ?>
           <div class="container"><div class="slide-content">

@@ -2,8 +2,8 @@
 <div id="eoffice-training-root" class="bg-[#f4f6f9] text-[#212529] leading-normal select-text">
 
   <!-- Thư viện Font chữ & Tailwind CSS để hỗ trợ hiển thị độc lập -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  
+  
   <script>window.tailwind = window.tailwind || {}; window.tailwind.config = { corePlugins: { preflight: false }, important: '#eoffice-training-root' };</script>
   <script src="https://cdn.tailwindcss.com"></script>
 
@@ -80,7 +80,7 @@
       padding: 4px 12px;
       height: 30px;
       font-size: 12.5px;
-      font-weight: 500;
+      font-weight: 600;
       border-radius: 3px;
       cursor: pointer;
       transition: all 0.15s ease-in-out;

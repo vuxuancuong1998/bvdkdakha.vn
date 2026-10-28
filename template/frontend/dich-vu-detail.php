@@ -115,7 +115,7 @@ $service = $all_services[$current_slug];
           <?php echo $service['icon']; ?>
         </div>
         <div>
-          <h1 class="h2 font-weight-extrabold mb-1" style="font-weight: 800;"><?php echo htmlspecialchars($service['title'], ENT_QUOTES, 'UTF-8'); ?></h1>
+          <h1 class="h2 font-weight-extrabold mb-1" style="font-weight: 700;"><?php echo htmlspecialchars($service['title'], ENT_QUOTES, 'UTF-8'); ?></h1>
           <p class="lead mb-0 text-white-50" style="font-size: 15px;"><?php echo htmlspecialchars($service['subtitle'], ENT_QUOTES, 'UTF-8'); ?></p>
         </div>
       </div>
@@ -134,7 +134,7 @@ $service = $all_services[$current_slug];
 
           <!-- Feature Image -->
           <div class="service-banner-img-wrap mb-4 overflow-hidden rounded-3">
-            <img src="<?php echo $service['image']; ?>" 
+            <img <?php echo site_image_attributes($service['image'], '(max-width: 767px) calc(100vw - 40px), 800px', true, true); ?> 
                  alt="<?php echo htmlspecialchars($service['title'], ENT_QUOTES, 'UTF-8'); ?>"
                  class="img-fluid w-100" 
                  style="max-height: 400px; object-fit: cover;" />
@@ -152,7 +152,7 @@ $service = $all_services[$current_slug];
             <?php foreach ($service['offerings'] as $offering): ?>
             <li class="d-flex align-items-start gap-3 p-3 rounded-3" style="background-color: #f8fafc; border-left: 4px solid #0284c7;">
               <i class="fa-solid fa-circle-check text-primary mt-1" style="font-size: 16px; color: #0284c7 !important;"></i>
-              <span style="font-size: 15px; color: #1e293b; font-weight: 500; line-height: 1.5;"><?php echo htmlspecialchars($offering, ENT_QUOTES, 'UTF-8'); ?></span>
+              <span style="font-size: 15px; color: #1e293b; font-weight: 600; line-height: 1.5;"><?php echo htmlspecialchars($offering, ENT_QUOTES, 'UTF-8'); ?></span>
             </li>
             <?php endforeach; ?>
           </ul>
@@ -259,7 +259,7 @@ $service = $all_services[$current_slug];
               <small class="text-white-50" style="font-size: 12px;">Hỗ trợ phương tiện & xe cấp cứu khẩn cấp</small>
             </div>
           </div>
-          <a href="tel:<?php echo $siteEsc($siteContact['hotline_tel']); ?>" class="btn btn-warning w-100 font-weight-bold mt-2 text-dark shadow-sm" style="font-weight: 800; font-size: 16px;">
+          <a href="tel:<?php echo $siteEsc($siteContact['hotline_tel']); ?>" class="btn btn-warning w-100 font-weight-bold mt-2 text-dark shadow-sm" style="font-weight: 700; font-size: 16px;">
             <i class="fa-solid fa-phone me-1"></i> <?php echo $siteEsc($siteContact['hotline']); ?>
           </a>
         </div>

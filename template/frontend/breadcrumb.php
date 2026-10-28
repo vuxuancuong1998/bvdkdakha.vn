@@ -10,6 +10,7 @@
     'dich-vu-y-te.html' => 'Dịch vụ y tế',
     'dich-vu.html' => 'Dịch vụ y tế',
     'doi-ngu-bac-si.html' => 'Đội ngũ bác sĩ',
+    'bac-si' => 'Đội ngũ bác sĩ',
     'bac-si.html' => 'Đội ngũ bác sĩ',
     'lien-he.html' => 'Liên hệ'
   );
@@ -60,3 +61,10 @@
   </nav>
   <?php endif; ?>
 
+
+<?php
+$uiNeedsHeading = in_array($crumbPath, array('bac-si', 'bac-si.html', 'doi-ngu-bac-si.html', 'tin-tuc.html', 'tin-tuc-su-kien.html', 'hoat-dong/lich-cong-tac.html', 'hoat-dong/dao-tao-tap-huan.html'), true)
+  || preg_match('~^tin-tuc/[0-9]+(?:-[^/]*)?(?:\.html)?$~', $crumbPath);
+if ($uiNeedsHeading): ?>
+<h1 class="ui-page-heading"><?php echo htmlspecialchars((string)$crumbTitle, ENT_QUOTES, 'UTF-8'); ?></h1>
+<?php endif; ?>

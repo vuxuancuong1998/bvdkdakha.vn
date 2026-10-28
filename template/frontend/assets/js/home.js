@@ -9,39 +9,14 @@ function localDate(date){return date.getFullYear()+'-'+String(date.getMonth()+1)
 
       initScrollRevealAndLazyLoad();
       initScrollTopVisibility();
+
     });
 
     // 2. Hiệu ứng Load dữ liệu & Hiển thị mượt mà theo Scroll (IntersectionObserver)
     function initScrollRevealAndLazyLoad() {
-      // Gán độ trễ (stagger delay) cho các thẻ trong cùng một hàng/nhóm
-      document.querySelectorAll('[data-stagger-group]').forEach(group => {
-        const items = group.querySelectorAll('[data-reveal]');
-        items.forEach((item, idx) => {
-          item.style.transitionDelay = `${(idx % 6) * 85}ms`;
-        });
-      });
-
-      const revealObserver = new IntersectionObserver((entries, observer) => {
-        entries.forEach(entry => {
-          if (entry.isIntersecting) {
-            const el = entry.target;
-            // Shimmer chỉ dùng trong section Đội ngũ bác sĩ
-            const useShimmer = !!el.closest('#doi-ngu-bac-si');
-            if (useShimmer) el.classList.add('data-loading');
-            requestAnimationFrame(() => {
-              el.classList.add('is-visible');
-            });
-            if (useShimmer) {
-              setTimeout(() => {
-                el.classList.remove('data-loading');
-              }, 900);
-            }
-            observer.unobserve(el);
-          }
-        });
-      }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
-
-      document.querySelectorAll('[data-reveal]').forEach(el => revealObserver.observe(el));
+      // Reveal and native image loading are managed once by ui-effects.js.
+      window.SiteUI?.register(document);
+      if (!('IntersectionObserver' in window) || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
       // Hiệu ứng đếm số mượt mà cho thống kê truy cập ở Footer khi cuộn tới
       const statsContainer = document.getElementById('visit-stats-counter');
@@ -190,23 +165,20 @@ function localDate(date){return date.getFullYear()+'-'+String(date.getMonth()+1)
       },
       {
         id: 6,
-        code: "07",
-        title: "TRỢ LÝ Y TẾ AI & XÉT NGHIỆM",
-        shortTitle: "TRÍ TUỆ NHÂN TẠO",
-        metric: "Chính xác 99.4%",
-        summary: "Ứng dụng AI hỗ trợ sàng lọc chẩn đoán và tự động hóa kết nối máy xét nghiệm LIS.",
+        code: "ONLINE",
+        title: "Đặt lịch online",
+        shortTitle: "Đặt lịch online",
+        metric: "",
+        summary: "Giảm bớt thời gian chờ đợi, số hóa quy trình tiếp nhận",
         fullDesc: "Tích hợp thuật toán Trí tuệ nhân tạo (AI) phân tích dữ liệu y khoa trên Smart Hub, đồng thời kết nối 2 chiều với hệ thống máy xét nghiệm tự động (LIS).",
         icon: "fa-brain",
         highlights: [
-          "AI cảnh báo sớm dấu hiệu bất thường",
-          "Kết nối 2 chiều máy xét nghiệm LIS",
-          "Loại bỏ sai sót nhập liệu thủ công",
-          "Rút ngắn 45% thời gian chờ kết quả"
+          
         ]
       },
       {
         id: 7,
-        code: "08",
+        code: "LIÊN THÔNG",
         title: "TRỤC LIÊN THÔNG & APP Y TẾ",
         shortTitle: "LIÊN THÔNG QUỐC GIA",
         metric: "Kết nối đa tuyến",
@@ -419,8 +391,14 @@ function localDate(date){return date.getFullYear()+'-'+String(date.getMonth()+1)
       `).join('');
     }
     //code quay cánh quạt dấu ấn chuyển đổi số
+    const homeMotion = matchMedia('(prefers-reduced-motion: reduce)');
+    let turbineFrame = 0;
+    homeMotion.addEventListener('change', () => {
+      cancelAnimationFrame(turbineFrame);
+      turbineFrame = requestAnimationFrame(animateTurbineWheel);
+    });
     function animateTurbineWheel() {
-      if (isSpinning && !isHoverPaused) {
+      if (isSpinning && !isHoverPaused && !homeMotion.matches) {
         currentRotationAngle = (currentRotationAngle + rotationSpeed) % 360;
       }
 
@@ -429,7 +407,7 @@ function localDate(date){return date.getFullYear()+'-'+String(date.getMonth()+1)
         svgGroup.setAttribute('transform', `rotate(${currentRotationAngle.toFixed(2)} ${CENTER_X} ${CENTER_Y})`);
       }
 
-      pulseProgress = (pulseProgress + 0.012) % 1;
+      if (!homeMotion.matches) pulseProgress = (pulseProgress + 0.012) % 1;
 
       milestones.forEach((item, index) => {
         const baseAngle = index * 45 - 90;
@@ -453,7 +431,7 @@ function localDate(date){return date.getFullYear()+'-'+String(date.getMonth()+1)
         }
       });
 
-      requestAnimationFrame(animateTurbineWheel);
+      turbineFrame = homeMotion.matches ? 0 : requestAnimationFrame(animateTurbineWheel);
     }
 
     function setActiveMilestone(index) {
@@ -553,7 +531,7 @@ function localDate(date){return date.getFullYear()+'-'+String(date.getMonth()+1)
     }
 
     function openMilestoneModal(index) {
-      const item = milestones[index];
+      const item = milestones[index]; if (!item || !document.getElementById('milestoneModal')) return;
       document.getElementById('modalIcon').className = `fa-solid ${item.icon} text-xl`;
       document.getElementById('modalCodeBadge').textContent = `DẤU ẤN #${item.code} • ${item.metric}`;
       document.getElementById('modalTitle').textContent = item.title;
@@ -567,7 +545,7 @@ function localDate(date){return date.getFullYear()+'-'+String(date.getMonth()+1)
         </div>
       `).join('');
 
-      const modal = document.getElementById('milestoneModal');
+      const modal = document.getElementById('milestoneModal'); if (!modal) return;
       modal.classList.remove('hidden');
       modal.classList.add('flex');
     }
@@ -576,7 +554,7 @@ function localDate(date){return date.getFullYear()+'-'+String(date.getMonth()+1)
       openMilestoneModal(activeNodeIndex);
     }
 
-    function openHubOverviewModal() {
+    function openHubOverviewModal() { if (!document.getElementById('milestoneModal')) return;
       document.getElementById('modalIcon').className = "fa-solid fa-globe text-xl";
       document.getElementById('modalCodeBadge').textContent = "TRỤC LÕI ĐIỀU HÀNH • SMART HUB";
       document.getElementById('modalTitle').textContent = "TRUNG TÂM ĐIỀU HÀNH & LIÊN THÔNG DỮ LIỆU SỐ";
@@ -602,13 +580,13 @@ function localDate(date){return date.getFullYear()+'-'+String(date.getMonth()+1)
         </div>
       `;
 
-      const modal = document.getElementById('milestoneModal');
+      const modal = document.getElementById('milestoneModal'); if (!modal) return;
       modal.classList.remove('hidden');
       modal.classList.add('flex');
     }
 
     function closeModal() {
-      const modal = document.getElementById('milestoneModal');
+      const modal = document.getElementById('milestoneModal'); if (!modal) return;
       modal.classList.add('hidden');
       modal.classList.remove('flex');
     }
@@ -616,14 +594,14 @@ function localDate(date){return date.getFullYear()+'-'+String(date.getMonth()+1)
     window.addEventListener('DOMContentLoaded', () => {
       initTurbineSystem();
       setActiveMilestone(0);
-      requestAnimationFrame(animateTurbineWheel);
+      turbineFrame = homeMotion.matches ? 0 : requestAnimationFrame(animateTurbineWheel);
     });
 
     // 3. Hiển thị nút cuộn lên đầu trang khi cuộn
     function initScrollTopVisibility() {
-      const btn = document.getElementById('scroll-top-btn');
+      const btn = document.getElementById('scroll-top-btn'); if (!btn) return;
       window.addEventListener('scroll', () => {
-        if (window.scrollY > 360) {
+        if (window.scrollY > 400) {
           btn.classList.add('show');
         } else {
           btn.classList.remove('show');
@@ -660,8 +638,8 @@ function localDate(date){return date.getFullYear()+'-'+String(date.getMonth()+1)
 
     // 7. Chọn nhanh dịch vụ & Đặt lịch khám
     function selectServiceForBooking(serviceName) {
-      document.getElementById('dat-lich-nhanh').scrollIntoView({ behavior: 'smooth' });
-      setTimeout(() => document.getElementById('booking-name').focus(), 550);
+      window.SiteUI?.scrollTo(document.getElementById('dat-lich-nhanh'), { onComplete: () => document.getElementById('booking-name')?.focus() });
+
     }
 
     async function submitQuickBooking(e) {
@@ -726,9 +704,9 @@ function localDate(date){return date.getFullYear()+'-'+String(date.getMonth()+1)
  d = Object.fromEntries(Object.entries(d).map(([k,v])=>[k, String(v ?? "").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]))]));
       return `
         <div class="doc-item">
-          <article class="doc-card bg-white rounded-3xl overflow-hidden text-slate-800 shadow-floating flex flex-col" data-doc="${i}" tabindex="0" role="button" aria-label="Xem thông tin ${d.name}">
+          <article class="doc-card bg-white rounded-3xl overflow-hidden text-slate-800 shadow-floating flex flex-col">
             <div class="relative h-48 sm:h-64 bg-medical-50 overflow-hidden">
-              <img src="${d.img}" loading="lazy" onerror="this.onerror=null;this.src='${docFallback(d.name)}'" alt="${d.name}" class="w-full h-full object-contain object-center" />
+              <img src="${d.img}" srcset="${d.srcset || ''}" sizes="(max-width: 639px) 42vw, (max-width: 1023px) 28vw, 300px" decoding="async" loading="lazy" onerror="this.onerror=null;this.src='${docFallback(d.name)}'" alt="${d.name}" class="w-full h-full object-contain object-center" />
             </div>
             <div class="p-3 sm:p-5 flex-1 flex flex-col justify-between gap-3">
               <div>
@@ -736,8 +714,8 @@ function localDate(date){return date.getFullYear()+'-'+String(date.getMonth()+1)
                 <p class="text-[11px] sm:text-sm text-medical-700 font-semibold mt-2">${d.role}</p>
                 <p class="text-[11px] sm:text-sm text-slate-600 line-clamp-doc mt-2">${d.dept}</p>
               </div>
-              <button type="button" data-book="${i}" class="w-full py-2 sm:py-2.5 rounded-xl bg-medical-700 hover:bg-medical-800 text-white font-bold text-[11px] sm:text-xs transition">
-                <span class="hidden sm:inline">Đặt lịch khám</span><span class="sm:hidden">Đặt lịch</span>
+              <button type="button" data-doc="${i}" aria-haspopup="dialog" aria-controls="doctor-modal" aria-label="Xem thêm về ${d.name}" class="w-full py-2 sm:py-2.5 rounded-xl bg-medical-700 hover:bg-medical-800 text-white font-bold text-[11px] sm:text-xs transition">
+                <span>XEM THÊM</span>
               </button>
             </div>
           </article>
@@ -782,11 +760,13 @@ function localDate(date){return date.getFullYear()+'-'+String(date.getMonth()+1)
       if (DOCTORS.length <= docState.per) return;
       if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
       docState.timer = setInterval(() => {
-        if (docState.hoverPause || docState.modalOpen || document.hidden) return;
+        if (docState.hoverPause || docState.modalOpen || document.hidden || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
         doctorSlide(1);
       }, 5000);
     }
 
+    let doctorModalTrigger = null;
+    let doctorBodyOverflow = '';
     function openDoctorModal(i) {
       const d = DOCTORS[i]; if (!d) return;
       const set = (id, v) => { document.getElementById(id).textContent = v; };
@@ -797,34 +777,31 @@ function localDate(date){return date.getFullYear()+'-'+String(date.getMonth()+1)
       set('dm-dept', d.dept); set('dm-unit', d.unit || DOCTOR_UNIT);
       set('dm-dob', d.dob || NA); set('dm-home', d.hometown || NA); set('dm-code', d.code || NA);
       set('dm-status-text', d.status || 'Đang công tác');
-      document.getElementById('dm-book').onclick = () => { closeDoctorModal(); selectServiceForBooking(d.service); };
+      doctorModalTrigger = document.activeElement;
+      doctorBodyOverflow = document.body.style.overflow;
       document.getElementById('doctor-modal').classList.add('open');
       document.getElementById('doctor-modal').classList.remove('hidden');
-      document.body.style.overflow = 'hidden';
+      document.body.style.overflow = 'hidden'; window.SiteUI?.stop();
       docState.modalOpen = true;
+      document.querySelector('#doctor-modal button').focus();
     }
     function closeDoctorModal() {
       const m = document.getElementById('doctor-modal');
       m.classList.remove('open'); m.classList.add('hidden');
-      document.body.style.overflow = '';
+      document.body.style.overflow = doctorBodyOverflow; window.SiteUI?.start();
       docState.modalOpen = false;
+      if (doctorModalTrigger && doctorModalTrigger.isConnected) doctorModalTrigger.focus();
     }
 
     document.addEventListener('DOMContentLoaded', () => {
       const vp = document.getElementById('doctor-slider'); if (!vp) return;
       buildDoctorSlider(); restartDoctorAutoplay();
 
-      // Click thẻ -> mở modal; nút Đặt lịch -> chọn dịch vụ
+      // Chỉ nút Xem thêm mở modal; nút HTML hỗ trợ Enter/Space mặc định.
       vp.addEventListener('click', (e) => {
         if (docState.dragged) { docState.dragged = false; return; }
-        const book = e.target.closest('[data-book]');
-        if (book) { e.stopPropagation(); selectServiceForBooking(DOCTORS[+book.dataset.book].service); return; }
-        const card = e.target.closest('[data-doc]');
-        if (card) openDoctorModal(+card.dataset.doc);
-      });
-      vp.addEventListener('keydown', (e) => {
-        const card = e.target.closest('[data-doc]');
-        if (card && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); openDoctorModal(+card.dataset.doc); }
+        const button = e.target.closest('button[data-doc]');
+        if (button) openDoctorModal(+button.dataset.doc);
       });
 
       // Tạm dừng khi rê chuột / chạm
@@ -843,7 +820,16 @@ function localDate(date){return date.getFullYear()+'-'+String(date.getMonth()+1)
       vp.addEventListener('pointerup', end);
       vp.addEventListener('pointercancel', () => { down = false; docState.hoverPause = false; });
 
-      document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && docState.modalOpen) closeDoctorModal(); });
+      document.addEventListener('keydown', (e) => {
+        if (!docState.modalOpen) return;
+        if (e.key === 'Escape') closeDoctorModal();
+        if (e.key === 'Tab') {
+          const buttons = document.querySelectorAll('#doctor-modal button');
+          const first = buttons[0], last = buttons[buttons.length - 1];
+          if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+          else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+        }
+      });
 
       let rz; window.addEventListener('resize', () => {
         clearTimeout(rz);

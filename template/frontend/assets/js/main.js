@@ -39,7 +39,7 @@
 
     function startAuto() {
       stopAuto();
-      if (slides.length < 2) return;
+      if (slides.length < 2 || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
       autoTimer = setInterval(() => goTo(current + 1), INTERVAL);
     }
 
@@ -52,6 +52,10 @@
 
     allDots.forEach(dot => {
       dot.addEventListener('click', () => { const index = dots.indexOf(dot); if (index >= 0) goTo(index); startAuto(); });
+    });
+
+    matchMedia('(prefers-reduced-motion: reduce)').addEventListener('change', event => {
+      if (event.matches) stopAuto(); else startAuto();
     });
 
     // Pause on hover
@@ -128,18 +132,20 @@
 
     function openNav() {
       mobileNav.classList.add('open');
+      mobileNav.setAttribute('aria-hidden', 'false');
       overlay.classList.add('show');
       hamburger.classList.add('open');
       hamburger.setAttribute('aria-expanded', 'true');
-      document.body.style.overflow = 'hidden';
+      document.body.style.overflow = 'hidden'; window.SiteUI?.stop();
     }
 
     function closeNav() {
       mobileNav.classList.remove('open');
+      mobileNav.setAttribute('aria-hidden', 'true');
       overlay?.classList.remove('show');
       hamburger.classList.remove('open');
       hamburger.setAttribute('aria-expanded', 'false');
-      document.body.style.overflow = '';
+      document.body.style.overflow = ''; window.SiteUI?.start();
     }
 
     window.closeMobileNav = closeNav;
@@ -187,21 +193,50 @@
   const ScrollEffects = (() => {
     const header    = document.querySelector('.site-header');
     const scrollTop = document.querySelector('.scroll-top');
-    let   lastScroll = 0;
+    let framePending = false;
+    let fixed = false;
+    let headerHeight = header?.offsetHeight || 0;
+    const placeholder = document.createElement('div');
+    placeholder.className = 'site-header-placeholder';
+    placeholder.setAttribute('aria-hidden', 'true');
+    header?.before(placeholder);
+
+    function measureHeader() {
+      headerHeight = header?.offsetHeight || 0;
+      if (fixed) placeholder.style.height = headerHeight + 'px';
+      scheduleScroll();
+    }
+
+    function scheduleScroll() {
+      if (framePending) return;
+      framePending = true;
+      requestAnimationFrame(onScroll);
+    }
 
     function onScroll() {
       const y = window.scrollY;
-      // Sticky header shadow
-      header?.classList.toggle('scrolled', y > 40);
+      framePending = false;
+      const origin = placeholder.getBoundingClientRect().top + y;
+      const shouldFix = y > origin + headerHeight + 24;
+      if (header && shouldFix !== fixed) {
+        fixed = shouldFix;
+        placeholder.style.height = fixed ? headerHeight + 'px' : '0px';
+        header.classList.toggle('is-fixed', fixed);
+      }
+      header?.classList.toggle('scrolled', fixed);
       // Scroll to top button
       scrollTop?.classList.toggle('show', y > 400);
-      lastScroll = y;
+
     }
 
-    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('scroll', scheduleScroll, { passive: true });
+    window.addEventListener('resize', measureHeader, { passive: true });
+    if (header && 'ResizeObserver' in window) new ResizeObserver(measureHeader).observe(header);
+    onScroll();
 
     scrollTop?.addEventListener('click', () => {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      if (window.SiteUI) window.SiteUI.scrollTo(0);
+      else window.scrollTo({ top: 0, behavior: 'auto' });
     });
   })();
 
@@ -209,24 +244,8 @@
   /* ============================================================
      4. SCROLL ANIMATIONS (Intersection Observer)
      ============================================================ */
-  const ScrollAnimate = (() => {
-    const elements = document.querySelectorAll('[data-animate]');
-    if (!elements.length) return;
-
-    const observer = new IntersectionObserver(
-      entries => {
-        entries.forEach(entry => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add('in-view');
-            observer.unobserve(entry.target);
-          }
-        });
-      },
-      { threshold: 0.12, rootMargin: '0px 0px -40px 0px' }
-    );
-
-    elements.forEach(el => observer.observe(el));
-  })();
+  // Shared progressive reveal also handles legacy data-animate components.
+  window.SiteUI?.register(document);
 
 
   /* ============================================================
@@ -234,7 +253,7 @@
      ============================================================ */
   const CountUp = (() => {
     const counters = document.querySelectorAll('[data-count]');
-    if (!counters.length) return;
+    if (!counters.length || !('IntersectionObserver' in window) || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
     function animateCounter(el) {
       const target    = parseInt(el.dataset.count, 10);
@@ -399,7 +418,7 @@
 
     window.addEventListener('scroll', () => {
       const total   = document.documentElement.scrollHeight - window.innerHeight;
-      const progress = (window.scrollY / total) * 100;
+      const progress = total > 0 ? (window.scrollY / total) * 100 : 0;
       bar.style.width = Math.min(progress, 100) + '%';
     }, { passive: true });
   })();
@@ -411,6 +430,10 @@
   const LazyMap = (() => {
     const mapWrap = document.querySelector('.map-lazy-wrap');
     if (!mapWrap) return;
+    if (!('IntersectionObserver' in window)) {
+      if (mapWrap.dataset.src) mapWrap.innerHTML = '<iframe src="' + mapWrap.dataset.src.replace(/"/g, '&quot;') + '" title="Bản đồ" loading="lazy"></iframe>';
+      return;
+    }
 
     const observer = new IntersectionObserver(entries => {
       entries.forEach(entry => {
@@ -498,15 +521,6 @@
   /* ============================================================
      12. SMOOTH ANCHOR SCROLL with offset
      ============================================================ */
-  document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-    anchor.addEventListener('click', function (e) {
-      const target = document.querySelector(this.getAttribute('href'));
-      if (!target) return;
-      e.preventDefault();
-      const offset = 80; // header height offset
-      const top    = target.getBoundingClientRect().top + window.scrollY - offset;
-      window.scrollTo({ top, behavior: 'smooth' });
-    });
-  });
+  // Shared ui-effects.js owns anchor handling, including sticky offsets and focus.
 
 })();

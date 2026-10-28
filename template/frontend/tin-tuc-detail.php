@@ -37,11 +37,11 @@ $created_date = $news_detail->event_created_date ?? $news_detail->published_at ?
 
           <?php if (!empty($img_src)): ?>
             <figure class="news-detail-thumbnail">
-              <img src="<?php echo htmlspecialchars($img_src, ENT_QUOTES, 'UTF-8'); ?>" alt="<?php echo htmlspecialchars($title, ENT_QUOTES, 'UTF-8'); ?>" itemprop="image" fetchpriority="high">
+              <img <?php echo site_image_attributes(htmlspecialchars($img_src, ENT_QUOTES, 'UTF-8'), '(max-width: 767px) calc(100vw - 40px), (max-width: 1023px) 65vw, 860px', true, true); ?> alt="<?php echo htmlspecialchars($title, ENT_QUOTES, 'UTF-8'); ?>" itemprop="image">
             </figure>
           <?php endif; ?>
 
-          <div class="news-detail-body post-content" itemprop="articleBody"><?php echo $content; ?></div>
+          <div class="news-detail-body post-content" itemprop="articleBody"><?php echo site_content_images($content); ?></div>
 
           <?php if (!empty($news_detail->event_attachment)): ?>
             <div class="news-attachment">
@@ -74,7 +74,7 @@ $created_date = $news_detail->event_created_date ?? $news_detail->published_at ?
                   $item_img = !empty($item->event_image) ? (strpos($item->event_image, 'http') === 0 ? $item->event_image : XC_URL . '/uploads/events/' . $item->event_image) : XC_URL . '/template/frontend/assets/images/banner-01.jpg';
                 ?>
                   <li><a class="news-popular-link" href="<?php echo htmlspecialchars($item_url, ENT_QUOTES, 'UTF-8'); ?>">
-                    <span class="news-popular-image"><img src="<?php echo htmlspecialchars($item_img, ENT_QUOTES, 'UTF-8'); ?>" alt="" loading="lazy"><span class="news-popular-category"><?php echo htmlspecialchars($item_type, ENT_QUOTES, 'UTF-8'); ?></span></span>
+                    <span class="news-popular-image"><img <?php echo site_image_attributes(htmlspecialchars($item_img, ENT_QUOTES, 'UTF-8'), '(max-width: 767px) calc(100vw - 40px), (max-width: 1023px) 65vw, 860px', false, true); ?> alt=""><span class="news-popular-category"><?php echo htmlspecialchars($item_type, ENT_QUOTES, 'UTF-8'); ?></span></span>
                     <span class="news-popular-copy"><strong><?php echo htmlspecialchars($item_title, ENT_QUOTES, 'UTF-8'); ?></strong><?php if (!empty($item->event_created_date)): ?><time datetime="<?php echo date('Y-m-d', strtotime($item->event_created_date)); ?>"><?php echo date('d/m/Y', strtotime($item->event_created_date)); ?></time><?php endif; ?></span>
                   </a></li>
                 <?php endforeach; ?>
@@ -129,10 +129,9 @@ if (!empty($related_news_list)):
         <div class="related-slide">
           <article class="related-card" itemscope itemtype="https://schema.org/NewsArticle">
             <a href="<?php echo $rel_url; ?>" class="related-card-img-link" tabindex="-1" aria-hidden="true">
-              <img src="<?php echo $rel_img; ?>"
+              <img <?php echo site_image_attributes($rel_img, '(max-width: 767px) calc(100vw - 40px), (max-width: 1023px) 65vw, 860px', false, false); ?>
                    alt="<?php echo $rel_title; ?>"
-                   class="related-card-img"
-                   loading="lazy" width="320" height="200"
+                   class="related-card-img" width="320" height="200"
                    itemprop="image" />
             </a>
             <div class="related-card-body">

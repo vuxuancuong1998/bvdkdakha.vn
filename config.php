@@ -44,7 +44,10 @@ define('DB_PORT', '3306');
 	define('AdminThemeMaster', 'backend'); //Replace xpanel by your admin theme's name
 
 	/*** define site path ***/
-	define('XC_URL','https://surface-port-globe-course.trycloudflare.com/bvdkdakha.vn'); //Replace by your site url
+	$localHost = strtolower((string)($_SERVER['HTTP_HOST'] ?? ''));
+	$localHost = preg_replace('/:\d+$/', '', $localHost);
+	$localBase = rtrim(str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'] ?? '/index.php')), '/.');
+	define('XC_URL', 'http://localhost/bvdkdakha.vn');
 
 }
 

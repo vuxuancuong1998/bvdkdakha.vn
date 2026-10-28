@@ -14,7 +14,7 @@
 .workspace-page-wrapper {
   background-color: #f8fafc;
   min-height: 80vh;
-  font-family: var(--font-primary, 'Be Vietnam Pro', sans-serif);
+  font-family: var(--font-primary);
   color: #0f172a;
 }
 
@@ -231,7 +231,7 @@
 
 .kpi-text-number {
   font-size: 26px;
-  font-weight: 800;
+  font-weight: 700;
   margin-top: 4px;
   line-height: 1.1;
 }
@@ -618,7 +618,7 @@
             </span>
             <span class="workspace-user-badge">NVYT Workspace</span>
           </div>
-          <h1 style="font-size: clamp(1.6rem, 3vw, 2.2rem); font-weight: 800; margin: 0 0 8px; line-height: 1.25;">
+          <h1 style="font-size: clamp(1.6rem, 3vw, 2.2rem); font-weight: 700; margin: 0 0 8px; line-height: 1.25;">
             Hệ thống Quản lý Yêu cầu & Hỗ trợ Kỹ thuật
           </h1>
           <p style="margin: 0; opacity: 0.9; font-size: 15px;">
@@ -918,7 +918,7 @@
     </div>
     <div class="ws-modal-content-body">
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-        <h4 style="font-weight: 800; color: #0f172a; margin: 0; font-size: 20px;" id="md_title"></h4>
+        <h4 style="font-weight: 700; color: #0f172a; margin: 0; font-size: 20px;" id="md_title"></h4>
         <span id="md_status_badge"></span>
       </div>
       <div class="ws-grid-2col" style="background: #f8fafc; padding: 14px; border-radius: 12px; font-size: 13.5px; border: 1px solid #e2e8f0;">

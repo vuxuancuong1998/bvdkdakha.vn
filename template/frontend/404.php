@@ -25,14 +25,14 @@ require "header.php";
 .simple-404-title{
   font-size:30px;
   line-height:1.35;
-  font-weight:800;
+  font-weight:700;
   color:#111827;
   margin-bottom:16px;
 }
 .simple-404-code{
   font-size:150px;
   line-height:.95;
-  font-weight:800;
+  font-weight:700;
   color:#0d4e96;
   margin-bottom:18px;
 }
@@ -140,7 +140,7 @@ require "header.php";
   background:#0d4e96;
   color:#fff;
   font-size:14px;
-  font-weight:800;
+  font-weight:700;
   transition:.2s;
 }
 .simple-404-home:hover{
@@ -158,7 +158,7 @@ require "header.php";
   color:#0d4e96;
   border:1px solid #cfe0f4;
   font-size:14px;
-  font-weight:800;
+  font-weight:700;
   transition:.2s;
 }
 .simple-404-secondary:hover{

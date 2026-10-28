@@ -315,7 +315,7 @@
 <div id="campaigns-component">
   <!-- Header -->
   <div class="cp-header">
-    <h2 class="cp-title">Các Chiến Dịch Truyền Thông Y Tế & Khám Chữa Bệnh Nhân Đạo</h2>
+    <h1 class="cp-title">Các Chiến Dịch Truyền Thông Y Tế & Khám Chữa Bệnh Nhân Đạo</h1>
     <p class="cp-subtitle">Kế hoạch triển khai công tác tuyên truyền phòng chống dịch bệnh và chăm sóc sức khỏe cộng đồng</p>
   </div>
 
@@ -347,7 +347,7 @@
     <div class="cp-card" data-category="<?php echo campaignFrontH($campaign->campaign_type);?>">
       <div class="cp-card-img-wrap">
         <span class="cp-badge cp-badge-<?php echo $isHumanitarian?'nhandao':'truyenthong';?>"><?php echo $typeLabel;?></span>
-        <img class="cp-card-img" src="<?php echo campaignFrontH($imageUrl);?>" alt="<?php echo campaignFrontH($campaign->title);?>">
+        <img class="cp-card-img" <?php echo site_image_attributes(campaignFrontH($imageUrl), '(max-width: 767px) calc(100vw - 40px), (max-width: 1023px) 45vw, 400px', false, true); ?> alt="<?php echo campaignFrontH($campaign->title);?>">
       </div>
       <div class="cp-card-body">
         <h3 class="cp-card-title"><a href="<?php echo XC_URL.'/hoat-dong/chien-dich-y-te/'.$campaignId.'.html';?>" style="color:inherit;text-decoration:none"><?php echo campaignFrontH($campaign->title);?></a></h3>
@@ -366,7 +366,7 @@
     <div class="cp-card" data-category="nhandao">
       <div class="cp-card-img-wrap">
         <span class="cp-badge cp-badge-nhandao">Khám chữa bệnh nhân đạo</span>
-        <img class="cp-card-img" src="https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=600&auto=format&fit=crop&q=80" alt="Khám bệnh nhân đạo">
+        <img class="cp-card-img" src="https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=600&auto=format&fit=crop&q=80" width="600" height="400" loading="lazy" decoding="async" alt="Khám bệnh nhân đạo">
       </div>
       <div class="cp-card-body">
         <h3 class="cp-card-title">Khám bệnh, tư vấn sức khỏe và cấp thuốc miễn phí cho người cao tuổi</h3>
@@ -414,7 +414,7 @@
     <div class="cp-card" data-category="truyenthong">
       <div class="cp-card-img-wrap">
         <span class="cp-badge cp-badge-truyenthong">Chiến dịch truyền thông</span>
-        <img class="cp-card-img" src="https://images.unsplash.com/photo-1584515979956-d9f6e5d09982?w=600&auto=format&fit=crop&q=80" alt="Truyền thông y tế">
+        <img class="cp-card-img" src="https://images.unsplash.com/photo-1584515979956-d9f6e5d09982?w=600&auto=format&fit=crop&q=80" width="600" height="400" loading="lazy" decoding="async" alt="Truyền thông y tế">
       </div>
       <div class="cp-card-body">
         <h3 class="cp-card-title">Chiến dịch truyền thông phòng chống dịch bệnh sốt xuất huyết và tay chân miệng</h3>
@@ -461,7 +461,7 @@
     <div class="cp-card" data-category="nhandao">
       <div class="cp-card-img-wrap">
         <span class="cp-badge cp-badge-nhandao">Khám chữa bệnh nhân đạo</span>
-        <img class="cp-card-img" src="https://images.unsplash.com/photo-1516549655169-df83a0774514?w=600&auto=format&fit=crop&q=80" alt="Hiến máu nhân đạo">
+        <img class="cp-card-img" src="https://images.unsplash.com/photo-1516549655169-df83a0774514?w=600&auto=format&fit=crop&q=80" width="600" height="400" loading="lazy" decoding="async" alt="Hiến máu nhân đạo">
       </div>
       <div class="cp-card-body">
         <h3 class="cp-card-title">Ngày hội Hiến máu tình nguyện "Giọt hồng blouse trắng Đăk Hà"</h3>
@@ -508,7 +508,7 @@
     <div class="cp-card" data-category="truyenthong">
       <div class="cp-card-img-wrap">
         <span class="cp-badge cp-badge-truyenthong">Chiến dịch truyền thông</span>
-        <img class="cp-card-img" src="https://images.unsplash.com/photo-1532938911079-1b06ac7ceec7?w=600&auto=format&fit=crop&q=80" alt="Khám sàng lọc">
+        <img class="cp-card-img" src="https://images.unsplash.com/photo-1532938911079-1b06ac7ceec7?w=600&auto=format&fit=crop&q=80" width="600" height="400" loading="lazy" decoding="async" alt="Khám sàng lọc">
       </div>
       <div class="cp-card-body">
         <h3 class="cp-card-title">Truyền thông giáo dục sức khỏe sinh sản và dinh dưỡng cho bà mẹ trẻ em</h3>

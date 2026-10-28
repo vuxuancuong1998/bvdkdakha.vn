@@ -11,9 +11,7 @@ if ($db->num_row() > 0) {
     <section id="thiet-bi-hien-dai" class="py-16 sm:py-24 section-mist">
       <div class="container-fluid">
         <div class="text-center max-w-3xl mx-auto mb-12" data-reveal>
-          <span class="text-xs font-bold uppercase tracking-widest text-medical-700 bg-medical-50 px-4 py-1.5 rounded-full border border-medical-200">
-            Công Nghệ Chẩn Đoán Đỉnh Cao
-          </span>
+         
           <h2 class="font-extrabold text-2xl sm:text-3xl lg:text-4xl text-medical-900 mt-3">
             HỆ THỐNG TRANG THIẾT BỊ Y TẾ HIỆN ĐẠI
           </h2>
@@ -43,7 +41,7 @@ if ($db->num_row() > 0) {
             <?php foreach ($homeEquipment as $equipment): ?>
 <article data-reveal class="equip-card bg-white rounded-2xl p-4 sm:p-5 border border-slate-100 shadow-pearl flex flex-col h-full">
  <div class="h-56 sm:h-60 rounded-xl bg-[#f6f7f9] flex items-center justify-center p-4 overflow-hidden">
-  <img class="w-full h-full object-contain" src="<?php echo $siteEsc($homeAsset($equipment->image_path)); ?>" alt="<?php echo $siteEsc($equipment->name); ?>" loading="lazy" width="240" height="240">
+  <img class="w-full h-full object-contain" <?php echo site_image_attributes($siteEsc($homeAsset($equipment->image_path)), '(max-width: 639px) 42vw, 240px', false, false); ?> alt="<?php echo $siteEsc($equipment->name); ?>" width="240" height="240">
  </div>
  <h3 class="font-bold text-[15px] text-slate-800 leading-snug mt-4 mb-3 min-h-[62px]"><?php echo $siteEsc($equipment->name); ?></h3>
  <div class="bg-[#f0f7ff] border border-medical-100 rounded-lg py-2.5 px-3 mb-3.5 grid grid-cols-2 items-center">

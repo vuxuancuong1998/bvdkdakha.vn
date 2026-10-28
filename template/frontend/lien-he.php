@@ -30,7 +30,7 @@ $contactEscape = function ($value) { return htmlspecialchars($value, ENT_QUOTES,
     }
     .page-hero h1 {
       font-size: var(--font-size-5xl);
-      font-weight: 800;
+      font-weight: 700;
       color: #fff;
       margin-bottom: var(--space-3);
       position: relative;
@@ -59,10 +59,10 @@ $contactEscape = function ($value) { return htmlspecialchars($value, ENT_QUOTES,
       margin: 0 auto var(--space-4);
     }
     .emergency-block .emg-icon svg { width: 32px; height: 32px; }
-    .emergency-block h2 { font-size: var(--font-size-2xl); font-weight: 800; margin-bottom: var(--space-2); color:#fff; }
+    .emergency-block h2 { font-size: var(--font-size-2xl); font-weight: 700; margin-bottom: var(--space-2); color:#fff; }
     .emergency-block .emg-number {
       font-size: clamp(2rem, 6vw, 3.5rem);
-      font-weight: 800;
+      font-weight: 700;
       letter-spacing: 0.06em;
       display: block;
       color: #fff;
@@ -278,7 +278,7 @@ $contactEscape = function ($value) { return htmlspecialchars($value, ENT_QUOTES,
 
           <!-- Right: Feedback Form -->
           <div class="contact-form-card" data-animate data-animate-delay="100">
-            <h2 style="font-size:var(--font-size-2xl);font-weight:800;color:var(--color-text);margin-bottom:var(--space-2);">
+            <h2 style="font-size:var(--font-size-2xl);font-weight:700;color:var(--color-text);margin-bottom:var(--space-2);">
               Gửi góp ý / Phản ánh
             </h2>
             <p style="color:var(--color-text-muted);margin-bottom:var(--space-6);">

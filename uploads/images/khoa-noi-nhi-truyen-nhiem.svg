@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512" fill="none">
+  <defs>
+    <linearGradient id="bgGrad29" x1="60" y1="60" x2="452" y2="452" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#fff7ed"/>
+      <stop offset="100%" stop-color="#ffedd5"/>
+    </linearGradient>
+  </defs>
+  <circle cx="256" cy="256" r="196" fill="url(#bgGrad29)" stroke="#e36928" stroke-width="18"/>
+  <circle cx="256" cy="256" r="166" stroke="#fdba74" stroke-width="3" stroke-dasharray="10 10"/>
+  <!-- Lungs & Stethoscope (Nội tổng hợp - Nhi - Dinh dưỡng - Truyền nhiễm) -->
+  <path d="M244 128v82c0 12-8 22-18 28-26 14-68 38-68 92 0 28 20 44 46 44 24 0 40-16 40-40v-86" fill="#ffffff" stroke="#e36928" stroke-width="14" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M268 128v82c0 12 8 22 18 28 26 14 68 38 68 92 0 28-20 44-46 44-24 0-40-16-40-40v-86" fill="#ffffff" stroke="#e36928" stroke-width="14" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Bronchi branches -->
+  <path d="M244 210l-38 30M218 230l-26 8M218 230l-8 28M268 210l38 30M294 230l26 8M294 230l8 28" stroke="#0056b3" stroke-width="10" stroke-linecap="round"/>
+  <!-- Protection shield badge -->
+  <path d="M256 320l34 14v24c0 24-15 40-34 48-19-8-34-24-34-48v-24l34-14z" fill="#0056b3" stroke="#ffffff" stroke-width="6" stroke-linejoin="round"/>
+  <path d="M256 338v24M244 350h24" stroke="#ffffff" stroke-width="7" stroke-linecap="round"/>
+</svg>

@@ -1,10 +1,6 @@
 <!-- ============================================================
-       MAIN CONTENT
+       HERO BANNER SLIDER
        ============================================================ -->
-
-  <main id="main-content" class="home-flow">
-
-    <!-- 1. HERO BANNER SLIDER -->
         <?php
     global $db;
     $siteSlides = array();

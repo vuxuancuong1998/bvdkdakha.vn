@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512" fill="none">
+  <defs>
+    <linearGradient id="bgGrad31" x1="60" y1="60" x2="452" y2="452" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#fff7ed"/>
+      <stop offset="100%" stop-color="#ffedd5"/>
+    </linearGradient>
+  </defs>
+  <circle cx="256" cy="256" r="196" fill="url(#bgGrad31)" stroke="#e36928" stroke-width="18"/>
+  <circle cx="256" cy="256" r="166" stroke="#fdba74" stroke-width="3" stroke-dasharray="10 10"/>
+  <!-- Herbal Leaf + Mortar & Pestle + Rehabilitation (Khoa YHCT - PHCN) -->
+  <path d="M296 132c-64 8-112 58-112 122 0 22 6 42 16 58 64-8 112-58 112-122 0-22-6-42-16-58z" fill="#ffffff" stroke="#059669" stroke-width="13" stroke-linejoin="round"/>
+  <path d="M198 308l82-126" stroke="#059669" stroke-width="11" stroke-linecap="round"/>
+  <!-- Mortar bowl -->
+  <path d="M164 282h184c0 54-40 94-92 94s-92-40-92-94z" fill="#ffffff" stroke="#e36928" stroke-width="14" stroke-linejoin="round"/>
+  <path d="M206 392h100" stroke="#e36928" stroke-width="14" stroke-linecap="round"/>
+  <path d="M256 308v44M234 330h44" stroke="#0056b3" stroke-width="11" stroke-linecap="round"/>
+</svg>

@@ -276,18 +276,18 @@
                            <div class="d-flex align-items-center gap-3 mb-4">
                               <img src="<?php echo XC_URL; ?>/template/frontend/assets/images/logo.png" alt="Logo" class="rounded-3 shadow-sm" style="width: 52px; height: 52px; object-fit: contain; background: #fff; padding: 4px; border: 1px solid #e2e8f0;">
                               <div>
-                                 <h5 class="fw-bold text-dark mb-0" style="font-size: 16px;">BVĐK ĐẮK HÀ</h5>
+                                 <h5 class="fw-bold text-dark mb-0" style="font-size: 16px;">BVĐK ĐĂK HÀ</h5>
                                  <div class="text-muted small">Hệ thống Quản trị Bệnh viện</div>
                               </div>
                            </div>
                            <h2 class="mb-2 text-center">Đăng nhập</h2>
-                           <p class="text-center">Nhập email và mật khẩu để đăng nhập!</p>
+                           <p class="text-center">Nhập CCCD, email hoặc tên đăng nhập và mật khẩu!</p>
                            <form>
                               <div class="row">
                                  <div class="col-lg-12">
                                     <div class="form-group">
-                                       <label for="email" class="form-label">Email</label>
-                                       <input type="email" class="form-control" id="email" aria-describedby="email" placeholder=" ">
+                                       <label for="email" class="form-label">CCCD / Email / Tên đăng nhập</label>
+                                       <input type="text" class="form-control" id="email" autocomplete="username" placeholder=" ">
                                     </div>
                                  </div>
                                  <div class="col-lg-12">

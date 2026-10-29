@@ -1,4 +1,4 @@
-<?php require_once "header.php"; ?>
+<?php require_once 'header.php'; ?>
 
 <?php
 // Service database dictionary for UI rendering
@@ -271,4 +271,4 @@ $service = $all_services[$current_slug];
 
 </main>
 
-<?php require_once "footer.php"; ?>
+<?php require_once 'home-footer.php'; ?>

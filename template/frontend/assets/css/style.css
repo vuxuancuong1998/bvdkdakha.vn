@@ -1,5 +1,5 @@
 /* ============================================================
-   TRUNG TÂM Y TẾ KHU VỰC ĐẮK HÀ — MAIN STYLESHEET
+   TRUNG TÂM Y TẾ KHU VỰC ĐĂK HÀ — MAIN STYLESHEET
    Author: Antigravity AI · Version: 1.0.0
    ============================================================ */
 
@@ -2564,7 +2564,7 @@ section.bg-dark {
 }
 
 .footer-links a::before {
-  content: '›';
+  content: '';
   color: var(--color-accent);
   font-size: var(--font-size-base);
   line-height: 1;

@@ -1,5 +1,4 @@
 <?php require_once 'header.php'; ?>
-<?php require_once 'menu.php'; ?>
 <main style="padding: var(--space-12) 0; background: var(--color-bg);">
   <div class="container">
     <div class="row" style="display: flex; gap: var(--space-8); flex-wrap: wrap;">

@@ -1,6 +1,6 @@
 <footer class="footer py-3 border-top bg-white mt-4">
   <div class="container-fluid d-flex flex-wrap justify-content-between align-items-center text-muted" style="font-size: 12px;">
-    <span>&copy; <?php echo date('Y'); ?> <strong>Bệnh viện Đa khoa Khu vực Đắk Hà</strong>. Hệ thống quản trị nội dung.</span>
+    <span>&copy; <?php echo date('Y'); ?> <strong>Bệnh viện Đa khoa Khu vực Đăk Hà</strong>. Hệ thống quản trị nội dung.</span>
     <span class="d-none d-sm-inline">Dak Ha Regional General Hospital Admin</span>
   </div>
 </footer>

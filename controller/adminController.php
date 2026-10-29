@@ -1,10 +1,12 @@
 <?php
 require_once __DIR__.'/admin-equipment.php';
 require_once __DIR__.'/admin-quick-appointments.php';
+require_once __DIR__.'/admin-support-requests.php';
 Class adminController extends baseController
 {
     use AdminEquipmentActions;
     use AdminQuickAppointmentActions;
+    use AdminSupportRequestActions;
 	private function ensureAdminPermissionTables()
 	{
 		global $db;
@@ -46,6 +48,7 @@ Class adminController extends baseController
 			array('key' => 'activities_publish', 'name' => 'Công khai hoạt động', 'parent' => 'activities', 'sort' => 54),
 			array('key' => 'customer_feedbacks', 'name' => 'Quản lý phản hồi khách hàng', 'parent' => '', 'sort' => 54),
 			array('key' => 'tt25_documents', 'name' => 'Quản lý giấy tờ TT25', 'parent' => '', 'sort' => 55),
+			array('key' => 'support_requests', 'name' => 'Quản lý yêu cầu hỗ trợ', 'parent' => '', 'sort' => 56),
 			array('key' => 'job_support_customers', 'name' => 'Quản lý khách hàng hỗ trợ tìm việc', 'parent' => '', 'sort' => 55),
 			array('key' => 'market_results', 'name' => 'Quản lý kết quả sàn', 'parent' => '', 'sort' => 56),
 			array('key' => 'google_meet', 'name' => 'Sàn việc làm online', 'parent' => '', 'sort' => 60),
@@ -91,7 +94,7 @@ Class adminController extends baseController
 		$db->query("SELECT u.*, g.group_name
 			FROM hicrm_users AS u
 			INNER JOIN hicrm_user_groups AS g ON g.id = u.user_group AND g.group_status NOT IN(99)
-			WHERE u.id = '".intval($_SESSION['user']['id'])."' AND u.user_status = 1 LIMIT 1");
+			WHERE u.id = '".intval($_SESSION['user']['id'])."' AND u.is_admin = 1 AND u.user_status = 1 LIMIT 1");
 		return $db->fetch_object(true);
 	}
 
@@ -173,7 +176,7 @@ Class adminController extends baseController
 			$this->view->admintmp('index');
 			return;
 		}
-		$routes = array('employers'=>'/admin/employers','employer_posts'=>'/admin/employers/posts','candidates'=>'/admin/candidates','students'=>'/admin/students','events'=>'/admin/events','activities'=>'/admin/activities','news_comments'=>'/admin/newscomments','staticpages'=>'/admin/staticpages','staticpage_categories'=>'/admin/staticpagecategories','customer_feedbacks'=>'/admin/customerfeedbacks','tt25_documents'=>'/admin/tt25documents','job_support_customers'=>'/admin/jobsupportcustomers','market_results'=>'/admin/marketresults','google_meet'=>'/admin/googlemeet','users'=>'/admin/users','groups'=>'/admin/groups','images'=>'/admin/images','files'=>'/admin/files','sliders'=>'/admin/sliders','equipment'=>'/admin/equipment','quick_appointments'=>'/admin/quickappointments','videos'=>'/admin/videos','config'=>'/admin/config','settings'=>'/admin/settings','trash'=>'/admin/trash');
+		$routes = array('employers'=>'/admin/employers','employer_posts'=>'/admin/employers/posts','candidates'=>'/admin/candidates','students'=>'/admin/students','events'=>'/admin/events','activities'=>'/admin/activities','news_comments'=>'/admin/newscomments','staticpages'=>'/admin/staticpages','staticpage_categories'=>'/admin/staticpagecategories','customer_feedbacks'=>'/admin/customerfeedbacks','tt25_documents'=>'/admin/tt25documents','job_support_customers'=>'/admin/jobsupportcustomers','market_results'=>'/admin/marketresults','google_meet'=>'/admin/googlemeet','users'=>'/admin/users','groups'=>'/admin/groups','images'=>'/admin/images','files'=>'/admin/files','sliders'=>'/admin/sliders','equipment'=>'/admin/equipment','support_requests'=>'/admin/supportrequests','quick_appointments'=>'/admin/quickappointments','videos'=>'/admin/videos','config'=>'/admin/config','settings'=>'/admin/settings','trash'=>'/admin/trash');
 		foreach($routes as $key => $route){
 			if($this->adminHasMenuPermission($allowed, $key)){ header('Location: '.XC_URL.$route); return; }
 		}
@@ -689,7 +692,7 @@ Class adminController extends baseController
 			doctor_cchn varchar(100) DEFAULT NULL,
 			doctor_position varchar(255) NOT NULL,
 			doctor_job_title_code varchar(50) DEFAULT NULL,
-			doctor_workplace varchar(255) NOT NULL DEFAULT 'Bệnh viện Đa khoa khu vực Đắk Hà',
+			doctor_workplace varchar(255) NOT NULL DEFAULT 'Bệnh viện Đa khoa khu vực Đăk Hà',
 			doctor_code varchar(50) DEFAULT NULL,
 			doctor_avatar varchar(255) DEFAULT NULL,
 			doctor_status tinyint(1) NOT NULL DEFAULT 1,
@@ -710,7 +713,7 @@ Class adminController extends baseController
 			'cchn'           => array('doctor_cchn', 'VARCHAR(100) NULL DEFAULT NULL'),
 			'position'       => array('doctor_position', 'VARCHAR(255) NOT NULL'),
 			'job_title_code' => array('doctor_job_title_code', 'VARCHAR(50) NULL DEFAULT NULL'),
-			'workplace'      => array('doctor_workplace', "VARCHAR(255) NOT NULL DEFAULT 'Bệnh viện Đa khoa khu vực Đắk Hà'"),
+			'workplace'      => array('doctor_workplace', "VARCHAR(255) NOT NULL DEFAULT 'Bệnh viện Đa khoa khu vực Đăk Hà'"),
 			'code'           => array('doctor_code', 'VARCHAR(50) NULL DEFAULT NULL'),
 			'avatar'         => array('doctor_avatar', 'VARCHAR(255) NULL DEFAULT NULL'),
 			'status'         => array('doctor_status', 'TINYINT(1) NOT NULL DEFAULT 1'),
@@ -1392,18 +1395,19 @@ Class adminController extends baseController
 	public function users($para)
 	{
 		if(!$this->prepareAdminAccess('users')){ return; }
-		$userModel = $this->model->get('userModel');
 		global $db;
+		require_once __DIR__.'/../application/admin_users.class.php';
+		AdminUsers::ensureSchema($db);
+		$userModel = $this->model->get('userModel');
 		$db->query("SELECT DISTINCT g.* FROM hicrm_user_groups g
 			LEFT JOIN hicrm_user_group_permissions gp ON gp.group_id = g.id
 			LEFT JOIN hicrm_admin_menu_permissions p ON p.id = gp.permission_id AND p.permission_status = 1
 			WHERE g.group_status NOT IN(99) AND (g.id = 1 OR p.id IS NOT NULL)
 			ORDER BY g.id ASC");
 		$admin_groups = $db->fetch_object();
+		$this->view->data['roles'] = is_array($admin_groups) ? $admin_groups : array();
 		if(isset($para[1]) && $para[1] == "add"){
 			$this->view->data['method'] = 'add';
-			$user_category = $userModel->get_user_category();
-			$this->view->data['user_category'] = $user_category;
 			$this->view->data['roles'] = $admin_groups;
 			
 			$db->query("SELECT * FROM hicrm_departments WHERE depart_status NOT IN(99) ORDER BY depart_name ASC");
@@ -1414,9 +1418,9 @@ Class adminController extends baseController
 			$this->view->admintmp("user-action");
 		}elseif(isset($para[1]) && $para[1] == "edit"){
 			$this->view->data['method'] = 'edit';
-			$this->view->data['user_categories'] = $userModel->get_user_category();
 			$this->view->data['roles'] = $admin_groups;
-			$this->view->data['user'] = $userModel->get_user($para[2]);
+			$this->view->data['user'] = $userModel->get_user((int)($para[2] ?? 0));
+			if(!$this->view->data['user']){ $this->adminRedirect('/admin/users'); return; }
 			
 			$db->query("SELECT * FROM hicrm_departments WHERE depart_status NOT IN(99) ORDER BY depart_name ASC");
 			$departments = $db->fetch_object();
@@ -1437,13 +1441,13 @@ Class adminController extends baseController
 				);
 				return;
 			}
-			$this->view->data['roles'] = $userModel->role_user();
-			$this->view->data['user'] = $userModel->get_user($para[2]);
-			$this->view->data['role_detail'] = $userModel->role_user_detail($userModel->get_user($para[2])->user_group);
-			$this->view->data['user_roles'] = $userModel->get_user_role();
+			$this->view->data['user'] = $userModel->get_user((int)$para[2]);
+			if(!$this->view->data['user']){ $this->adminRedirect('/admin/users'); return; }
+			$db->query("SELECT gp.group_id, p.permission_name FROM hicrm_user_group_permissions gp INNER JOIN hicrm_admin_menu_permissions p ON p.id = gp.permission_id AND p.permission_status = 1 ORDER BY p.sort_order, p.id");
+			$this->view->data['group_permissions'] = $db->fetch_object();
 			$this->view->data['method'] = 'role';
 			$this->view->data['active_menu'] = 'users_role';
-			$this->view->data['pagetitle'] = 'Thêm nhóm quyền';
+			$this->view->data['pagetitle'] = 'Phân quyền tài khoản';
 			$this->view->admintmp("user-role");
 		}
 		else{
@@ -3299,7 +3303,7 @@ Class adminController extends baseController
 				$cccd = $db->escapestring(trim(isset($_POST['doctor_cccd']) ? $_POST['doctor_cccd'] : (isset($_POST['cccd']) ? $_POST['cccd'] : '')));
 				$cchn = $db->escapestring(trim(isset($_POST['doctor_cchn']) ? $_POST['doctor_cchn'] : (isset($_POST['cchn']) ? $_POST['cchn'] : '')));
 				$job_title_code = $db->escapestring(trim(isset($_POST['doctor_job_title_code']) ? $_POST['doctor_job_title_code'] : (isset($_POST['job_title_code']) ? $_POST['job_title_code'] : '')));
-				$workplace = $db->escapestring(trim(isset($_POST['doctor_workplace']) && $_POST['doctor_workplace'] !== '' ? $_POST['doctor_workplace'] : (isset($_POST['workplace']) && $_POST['workplace'] !== '' ? $_POST['workplace'] : 'Bệnh viện Đa khoa khu vực Đắk Hà')));
+				$workplace = $db->escapestring(trim(isset($_POST['doctor_workplace']) && $_POST['doctor_workplace'] !== '' ? $_POST['doctor_workplace'] : (isset($_POST['workplace']) && $_POST['workplace'] !== '' ? $_POST['workplace'] : 'Bệnh viện Đa khoa khu vực Đăk Hà')));
 				$code = $db->escapestring(trim(isset($_POST['doctor_code']) ? $_POST['doctor_code'] : (isset($_POST['code']) ? $_POST['code'] : '')));
 				$status = isset($_POST['doctor_status']) ? intval($_POST['doctor_status']) : (isset($_POST['status']) ? intval($_POST['status']) : 1);
 
@@ -3415,7 +3419,7 @@ Class adminController extends baseController
 				'doctor_cchn' => '',
 				'doctor_position' => '',
 				'doctor_job_title_code' => '',
-				'doctor_workplace' => 'Bệnh viện Đa khoa khu vực Đắk Hà',
+				'doctor_workplace' => 'Bệnh viện Đa khoa khu vực Đăk Hà',
 				'doctor_code' => '',
 				'doctor_avatar' => '',
 				'doctor_status' => 1,
@@ -3428,7 +3432,7 @@ Class adminController extends baseController
 				'cchn' => '',
 				'position' => '',
 				'job_title_code' => '',
-				'workplace' => 'Bệnh viện Đa khoa khu vực Đắk Hà',
+				'workplace' => 'Bệnh viện Đa khoa khu vực Đăk Hà',
 				'code' => '',
 				'avatar' => '',
 				'status' => 1

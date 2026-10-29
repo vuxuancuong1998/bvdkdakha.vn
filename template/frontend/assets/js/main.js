@@ -1,5 +1,5 @@
 /**
- * TRUNG TÂM Y TẾ KHU VỰC ĐẮK HÀ
+ * TRUNG TÂM Y TẾ KHU VỰC ĐĂK HÀ
  * Main JavaScript — slider, scroll animations, mobile menu, count-up, form validate
  * Version: 1.0.0
  */

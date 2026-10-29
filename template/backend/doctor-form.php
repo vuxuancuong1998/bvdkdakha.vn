@@ -4,7 +4,7 @@ $doctor_edit = isset($doctor_edit) && is_object($doctor_edit) ? $doctor_edit : (
 $doc_id = isset($doctor_edit->id) ? (int)$doctor_edit->id : 0;
 $doc_name = isset($doctor_edit->doctor_name) ? $doctor_edit->doctor_name : (isset($doctor_edit->fullname) ? $doctor_edit->fullname : '');
 $doc_position = isset($doctor_edit->doctor_position) ? $doctor_edit->doctor_position : (isset($doctor_edit->position) ? $doctor_edit->position : '');
-$doc_workplace = isset($doctor_edit->doctor_workplace) && $doctor_edit->doctor_workplace !== '' ? $doctor_edit->doctor_workplace : (isset($doctor_edit->workplace) && $doctor_edit->workplace !== '' ? $doctor_edit->workplace : 'Bệnh viện Đa khoa khu vực Đắk Hà');
+$doc_workplace = isset($doctor_edit->doctor_workplace) && $doctor_edit->doctor_workplace !== '' ? $doctor_edit->doctor_workplace : (isset($doctor_edit->workplace) && $doctor_edit->workplace !== '' ? $doctor_edit->workplace : 'Bệnh viện Đa khoa khu vực Đăk Hà');
 $doc_dept_id = isset($doctor_edit->doctor_department_id) ? (int)$doctor_edit->doctor_department_id : (isset($doctor_edit->department_id) ? (int)$doctor_edit->department_id : 0);
 $doc_dob = isset($doctor_edit->doctor_dob) ? $doctor_edit->doctor_dob : (isset($doctor_edit->dob) ? $doctor_edit->dob : '');
 $doc_hometown = isset($doctor_edit->doctor_hometown) ? $doctor_edit->doctor_hometown : (isset($doctor_edit->hometown) ? $doctor_edit->hometown : '');
@@ -74,7 +74,7 @@ $avatarUrl = $hasAvatar
 
                      <div class="col-md-6">
                         <label class="form-label">Quê quán</label>
-                        <input type="text" class="form-control" name="doctor_hometown" value="<?php echo htmlspecialchars((string)$doc_hometown, ENT_QUOTES, 'UTF-8'); ?>" placeholder="Ví dụ: Đắk Hà, Kon Tum">
+                        <input type="text" class="form-control" name="doctor_hometown" value="<?php echo htmlspecialchars((string)$doc_hometown, ENT_QUOTES, 'UTF-8'); ?>" placeholder="Ví dụ: Đăk Hà, Kon Tum">
                      </div>
 
                      <div class="col-md-6">
@@ -106,7 +106,7 @@ $avatarUrl = $hasAvatar
 
                      <div class="col-md-6">
                         <label class="form-label fw-bold">Đơn vị công tác <span class="text-danger">*</span></label>
-                        <input type="text" class="form-control" name="doctor_workplace" value="<?php echo htmlspecialchars((string)$doc_workplace, ENT_QUOTES, 'UTF-8'); ?>" placeholder="Bệnh viện Đa khoa khu vực Đắk Hà" required>
+                        <input type="text" class="form-control" name="doctor_workplace" value="<?php echo htmlspecialchars((string)$doc_workplace, ENT_QUOTES, 'UTF-8'); ?>" placeholder="Bệnh viện Đa khoa khu vực Đăk Hà" required>
                      </div>
 
                      <div class="col-md-6">

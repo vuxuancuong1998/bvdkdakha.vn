@@ -1,6 +1,6 @@
 # Kế Hoạch Thiết Kế & Triển Khai Chức Năng Quản Lý Và Hiển Thị Bác Sĩ
 
-**Dự án:** Website Bệnh viện Đa khoa Khu vực Đắk Hà (`bvdkdakha.vn`)  
+**Dự án:** Website Bệnh viện Đa khoa Khu vực Đăk Hà (`bvdkdakha.vn`)  
 **Ngày lập:** 27/09/2026  
 **Trạng thái:** Bản kế hoạch chốt cuối cùng (Final Design Spec)
 
@@ -90,7 +90,7 @@ Bổ sung action `doctors($para = array())`:
 ### 4.2. Trang Danh Sách Chi Tiết Đội Ngũ Bác Sĩ (`/page/doctors`)
 * **Controller:** Bổ sung phương thức `doctors()` trong `controller/pageController.php`.
 * **Giao diện (`template/frontend/doi-ngu-bac-si.php`):**
-  * Banner tiêu đề trang: "Đội ngũ Y Bác sĩ — Bệnh viện Đa khoa Khu vực Đắk Hà".
+  * Banner tiêu đề trang: "Đội ngũ Y Bác sĩ — Bệnh viện Đa khoa Khu vực Đăk Hà".
   * Bộ lọc phân loại Khoa/Phòng (Tất cả, Khoa Nội, Khoa Ngoại, Sản khoa, Cận lâm sàng...).
   * Lưới thẻ bác sĩ (Doctor Cards Grid) hiển thị chi tiết: Ảnh đại diện, Chức danh & Họ tên, Khoa phòng, Số Chứng chỉ hành nghề (CCHN).
 * **Tích hợp Menu chính:** Bổ sung liên kết đến trang Đội ngũ bác sĩ vào thanh menu trên đầu trang (`template/frontend/menu.php`).

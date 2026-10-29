@@ -167,7 +167,7 @@ if (!function_exists('frontendDoctorPaginationItems')) {
           <?php foreach($doctors as $idx => $doc): 
             $docName = !empty($doc->doctor_name) ? $doc->doctor_name : (!empty($doc->fullname) ? $doc->fullname : '');
             $docPosition = !empty($doc->doctor_position) ? $doc->doctor_position : (!empty($doc->position) ? $doc->position : 'Cán bộ y tế');
-            $docWorkplace = !empty($doc->doctor_workplace) ? $doc->doctor_workplace : (!empty($doc->workplace) ? $doc->workplace : 'Bệnh viện Đa khoa khu vực Đắk Hà');
+            $docWorkplace = !empty($doc->doctor_workplace) ? $doc->doctor_workplace : (!empty($doc->workplace) ? $doc->workplace : 'Bệnh viện Đa khoa khu vực Đăk Hà');
             $docAvatar = !empty($doc->doctor_avatar) ? $doc->doctor_avatar : (!empty($doc->avatar) ? $doc->avatar : '');
             $docDob = !empty($doc->doctor_dob) ? $doc->doctor_dob : (!empty($doc->dob) ? $doc->dob : '');
             $docHometown = !empty($doc->doctor_hometown) ? $doc->doctor_hometown : (!empty($doc->hometown) ? $doc->hometown : '');
@@ -191,7 +191,7 @@ if (!function_exists('frontendDoctorPaginationItems')) {
               'cccd' => !empty($docCccd) ? (string)$docCccd : 'Chưa cập nhật',
               'position' => (string)$docPosition,
               'job_title_code' => !empty($docJobCode) ? (string)$docJobCode : 'Chưa cập nhật',
-              'department' => !empty($doc->depart_name) ? (string)$doc->depart_name : 'Bệnh viện Đa khoa khu vực Đắk Hà',
+              'department' => !empty($doc->depart_name) ? (string)$doc->depart_name : 'Bệnh viện Đa khoa khu vực Đăk Hà',
               'workplace' => (string)$docWorkplace,
               'code' => !empty($docCode) ? (string)$docCode : 'Chưa cập nhật',
               'avatar' => $avatarSrc
@@ -1518,4 +1518,4 @@ document.addEventListener('keydown', function(e) {
 });
 </script>
 
-<?php require_once "footer.php"; ?>
+<?php require_once 'home-footer.php'; ?>

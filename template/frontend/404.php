@@ -5,7 +5,7 @@ $verify_email = isset($verify_email) ? $verify_email : 0;
 $is_success = isset($page_status) && $page_status == "success";
 $disable_auto_redirect = isset($page_action_label) && trim((string)$page_action_label) !== '';
 http_response_code($is_success ? 200 : 404);
-require "header.php";
+require_once 'header.php';
 ?>
 
 <style>
@@ -312,4 +312,4 @@ require "header.php";
 </script>
 <?php } ?>
 
-<?php require "footer.php"; ?>
+<?php require_once 'home-footer.php'; ?>

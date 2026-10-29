@@ -4,7 +4,7 @@
 
 **Goal:** Xây dựng tính năng quản lý bác sĩ trong trang Admin (danh sách, thêm, sửa, đổi trạng thái, xóa, upload ảnh đại diện vào `uploads/doctors/`) và hiển thị bác sĩ động trên trang chủ website (`index.php`) cùng trang danh sách chi tiết (`/bac-si`).
 
-**Architecture:** Sử dụng kiến trúc MVC thuần của dự án (`router.class.php` -> Controller -> Database -> Template View). Cơ chế auto-init tự động khởi tạo bảng `hicrm_doctors` nếu chưa tồn tại khi truy cập module Admin. Khối giao diện frontend kế thừa style hiện tại của website bệnh viện Đắk Hà.
+**Architecture:** Sử dụng kiến trúc MVC thuần của dự án (`router.class.php` -> Controller -> Database -> Template View). Cơ chế auto-init tự động khởi tạo bảng `hicrm_doctors` nếu chưa tồn tại khi truy cập module Admin. Khối giao diện frontend kế thừa style hiện tại của website bệnh viện Đăk Hà.
 
 **Tech Stack:** PHP 7/8, MariaDB/MySQL, Bootstrap 5 (Backend Hope UI), HTML5/CSS3 (Frontend Vanilla CSS/Responsive).
 

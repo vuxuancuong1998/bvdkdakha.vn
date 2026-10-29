@@ -68,9 +68,7 @@ foreach ((is_array($featured_doctors ?? null) ? $featured_doctors : array()) as 
 
   <!-- Stylesheet -->
   <link rel="stylesheet" href="<?php echo XC_URL;?>/template/frontend/assets/css/style.css?version=<?php echo filemtime(__DIR__.'/assets/css/style.css'); ?>" />
-  <?php if (empty($isHomeDesign)): ?>
   <link rel="stylesheet" href="<?php echo XC_URL;?>/template/frontend/assets/css/tin-tuc.css?version=<?php echo filemtime(__DIR__.'/assets/css/tin-tuc.css'); ?>" />
-  <?php endif; ?>
 
   <!-- ============================================================
        STRUCTURED DATA — JSON-LD

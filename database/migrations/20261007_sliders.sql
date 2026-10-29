@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS `hicrm_sliders` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 INSERT INTO `hicrm_sliders` (`image_path`, `alt_text`, `eyebrow`, `title`, `description`, `button_label`, `button_url`, `sort_order`, `is_active`)
-SELECT 'uploads/slider/banner_01.png', 'Bệnh viện đa khoa khu vực Đắk Hà — Cơ sở vật chất hiện đại', NULL, NULL, NULL, NULL, NULL, 10, 1
+SELECT 'uploads/slider/banner_01.png', 'Bệnh viện đa khoa khu vực Đăk Hà — Cơ sở vật chất hiện đại', NULL, NULL, NULL, NULL, NULL, 10, 1
 WHERE NOT EXISTS (SELECT 1 FROM `hicrm_sliders` LIMIT 1);
 
 INSERT INTO `hicrm_sliders` (`image_path`, `alt_text`, `eyebrow`, `title`, `description`, `button_label`, `button_url`, `sort_order`, `is_active`)
@@ -24,5 +24,5 @@ SELECT 'template/frontend/assets/images/banner-02.jpg', 'Cơ sở hạ tầng v�
 WHERE NOT EXISTS (SELECT 1 FROM `hicrm_sliders` WHERE `image_path` = 'template/frontend/assets/images/banner-02.jpg');
 
 INSERT INTO `hicrm_sliders` (`image_path`, `alt_text`, `eyebrow`, `title`, `description`, `button_label`, `button_url`, `sort_order`, `is_active`)
-SELECT 'template/frontend/assets/images/banner-03.jpg', 'Đội ngũ y tế phục vụ cộng đồng huyện Đắk Hà', 'Y tế cộng đồng', 'Vì sức khỏe cộng đồng vùng cao Tây Nguyên', 'Chúng tôi đẩy mạnh công tác y tế dự phòng, tuyên truyền phòng chống dịch bệnh và chăm sóc sức khỏe ban đầu cho đồng bào các dân tộc thiểu số.', 'Tin y tế cộng đồng', 'tin-tuc.html', 30, 1
+SELECT 'template/frontend/assets/images/banner-03.jpg', 'Đội ngũ y tế phục vụ cộng đồng huyện Đăk Hà', 'Y tế cộng đồng', 'Vì sức khỏe cộng đồng vùng cao Tây Nguyên', 'Chúng tôi đẩy mạnh công tác y tế dự phòng, tuyên truyền phòng chống dịch bệnh và chăm sóc sức khỏe ban đầu cho đồng bào các dân tộc thiểu số.', 'Tin y tế cộng đồng', 'tin-tuc.html', 30, 1
 WHERE NOT EXISTS (SELECT 1 FROM `hicrm_sliders` WHERE `image_path` = 'template/frontend/assets/images/banner-03.jpg');

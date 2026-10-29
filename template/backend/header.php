@@ -69,7 +69,7 @@ $adminCanAny = function($keys) use ($adminCan){
                     <img src="<?php echo XC_URL; ?>/template/frontend/assets/images/logo.png" class="logo-normal" alt="logo" width="26px" height="26px">
                 </div>
                 <div>
-                    <h4 class="logo-title">BVĐK ĐẮK HÀ</h4>
+                    <h4 class="logo-title">BVĐK ĐĂK HÀ</h4>
                     <span class="logo-subtitle">Hệ thống Quản trị</span>
                 </div>
             </a>
@@ -129,6 +129,9 @@ $adminCanAny = function($keys) use ($adminCan){
                     </li>
                     <?php endif; ?>
 
+                    <?php if($adminCan('support_requests')): ?>
+                    <li class="nav-item"><a class="nav-link <?php echo ($active_menu ?? '') === 'support_requests' ? 'active' : ''; ?>" href="<?php echo XC_URL; ?>/admin/supportrequests"><i class="fa-solid fa-headset"></i><span class="item-name">Yêu cầu hỗ trợ</span></a></li>
+                    <?php endif; ?>
                     <?php if($adminCan('tt25_documents')): ?>
                     <li class="nav-item">
                         <a class="nav-link <?php echo (isset($active_menu) && $active_menu == 'tt25documents') ? 'active' : ''; ?>" href="<?php echo XC_URL;?>/admin/tt25documents">
@@ -360,7 +363,7 @@ $adminCanAny = function($keys) use ($adminCan){
                   </i>
               </button>
               <div class="admin-topbar-brand d-flex align-items-center gap-2">
-                  <span class="fw-bold text-dark d-none d-sm-inline" style="font-size: 14.5px;">Bệnh viện Đa khoa Khu vực Đắk Hà</span>
+                  <span class="fw-bold text-dark d-none d-sm-inline" style="font-size: 14.5px;">Bệnh viện Đa khoa Khu vực Đăk Hà</span>
                   <span class="badge-tag">Hệ thống Quản trị</span>
               </div>
             </div>

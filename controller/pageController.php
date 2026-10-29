@@ -73,83 +73,40 @@ Class pageController extends baseController
 		$this->view->data['other_pages'] = is_array($other_pages) ? $other_pages : array();
 		$this->view->show("trangtinh");
 	}
-	public function workspace($para)
-	{
-		global $db;
-		
-		if(!isset($_SESSION['user']['id'])){
-			$_SESSION['user'] = array(
-				'id' => 40,
-				'full_name' => 'Cương Vũ Xuân',
-				'email' => 'vxcuong1101@gmail.com',
-				'group' => 2,
-				'avatar' => ''
-			);
-			$_SESSION['LoggedIn'] = 1;
-		}
-
-		$user_group = isset($_SESSION['user']['group']) ? intval($_SESSION['user']['group']) : 0;
-		if($user_group !== 2){
-			echo "<script>alert('Tính năng Không gian làm việc số chỉ dành cho nhóm tài khoản Cán bộ / Nhân viên (user_group = 2).'); window.location.href='".XC_URL."';</script>";
-			return;
-		}
-
-		$user_id = isset($_SESSION['user']['id']) ? intval($_SESSION['user']['id']) : 0;
-		$user_dept_id = 0;
-		$user_dept_name = '';
-
-		if($user_id > 0) {
-			$db->query("SELECT u.*, d.depart_name FROM hicrm_users u 
-						LEFT JOIN hicrm_departments d ON u.user_department = d.id 
-						WHERE u.id = '".$user_id."' LIMIT 1");
-			$user_data = $db->fetch_object(true);
-			if($user_data) {
-				$user_dept_id = isset($user_data->user_department) ? intval($user_data->user_department) : 0;
-				$user_dept_name = isset($user_data->depart_name) ? $user_data->depart_name : '';
-			}
-		}
-
-		if(empty($user_dept_name)) {
-			$user_dept_name = 'Khoa Khám bệnh';
-		}
-
-		// Fetch all active staff members in the same department from hicrm_staff
-		$db->query("SELECT id, staff_fullname AS full_name FROM hicrm_staff WHERE staff_department = '".$user_dept_id."' AND staff_status = 1 ORDER BY staff_fullname ASC");
-		$dept_users = $db->fetch_object();
-
-		$status_filter = isset($_GET['status']) ? trim($_GET['status']) : '';
-		$search_q = isset($_GET['q']) ? trim($_GET['q']) : '';
-
-		$db->query("SELECT 
-			COUNT(*) as total_all,
-			SUM(CASE WHEN status = 'completed' THEN 1 ELSE 0 END) as total_completed,
-			SUM(CASE WHEN status IN ('sent', 'processing') THEN 1 ELSE 0 END) as total_processing,
-			SUM(CASE WHEN status = 'draft' THEN 1 ELSE 0 END) as total_draft,
-			SUM(CASE WHEN status = 'rejected' THEN 1 ELSE 0 END) as total_rejected
-			FROM hicrm_support_requests");
-		$stats_obj = $db->fetch_object(true);
-
-		$where = " WHERE 1=1 ";
-		if(!empty($status_filter)){
-			$where .= " AND status = '".$db->escapestring($status_filter)."' ";
-		}
-		if(!empty($search_q)){
-			$sq = $db->escapestring($search_q);
-			$where .= " AND (request_code LIKE '%".$sq."%' OR title LIKE '%".$sq."%' OR user_name LIKE '%".$sq."%' OR department LIKE '%".$sq."%') ";
-		}
-
-		$db->query("SELECT * FROM hicrm_support_requests ".$where." ORDER BY id DESC");
-		$requests = $db->fetch_object();
-
-		$this->view->data['stats'] = $stats_obj;
-		$this->view->data['requests'] = is_array($requests) ? $requests : array();
-		$this->view->data['status_filter'] = $status_filter;
-		$this->view->data['search_q'] = $search_q;
-		$this->view->data['dept_users'] = is_array($dept_users) ? $dept_users : array();
-		$this->view->data['user_dept_name'] = $user_dept_name;
-		$this->view->data['user_dept_id'] = $user_dept_id;
-		$this->view->show("khonggian_lamviec_so");
-	}
+    public function workspace($para)
+    {
+        global $db;
+        require_once dirname(__DIR__).'/application/support_requests.class.php';
+        $actor=SupportRequests::actor($db);
+        if (!$actor) { header('Location: '.XC_URL.'/?login=1'); return; }
+        header('Cache-Control: no-store');
+        SupportRequests::ensureSchema($db);
+        if (empty($_SESSION['workspace_csrf_token'])) $_SESSION['workspace_csrf_token']=bin2hex(random_bytes(32));
+        $status=is_string($_GET['status'] ?? null) ? trim($_GET['status']) : '';
+        if (!isset(SupportRequests::statuses()[$status])) $status='';
+        $q=is_string($_GET['q'] ?? null) ? trim($_GET['q']) : '';
+        $scope=SupportRequests::scope($db,$actor);
+        $where=SupportRequests::listing($db,$scope,$status,$q);
+        $stats=SupportRequests::stats($db,$scope);
+        $db->query("SELECT * FROM hicrm_support_requests WHERE $where ORDER BY id DESC");
+        $requests=$db->fetch_object();
+        $name=$actor->full_name ?: $actor->user_username;
+        $staff=array((object)array('full_name'=>$name));
+        $db->query("SHOW TABLES LIKE 'hicrm_staff'");
+        if ($db->num_row() && (int)$actor->user_department>0) {
+            $db->query('SELECT staff_fullname AS full_name FROM hicrm_staff WHERE staff_status=1 AND staff_department='.(int)$actor->user_department.' ORDER BY staff_fullname');
+            foreach($db->fetch_object() as $row) if($row->full_name!==$name) $staff[]=$row;
+        }
+        $this->view->data['stats']=$stats;
+        $this->view->data['requests']=$requests;
+        $this->view->data['status_filter']=$status;
+        $this->view->data['search_q']=$q;
+        $this->view->data['dept_users']=$staff;
+        $this->view->data['user_dept_name']=$actor->depart_name ?? '';
+        $this->view->data['user_dept_id']=(int)$actor->user_department;
+        $this->view->data['workspace_csrf_token']=$_SESSION['workspace_csrf_token'];
+        $this->view->show('khonggian_lamviec_so');
+    }
 	public function introduce($para){
 		$id = $para[1];
 	

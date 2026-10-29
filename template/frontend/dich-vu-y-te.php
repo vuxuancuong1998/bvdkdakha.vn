@@ -1,4 +1,4 @@
-<?php require_once "header.php"; ?>
+<?php require_once 'header.php'; ?>
 
 <main id="main-content" role="main" class="services-page py-4">
 
@@ -11,7 +11,7 @@
         <div class="col-lg-8">
           <h1 class="h2 font-weight-extrabold mb-2" style="font-weight: 700;">Dịch Vụ Y Tế Chuyên Khoa</h1>
           <p class="lead mb-0 text-white-50" style="font-size: 15px;">
-            Bệnh viện Đa khoa Khu vực Đắk Hà cung cấp đầy đủ các dịch vụ khám, chữa bệnh chất lượng cao với đội ngũ y bác sĩ giàu kinh nghiệm và trang thiết bị hiện đại.
+            Bệnh viện Đa khoa Khu vực Đăk Hà cung cấp đầy đủ các dịch vụ khám, chữa bệnh chất lượng cao với đội ngũ y bác sĩ giàu kinh nghiệm và trang thiết bị hiện đại.
           </p>
         </div>
       </div>
@@ -219,4 +219,4 @@
 }
 </style>
 
-<?php require_once "footer.php"; ?>
+<?php require_once 'home-footer.php'; ?>

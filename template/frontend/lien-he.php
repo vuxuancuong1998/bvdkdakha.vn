@@ -156,7 +156,7 @@ $contactEscape = function ($value) { return htmlspecialchars($value, ENT_QUOTES,
   <?php echo json_encode(array(
     '@context' => 'https://schema.org',
     '@type' => 'MedicalOrganization',
-    'name' => 'Bệnh viện đa khoa khu vực Đắk Hà',
+    'name' => 'Bệnh viện đa khoa khu vực Đăk Hà',
     'url' => XC_URL,
     'telephone' => $contactPhone,
     'email' => $contactEmail,
@@ -236,7 +236,7 @@ $contactEscape = function ($value) { return htmlspecialchars($value, ENT_QUOTES,
                 Giờ làm việc
               </h2>
               <table class="hours-table" aria-label="Lịch làm việc">
-                <caption class="sr-only">Giờ làm việc của Trung tâm Y tế khu vực Đắk Hà</caption>
+                <caption class="sr-only">Giờ làm việc của Trung tâm Y tế khu vực Đăk Hà</caption>
                 <tbody>
                   <tr><td>Thứ Hai – Thứ Sáu</td><td>07:00 – 17:00</td></tr>
                   <tr><td>Thứ Bảy & Chủ Nhật</td><td>Trực cấp cứu</td></tr>
@@ -264,7 +264,7 @@ $contactEscape = function ($value) { return htmlspecialchars($value, ENT_QUOTES,
               <div class="map-lazy-wrap"
                    style="width:100%;height:100%;background:var(--color-bg-alt);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:var(--space-3);"
                    data-src="<?php echo $contactEscape('https://maps.google.com/maps?q='.rawurlencode($contactAddress).'&output=embed'); ?>"
-                   aria-label="Bản đồ vị trí Trung tâm Y tế khu vực Đắk Hà">
+                   aria-label="Bản đồ vị trí Trung tâm Y tế khu vực Đăk Hà">
                 <svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="var(--color-primary)" stroke-width="1.5" aria-hidden="true">
                   <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/>
                 </svg>
@@ -369,4 +369,4 @@ $contactEscape = function ($value) { return htmlspecialchars($value, ENT_QUOTES,
 
   </main>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<?php require_once 'footer.php'; ?>
+<?php require_once 'home-footer.php'; ?>

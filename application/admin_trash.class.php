@@ -34,7 +34,7 @@ class AdminTrash
             'hicrm_market_results'=>array('Kết quả sàn', 'market_results', 'result_status'),
             'hicrm_candidates'=>array('Ứng viên', 'candidates', 'status'),
             'hicrm_job_posts'=>array('Bài đăng tuyển dụng', 'employer_posts', 'status'),
-            'hicrm_support_requests'=>array('Yêu cầu hỗ trợ', 'job_support_customers', 'status'),
+            'hicrm_support_requests'=>array('Yêu cầu hỗ trợ', 'support_requests', 'status'),
             'hicrm_google_meets'=>array('Sàn việc làm online', 'google_meet', 'status'),
             'hicrm_users'=>array('Tài khoản', 'users', 'user_status'),
             'hicrm_user_groups'=>array('Nhóm quyền', 'groups', 'group_status'),
@@ -119,6 +119,11 @@ class AdminTrash
         if(!$this->db->fetch_object(true)){ throw new Exception('Bản ghi không còn trong Sọt rác. Vui lòng tải lại trang.'); }
         // Uploaded files remain on disk; this operation removes only the DB record.
         $sql = $action === 'restore' ? 'UPDATE `'.$category.'` SET `'.$source['status'].'` = 1'.$where.' LIMIT 1' : 'DELETE FROM `'.$category.'`'.$where.' LIMIT 1';
+        if ($category === 'hicrm_support_requests' && $action === 'restore') {
+            $this->db->query("SHOW TABLES LIKE 'hicrm_support_request_history'");
+            $status = $this->db->num_row() ? "COALESCE((SELECT from_status FROM hicrm_support_request_history WHERE request_id=".(int)$id." AND action='delete' ORDER BY id DESC LIMIT 1),'sent')" : "'sent'";
+            $sql = 'UPDATE `'.$category.'` SET status='.$status.', updated_at=NOW()'.$where.' LIMIT 1';
+        }
         if(!$this->db->tryQuery($sql)){ throw new Exception('Không thể thực hiện do dữ liệu trùng hoặc đang được liên kết với bản ghi khác.'); }
     }
 }

@@ -1,199 +1,48 @@
-
-<?php require "header.php"; ?>
+<?php
+require 'header.php';
+$esc = function($value){ return htmlspecialchars((string)$value, ENT_QUOTES, 'UTF-8'); };
+$editing = ($method ?? '') === 'edit';
+$value = function($key, $default = '') use (&$user){ return isset($user) ? ($user->$key ?? $default) : $default; };
+?>
+<div class="container-fluid content-inner mt-n5 py-0">
+ <div class="card">
+  <div class="card-header"><h4 class="card-title"><?php echo $esc($pagetitle); ?></h4></div>
+  <div class="card-body">
+   <form id="frm-action" method="post">
+    <input type="hidden" name="method" value="<?php echo $editing ? 'edit' : 'add'; ?>">
+    <input type="hidden" name="user_id" value="<?php echo (int)$value('uid', 0); ?>">
+    <input type="hidden" name="csrf_token" value="<?php echo $esc($admin_csrf_token); ?>">
+    <div class="row g-3">
+     <div class="col-md-6"><label for="full_name" class="form-label">Họ và tên <span class="text-danger">*</span></label><input id="full_name" name="full_name" class="form-control" required maxlength="255" autocomplete="name" value="<?php echo $esc($value('full_name') ?: $value('user_username')); ?>"></div>
+     <div class="col-md-6"><label for="user_cccd" class="form-label">Căn cước công dân <span class="text-danger">*</span></label><input id="user_cccd" name="user_cccd" class="form-control" required inputmode="numeric" pattern="[0-9]{12}" minlength="12" maxlength="12" title="Nhập đúng 12 chữ số CCCD" value="<?php echo $esc($value('user_cccd')); ?>"></div>
+     <div class="col-md-6"><label for="user_phone" class="form-label">Số điện thoại <span class="text-danger">*</span></label><input type="tel" id="user_phone" name="user_phone" class="form-control" required pattern="0[0-9]{9,10}" minlength="10" maxlength="11" title="Nhập 10 hoặc 11 chữ số, bắt đầu bằng 0" autocomplete="tel" value="<?php echo $esc($value('user_phone')); ?>"></div>
+     <div class="col-md-6"><label for="user_department" class="form-label">Khoa phòng <span class="text-danger">*</span></label><select id="user_department" name="user_department" class="form-select" required><option value="">Chọn khoa phòng</option><?php foreach($departments as $dept): ?><option value="<?php echo (int)$dept->id; ?>" <?php if((int)$value('user_department') === (int)$dept->id) echo 'selected'; ?>><?php echo $esc($dept->depart_name); ?></option><?php endforeach; ?></select></div>
+     <div class="col-md-6"><label for="is_admin" class="form-label">Đối tượng <span class="text-danger">*</span></label><select id="is_admin" name="is_admin" class="form-select" required><option value="0" <?php if((int)$value('is_admin', 0) === 0) echo 'selected'; ?>>Người dùng</option><option value="1" <?php if((int)$value('is_admin', 0) === 1) echo 'selected'; ?>>Admin</option></select></div>
+     <div class="col-md-6" id="admin-group-field"><label for="user_group" class="form-label">Nhóm quyền Admin <span class="text-danger">*</span></label><select id="user_group" name="user_group" class="form-select"><option value="">Chọn nhóm quyền</option><?php foreach($roles as $role): if((int)$role->id === 1 && (int)($current_admin_user->user_group ?? 0) !== 1) continue; ?><option value="<?php echo (int)$role->id; ?>" <?php if((int)$value('user_group') === (int)$role->id) echo 'selected'; ?>><?php echo $esc($role->group_name); ?></option><?php endforeach; ?></select></div>
+     <div class="col-md-6" id="admin-email-field"><label for="user_email" class="form-label">Email nhận mã xác thực (Admin)</label><input type="email" id="user_email" name="user_email" class="form-control" maxlength="255" value="<?php echo $esc($value('user_email')); ?>"><small class="text-muted">Cần cho nhóm Super Admin khi bật xác thực đăng nhập qua email.</small></div>
+    </div>
+    <p class="text-muted mt-3"><?php echo $editing ? 'Giữ nguyên mật khẩu hiện tại. Dùng Đặt lại mật khẩu tại danh sách nếu cần đổi.' : 'CCCD là tên đăng nhập. Mật khẩu được tạo tự động và hiển thị một lần sau khi lưu.'; ?></p>
+    <div class="d-flex justify-content-end gap-2 mt-4"><a class="btn btn-outline-secondary" href="<?php echo XC_URL; ?>/admin/users">Quay lại</a><button type="submit" id="send_DB" class="btn btn-primary">Lưu tài khoản</button></div>
+   </form>
+  </div>
+ </div>
+</div>
 <script>
-	jQuery(document).ready(function(){
-			jQuery("#table-user").on('click', '.btn-delete-user', function(e) {
-			var id = jQuery(this).attr("data-id");
-			var user_status =  jQuery(this).attr("data-status");
-			jQuery.ajax({
-				"type": "POST",
-				"url": "<?php echo XC_URL; ?>/api/deleteuser",
-				"data": {
-					'id': id,
-					'user_status': user_status
-				},
-				"dataType":'json',
-				success:function(data){
-					if(data.status == 200){
-						Swal.fire({
-						  icon: 'success',
-						  title: "Xoá thành công",
-						  footer: '<a href=""></a>',
-						  timer: 1700
-						})
-						setTimeout(function(){ location.reload();     }, 2000);
-					}else{
-						Swal.fire({
-						  icon: 'error',
-						  title: "Lỗi",
-						  text: data.message,
-						  footer: '<a href=""></a>'
-						})
-					}
-				}
-			
-			});
-			return false;
-		});
-jQuery.validator.addMethod('strongPassword', function(value, element) {
-			return this.optional(element) || /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=[\]{};':"\\|,.<>\/?]).{8,}$/.test(value);
-		}, 'Mật khẩu phải tối thiểu 8 ký tự, bao gồm chữ hoa, chữ thường, số và ký tự đặc biệt.');
-
-		jQuery('#frm-action').validate({
-				rules: {
-					user_username: {
-						required: true,
-						minlength: 3
-					},
-					user_email: {
-						required: true,
-						email: true
-					},
-					user_password: {
-						required: function(element) {
-							return jQuery('#method').val() === 'add';
-						},
-						minlength: 8,
-					strongPassword: true
-					},
-					user_group: {
-						required: true
-					}
-				},
-				messages: {
-					user_username: {
-						required: 'Vui lòng nhập họ và tên',
-						minlength: 'Tên đăng nhập phải có ít nhất 3 ký tự'
-					},
-					user_email: {
-						required: 'Vui lòng nhập email',
-						email: 'Email không đúng định dạng'
-					},
-					user_password: {
-						required: 'Vui lòng nhập mật khẩu',
-						minlength: 'Mật khẩu phải có ít nhất 8 ký tự',
-					strongPassword: 'Mật khẩu phải có chữ hoa, chữ thường, số và ký tự đặc biệt'
-					},
-					user_group: {
-						required: 'Vui lòng chọn quyền tài khoản'
-					}
-				},
-				errorClass: 'is-invalid',
-				success: function(label) {
-					label.remove();
-				}
-			});
-
-			jQuery('#send_DB').click(function(e){
-				e.preventDefault();
-				if(jQuery('#frm-action').valid()){
-					var full_name = jQuery('#full_name').val();
-					var user_email = jQuery('#email').val();
-					var user_password = jQuery('#password').val();
-					var user_group = jQuery('#user_group').val();
-					var user_department = jQuery('#user_department').val();
-					var method = jQuery('#method').val();
-					var user_id = jQuery('#user_id').val();
-					jQuery.ajax({
-						type: "POST",
-						url: "<?php echo XC_URL;?>/api/userAction",
-						data:{
-							'full_name': full_name,
-							'user_email': user_email,
-							'user_password': user_password,
-							'user_group': user_group,
-							'user_department': user_department,
-							'method': method,
-							'user_id': user_id,
-							'csrf_token': '<?php echo htmlspecialchars($admin_csrf_token, ENT_QUOTES, 'UTF-8'); ?>'
-						},
-						dataType: 'json',
-						success: function(data){
-							if(data.status == 200){
-								Swal.fire({
-								  icon: 'success',
-								  title: data.message,
-								  footer: '<a href=""></a>',
-								  timer: 1700
-								})
-								setTimeout(function(){ location.href=data.url;     }, 2000);
-							}else{
-								Swal.fire({
-								  icon: 'error',
-								  title: "Lỗi",
-								  text: data.message,
-								  footer: '<a href=""></a>'
-								})
-							}
-						}
-					});
-				}
-		});
-	
-		
-	});
+jQuery(function($){
+ var $form = $('#frm-action'), $button = $('#send_DB');
+ function toggleGroup(){ var admin = $('#is_admin').val() === '1'; $('#admin-group-field, #admin-email-field').toggle(admin); $('#user_group').prop('required', admin).prop('disabled', !admin); }
+ $('#is_admin').on('change', toggleGroup); toggleGroup();
+ $form.on('submit', function(e){
+  e.preventDefault(); if(!this.reportValidity() || $button.prop('disabled')) return;
+  $button.prop('disabled', true);
+  $.ajax({url: <?php echo json_encode(XC_URL.'/api/userAction'); ?>, type: 'POST', data: $form.serialize(), dataType: 'json'})
+   .done(function(result){
+    if(Number(result.status) !== 200){ Swal.fire({icon:'error',title:'Không thể lưu tài khoản',text:result.message}); return; }
+    var message = result.new_password ? 'Tên đăng nhập: ' + result.username + '\nMật khẩu: ' + result.new_password + '\nHãy lưu lại thông tin này trước khi đóng.' : result.message;
+    Swal.fire({icon:'success',title:result.message,text:message,confirmButtonText:'Đã lưu thông tin',allowOutsideClick:false}).then(function(){ location.href=result.url; });
+   }).fail(function(){ Swal.fire({icon:'error',title:'Không thể lưu tài khoản',text:'Kết nối máy chủ bị lỗi. Vui lòng thử lại.'}); })
+   .always(function(){ $button.prop('disabled', false); });
+ });
+});
 </script>
-    
-      <div class="conatiner-fluid content-inner mt-n5 py-0">
-      <div>
-         <div class="row">
-            
-            <div class="col-xl-12 col-lg-12">
-               <div class="card">
-                  <div class="card-header d-flex justify-content-between">
-                     <div class="header-title">
-                        <h4 class="card-title"><?php echo $pagetitle;?></h4>
-                     </div>
-                  </div>
-                  <div class="card-body">
-                     <div class="new-user-info">
-                        <form action="#" method="POST" id="frm-action">
-                           <div class="row">
-                              <div class="form-group col-md-6">
-                                 <label class="form-label" for="full_name">Họ và tên:</label>
-                                 <input type="text" value="<?php echo isset($user) ? $user->full_name : ''; ?>" class="form-control" id="full_name" name="full_name" placeholder="Họ và tên">
-                              </div>
-                              <div class="form-group col-md-6">
-                                 <label class="form-label" for="email">Email:</label>
-                                 <input type="text" value="<?php echo isset($user) ? $user->user_email : ''; ?>" class="form-control" id="email" name="user_email" placeholder="Email">
-                              </div>
-				  <?php if(isset($method) && $method == "add"){ ?>
-                              <div class="form-group col-md-6">
-                                 <label class="form-label" for="password">Mật khẩu:</label>
-                                 <input type="password" value="" class="form-control" id="password" name="user_password" placeholder="Mật khẩu">
-								<?php } ?>
-							  </div>
-                              
-							  <div class="form-group col-md-6">
-                                 <label class="form-label" for="user_group">Quyền tài khoản:</label>
-                                 <select class='form-control selectpicker' id='user_group' name='user_group' data-live-search="true">
-                                   <?php foreach($roles as $role){ ?>
-								   <option <?php if(isset($user) && $user->user_group == $role->id) echo "selected"; ?> value="<?php echo $role->id;?>"><?php echo $role->group_name;?></option>
-                                   <?php } ?>
-                                 </select>
-                              </div>
-                              <div class="form-group col-md-6">
-                                 <label class="form-label" for="user_department">Khoa / Phòng ban:</label>
-                                 <select class='form-control selectpicker' id='user_department' name='user_department' data-live-search="true">
-                                    <option value="0">-- Chọn Khoa / Phòng --</option>
-                                    <?php foreach($departments as $dept){ ?>
-                                       <option <?php if(isset($user) && $user->user_department == $dept->id) echo "selected"; ?> value="<?php echo $dept->id;?>"><?php echo htmlspecialchars($dept->depart_name);?></option>
-                                    <?php } ?>
-                                 </select>
-                              </div>
-								  <div class="text-end">
-									  <a href="<?php echo XC_URL; ?>/admin/users"><button type="button" class="btn btn-warning btn-sm">Quay lại</button></a>
-									<input type="hidden" id="method" value="<?php echo isset($method) ? $method : ''; ?>">
-									<input type="hidden" id="user_id" value="<?php echo isset($user) ? (int)$user->uid : 0; ?>">
-									  <button type="button" id='send_DB' class="btn btn-primary btn-sm">Lưu</button>
-								  </div>
-							</div>
-							</div>
-						</form>
-					 </div>
-				  </div>
-			   </div>
-			</div>
-		 </div>
-     
-      <?php require "footer.php";?>
+<?php require 'footer.php'; ?>

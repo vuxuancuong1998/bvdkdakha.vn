@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512" fill="none">
+  <defs>
+    <linearGradient id="bgGrad32" x1="60" y1="60" x2="452" y2="452" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#fff7ed"/>
+      <stop offset="100%" stop-color="#ffedd5"/>
+    </linearGradient>
+  </defs>
+  <circle cx="256" cy="256" r="196" fill="url(#bgGrad32)" stroke="#e36928" stroke-width="18"/>
+  <circle cx="256" cy="256" r="166" stroke="#fdba74" stroke-width="3" stroke-dasharray="10 10"/>
+  <!-- Microscope & Bio-safety Shield (Khoa Cận lâm sàng - Kiểm soát nhiễm khuẩn) -->
+  <path d="M236 142l44 24-48 88-44-24 48-88z" fill="#ffffff" stroke="#e36928" stroke-width="13" stroke-linejoin="round"/>
+  <path d="M256 126l36 20" stroke="#0056b3" stroke-width="12" stroke-linecap="round"/>
+  <path d="M266 206c48 16 74 62 62 110-10 38-44 64-86 64h-68" stroke="#e36928" stroke-width="16" stroke-linecap="round"/>
+  <path d="M156 306h96" stroke="#0056b3" stroke-width="14" stroke-linecap="round"/>
+  <path d="M164 380h184" stroke="#e36928" stroke-width="16" stroke-linecap="round"/>
+  <!-- Shield check -->
+  <circle cx="344" cy="176" r="36" fill="#0056b3" stroke="#ffffff" stroke-width="6"/>
+  <path d="M330 176l10 10 20-20" stroke="#ffffff" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

@@ -10,14 +10,14 @@ $(document).ready(function () {
          order: [[1, 'asc']],
          orderCellsTop: true,
          columnDefs: [
-            { targets: [0, 6], orderable: false },
-            { targets: 6, searchable: false }
+            { targets: [0, 8], orderable: false },
+            { targets: 8, searchable: false }
          ],
          language: {
             search: 'Tìm kiếm:',
-            lengthMenu: 'Hiển thị _MENU_ tài khoản admin',
-            info: 'Hiển thị _START_ - _END_ trong _TOTAL_ tài khoản admin',
-            infoEmpty: 'Không có tài khoản admin',
+            lengthMenu: 'Hiển thị _MENU_ tài khoản',
+            info: 'Hiển thị _START_ - _END_ trong _TOTAL_ tài khoản',
+            infoEmpty: 'Không có tài khoản',
             infoFiltered: '(lọc từ _MAX_ tài khoản)',
             zeroRecords: 'Không tìm thấy tài khoản phù hợp',
             paginate: {
@@ -30,7 +30,7 @@ $(document).ready(function () {
          initComplete: function () {
             var api = this.api();
 
-            api.columns([3, 4, 5]).every(function () {
+            api.columns([4, 5, 6, 7]).every(function () {
                var column = this;
                var $select = $('#user-list-table thead .user-filter-row th')
                   .eq(column.index())
@@ -62,7 +62,8 @@ $(document).ready(function () {
       }).draw();
    }
 
-   $(document).on('click', '.reset-password-btn', function () {
+   $(document).on('click', '.reset-password-btn', function (e) {
+      e.preventDefault();
       var id = $(this).data('id');
 
       $.ajax({
@@ -170,7 +171,7 @@ $(document).ready(function () {
       var currentGroup = String($(this).data('group-id'));
       $('#assign_admin_user_id').val(userId);
       $('#assign_admin_group_id').val(currentGroup);
-      $('#assignAdminGroupModal').modal('show');
+      bootstrap.Modal.getOrCreateInstance(document.getElementById('assignAdminGroupModal')).show();
    });
 
    $('#saveAdminGroupBtn').on('click', function () {
@@ -187,7 +188,7 @@ $(document).ready(function () {
       }).done(function (result) {
          if (Number(result.status) === 200) location.reload();
          else Swal.fire({icon:'error', title:'Không thể phân quyền', text:result.message});
-      }).always(function () { $button.prop('disabled', false); });
+      }).fail(function () { Swal.fire({icon:'error', title:'Không thể phân quyền', text:'Kết nối máy chủ bị lỗi. Vui lòng thử lại.'}); }).always(function () { $button.prop('disabled', false); });
    });
 
    $(document).on('click', '.btn-open-delete-user', function (e) {
@@ -215,7 +216,7 @@ $(document).ready(function () {
          dataType: "json",
          success: function (data) {
             if (Number(data.status) === 200) {
-               $('#deleteUserModal').modal('hide');
+               bootstrap.Modal.getOrCreateInstance(document.getElementById('deleteUserModal')).hide();
                Swal.fire({
                   icon: 'success',
                   title: 'Xóa thành công',
@@ -245,6 +246,14 @@ $(document).ready(function () {
    });
 });
 </script>
+<style>
+#user-list-table { width:100% !important; min-width:1250px; }
+#user-list-table td:nth-child(2), #user-list-table td:nth-child(5), #user-list-table td:nth-child(7) { white-space:normal; min-width:150px; overflow-wrap:anywhere; }
+#user-list-table td:nth-child(3), #user-list-table td:nth-child(4) { white-space:nowrap; font-variant-numeric:tabular-nums; }
+#user-list-table th:last-child, #user-list-table td:last-child { min-width:220px; }
+#user-list-table .btn-action-group { flex-wrap:nowrap; }
+#user-list-table .user-filter-row .form-control, #user-list-table .user-filter-row .form-select { width:100%; min-width:100px; }
+</style>
 
 <div class="conatiner-fluid content-inner mt-n5 py-0">
    <div>
@@ -253,8 +262,8 @@ $(document).ready(function () {
             <div class="card">
                <div class="card-header d-flex justify-content-between align-items-center">
                   <div class="header-title">
-                     <h4 class="card-title mb-0">Danh sách tài khoản Admin</h4>
-                     <small class="text-muted">Chỉ hiển thị các tài khoản có thể đăng nhập vào trang quản trị và được gắn nhóm quyền admin.</small>
+                     <h4 class="card-title mb-0">Danh sách tài khoản</h4>
+                     <small class="text-muted">Quản lý thông tin, đối tượng và quyền truy cập của tài khoản.</small>
                   </div>
 
                   <div>
@@ -263,7 +272,7 @@ $(document).ready(function () {
                            <path d="M12 5V19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
                            <path d="M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
                         </svg>
-                        <span>Thêm tài khoản Admin</span>
+                        <span>Thêm tài khoản</span>
                      </a>
                   </div>
                </div>
@@ -271,112 +280,37 @@ $(document).ready(function () {
                <div class="card-body p-0">
                   <div class="table-responsive">
                      <table id="user-list-table" class="table table-hover mb-0 align-middle" role="grid">
-                        <thead>
-                           <tr>
-                              <th style="width: 45px;" class="text-center">#</th>
-                              <th>Tài khoản & Email</th>
-                              <th>Khoa phòng</th>
-                              <th>Nhóm quyền</th>
-                              <th style="width: 120px;" class="text-center">Trạng thái</th>
-                              <th style="width: 150px;" class="text-end">Thao tác</th>
-                           </tr>
-                           <tr class="user-filter-row bg-light">
-                              <th></th>
-                              <th>
-                                 <input type="search" class="form-control form-control-sm user-column-search" data-column="1" placeholder="Tìm tài khoản, email...">
-                              </th>
-                              <th>
-                                 <select class="form-select form-select-sm">
-                                    <option value="">Tất cả khoa phòng</option>
-                                 </select>
-                              </th>
-                              <th>
-                                 <select class="form-select form-select-sm">
-                                    <option value="">Tất cả nhóm</option>
-                                 </select>
-                              </th>
-                              <th>
-                                 <select class="form-select form-select-sm">
-                                    <option value="">Tất cả trạng thái</option>
-                                 </select>
-                              </th>
-                              <th></th>
-                           </tr>
-                        </thead>
-                        <tbody>
-                           <?php $i = 1; ?>
-                           <?php foreach($users as $user): ?>
-                           <tr>
-                              <td class="text-center text-muted fw-bold"><?php echo $i; ?></td>
-                              <td>
-                                 <div class="fw-bold text-dark" style="font-size: 13.5px;"><?php echo htmlspecialchars($user->user_username, ENT_QUOTES, 'UTF-8'); ?></div>
-                                 <div class="cell-meta"><i class="fa-regular fa-envelope text-muted me-1"></i><?php echo htmlspecialchars($user->user_email, ENT_QUOTES, 'UTF-8'); ?></div>
-                              </td>
-                              <td>
-                                 <span class="text-secondary small fw-semibold">
-                                    <i class="fa-solid fa-hospital-user text-muted me-1"></i><?php echo htmlspecialchars($user->depart_name ?? 'Chưa cấu hình', ENT_QUOTES, 'UTF-8'); ?>
-                                 </span>
-                              </td>
-                              <td>
-                                 <span class="badge bg-primary-subtle text-primary border border-primary-subtle">
-                                    <i class="fa-solid fa-shield-halved me-1"></i><?php echo htmlspecialchars($user->group_name, ENT_QUOTES, 'UTF-8'); ?>
-                                 </span>
-                              </td>
-                              <td class="text-center">
-                                 <?php if((int)$user->user_status === 1){ ?>
-                                    <span class="badge bg-success"><i class="fa-solid fa-circle-check me-1"></i>Hoạt động</span>
-                                 <?php } elseif((int)$user->user_status === 2) { ?>
-                                    <span class="badge bg-warning text-dark"><i class="fa-solid fa-lock me-1"></i>Tạm khóa</span>
-                                 <?php } else { ?>
-                                    <span class="badge bg-secondary"><?php echo htmlspecialchars($user->status_label ?? 'Không xác định', ENT_QUOTES, 'UTF-8'); ?></span>
-                                 <?php } ?>
-                              </td>
-                              <td class="text-end">
-                                 <div class="btn-action-group">
-                                    <a class="btn-action is-edit" href="<?php echo XC_URL; ?>/admin/users/edit/<?php echo $user->uid; ?>" title="Chỉnh sửa tài khoản">
-                                       <i class="fa-solid fa-pen-to-square"></i>
-                                    </a>
-
-                                    <a class="btn-action btn-soft-info" href="<?php echo XC_URL; ?>/admin/users/role/<?php echo $user->uid; ?>" title="Phân quyền menu">
-                                       <i class="fa-solid fa-key"></i>
-                                    </a>
-
-                                    <?php if((int)$user->uid !== (int)$_SESSION['user']['id']): ?>
-                                    <button type="button" class="btn-action btn-soft-primary btn-assign-admin-group" data-user-id="<?php echo (int)$user->uid; ?>" data-group-id="<?php echo (int)$user->user_group; ?>" title="Gán nhóm quyền">
-                                       <i class="fa-solid fa-user-shield"></i>
-                                    </button>
-                                    <?php endif; ?>
-
-                                    <a class="btn-action btn-soft-warning btn-toggle-lock"
-                                       href="#"
-                                       data-id="<?php echo $user->uid; ?>"
-                                       data-status="<?php echo $user->user_status; ?>"
-                                       title="<?php echo ((int)$user->user_status === 2) ? 'Mở khóa tài khoản' : 'Khóa tài khoản'; ?>">
-                                       <i class="fa-solid <?php echo ((int)$user->user_status === 2) ? 'fa-lock-open' : 'fa-lock'; ?>"></i>
-                                    </a>
-
-                                    <a class="btn-action btn-soft-secondary reset-password-btn"
-                                       href="#"
-                                       data-id="<?php echo $user->uid; ?>"
-                                       title="Reset mật khẩu">
-                                       <i class="fa-solid fa-rotate-left"></i>
-                                    </a>
-
-                                    <a class="btn-action is-delete btn-open-delete-user"
-                                       data-bs-toggle="modal"
-                                       data-bs-target="#deleteUserModal"
-                                       data-user-id="<?php echo $user->uid; ?>"
-                                       data-user-status="<?php echo isset($user->user_status) ? $user->user_status : ''; ?>"
-                                       href="#"
-                                       title="Xóa tài khoản">
-                                       <i class="fa-solid fa-trash"></i>
-                                    </a>
-                                 </div>
-                              </td>
-                           </tr>
-                           <?php $i++; endforeach; ?>
-                        </tbody>
-                     </table>
+ <thead><tr><th>#</th><th>Họ và tên</th><th>Căn cước công dân</th><th>Số điện thoại</th><th>Khoa phòng</th><th>Đối tượng</th><th>Nhóm quyền</th><th>Trạng thái</th><th class="text-end">Thao tác</th></tr>
+ <tr class="user-filter-row bg-light">
+  <th></th><th><input aria-label="Lọc họ tên" class="form-control form-control-sm user-column-search" data-column="1" placeholder="Tìm họ tên"></th>
+  <th><input aria-label="Lọc CCCD" class="form-control form-control-sm user-column-search" data-column="2" placeholder="Tìm CCCD"></th>
+  <th><input aria-label="Lọc số điện thoại" class="form-control form-control-sm user-column-search" data-column="3" placeholder="Tìm số điện thoại"></th>
+  <th><select aria-label="Lọc khoa phòng" class="form-select form-select-sm"><option value="">Tất cả khoa phòng</option></select></th>
+  <th><select aria-label="Lọc đối tượng" class="form-select form-select-sm"><option value="">Tất cả đối tượng</option></select></th>
+  <th><select aria-label="Lọc nhóm quyền" class="form-select form-select-sm"><option value="">Tất cả nhóm quyền</option></select></th>
+  <th><select aria-label="Lọc trạng thái" class="form-select form-select-sm"><option value="">Tất cả trạng thái</option></select></th><th></th>
+ </tr></thead>
+ <tbody><?php $i=1; foreach((is_array($users) ? $users : array()) as $user): $uid=(int)$user->uid; $self=$uid===(int)$_SESSION['user']['id']; $esc=function($v){return htmlspecialchars((string)$v, ENT_QUOTES, 'UTF-8');}; ?>
+ <tr>
+  <td><?php echo $i++; ?></td>
+  <td><div class="fw-bold"><?php echo $esc($user->full_name ?: $user->user_username); ?></div></td>
+  <td><?php echo $esc($user->user_cccd ?? ''); ?></td><td><?php echo $esc($user->user_phone); ?></td>
+  <td><?php echo $esc($user->depart_name ?? 'Chưa cấu hình'); ?></td>
+  <td><?php echo (int)$user->is_admin===1 ? 'Admin' : 'Người dùng'; ?></td>
+  <td><?php echo $esc($user->group_name ?? 'Chưa phân nhóm'); ?></td>
+  <td><?php echo (int)$user->user_status===1 ? 'Hoạt động' : ((int)$user->user_status===2 ? 'Tạm khóa' : $esc($user->status_label ?? 'Không xác định')); ?></td>
+  <td><div class="btn-action-group">
+   <a class="btn-action is-edit" href="<?php echo XC_URL.'/admin/users/edit/'.$uid; ?>" title="Chỉnh sửa tài khoản" aria-label="Chỉnh sửa tài khoản"><i class="fa-solid fa-pen-to-square"></i></a>
+   <?php if((int)$user->is_admin===1): ?>
+   <a class="btn-action btn-soft-info" href="<?php echo XC_URL.'/admin/users/role/'.$uid; ?>" title="Phân quyền menu" aria-label="Phân quyền menu"><i class="fa-solid fa-key"></i></a>
+   <?php if(!$self): ?><button type="button" class="btn-action btn-soft-primary btn-assign-admin-group" data-user-id="<?php echo $uid; ?>" data-group-id="<?php echo (int)$user->user_group; ?>" title="Gán nhóm quyền" aria-label="Gán nhóm quyền"><i class="fa-solid fa-user-shield"></i></button><?php endif; ?>
+   <?php endif; ?>
+   <?php if(!$self): ?><a class="btn-action btn-soft-warning btn-toggle-lock" href="#" data-id="<?php echo $uid; ?>" data-status="<?php echo (int)$user->user_status; ?>" title="<?php echo (int)$user->user_status===2 ? 'Mở khóa tài khoản' : 'Khóa tài khoản'; ?>"><i class="fa-solid <?php echo (int)$user->user_status===2 ? 'fa-lock-open' : 'fa-lock'; ?>"></i></a><?php endif; ?>
+   <a class="btn-action btn-soft-secondary reset-password-btn" href="#" data-id="<?php echo $uid; ?>" title="Đặt lại mật khẩu" aria-label="Đặt lại mật khẩu"><i class="fa-solid fa-rotate-left"></i></a>
+   <?php if(!$self): ?><a class="btn-action is-delete btn-open-delete-user" data-bs-toggle="modal" data-bs-target="#deleteUserModal" data-user-id="<?php echo $uid; ?>" data-user-status="<?php echo (int)$user->user_status; ?>" href="#" title="Xóa tài khoản" aria-label="Xóa tài khoản"><i class="fa-solid fa-trash"></i></a><?php endif; ?>
+  </div></td>
+ </tr><?php endforeach; ?></tbody>
+</table>
                   </div>
                </div>
             </div>
@@ -403,7 +337,7 @@ $(document).ready(function () {
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
          </div>
          <div class="modal-body">
-            Bạn chắc chắn muốn xóa tài khoản admin này?
+            Bạn chắc chắn muốn xóa tài khoản này?
             <input type="hidden" id="delete_user_id" value="">
             <input type="hidden" id="delete_user_status" value="">
          </div>

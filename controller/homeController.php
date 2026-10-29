@@ -1475,7 +1475,7 @@ Class homeController Extends baseController
         $categories = $db->fetch_object();
 
         $this->view->data['tt25_categories'] = is_array($categories) ? $categories : array();
-        $this->view->data['page_title'] = "Lấy giấy TT25 - Bệnh viện đa khoa khu vực Đắk Hà";
+        $this->view->data['page_title'] = "Lấy giấy TT25 - Bệnh viện đa khoa khu vực Đăk Hà";
         $this->view->show("lay-giay-tt25");
     }
 }

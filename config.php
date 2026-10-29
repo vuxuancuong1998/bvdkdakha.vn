@@ -59,5 +59,5 @@ $upload_path = XC_URL.'/uploads';
 $image_path = XC_URL.'/uploads/images';
 
 /*** Set Application Name ***/
-$app_name = 'Bệnh viện Đa khoa Khu vực Đắk Hà';
+$app_name = 'Bệnh viện Đa khoa Khu vực Đăk Hà';
 ?>

@@ -105,46 +105,55 @@ function localDate(date){return date.getFullYear()+'-'+String(date.getMonth()+1)
           "100% biểu mẫu y tế số hóa",
           "Tra cứu lịch sử khám < 0.5 giây",
           "Bảo mật đa lớp chuẩn quốc tế",
-          "Tiết kiệm hàng tỷ đồng chi phí in ấn"
+          "Tiết kiệm chi phí in ấn & lưu trữ"
         ]
       },
       {
         id: 2,
         code: "RIS/PACS",
-        title: "TRUNG TÂM ĐIỀU HÀNH IOC",
+        title: "CHẨN ĐOÁN HÌNH ẢNH RIS/PACS",
         shortTitle: "CHẨN ĐOÁN HÌNH ẢNH",
-        metric: "",
-        summary: "Lưu trữ và truyền tải ảnh DICOM sắc nét,không cần in phim.",
-        fullDesc: "",
-        icon: "fa-chart-pie",
+        metric: "Ảnh số DICOM",
+        summary: "Lưu trữ và truyền tải ảnh DICOM sắc nét, không cần in phim.",
+        fullDesc: "Hệ thống lưu trữ và truyền tải hình ảnh y khoa (RIS/PACS) cho phép kết nối trực tiếp từ máy X-Quang, CT-Scanner, Siêu âm lên bệnh án điện tử mà không cần in phim nhựa.",
+        icon: "fa-x-ray",
         highlights: [
-          
+          "Truyền tải ảnh DICOM tức thì",
+          "Không cần chờ in phim truyền thống",
+          "Hỗ trợ hội chẩn hình ảnh từ xa",
+          "Lưu trữ hình ảnh y khoa dài hạn"
         ]
       },
       {
         id: 3,
         code: "LIS",
-        title: "XÉT NGHIỆM",
+        title: "HỆ THỐNG XÉT NGHIỆM LIS",
         shortTitle: "HỆ THỐNG XÉT NGHIỆM",
-        metric: "",
+        metric: "Tự động hóa 2 chiều",
         summary: "Tự động hóa – Nhanh chóng – Chính xác tuyệt đối.",
-        fullDesc: "",
-        icon: "fa-x-ray",
+        fullDesc: "Hệ thống quản lý phòng xét nghiệm (LIS) kết nối 2 chiều với các máy xét nghiệm sinh hóa, huyết học, vi sinh tự động, trả kết quả trực tiếp về phòng khám.",
+        icon: "fa-microscope",
         highlights: [
-        
+          "Mã hóa mẫu bệnh phẩm bằng Barcode",
+          "Kết nối 2 chiều với máy xét nghiệm",
+          "Trả kết quả tự động lên HIS/EMR",
+          "Kiểm soát chất lượng xét nghiệm chặt chẽ"
         ]
       },
       {
         id: 4,
         code: "TT25/BYT",
         title: "NHẬN CHẾ ĐỘ BHXH ONLINE",
-        shortTitle: "KIOSK Y TẾ SỐ",
-        metric: "",
-        summary: "Nhận các loại giấy chế độ BHXH Online",
-        fullDesc: "Hệ thống Kiosk tự phục vụ thông minh tại sảnh giúp người dân chủ động đăng ký khám bằng CCCD gắn chip hoặc nhận diện khuôn mặt mà không phải xếp hàng chờ đợi.",
-        icon: "fa-id-card-clip",
+        shortTitle: "CHẾ ĐỘ BHXH ONLINE",
+        metric: "Liên thông BHXH",
+        summary: "Nhận các loại giấy chế độ BHXH Online theo Thông tư 25/BYT.",
+        fullDesc: "Cấp và liên thông dữ liệu Giấy ra viện, Giấy chứng nhận nghỉ việc hưởng BHXH, Giấy chứng sinh điện tử trực tiếp lên Cổng tiếp nhận dữ liệu Hệ thống thông tin giám định BHYT.",
+        icon: "fa-file-shield",
         highlights: [
-        
+          "Ký số giấy chứng nhận nghỉ hưởng BHXH",
+          "Liên thông tức thì lên cổng BHXH Việt Nam",
+          "Tra cứu hồ sơ hưởng chế độ trực tuyến",
+          "Giảm thiểu thủ tục hành chính cho người bệnh"
         ]
       },
       {
@@ -153,12 +162,12 @@ function localDate(date){return date.getFullYear()+'-'+String(date.getMonth()+1)
         title: "THANH TOÁN KHÔNG TIỀN MẶT",
         shortTitle: "THANH TOÁN SỐ",
         metric: "QR Động 1 chạm",
-        summary: "Tích hợp thanh toán qua quét mã QRcode",
-        fullDesc: "Mỗi chỉ định cận lâm sàng hoặc đơn thuốc đều được Smart Hub sinh mã QR động định danh riêng, giúp bệnh nhân thanh toán tức thì ngay tại phòng khám.",
+        summary: "Tích hợp thanh toán qua quét mã QRcode nhanh chóng, tiện lợi.",
+        fullDesc: "Mỗi chỉ định cận lâm sàng hoặc đơn thuốc đều được hệ thống sinh mã QR động định danh riêng, giúp bệnh nhân thanh toán viện phí tức thì không cần xếp hàng.",
         icon: "fa-qrcode",
         highlights: [
           "Gạch nợ viện phí tự động 100%",
-          "Hỗ trợ đa kênh ngân hàng & Ví",
+          "Hỗ trợ đa kênh ngân hàng & Ví điện tử",
           "Xuất hóa đơn điện tử tức thời",
           "Minh bạch và đối soát tự động"
         ]
@@ -166,14 +175,17 @@ function localDate(date){return date.getFullYear()+'-'+String(date.getMonth()+1)
       {
         id: 6,
         code: "ONLINE",
-        title: "Đặt lịch online",
-        shortTitle: "Đặt lịch online",
-        metric: "",
-        summary: "Giảm bớt thời gian chờ đợi, số hóa quy trình tiếp nhận",
-        fullDesc: "Tích hợp thuật toán Trí tuệ nhân tạo (AI) phân tích dữ liệu y khoa trên Smart Hub, đồng thời kết nối 2 chiều với hệ thống máy xét nghiệm tự động (LIS).",
-        icon: "fa-brain",
+        title: "ĐẶT LỊCH KHÁM TRỰC TUYẾN",
+        shortTitle: "ĐẶT LỊCH ONLINE",
+        metric: "Tiếp đón ưu tiên",
+        summary: "Giảm bớt thời gian chờ đợi, số hóa quy trình tiếp nhận.",
+        fullDesc: "Người dân dễ dàng đăng ký lịch khám trước qua Website hoặc điện thoại, chủ động lựa chọn khung giờ và chuyên khoa, giảm tối đa thời gian chờ đợi tại sảnh tiếp đón.",
+        icon: "fa-calendar-check",
         highlights: [
-          
+          "Chủ động chọn ngày giờ & chuyên khoa",
+          "Xác nhận lịch hẹn nhanh chóng",
+          "Tiếp đón ưu tiên bằng CCCD/VNeID",
+          "Giảm tải chờ đợi tại khu vực khám bệnh"
         ]
       },
       {
@@ -184,12 +196,12 @@ function localDate(date){return date.getFullYear()+'-'+String(date.getMonth()+1)
         metric: "Kết nối đa tuyến",
         summary: "Liên thông cổng BHXH, Hồ sơ sức khỏe điện tử và Ứng dụng đặt lịch trên di động.",
         fullDesc: "Kết nối đồng bộ dữ liệu với Cổng giám định BHYT, Sổ sức khỏe điện tử VNeID và ứng dụng di động giúp người dân theo dõi sức khỏe trọn đời.",
-        icon: "fa-mobile-screen-button",
+        icon: "fa-network-wired",
         highlights: [
           "Liên thông chuẩn XML Bộ Y Tế",
-          "Đặt lịch khám trực tuyến từ xa",
-          "Tra cứu hồ sơ sức khỏe trên điện thoại",
-          "Nhắc lịch tái khám & uống thuốc tự động"
+          "Tích hợp Sổ sức khỏe điện tử VNeID",
+          "Tra cứu lịch sử khám trên điện thoại",
+          "Đồng bộ dữ liệu y tế quốc gia"
         ]
       }
     ];
@@ -324,13 +336,15 @@ function localDate(date){return date.getFullYear()+'-'+String(date.getMonth()+1)
             <span class="node-badge text-[10px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded-md bg-sapphire-50 text-sapphire border border-sapphire-200/80 transition-colors">
               ${item.code}
             </span>
-            <span class="text-[10px] font-bold text-cyber flex items-center gap-1">
+            ${item.metric ? `<span class="text-[10px] font-bold text-cyber flex items-center gap-1">
               <span class="w-1.5 h-1.5 rounded-full bg-cyber animate-ping"></span>
               ${item.metric}
-            </span>
+            </span>` : ''}
           </div>
           <div class="flex items-start gap-2.5">
-            
+            <div class="node-icon-box w-9 h-9 rounded-xl bg-gradient-to-br from-sapphire to-cyber text-white flex items-center justify-center shadow-sm shrink-0">
+              <i class="fa-solid ${item.icon} text-sm"></i>
+            </div>
             <div class="min-w-0 flex-1">
               <h4 class="text-xs font-extrabold text-sapphire-dark uppercase leading-snug group-hover:text-cyber transition-colors line-clamp-1">
                 ${item.shortTitle}
@@ -373,7 +387,7 @@ function localDate(date){return date.getFullYear()+'-'+String(date.getMonth()+1)
         <div onclick="openMilestoneModal(${idx})" class="pearl-card rounded-2xl p-4 relative cursor-pointer">
           <span class="absolute -left-[25px] sm:-left-[29px] top-6 w-4 h-4 rounded-full bg-white border-4 border-sapphire shadow"></span>
           <div class="flex items-start gap-3.5">
-            <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-sapphire to-cyber text-white flex items-center justify-center shadow-md shrink-0">
+            <div class="node-icon-box w-11 h-11 rounded-xl bg-gradient-to-br from-sapphire to-cyber text-white flex items-center justify-center shadow-md shrink-0">
               <i class="fa-solid ${item.icon} text-base"></i>
             </div>
             <div class="flex-1 min-w-0">
@@ -475,9 +489,11 @@ function localDate(date){return date.getFullYear()+'-'+String(date.getMonth()+1)
 
       const centerIcon = document.getElementById('centerHubIcon');
       const centerSub = document.getElementById('centerHubSub');
-      if (centerIcon && centerSub) {
-        centerIcon.className = `fa-solid ${selected.icon} text-2xl text-sky-100`;
-        centerSub.textContent = `Kết nối: Dấu ấn #${selected.code}`;
+      if (centerIcon) {
+        centerIcon.className = `fa-solid ${selected.icon} text-2xl text-sky-100 group-hover:text-white`;
+      }
+      if (centerSub) {
+        centerSub.textContent = `Kết nối: ${selected.code}`;
       }
     }
 
@@ -533,7 +549,7 @@ function localDate(date){return date.getFullYear()+'-'+String(date.getMonth()+1)
     function openMilestoneModal(index) {
       const item = milestones[index]; if (!item || !document.getElementById('milestoneModal')) return;
       document.getElementById('modalIcon').className = `fa-solid ${item.icon} text-xl`;
-      document.getElementById('modalCodeBadge').textContent = `DẤU ẤN #${item.code} • ${item.metric}`;
+      document.getElementById('modalCodeBadge').textContent = item.metric ? `DẤU ẤN #${item.code} • ${item.metric}` : `DẤU ẤN #${item.code}`;
       document.getElementById('modalTitle').textContent = item.title;
       document.getElementById('modalDescription').textContent = item.fullDesc;
 
@@ -767,8 +783,14 @@ function localDate(date){return date.getFullYear()+'-'+String(date.getMonth()+1)
 
     let doctorModalTrigger = null;
     let doctorBodyOverflow = '';
+    const prevOpenDoctorModal = typeof window.openDoctorModal === 'function' ? window.openDoctorModal : null;
+    const prevCloseDoctorModal = typeof window.closeDoctorModal === 'function' ? window.closeDoctorModal : null;
     function openDoctorModal(i) {
-      const d = DOCTORS[i]; if (!d) return;
+      if (typeof i === 'object' && i !== null && prevOpenDoctorModal && prevOpenDoctorModal !== openDoctorModal) {
+        return prevOpenDoctorModal(i);
+      }
+      const modalEl = document.getElementById('doctor-modal');
+      const d = DOCTORS[i]; if (!d || !modalEl) return;
       const set = (id, v) => { document.getElementById(id).textContent = v; };
       const img = document.getElementById('dm-photo');
       img.onerror = () => { img.onerror = null; img.src = docFallback(d.name); };
@@ -787,6 +809,10 @@ function localDate(date){return date.getFullYear()+'-'+String(date.getMonth()+1)
     }
     function closeDoctorModal() {
       const m = document.getElementById('doctor-modal');
+      if (!m) {
+        if (prevCloseDoctorModal && prevCloseDoctorModal !== closeDoctorModal) return prevCloseDoctorModal();
+        return;
+      }
       m.classList.remove('open'); m.classList.add('hidden');
       document.body.style.overflow = doctorBodyOverflow; window.SiteUI?.start();
       docState.modalOpen = false;

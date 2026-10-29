@@ -1,5 +1,4 @@
 <?php require_once 'header.php'; ?>
-<?php require_once 'menu.php'; ?>
 
 <!-- Load jQuery and Select2 CDN -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -552,6 +551,7 @@
   .kpi-summary-grid { grid-template-columns: repeat(2, 1fr); }
   .workspace-layout { flex-direction: column; }
   .workspace-sidebar { width: 100%; }
+  .workspace-content { width: 100%; }
 }
 
 @media (max-width: 640px) {
@@ -658,19 +658,19 @@
               </a>
               <a href="<?php echo XC_URL; ?>/khong-gian-lam-viec-so?status=processing" class="sidebar-menu-item <?php echo ($status_filter=='processing') ? 'active' : ''; ?>">
                 <span><i class="fa-solid fa-spinner me-2 text-info"></i>Đang & Chưa xử lý</span>
-                <span class="sidebar-count-badge bg-info"><?php echo (int)$stats->total_processing; ?></span>
+                <span class="sidebar-count-badge bg-info" data-workspace-stat="total_processing"><?php echo (int)$stats->total_processing; ?></span>
               </a>
               <a href="<?php echo XC_URL; ?>/khong-gian-lam-viec-so?status=completed" class="sidebar-menu-item <?php echo ($status_filter=='completed') ? 'active' : ''; ?>">
                 <span><i class="fa-solid fa-circle-check me-2 text-success"></i>Đã xử lý xong</span>
-                <span class="sidebar-count-badge bg-success"><?php echo (int)$stats->total_completed; ?></span>
+                <span class="sidebar-count-badge bg-success" data-workspace-stat="total_completed"><?php echo (int)$stats->total_completed; ?></span>
               </a>
               <a href="<?php echo XC_URL; ?>/khong-gian-lam-viec-so?status=draft" class="sidebar-menu-item <?php echo ($status_filter=='draft') ? 'active' : ''; ?>">
                 <span><i class="fa-solid fa-file-pen me-2 text-warning"></i>Bản nháp (Chờ gửi)</span>
-                <span class="sidebar-count-badge bg-warning"><?php echo (int)$stats->total_draft; ?></span>
+                <span class="sidebar-count-badge bg-warning" data-workspace-stat="total_draft"><?php echo (int)$stats->total_draft; ?></span>
               </a>
               <a href="<?php echo XC_URL; ?>/khong-gian-lam-viec-so?status=rejected" class="sidebar-menu-item <?php echo ($status_filter=='rejected') ? 'active' : ''; ?>">
                 <span><i class="fa-solid fa-circle-xmark me-2 text-danger"></i>Từ chối xử lý</span>
-                <span class="sidebar-count-badge bg-danger"><?php echo (int)$stats->total_rejected; ?></span>
+                <span class="sidebar-count-badge bg-danger" data-workspace-stat="total_rejected"><?php echo (int)$stats->total_rejected; ?></span>
               </a>
             </div>
 
@@ -691,7 +691,7 @@
             <div class="kpi-card-item kpi-completed">
               <div>
                 <div class="kpi-text-label">Yêu cầu đã xử lý</div>
-                <div class="kpi-text-number" style="color: #10b981;"><?php echo (int)$stats->total_completed; ?></div>
+                <div class="kpi-text-number" style="color: #10b981;" data-workspace-stat="total_completed"><?php echo (int)$stats->total_completed; ?></div>
               </div>
               <div class="kpi-icon-wrapper icon-success">
                 <i class="fa-solid fa-check-double"></i>
@@ -702,7 +702,7 @@
             <div class="kpi-card-item kpi-processing">
               <div>
                 <div class="kpi-text-label">Đang & Chưa xử lý</div>
-                <div class="kpi-text-number" style="color: #0284c7;"><?php echo (int)$stats->total_processing; ?></div>
+                <div class="kpi-text-number" style="color: #0284c7;" data-workspace-stat="total_processing"><?php echo (int)$stats->total_processing; ?></div>
               </div>
               <div class="kpi-icon-wrapper icon-primary">
                 <i class="fa-solid fa-clock-rotate-left"></i>
@@ -713,7 +713,7 @@
             <div class="kpi-card-item kpi-draft">
               <div>
                 <div class="kpi-text-label">Chưa gửi / Bản nháp</div>
-                <div class="kpi-text-number" style="color: #f59e0b;"><?php echo (int)$stats->total_draft; ?></div>
+                <div class="kpi-text-number" style="color: #f59e0b;" data-workspace-stat="total_draft"><?php echo (int)$stats->total_draft; ?></div>
               </div>
               <div class="kpi-icon-wrapper icon-warning">
                 <i class="fa-solid fa-file-lines"></i>
@@ -724,7 +724,7 @@
             <div class="kpi-card-item kpi-rejected">
               <div>
                 <div class="kpi-text-label">Từ chối xử lý</div>
-                <div class="kpi-text-number" style="color: #ef4444;"><?php echo (int)$stats->total_rejected; ?></div>
+                <div class="kpi-text-number" style="color: #ef4444;" data-workspace-stat="total_rejected"><?php echo (int)$stats->total_rejected; ?></div>
               </div>
               <div class="kpi-icon-wrapper icon-danger">
                 <i class="fa-solid fa-circle-xmark"></i>
@@ -758,7 +758,7 @@
                     <th style="text-align: center;" width="100">Chi tiết</th>
                   </tr>
                 </thead>
-                <tbody>
+                <tbody id="workspace-request-rows">
                   <?php if(!empty($requests)): foreach($requests as $req): ?>
                     <tr>
                       <td style="padding-left: 20px; font-weight: 700; font-family: monospace; color: #0284c7;">
@@ -780,7 +780,7 @@
                       </td>
                       <td>
                         <div style="font-weight: 700; color: #0f172a;"><?php echo htmlspecialchars($req->user_name); ?></div>
-                        <div style="font-size: 12.5px; color: #64748b;"><?php echo !empty($req->department) ? htmlspecialchars($req->department) : 'Bệnh viện Đắk Hà'; ?></div>
+                        <div style="font-size: 12.5px; color: #64748b;"><?php echo !empty($req->department) ? htmlspecialchars($req->department) : 'Bệnh viện Đăk Hà'; ?></div>
                       </td>
                       <td style="text-align: center;">
                         <?php if($req->status === 'completed'): ?>
@@ -796,7 +796,7 @@
                         <?php endif; ?>
                       </td>
                       <td style="text-align: center;">
-                        <button type="button" class="btn-detail-view" onclick="viewRequestDetail(<?php echo htmlspecialchars(json_encode($req)); ?>)" title="Xem chi tiết">
+                        <button type="button" class="btn-detail-view" data-request-id="<?php echo (int)$req->id; ?>" title="Xem chi tiết">
                           <i class="fa-solid fa-eye"></i>
                         </button>
                       </td>
@@ -825,7 +825,7 @@
      ============================================================ -->
 <div class="ws-custom-modal" id="modalCreateRequest" tabindex="-1" aria-hidden="true">
   <div class="ws-modal-container">
-    <form id="formCreateRequest" enctype="multipart/form-data">
+    <form id="formCreateRequest" enctype="multipart/form-data"><input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($workspace_csrf_token, ENT_QUOTES, 'UTF-8'); ?>">
       <div class="ws-modal-topbar">
         <h5 class="ws-modal-topbar-title">
           <i class="fa-solid fa-paper-plane"></i> Tạo Yêu Cầu Hỗ Trợ Mới (Kỹ thuật / Y tế)
@@ -932,10 +932,10 @@
         <div style="padding: 14px; border: 1px solid #e2e8f0; border-radius: 10px; background: #ffffff; white-space: pre-line; font-size: 14px;" id="md_content"></div>
       </div>
 
-      <!-- RESOLUTION NOTE FROM ADMIN -->
+      <a id="md_attachment" class="btn-detail-view" target="_blank" rel="noopener" style="display:none">Xem tệp đính kèm</a><div id="md_history" style="margin-top:16px"></div><!-- RESOLUTION NOTE FROM ADMIN -->
       <div style="margin-top: 16px; padding: 14px; border-radius: 12px; background: #f0fdf4; border: 1px solid #bbf7d0;">
-        <h6 style="font-weight: 700; color: #047857; margin: 0 0 8px;"><i class="fa-solid fa-user-check me-2"></i>Mô tả nội dung đã xử lý (Bộ phận Kỹ thuật / Admin):</h6>
-        <div id="md_resolution_note" style="font-style: italic; color: #1e293b; font-size: 13.5px;">Chưa có thông tin xử lý từ Admin/Kỹ thuật viên.</div>
+        <h6 style="font-weight: 700; color: #047857; margin: 0 0 8px;"><i class="fa-solid fa-user-check me-2"></i>Phản hồi / Kết quả xử lý từ Admin:</h6>
+        <div id="md_resolution_note" style="white-space: pre-wrap; font-style: italic; color: #1e293b; font-size: 13.5px;">Chưa có thông tin xử lý từ Admin/Kỹ thuật viên.</div>
       </div>
     </div>
     <div class="ws-modal-action-footer">
@@ -972,6 +972,7 @@ function closeCreateRequestModal() {
 }
 
 function closeViewDetailModal() {
+  window.workspaceRequestId = null;
   var modalEl = document.getElementById('modalViewDetail');
   if (modalEl) {
     modalEl.classList.remove('show');
@@ -1029,7 +1030,7 @@ function submitRequestForm(statusType) {
   }
 }
 
-function viewRequestDetail(req) {
+function renderRequestDetail(req) {
   document.getElementById('md_code').innerText = 'Chi tiết yêu cầu: ' + (req.request_code || '');
   document.getElementById('md_title').innerText = req.title || '';
   document.getElementById('md_user').innerText = req.user_name || '';
@@ -1063,4 +1064,5 @@ document.addEventListener('click', function(e) {
 });
 </script>
 
-<?php require_once 'footer.php'; ?>
+<script src="<?php echo XC_URL; ?>/template/frontend/assets/js/workspace-requests.js?v=<?php echo filemtime(__DIR__.'/assets/js/workspace-requests.js'); ?>" defer></script>
+<?php require_once 'home-footer.php'; ?>

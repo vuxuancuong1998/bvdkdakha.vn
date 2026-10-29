@@ -51,7 +51,7 @@ $current_role_name = isset($_SESSION['user']['group_name']) ? $_SESSION['user'][
                 <div class="col-lg-8">
                     <div class="d-flex align-items-center gap-3 mb-2">
                         <span class="badge bg-white text-primary px-3 py-1 fw-bold" style="font-size: 11.5px; border-radius: 999px;">
-                            <i class="fa-solid fa-hospital me-1"></i> Bệnh viện Đa khoa Khu vực Đắk Hà
+                            <i class="fa-solid fa-hospital me-1"></i> Bệnh viện Đa khoa Khu vực Đăk Hà
                         </span>
                         <span class="text-white-50 small"><i class="fa-regular fa-calendar-check me-1"></i> <?php echo date('d/m/Y'); ?></span>
                     </div>

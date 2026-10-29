@@ -12,7 +12,7 @@
       font-family: var(--font-primary);
       background-color: var(--color-pearl);
       color: #1e293b;
-      overflow-x: hidden;
+      overflow-x: clip;
     }
     #home-design .container {
       width: 100% !important;
@@ -142,6 +142,20 @@
       background: linear-gradient(135deg, rgb(5 121 88) 0%, #f97316 100%);
       color: #ffffff;
       border-color: transparent;
+    }
+
+    #home-design .pearl-card .node-icon-box {
+      /* Keep white icons visible without relying on generated gradient utilities. */
+      background: linear-gradient(135deg, #1760a5 0%, #0284c7 100%);
+      color: #ffffff;
+      transition: transform 0.25s ease, background 0.25s ease, box-shadow 0.25s ease;
+    }
+
+    #home-design .pearl-card:hover .node-icon-box,
+    #home-design .pearl-card.active-node .node-icon-box {
+      background: linear-gradient(135deg, rgb(5 121 88) 0%, #f97316 100%);
+      transform: scale(1.06);
+      box-shadow: 0 6px 14px -3px rgba(249, 115, 22, 0.35);
     }
 
     #home-design .smart-hub-shell {
@@ -700,7 +714,7 @@
 #home-design button{cursor:pointer}
 #home-design [data-reveal]{opacity:1;transform:none}
 #home-design .hidden{display:none}
-#home-design .hero{padding:0}
+.hero, #home-design .hero{padding:0}
 #home-design .empty-doctors{padding:2rem;color:white}
 #home-design .booking-field-error{color:#b91c1c;font-size:12px;line-height:1.5;margin-top:6px}
 #home-design #quick-booking-form [aria-invalid="true"]{border-color:#b91c1c}

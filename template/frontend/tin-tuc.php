@@ -1,4 +1,4 @@
-<?php require_once "header.php";?>
+<?php require_once 'header.php'; ?>
 
 <?php
 // Safety fallback for controller variables
@@ -433,6 +433,4 @@ $badge_classes = [
         </div><!-- /news-layout -->
       </div><!-- /container -->
     </div><!-- /news-main-wrapper -->
-
-  </main>
-<?php require_once "footer.php"; ?>
+<?php require_once 'home-footer.php'; ?>

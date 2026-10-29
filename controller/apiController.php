@@ -8,9 +8,13 @@
  * Website: www.xiao.vn
  */
 require_once __DIR__.'/api-quick-appointments.php';
+require_once __DIR__.'/api-users.php';
+require_once __DIR__.'/api-support-requests.php';
 Class apiController extends baseController
 { 
     use ApiQuickAppointmentActions;
+    use AdminUserActions;
+    use ApiSupportRequestActions;
 	private function ensureAdminPermissionTables()
 	{
 		global $db;
@@ -165,7 +169,7 @@ Class apiController extends baseController
 	{
 		global $db;
 		if(!isset($_SESSION['user']['id']) || intval($_SESSION['user']['id']) <= 0){ return array(); }
-		$db->query("SELECT user_group FROM hicrm_users WHERE id = '".intval($_SESSION['user']['id'])."' AND user_status = 1 LIMIT 1");
+		$db->query("SELECT user_group FROM hicrm_users WHERE id = '".intval($_SESSION['user']['id'])."' AND is_admin = 1 AND user_status = 1 LIMIT 1");
 		$user = $db->fetch_object(true);
 		if(!$user){ return array(); }
 		if(intval($user->user_group) === 1){ return array('*'); }
@@ -650,6 +654,7 @@ Class apiController extends baseController
 	public function applogin()
 	{
 		global $db;
+		AdminUsers::ensureSchema($db);
 		$result = array();
 		$loginContext = isset($_POST['login_context']) ? trim((string)$_POST['login_context']) : '';
 		$isFrontendLogin = $loginContext === 'frontend';
@@ -665,7 +670,7 @@ Class apiController extends baseController
 		$password = md5($password);
 		$db->query("SELECT *
 			FROM hicrm_users 
-			WHERE (user_email = '".$email."' OR user_username = '".$email."')
+			WHERE (user_email = '".$email."' OR user_username = '".$email."' OR user_cccd = '".$email."')
 				AND user_password = '".$password."'
 				AND is_admin = 1
 				AND user_status = 1
@@ -822,9 +827,12 @@ Class apiController extends baseController
 			echo json_encode($result);
 			return;
 		}
+		if((int)$user->user_status === 99 || ((int)$user->user_group === 1 && !$this->currentAdminIsSuperAdmin())){
+			echo json_encode(array('status'=>403, 'message'=>'Không thể đặt lại mật khẩu tài khoản này'));
+			return;
+		}
 
-		$chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-		$new_password = substr(str_shuffle(str_repeat($chars, 8)), 0, 8);
+		$new_password = AdminUsers::password();
 		$hashed_password = md5($db->escapestring($new_password));
 
 		$db->query("UPDATE hicrm_users SET user_password = '".$hashed_password."' WHERE id = '".$id."'");
@@ -834,126 +842,6 @@ Class apiController extends baseController
 		echo json_encode($result);
 	}	
 	//insert user database
-	public function userAction(){
-		global $db;
-		if(!$this->requireAdminApiPermission('users')){ return; }
-		
-		$full_name = $db->escapestring($_POST['full_name']);
-		$email = $db->escapestring($_POST['user_email']);
-		$password = md5($db->escapestring($_POST['user_password']));
-		$user_group = isset($_POST['user_group']) ? intval($_POST['user_group']) : 0;
-		$user_department = isset($_POST['user_department']) ? intval($_POST['user_department']) : 0;
-		$method = $_POST['method'];
-		$user_created_date = date("Y-m-d");
-		$user_id = isset($_POST['user_id']) ? intval($_POST['user_id']) : 0;
-		$result = array();
-		if($user_group <= 0){
-			$result['status'] = 400;
-			$result['message'] = 'Vui lòng chọn nhóm quyền cho tài khoản';
-			echo json_encode($result);
-			return;
-		}
-		$db->query("SELECT id FROM hicrm_user_groups WHERE id = '".$user_group."' AND group_status NOT IN(99) LIMIT 1");
-		if(!$db->num_row()){
-			$result['status'] = 400;
-			$result['message'] = 'Nhóm quyền không tồn tại hoặc đã bị xóa';
-			echo json_encode($result);
-			return;
-		}
-		if(intval($user->user_group) === 1 && !$this->currentAdminIsSuperAdmin()){
-			$result['status'] = 403;
-			$result['message'] = 'Không thể reset mật khẩu tài khoản Super Admin.';
-			echo json_encode($result);
-			return;
-		}
-		if(!$this->adminAccountHasAccess($user_group)){
-			$result['status'] = 400;
-			$result['message'] = 'Nhóm được chọn chưa có quyền truy cập Admin.';
-			echo json_encode($result);
-			return;
-		}
-		if($user_group === 1 && !$this->currentAdminIsSuperAdmin()){
-			$result['status'] = 403;
-			$result['message'] = 'Chỉ Super Admin mới được gán nhóm Super Admin.';
-			echo json_encode($result);
-			return;
-		}
-		
-		if(isset($method) && $method == "add"){
-			if(empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)){
-				$result['status'] = 400;
-				$result['message'] = 'Email không hợp lệ';
-				echo json_encode($result);
-				return;
-			}
-			$password_raw = trim($_POST['user_password']);
-			if(empty($password_raw)){
-				$result['status'] = 400;
-				$result['message'] = 'Mật khẩu không được để trống';
-				echo json_encode($result);
-				return;
-			}
-			
-			$password = md5($db->escapestring($password_raw));
-			$db->query("SELECT * FROM hicrm_users WHERE user_email = '".$email."'");
-			if($db->num_row()){
-				$existing = $db->fetch_object(true);
-				if($existing->user_email == $email){
-					$result['status'] = 400;
-					$result['message'] = 'Email đã tồn tại';
-				}
-				echo json_encode($result);
-				return;
-			}
-			$db->query("INSERT INTO hicrm_users(user_username, user_password, user_email, user_group, user_department, user_status, user_created_date) VALUES ('".$full_name."','".$password."','".$email."','".$user_group."','".$user_department."',1,'".$user_created_date."')");
-			$result['status'] = 200;
-			$result['message'] = 'Thêm thành công';
-			$result['url'] = XC_URL."/admin/users";
-		}elseif(isset($method) && $method == "edit"){
-			if($user_id <= 0){
-				$result['status'] = 400;
-				$result['message'] = 'Tài khoản cần cập nhật không hợp lệ';
-				echo json_encode($result);
-				return;
-			}
-			$db->query("SELECT user_group FROM hicrm_users WHERE id = '".$user_id."' LIMIT 1");
-			$target_user = $db->fetch_object(true);
-			if($target_user && intval($target_user->user_group) === 1 && !$this->currentAdminIsSuperAdmin()){
-				$result['status'] = 403;
-				$result['message'] = 'Không thể chỉnh sửa tài khoản Super Admin.';
-				echo json_encode($result);
-				return;
-			}
-			if(empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)){
-				$result['status'] = 400;
-				$result['message'] = 'Email không hợp lệ';
-				echo json_encode($result);
-				return;
-			}
-			$db->query("SELECT id FROM hicrm_users WHERE user_email = '".$email."' AND id <> '".$user_id."' LIMIT 1");
-			if($db->num_row()){
-				$result['status'] = 400;
-				$result['message'] = 'Email đã tồn tại';
-				echo json_encode($result);
-				return;
-			}
-			$fields = array(
-				"user_username = '".$full_name."'",
-				"user_email = '".$email."'",
-				"user_group = '".$user_group."'",
-				"user_department = '".$user_department."'"
-			);
-			if(trim((string)($_POST['user_password'] ?? '')) !== ''){
-				$fields[] = "user_password = '".$password."'";
-			}
-			$db->query("UPDATE hicrm_users SET ".implode(',', $fields)." WHERE id = '".$user_id."' LIMIT 1");
-			$result['status'] = 200;
-			$result['message'] = 'Cập nhật tài khoản thành công';
-			$result['url'] = XC_URL."/admin/users";
-		}
-		echo json_encode($result);
-	}
-
 	public function toggleuserstatus()
 	{
 		global $db;
@@ -980,6 +868,10 @@ Class apiController extends baseController
 			return;
 		}
 		$user = $db->fetch_object(true);
+		if((int)$user->user_status === 99){
+			echo json_encode(array('status'=>404, 'message'=>'Tài khoản đã bị xóa'));
+			return;
+		}
 		if(intval($user->user_group) === 1 && !$this->currentAdminIsSuperAdmin()){
 			$result['status'] = 403;
 			$result['message'] = 'Không thể thay đổi trạng thái tài khoản Super Admin.';
@@ -2507,104 +2399,6 @@ Class apiController extends baseController
 
 
 	//======= API Support Requests (Quản lý Yêu cầu) ==========//
-	public function submitrequest()
-	{
-		header('Content-Type: application/json; charset=utf-8');
-		global $db;
-		$result = array('status' => 500, 'message' => 'Lỗi kết nối');
-
-		$user_id = isset($_SESSION['user']['id']) ? (int)$_SESSION['user']['id'] : 0;
-		$user_name = !empty($_POST['user_name']) ? trim($_POST['user_name']) : (isset($_SESSION['user']['full_name']) ? $_SESSION['user']['full_name'] : 'Khách');
-		$user_email = isset($_SESSION['user']['email']) ? $_SESSION['user']['email'] : (isset($_POST['user_email']) ? trim($_POST['user_email']) : '');
-		
-		$title = isset($_POST['title']) ? trim($_POST['title']) : '';
-		$service_type = isset($_POST['service_type']) ? trim($_POST['service_type']) : 'CNTT';
-		$priority = isset($_POST['priority']) ? trim($_POST['priority']) : 'Normal';
-		$department = isset($_POST['department']) ? trim($_POST['department']) : '';
-		
-		if(empty($department) && $user_id > 0){
-			$db->query("SELECT u.*, d.depart_name FROM hicrm_users u 
-						LEFT JOIN hicrm_departments d ON u.user_department = d.id 
-						WHERE u.id = '".$user_id."' LIMIT 1");
-			$user_data = $db->fetch_object(true);
-			if($user_data && !empty($user_data->depart_name)){
-				$department = $user_data->depart_name;
-			}
-		}
-		
-		$content = isset($_POST['content']) ? trim($_POST['content']) : '';
-		$action_status = isset($_POST['action_status']) ? trim($_POST['action_status']) : 'sent';
-
-		if(empty($title)){
-			$result['message'] = 'Vui lòng nhập Tiêu đề / Nội dung ngắn của yêu cầu!';
-			echo json_encode($result);
-			return;
-		}
-
-		$prefix = 'YC-' . date('Ymd') . '-';
-		$rand_code = $prefix . rand(100, 999);
-
-		$attachment = '';
-		if(isset($_FILES['attachment']) && $_FILES['attachment']['name'] != ''){
-			$file_name = $_FILES['attachment']['name'];
-			$file_tmp = $_FILES['attachment']['tmp_name'];
-			$file_ext = strtolower(pathinfo($file_name, PATHINFO_EXTENSION));
-			$new_name = 'request_'.time().'_'.rand(100,999).'.'.$file_ext;
-			$target = './uploads/files/'.$new_name;
-			if(move_uploaded_file($file_tmp, $target)){
-				$attachment = 'uploads/files/'.$new_name;
-			}
-		}
-
-		$e_code = $db->escapestring($rand_code);
-		$e_name = $db->escapestring($user_name);
-		$e_email = $db->escapestring($user_email);
-		$e_dept = $db->escapestring($department);
-		$e_type = $db->escapestring($service_type);
-		$e_prio = $db->escapestring($priority);
-		$e_title = $db->escapestring($title);
-		$e_content = $db->escapestring($content);
-		$e_attach = $db->escapestring($attachment);
-		$e_status = in_array($action_status, array('draft','sent','processing','completed','rejected')) ? $action_status : 'sent';
-
-		$db->query("INSERT INTO hicrm_support_requests (request_code, user_id, user_name, user_email, department, service_type, priority, title, content, attachment, status, created_at)
-		VALUES ('".$e_code."', '".$user_id."', '".$e_name."', '".$e_email."', '".$e_dept."', '".$e_type."', '".$e_prio."', '".$e_title."', '".$e_content."', '".$e_attach."', '".$e_status."', NOW())");
-
-		$result['status'] = 200;
-		$result['request_code'] = $rand_code;
-		$result['message'] = ($e_status === 'draft') ? 'Đã lưu nháp yêu cầu thành công!' : 'Gửi yêu cầu hỗ trợ thành công! Mã YC: ' . $rand_code;
-		$result['returnUrl'] = XC_URL."/khong-gian-lam-viec-so";
-
-		echo json_encode($result);
-	}
-
-	public function updaterequeststatus()
-	{
-		header('Content-Type: application/json; charset=utf-8');
-		if(!$this->requireAdminApiPermission('support_requests', false)){ return; }
-		global $db;
-		$result = array('status' => 500, 'message' => 'Lỗi kết nối');
-
-		$id = isset($_POST['id']) ? (int)$_POST['id'] : 0;
-		$status = isset($_POST['status']) ? trim($_POST['status']) : '';
-		$resolution_note = isset($_POST['resolution_note']) ? trim($_POST['resolution_note']) : '';
-
-		$allowed_status = array('draft', 'sent', 'processing', 'completed', 'rejected');
-		if($id <= 0 || !in_array($status, $allowed_status)){
-			$result['message'] = 'Trạng thái hoặc ID không hợp lệ!';
-			echo json_encode($result);
-			return;
-		}
-
-		$e_status = $db->escapestring($status);
-		$e_note = $db->escapestring($resolution_note);
-
-		$db->query("UPDATE hicrm_support_requests SET status = '".$e_status."', resolution_note = '".$e_note."', updated_at = NOW() WHERE id = '".$id."'");
-
-		$result['status'] = 200;
-		$result['message'] = 'Cập nhật trạng thái và nội dung xử lý yêu cầu thành công!';
-		echo json_encode($result);
-	}
 	//====END SUPPORT REQUESTS====/
 
 	//=======API product ========== ////
@@ -4883,6 +4677,7 @@ Class apiController extends baseController
 	public function login()
 	{
 		global $db;
+		AdminUsers::ensureSchema($db);
 		$result = array();
 		$loginContext = isset($_POST['login_context']) ? trim((string)$_POST['login_context']) : '';
 		$isFrontendLogin = $loginContext === 'frontend';
@@ -4898,7 +4693,7 @@ Class apiController extends baseController
 		$password = md5($password);
 		$db->query("SELECT *
 			FROM hicrm_users 
-			WHERE (user_email = '".$email."' OR user_username = '".$email."')
+			WHERE (user_email = '".$email."' OR user_username = '".$email."' OR user_cccd = '".$email."')
 				AND user_password = '".$password."'
 				AND is_admin != 1
 				AND user_status = 1
@@ -4932,7 +4727,7 @@ Class apiController extends baseController
 					echo json_encode($result);
 					return;
 				}
-				if(!in_array($userGroup, array(2, 3, 4), true)){
+				if(!in_array($userGroup, array(2, 3, 4, 5), true)){
 					$result["status"] = 403;
 					$result["message"] = "Tài khoản này không được hỗ trợ đăng nhập tại giao diện trang chủ.";
 					echo json_encode($result);
@@ -8204,7 +7999,7 @@ public function addstudent()
 			return;
 		}
 
-		$db->query("SELECT u.id, u.user_group
+		$db->query("SELECT u.id, u.user_group, u.is_admin, u.user_email
 			FROM hicrm_users u
 			INNER JOIN hicrm_user_groups g ON u.user_group = g.id AND g.group_status NOT IN(99)
 			WHERE u.id = '".$user_id."' AND u.user_status NOT IN(99)
@@ -8216,6 +8011,14 @@ public function addstudent()
 			return;
 		}
 		$target_user = $db->fetch_object(true);
+		if((int)$target_user->is_admin !== 1){
+			echo json_encode(array('status'=>400, 'message'=>'Chỉ có thể gán nhóm quyền quản trị cho đối tượng Admin'));
+			return;
+		}
+		if($user_group === 1 && $this->adminTwoFactorConfigEnabled() && trim((string)$target_user->user_email) === ''){
+			echo json_encode(array('status'=>400, 'message'=>'Vui lòng bổ sung email nhận mã xác thực trước khi gán nhóm Super Admin'));
+			return;
+		}
 		if($target_user && intval($target_user->user_group) === 1 && !$this->currentAdminIsSuperAdmin()){
 			$result['status'] = 403;
 			$result['message'] = 'Không thể thay đổi nhóm của tài khoản Super Admin.';
